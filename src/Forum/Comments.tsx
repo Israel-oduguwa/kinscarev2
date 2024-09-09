@@ -12,7 +12,7 @@ polyfill();
 async function Comments({ postID, threadID }: any) {
   // console.log(postID, "sklk")
   let data = await fetch(
-    `http://localhost:8081/api/v1/forum/posts/${postID}/replies`,
+    `http://kinscare-dev.us-east-1.elasticbeanstalk.com/api/v1/forum/posts/${postID}/replies`,
     // { next: { revalidate:1 } }
     { cache: "no-cache" }
   );

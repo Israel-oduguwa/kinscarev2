@@ -6,7 +6,7 @@ interface PostProps {
 
 async function DiscussionPosts({ threadID }: PostProps) {
   let data = await fetch(
-    `http://localhost:8081/api/v1/forum/threads/${threadID}/posts`,
+    `http://kinscare-dev.us-east-1.elasticbeanstalk.com/api/v1/forum/threads/${threadID}/posts`,
     // { next: { revalidate:1 } }
     { cache: "no-cache" }
   );

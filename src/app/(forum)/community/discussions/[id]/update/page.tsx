@@ -44,7 +44,7 @@ const Page = ({ params }: { params: { id: string } }) => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `http://localhost:8081/api/v1/forum/threads/${id}`
+          `http://kinscare-dev.us-east-1.elasticbeanstalk.com/api/v1/forum/threads/${id}`
         );
         const { thread }: any = response.data;
         console.log(thread);
@@ -74,7 +74,7 @@ const Page = ({ params }: { params: { id: string } }) => {
       };
       console.log("jo");
       const { data } = await axios.put(
-        `http://localhost:8081/api/v1/forum/threads/${id}`,
+        `http://kinscare-dev.us-east-1.elasticbeanstalk.com/api/v1/forum/threads/${id}`,
         payload
       );
       //   console.log(data)

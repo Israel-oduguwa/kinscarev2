@@ -13,7 +13,7 @@ import ThreadMenuAction from "./ThreadMenuAction";
 
 async function Discussion({ threadID }: { threadID: string }) {
   let data = await fetch(
-    `http://localhost:8081/api/v1/forum/threads/${threadID}`
+    `http://kinscare-dev.us-east-1.elasticbeanstalk.com/api/v1/forum/threads/${threadID}`
   );
   const response = await data.json();
   const { thread, creator } = response;
