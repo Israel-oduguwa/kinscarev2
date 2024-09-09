@@ -227,7 +227,7 @@ const Signin: React.FC = () => {
       const password = data.password;
       const credentials = Realm.Credentials.emailPassword(email, password);
       await app.logIn(credentials);
-      await app.currentUser.refreshCustomData();
+      await app.currentUser?.refreshCustomData();
       const user = await client
         .db("kinshealth")
         .collection("users")
