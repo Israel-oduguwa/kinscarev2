@@ -50,6 +50,7 @@
     "@tiptap/extension-text-align": "^2.6.6",
     "@tiptap/extension-underline": "^2.6.6",
     "@tiptap/react": "^2.6.6",
+    "@tiptap/starter-kit": "^2.6.6",
     "@tiptap/suggestion": "^2.6.6",
     "@vercel/speed-insights": "^1.0.12",
     "axios": "^1.7.2",
