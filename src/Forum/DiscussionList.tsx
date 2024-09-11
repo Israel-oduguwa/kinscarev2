@@ -12,7 +12,7 @@ const ITEMS_PER_PAGE = 10;
 
 async function getThreads(page: number, limit: number) {
   const response = await fetch(
-    `http://kinscare-dev.us-east-1.elasticbeanstalk.com/api/v1/forum/threads?page=${page}&limit=${limit}`
+    `https://api.kinscare.org/api/v1/forum/threads?page=${page}&limit=${limit}`
   );
   return response.json();
 }

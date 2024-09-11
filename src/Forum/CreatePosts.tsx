@@ -26,9 +26,9 @@ function CreatePosts({ threadId }: any) {
         content: postContent,
         threadId,
       };
-      // console.log("jo");
+      console.log(payload);
       const { data } = await axios.post(
-        `http://kinscare-dev.us-east-1.elasticbeanstalk.com/api/v1/forum/threads/posts`,
+        `https://api.kinscare.org/api/v1/forum/threads/posts/reply`,
         payload
       );
       //   console.log(data)

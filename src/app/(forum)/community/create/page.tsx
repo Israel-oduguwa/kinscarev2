@@ -48,7 +48,7 @@ const Page = () => {
       };
       console.log("jo");
       const { data } = await axios.post(
-        `http://kinscare-dev.us-east-1.elasticbeanstalk.com/api/v1/forum/threads`,
+        `https://api.kinscare.org/api/v1/forum/threads`,
         payload
       );
       //   console.log(data)

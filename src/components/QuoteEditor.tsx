@@ -470,7 +470,7 @@ function QuoteEditor({
       formData.append("file", file);
 
       const { data } = await axios.post(
-        "http://kinscare-dev.us-east-1.elasticbeanstalk.com/api/v1/upload-file",
+        "https://api.kinscare.org/api/v1/upload-file",
         formData,
         {
           headers: {
@@ -505,7 +505,7 @@ function QuoteEditor({
     console.log(fileUrl, "delete the url");
     try {
       await axios.post(
-        "http://kinscare-dev.us-east-1.elasticbeanstalk.com/api/v1/delete-file",
+        "https://api.kinscare.org/api/v1/delete-file",
         { fileUrl }
       );
       console.log(`File deleted: ${fileUrl}`);

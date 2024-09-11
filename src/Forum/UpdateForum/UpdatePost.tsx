@@ -47,7 +47,7 @@ export default function UpdatePost({
     //   console.log(replyEndPoint)
       // console.log("jo");
       const { data } = await axios.put(
-        `http://kinscare-dev.us-east-1.elasticbeanstalk.com/api/${usage === "comments" ? replyEndPoint : postEndPoint}`,
+        `https://api.kinscare.org/api/${usage === "comments" ? replyEndPoint : postEndPoint}`,
         payload
       );
       //   console.log(data)

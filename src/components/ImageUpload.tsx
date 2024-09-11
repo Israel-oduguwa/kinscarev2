@@ -21,7 +21,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUpload, onImageRemove,
         const formData = new FormData();
         formData.append('file', file);
 
-        const response = await axios.post('http://kinscare-dev.us-east-1.elasticbeanstalk.com/api/v1/upload-file', formData, {
+        const response = await axios.post('https://api.kinscare.org/api/v1/upload-file', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -49,7 +49,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUpload, onImageRemove,
         const formData = new FormData();
         formData.append('file', file);
 
-        axios.post('http://kinscare-dev.us-east-1.elasticbeanstalk.com/api/v1/upload-file', formData, {
+        axios.post('https://api.kinscare.org/api/v1/upload-file', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -69,7 +69,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUpload, onImageRemove,
   const handleRemove = async () => {
     if (previewUrl) {
       try {
-        await axios.post('http://kinscare-dev.us-east-1.elasticbeanstalk.com/api/v1/delete-file', { fileUrl: imageUrl });
+        await axios.post('https://api.kinscare.org/api/v1/delete-file', { fileUrl: imageUrl });
         onImageRemove(previewUrl);
         setPreviewUrl(null);
         setSelectedFile(null);

@@ -6,7 +6,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Interweave } from "interweave";
 import { polyfill } from "interweave-ssr";
 import { MessageSquare, ThumbsUp } from "lucide-react";
-import React, { Suspense } from "react";
+import React, { ReactNode, Suspense } from "react";
 import Comments from "./Comments";
 import PostMenuActions from "./PostMenuActions";
 
@@ -18,6 +18,7 @@ function DiscussionPost({ posts, threadID }: any) {
       <QuoteProvider>
         {posts.map(
           (post: {
+            replies: ReactNode;
             updatedAt: string | number | Date;
             edited: boolean;
             content: string;
@@ -82,7 +83,7 @@ function DiscussionPost({ posts, threadID }: any) {
                   <details className="w-full flex">
                     <summary className="flex items-center space-x-1 text-sm font-medium mb-1 cursor-pointer">
                       <MessageSquare size={20} strokeWidth={1.5} />
-                      <span>Reply</span>
+                      <span>{post.replies} Replies</span>
                     </summary>
                     <div className="ml-1 mt-2">
                       <Suspense fallback={<p>loading....</p>}>

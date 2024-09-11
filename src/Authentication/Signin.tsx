@@ -243,7 +243,7 @@ const Signin: React.FC = () => {
           );
       }
       setUser(app.currentUser);
-      user?.refreshCustomData();
+      // user?.refreshCustomData();
       setLoading(false);
     } catch (error: any) {
       handleError(error);

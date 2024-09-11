@@ -6,10 +6,13 @@ polyfill();
 
 interface RichTextProps {
   truncatedContent: string; // Truncated HTML content
-  fullContent: string;      // Full HTML content
+  fullContent: string; // Full HTML content
 }
 
-const RichTextRendering: React.FC<RichTextProps> = ({ truncatedContent, fullContent }) => {
+const RichTextRendering: React.FC<RichTextProps> = ({
+  truncatedContent,
+  fullContent,
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Toggle the state between expanded and collapsed content
@@ -23,12 +26,14 @@ const RichTextRendering: React.FC<RichTextProps> = ({ truncatedContent, fullCont
       <Interweave content={isExpanded ? fullContent : truncatedContent} />
 
       {/* Toggle button to show more or show less */}
-      <button
-        onClick={handleToggleContent}
-        className="mt-2 text-blue-500 hover:text-blue-700"
-      >
-        {isExpanded ? "Show Less" : "Show More"}
-      </button>
+      {fullContent !== truncatedContent && (
+        <button
+          onClick={handleToggleContent}
+          className="mt-2 text-blue-500 hover:text-blue-700"
+        >
+          {isExpanded ? "Show Less" : "Show More"}
+        </button>
+      )}
     </div>
   );
 };

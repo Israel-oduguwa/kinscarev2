@@ -13,7 +13,7 @@ import ThreadMenuAction from "./ThreadMenuAction";
 
 async function Discussion({ threadID }: { threadID: string }) {
   let data = await fetch(
-    `http://kinscare-dev.us-east-1.elasticbeanstalk.com/api/v1/forum/threads/${threadID}`
+    `https://api.kinscare.org/api/v1/forum/threads/${threadID}`
   );
   const response = await data.json();
   const { thread, creator } = response;
@@ -32,14 +32,14 @@ async function Discussion({ threadID }: { threadID: string }) {
               <Bookmark />
             </Button>
           </div>
-          <h1 className="font-bold antialiased text-gray-800 text-2xl ">
+          <h1 className="font-semibold antialiased text-gray-900 text-xl ">
             {thread.title}
           </h1>
         </div>
         <div className="flex justify-between w-full">
           <div className="flex gap-3 mb-3 items-center">
             <Avatar className="border-gray-50 shadow-sm">
-              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarImage src="https://lh3.googleusercontent.com/a/ACg8ocLhJ06zIepDHxUHhZ6_sW01qSutpYn8XzXPb9cbFkFOfmOdoOs=s192-c-mo" />
               <AvatarFallback
                 style={{ background: avatarData.gradient }}
                 className="border-gray-50"
