@@ -35,7 +35,7 @@ async function getThreads(queryParams: {
     sortReplies,
     sortOrder = "desc",
   } = queryParams;
-  const url = `http://localhost:8081/api/v1/forum/threads?page=${page}&limit=10${sortReplies ? `&sortReplies=${sortReplies}` : ""} ${popular ? "&popular=1" : ""}${category ? `&categories=${category}` : ""}${
+  const url = `https://api.kinscare.org/api/v1/forum/threads?page=${page}&limit=10${sortReplies ? `&sortReplies=${sortReplies}` : ""} ${popular ? "&popular=1" : ""}${category ? `&categories=${category}` : ""}${
     tags ? `&tags=${tags}` : ""
   }${sortBy ? `&sortBy=${sortBy}&sortOrder=${sortOrder}` : ""}`;
   console.log(url);

@@ -30,7 +30,7 @@ function LikeComponent({
     try {
       setLoading(true);
       const res = await axios.get(
-        `http://localhost:8081/api/v1/forum/like/${type}/${threadID}/${user.customData.userID}`
+        `https://api.kinscare.org/api/v1/forum/like/${type}/${threadID}/${user.customData.userID}`
       );
       setLiked(res.data.liked); // Set liked status
       setLoading(false);
@@ -52,7 +52,7 @@ function LikeComponent({
         userID: user.customData.userID,
       };
       const { data } = await axios.post(
-        `http://localhost:8081/api/v1/forum/like/${type}/${threadID}`,
+        `https://api.kinscare.org/api/v1/forum/like/${type}/${threadID}`,
         payload
       );
       return data;
@@ -89,7 +89,7 @@ function LikeComponent({
         userID: user.customData.userID,
       };
       const { data } = await axios.post(
-        `http://localhost:8081/api/v1/forum/like/${type}/${threadID}/remove`,
+        `https://api.kinscare.org/api/v1/forum/like/${type}/${threadID}/remove`,
         payload
       );
       return data;
