@@ -14,6 +14,7 @@ import {
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import NavbarActions from "./NavbarActions";
+import NavbarLink from "@/WebPages/NavbarLink";
 // this is the navbar for normal pages
 
 function SheetDemo() {
@@ -59,7 +60,7 @@ function ForumNavbar() {
   return (
     <header>
       <nav className="bg-white/60 z-50 backdrop-blur-md fixed top-0 w-full border-b border-gray-100 px-4 lg:px-6 py-3 transition-all duration-300 dark:bg-gray-800/60">
-        <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
+        <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-2xl">
           <Link className="flex items-center mr-2" href="/">
             <img
               className="h-6 pr-1 sm:h-9"
@@ -75,7 +76,7 @@ function ForumNavbar() {
             </div>
           </div>
           <div className="hidden justify-between items-center w-full lg:flex lg:w-auto lg:order-1">
-            {/* <NavbarLink /> */}
+            <NavbarLink />
           </div>
         </div>
       </nav>

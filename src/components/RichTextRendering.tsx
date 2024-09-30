@@ -29,7 +29,7 @@ const RichTextRendering: React.FC<RichTextProps> = ({
       {fullContent !== truncatedContent && (
         <button
           onClick={handleToggleContent}
-          className="mt-2 text-blue-500 hover:text-blue-700"
+          className="mt-0 mb-2 text-blue-500 hover:text-blue-700"
         >
           {isExpanded ? "Show Less" : "Show More"}
         </button>

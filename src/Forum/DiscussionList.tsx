@@ -1,45 +1,29 @@
 // DiscussionList.tsx
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { generateAvatarData } from "@/lib/ui_utils";
 import { formatDistanceToNow } from "date-fns";
 import { MessageCircleReply } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 
 const ITEMS_PER_PAGE = 10;
 
-async function getThreads(page: number, limit: number) {
-  const response = await fetch(
-    `https://api.kinscare.org/api/v1/forum/threads?page=${page}&limit=${limit}`
-  );
-  return response.json();
-}
+// async function getThreads(page: number, limit: number) {
+//   const response = await fetch(
+//     `https://api.kinscare.org/api/v1/forum/threads?page=${page}&limit=${limit}`
+//   );
+//   return response.json();
+// }
 
-export default function DiscussionList() {
-  const [threads, setThreads] = useState<any[]>([]);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const loadThreads = async () => {
-    setIsLoading(true);
-    try {
-      const { data, pagination } = await getThreads(page, ITEMS_PER_PAGE);
-      setThreads((prevThreads) => [...prevThreads, ...data]);
-      setHasMore(page < pagination.totalPages);
-      setPage((prevPage) => prevPage + 1);
-    } catch (error) {
-      console.error("Error loading threads:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadThreads();
-  }, []);
+export default function DiscussionList({
+  threads,
+  pagination,
+}: {
+  threads: any[];
+  pagination: any;
+}) {
+  const { page, pages } = pagination; // Extract the pagination details from the API
   // console.log(threads)
   return (
     <div>
@@ -48,9 +32,8 @@ export default function DiscussionList() {
           `${thread.creator?.fname} ${thread.creator?.lname}`
         );
         return (
-          <Link href={`/community/discussions/${thread._id}`}>
+          <Link key={thread._id} href={`/community/discussions/${thread._id}`}>
             <div
-              key={thread._id}
               className="p-4 mb-4 flex gap-4 flex-col md:flex-row items-center bg-white dark:bg-gray-800 border border-gray-50 dark:border-gray-700 rounded-lg shadow-md max-w-full md:max-w-5xl"
             >
               <div className="flex flex-col justify-between py-3 px-1 leading-normal w-full">
@@ -116,13 +99,18 @@ export default function DiscussionList() {
           </Link>
         );
       })}
-      {hasMore && (
-        <div className="flex justify-center mt-4">
-          <Button onClick={loadThreads} disabled={isLoading}>
-            {isLoading ? "Loading..." : "Load More"}
-          </Button>
-        </div>
-      )}
+      <div className="flex justify-center mt-4">
+        {page > 1 && (
+          <Link href={`/community?page=${page - 1}`}>
+            <button className="px-4 py-2 bg-gray-200 rounded">Previous</button>
+          </Link>
+        )}
+        {page < pages && (
+          <Link href={`/community?page=${page + 1}`}>
+            <button className="px-4 py-2 bg-gray-200 rounded">Next</button>
+          </Link>
+        )}
+      </div>
     </div>
   );
 }

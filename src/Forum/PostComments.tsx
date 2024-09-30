@@ -73,7 +73,7 @@ function PostComments({ postID, threadId }: any) {
     router.push("/signin");
   };
   return (
-    <div className="w-full ">
+    <div className="w-full mt-4 ">
       <div className="mb-2">
         <QuoteEditor
           postID={postID}
@@ -88,7 +88,7 @@ function PostComments({ postID, threadId }: any) {
             variant="default"
             onClick={() => createPost()}
             className="py-1 px-6"
-            disabled={postMessage.length === 0 || isPending}
+            disabled={replyContent.length === 0 || isPending}
           >
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Post
@@ -98,7 +98,7 @@ function PostComments({ postID, threadId }: any) {
             variant="default"
             onClick={routeUnauthenticated}
             className="py-0 px-6"
-            disabled={postMessage.length === 0 || isPending}
+            disabled={replyContent.length === 0 || isPending}
           >
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Post

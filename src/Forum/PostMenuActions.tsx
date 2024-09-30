@@ -41,7 +41,7 @@ function PostMenuActions({ postID, content, authorID, replyID, usage }: any) {
       <Menubar className="border-none">
         <MenubarMenu>
           <MenubarTrigger className="border-none p-2">
-            <Ellipsis />
+            <Ellipsis  />
           </MenubarTrigger>
           <MenubarContent>
             <MenubarItem>

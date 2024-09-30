@@ -30,7 +30,7 @@ function ThreadMenuAction({ threadID, authorID }: any) {
   const openEditDialog = () => setEditOpen(true);
   const closeEditDialog = () => setEditOpen(false);
 const del = async () => {
-    const del = await axios.post(`https://api.kinscare.org/api/v1/forum/threads/${threadID}`)
+    const del = await axios.post(`http://localhost:8081/api/v1/forum/threads/${threadID}`)
     // console.log(del)
 }
   const openDeleteDialog = () => setDeleteOpen(true);
@@ -48,7 +48,7 @@ const del = async () => {
           <MenubarTrigger className="border-none p-2">
             <Ellipsis />
           </MenubarTrigger>
-          <MenubarContent>
+          <MenubarContent> 
             <MenubarItem>
               <p className="text-gray-800 antialiased">Share Link</p>
             </MenubarItem>

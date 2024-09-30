@@ -93,7 +93,7 @@ export default function DeletePost({
         </DialogDescription>
       </DialogHeader>
       <DialogFooter>
-        <Button variant="ghost" onClick={() => close()} className="py-1 px-6">
+        <Button variant="ghost" onClick={() => close()} className="py-0 m-0">
           Cancel
         </Button>
         <Button

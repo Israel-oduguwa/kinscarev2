@@ -9,15 +9,18 @@ import { MessageSquare, ThumbsUp } from "lucide-react";
 import React, { ReactNode, Suspense } from "react";
 import Comments from "./Comments";
 import PostMenuActions from "./PostMenuActions";
+import LikeComponent from "./UpdateForum/LikeComponent";
 
 polyfill();
 
 function DiscussionPost({ posts, threadID }: any) {
+  // console.log(posts)
   return (
     <>
       <QuoteProvider>
         {posts.map(
           (post: {
+            likesCount: any;
             replies: ReactNode;
             updatedAt: string | number | Date;
             edited: boolean;
@@ -32,7 +35,7 @@ function DiscussionPost({ posts, threadID }: any) {
             return (
               <div
                 key={post._id}
-                className="w-full rounded-lg p-4 mb-6 shadow-sm bg-white dark:bg-slate-900"
+                className="w-full rounded-lg p-6 mb-6 shadow-sm bg-white dark:bg-slate-900"
               >
                 <div className="flex w-full justify-between">
                   <div className="flex gap-2 mb-3 items-center">
@@ -73,20 +76,24 @@ function DiscussionPost({ posts, threadID }: any) {
                 <div className="discussion-content mb-6 prose prose-h1:my2 prose-h3:my-2  lg:prose-lg md:prose-md sm:prose-sm transition-max-height duration-300 ease-in-out">
                   <div dangerouslySetInnerHTML={{ __html: post.content }} />
                 </div>
-               
-                <div className="flex gap-4 items-baseline">
+
+                <div className="flex gap-2 items-baseline">
                   <div className="flex  justify-between text-gray-600">
-                    <button className="flex  space-x-1 text-sm font-medium mb-1 hover:text-green-500">
-                      <ThumbsUp size={20} strokeWidth={1.5} /> 
-                    </button>
+                    <LikeComponent
+                      threadID={post._id}
+                      initialLikeCount={post?.likesCount}
+                      type="post"
+                      size="sm"
+                      section="reply"
+                    />
                   </div>
-                  <details className="w-full flex">
+                  <details open className="w-full flex">
                     <summary className="flex items-center space-x-1 text-sm font-medium mb-1 cursor-pointer">
                       <MessageSquare size={20} strokeWidth={1.5} />
                       <span>{post.replies} Replies</span>
                     </summary>
-                    <div className="ml-1 mt-2">
-                      <Suspense fallback={<p>loading....</p>}>
+                    <div className="mt-2">
+                      <Suspense fallback={<p>.</p>}>
                         <Comments threadID={threadID} postID={post._id} />
                       </Suspense>
                     </div>

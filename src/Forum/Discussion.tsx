@@ -10,10 +10,11 @@ import { Suspense } from "react";
 import CreatePosts from "./CreatePosts";
 import RichTextRendering from "@/components/RichTextRendering";
 import ThreadMenuAction from "./ThreadMenuAction";
+import LikeComponent from "./UpdateForum/LikeComponent";
 
 async function Discussion({ threadID }: { threadID: string }) {
   let data = await fetch(
-    `https://api.kinscare.org/api/v1/forum/threads/${threadID}`
+    `https://api.kinscare.org/api/v1/forum/threads/${threadID}`,  { cache: "no-cache" }
   );
   const response = await data.json();
   const { thread, creator } = response;
@@ -21,17 +22,15 @@ async function Discussion({ threadID }: { threadID: string }) {
   const truncatedContent = htmlTruncate(thread.content, 800, {
     ellipsis: "...",
   });
+  // console.log(thread,"thread")
 
   return (
     <div className="rounded-xl border-slate-200 bg-white dark:bg-slate-900 shadow-lg  w-full">
       <div className="p-6">
         <div className="flex items-center mb-6 gap-2">
-          <div className="vote border rounded-md border-gray-300">
-            <Button className="p-2" variant="ghost">
-              {" "}
-              <Bookmark />
-            </Button>
-          </div>
+          {/* <div className="vote border rounded-md border-gray-300">
+            
+          </div> */}
           <h1 className="font-semibold antialiased text-gray-900 text-xl ">
             {thread.title}
           </h1>
@@ -85,6 +84,9 @@ async function Discussion({ threadID }: { threadID: string }) {
                 {tag}
               </div>
             ))}
+          </div>
+          <div>
+            <LikeComponent  threadID={threadID} initialLikeCount={thread?.likesCount} type="thread"  size="lg"  />
           </div>
         </div>
       </div>

@@ -19,12 +19,10 @@ import CategoryChipInput from "@/components/ui/CategoryChipInput";
 // title, content, userId, categories, tags
 
 const categories = [
+  "Programs",
+  "Schools",
+  "Jobs",
   "Questions",
-  "Actions",
-  "Helps",
-  "Updates",
-  "News",
-  "Provider Jobs",
 ]; // Pre-existing categories
 
 const Page = () => {
@@ -142,13 +140,13 @@ const Page = () => {
               />
             </div>
             <div className="py-3">
-              <h2 className="mb-3 text-sm font-medium">Select Categories</h2>
+              <h2 className="mb-1 text-sm font-medium">Select Categories</h2>
+              <p className="mb-3 text-sm antialiased">Category helps you to group your post for users to see them easy</p>
               {/* Use the reusable ChipInput component */}
               <CategoryChipInput
                 fields={categories}
                 selectedFields={selectedCategories}
                 setSelectedFields={setSelectedCategories}
-                placeholder="Choose a category..."
               />
 
               {/* Display selected categories */}
@@ -161,14 +159,15 @@ const Page = () => {
                 </ul>
               </div>
             </div>
+            
           </div>
 
           <div>
-            <ImageUpload
+            {/* <ImageUpload
               onImageUpload={handleImageUpload}
               onImageRemove={handleImageRemove}
               imageUrl={imageUrl}
-            />
+            /> */}
             {imageUrl && (
               <div className="mt-4">
                 <p>Uploaded Image URL:</p>
