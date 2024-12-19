@@ -189,19 +189,7 @@ const CandidatesCard = ({ candidate }: any) => {
               {candidate.availability.map(
                 (
                   sch:
-                    | string
-                    | number
-                    | bigint
-                    | boolean
-                    | React.ReactElement<
-                        any,
-                        string | React.JSXElementConstructor<any>
-                      >
-                    | Iterable<React.ReactNode>
-                    | React.ReactPortal
-                    | Promise<React.AwaitedReactNode>
-                    | null
-                    | undefined,
+                    any,
                   index: React.Key | null | undefined
                 ) => (
                   <div
