@@ -4,9 +4,10 @@ import { ModeToggle } from "@/components/ModeToggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { cn, isAnon } from "@/lib/utils";
+import { cn, fetchUserData, isAnon } from "@/lib/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ToastAction } from "@radix-ui/react-toast";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { Loader2 } from "lucide-react";
@@ -53,13 +54,14 @@ const Signin: React.FC = () => {
     app,
     client,
     user,
+    setUserData,
     setUser,
     authenticated,
     setAuthenticated,
     loadingAuth,
   } = mongoContext;
   const { toast } = useToast();
-  const { push } = useRouter();
+  const { push, refresh } = useRouter();
   const {
     control,
     handleSubmit,
@@ -87,85 +89,133 @@ const Signin: React.FC = () => {
   };
 
   // Handle Google Credential Response
-  globalThis.handleCredentialResponse = async (response: any) => {
-    try {
-      setLoading(true);
-      const idToken = response.credential;
-      const decodedToken: any = jwtDecode(idToken);
-      const credentials = Realm.Credentials.jwt(idToken);
-      const userObj = await app.logIn(credentials);
 
-      // Check if user exists
-      const user = await client
-        ?.db("kinshealth")
-        .collection("contacts")
-        .findOne({
-          userID: userObj.id,
-          email: userObj.profile.email,
-        });
+  const handleGoogleSuccess = async (response: any) => {
+    const token = response.credential;
+    if (token) {
+      try {
+        setLoading(true);
+        const decodedToken: any = jwtDecode(token);
+        const credentials = Realm.Credentials.jwt(token);
+        const userObj = await app.logIn(credentials);
 
-      if (!user) {
-        const payload = {
-          email: userObj.profile.email,
-          userID: userObj.id,
-          fname: decodedToken.given_name,
-          lname: decodedToken.family_name,
-          auth_mode: "oauth2-google",
-          googleId: userObj.identities[0].id,
-          route: "Regular",
-          created: new Date(),
-        };
-        createUserDuringRegistration(payload);
-      } else {
-        if (!user.returning) {
-          await client
-            .db("kinshealth")
-            .collection("users")
-            .updateOne(
-              { userID: userObj.id },
-              { $set: { returning: true } },
-              { upsert: true }
-            );
-          userObj.refreshCustomData();
+        const existingUser = await client
+          ?.db("kinshealth")
+          .collection("contacts")
+          .findOne({
+            userID: userObj.id,
+            email: userObj.profile.email,
+          });
+
+        if (!existingUser) {
+          const payload = {
+            email: userObj.profile.email,
+            userID: userObj.id,
+            profileImage: decodedToken.picture,
+            fname: decodedToken.given_name,
+            lname: decodedToken.family_name,
+            verified: decodedToken.email_verified,
+            auth_mode: "oauth2-google",
+            googleId: userObj.identities[0].id,
+            route: "Regular",
+            created: new Date(),
+          };
+          createUserDuringRegistration(payload);
+          user.refreshCustomData();
+          refresh();
+          setUser(userObj);
+          setSelectRoleModal(true);
+        } else {
+          // console.log("hi");
+          console.log(existingUser);
+          setUser(userObj);
+          setAuthenticated(true);
+          const fetchedData: any = await fetchUserData(
+            userObj.id,
+            userObj.profile.email
+          );
+          console.log(fetchedData);
+          await setUserData(fetchedData.result);
+          if (existingUser.role) {
+            if (fetchedData.result.role === "provider") {
+              push("/provider/candidates/all");
+            }
+          } else {
+            setSelectRoleModal(true);
+          }
         }
-        setUser(userObj);
-        setAuthenticated(true);
+      } catch (error) {
+        handleError(error);
+      } finally {
         setLoading(false);
       }
-    } catch (error) {
-      handleError(error);
     }
   };
 
-  // Load Google Script
-  const loadGoogleScript = () => {
-    setGoogleLoading(true);
-    const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
-    script.onload = () => {
-      window.handleCredentialResponse = handleCredentialResponse;
-    };
-    document.body.appendChild(script);
-    setGoogleLoading(false);
+  const handleGoogleError = () => {
+    toast({
+      variant: "destructive",
+      description: "Google Login Failed. Please try again.",
+    });
   };
 
+  const handleFacebookCallback = (response: any) => {
+    if (response?.status === "unknown") {
+      toast({
+        variant: "destructive",
+        description: "Facebook Login Failed. Please try again.",
+      });
+      return;
+    }
+    console.log(response);
+  };
+  // Load Google Script
+  const routeUser = (role: string) => {
+    switch (role) {
+      case "caregiver":
+        push("/vitae/jobs/all");
+        break;
+      case "provider":
+        push("/provider/candidates/all");
+        break;
+      case "admin":
+        push("/admin/overview");
+        break;
+      default:
+        push("/");
+        break;
+    }
+  };
   // Register user during registration
   const createUserDuringRegistration = async (payload: object) => {
     try {
       setLoading(true);
       const response = await axios.get("/api/ip");
       if (response.data) {
-        const { ip, city, latitude, longitude, country_code, region_name } =
-          response.data;
+        const {
+          ip,
+          city,
+          latitude,
+          longitude,
+          country_code,
+          region_name,
+          zip,
+        } = response.data;
         Object.assign(payload, {
           route: "Regular",
           userIp: ip,
           address: `${city}, ${region_name}, ${country_code}`,
           geocode_address: { lng: longitude, lat: latitude },
+          zipcode: zip,
           city,
           returning: false,
         });
-        await user.callFunction("web_add_social_user_custom_data", payload);
+        const createUser = await axios.post(
+          "http://localhost:8081/api/v1/auth/create_user",
+          payload
+        );
+        // console.log(createUser);
+        // await user.callFunction("web_add_social_user_custom_data", payload);
         setAuthenticated(true);
         setLoading(false);
       }
@@ -189,12 +239,11 @@ const Signin: React.FC = () => {
       await user?.refreshCustomData();
       if (!isAnon(user) && Object.keys(user?.customData || {}).length > 0) {
         switch (user.customData.role) {
-          case "caregiver": 
-            push("/community")
+          case "caregiver":
+            push("/vitae/jobs/all");
             break;
           case "provider":
-            // push("/provider/candidates/all");
-            push("/community")
+            push("/provider/candidates/all");
             console.log("user is a provider");
             break;
           case undefined:
@@ -206,18 +255,16 @@ const Signin: React.FC = () => {
         // setSignupPageLoading(false);
       } else {
         // setSignupPageLoading(false);
-        push("/signup");
+        push("/signin");
       }
     } else {
-      //   console.log(isAnon(user))
       push("/signin");
     }
   };
 
   useEffect(() => {
     RedirectUser(user);
-    loadGoogleScript();
-  }, []);
+  }, [user, authenticated]);
 
   // Form submit handler
   const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
@@ -227,175 +274,173 @@ const Signin: React.FC = () => {
       const password = data.password;
       const credentials = Realm.Credentials.emailPassword(email, password);
       await app.logIn(credentials);
-      await app.currentUser?.refreshCustomData();
-      const user = await client
-        .db("kinshealth")
-        .collection("users")
-        .findOne({ userID: app.currentUser.id, email: app.currentUser.email });
-      if (!user.returning) {
-        await client
-          .db("kinshealth")
-          .collection("users")
-          .updateOne(
-            { "auth.email": email },
-            { $set: { returning: true } },
-            { upsert: true }
-          );
+
+      if (app.currentUser) {
+        setUser(app.currentUser);
+        // console.log("User logged in, refreshing custom data");
+        await app.currentUser.refreshCustomData(); // Try to refresh the data here
+        // lets get the user from the database
+        const userID = app.currentUser.id;
+        const email = app.currentUser.email;
+        const user_data: any = await fetchUserData(userID, email);
+        // console.log(user_data.result);
+        if (user_data) {
+          setUserData(user_data.result); // set the user data
+          user.refreshCustomData();
+          // console.log(user_data.result.role);
+          refresh();
+          routeUser(user_data.result.role);
+        }
+      } else {
+        console.error("User is not logged in");
       }
-      setUser(app.currentUser);
-      // user?.refreshCustomData();
       setLoading(false);
-    } catch (error: any) {
+    } catch (error) {
       handleError(error);
+      setLoading(false);
     }
   };
   const closeSelectModal = () => setSelectRoleModal(false);
 
   return (
-    <div className="w-full min-h-[100vh] bg-gray-100 dark:bg-inherit">
-      <SelectRole
-        selectRoleModal={selectRoleModal}
-        closeSelectModal={closeSelectModal}
-      />
-      <header className="py-8 px-8 sm:py-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <Link
-              href="/"
-              className="flex items-center text-lg font-semibold text-gray-900 dark:text-white"
-            >
-              <img
-                className="w-12 mr-2"
-                src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
-                alt="logo"
-              />
-              Kinscare
-            </Link>
-          </div>
-          <div>
-            <div className="flex justify-between gap-6 items-center">
-              <ModeToggle />
-              <p className="text-md text-gray-800 dark:text-gray-50 antialiased hidden md:block">
-                Don't have an account?
-              </p>
-              <Button className="shadow-2xl">
-                {" "}
-                <Link href="/signup">Signup</Link>
-              </Button>
+    <GoogleOAuthProvider clientId={`${process.env.GOOGLE_APP_ID}`}>
+      <div className="w-full min-h-[100vh] bg-gray-100 dark:bg-inherit">
+        <SelectRole
+          selectRoleModal={selectRoleModal}
+          closeSelectModal={closeSelectModal}
+        />
+        <header className="py-8 px-8 sm:py-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <Link
+                href="/"
+                className="flex items-center text-lg font-semibold text-gray-900 dark:text-white"
+              >
+                <img
+                  className="w-12 mr-2"
+                  src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
+                  alt="logo"
+                />
+                Kinscare
+              </Link>
+            </div>
+            <div>
+              <div className="flex justify-between gap-6 items-center">
+                <ModeToggle />
+                <p className="text-md text-gray-800 dark:text-gray-50 antialiased hidden md:block">
+                  Don't have an account?
+                </p>
+                <Link href="/signup">
+                  <Button className="shadow-2xl">Signup</Button>
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
-      <section className="py-8 mt-0 md:mt-10 max-w-[580px] m-auto">
-        <div className="mx-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl dark:border md:mt-0 xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-            <div className="p-6 space-y-4 md:space-y-8 sm:p-8">
-              <h1 className="text-xl text-center font-bold leading-tight tracking-tight antialiased text-gray-900 md:text-2xl dark:text-white">
-                Sign in to Kinscare
-              </h1>
-              <form
-                className="space-y-4 md:space-y-6"
-                onSubmit={handleSubmit(onSubmit)}
-              >
-                <div>
-                  <div
-                    id="g_id_onload"
-                    data-client_id={!loading && `${process.env.GOOGLE_APP_ID}`}
-                    data-context="signin"
-                    data-ux_mode="popup"
-                    data-callback="handleCredentialResponse"
-                    data-itp_support="true"
-                  ></div>
-                  <div
-                    className="g_id_signin"
-                    data-type="standard"
-                    data-shape="rectangular"
-                    data-theme="filled_black"
-                    data-text="signin_with"
-                    data-size="large"
-                    data-logo_alignment="left"
-                  ></div>
+        </header>
+        <section className="py-8 mt-0 md:mt-10 max-w-lg m-auto">
+          <div className="mx-4">
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden">
+              <div className="p-6 space-y-6 md:space-y-6 sm:p-8">
+                <h1 className="text-xl text-center font-bold leading-tight tracking-tight antialiased text-gray-900 md:text-2xl dark:text-white">
+                  Sign in to Kinscare
+                </h1>
+                {/* Centered Google Sign-In */}
+                <div className="flex justify-center">
+                  <GoogleLogin
+                    size="large"
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleError}
+                    theme="outline"
+                    text="continue_with"
+                  />
                 </div>
                 <OrSeparator />
-                <div>
-                  <p className="text-md text-gray-800 dark:text-gray-50 font-semibold antialiased">
-                    Sign in with email and password
-                  </p>
-                </div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block mb-1 text-sm font-medium text-gray-800 dark:text-white"
-                  >
-                    Email
-                  </label>
-                  <Controller
-                    name="email"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        id="email"
-                        placeholder="name@company.com"
-                        className={errors.email ? "border-red-500" : ""}
-                      />
-                    )}
-                  />
-                  {errors.email && (
-                    <p className="text-red-500 mt-1 text-sm">
-                      {errors.email.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="password"
-                    className="block mb-1 text-sm font-medium text-gray-800 dark:text-white"
-                  >
-                    Password
-                  </label>
-                  <Controller
-                    name="password"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        type="password"
-                        {...field}
-                        id="password"
-                        placeholder="••••••••"
-                        className={errors.password ? "border-red-500" : ""}
-                      />
-                    )}
-                  />
-                  {errors.password && (
-                    <p className="text-red-500 mt-1 text-sm">
-                      {errors.password.message}
-                    </p>
-                  )}
-                </div>
-                <Button
-                  disabled={loading}
-                  type="submit"
-                  className="text-center w-full"
-                >
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Sign in
-                </Button>
-                <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                  Don't have an account?{" "}
-                  <Link
-                    href="/signup"
-                    className="font-medium text-primary hover:underline dark:text-primary-500"
-                  >
-                    Signup here
-                  </Link>
+                {/* <div>
+                <p className="text-sm text-center text-gray-800 dark:text-gray-50 antialiased">
+                  Sign in with email and password
                 </p>
-              </form>
+              </div> */}
+                <form
+                  className="space-y-2 md:space-y-4"
+                  onSubmit={handleSubmit(onSubmit)}
+                >
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block mb-1 text-sm font-medium text-gray-800 dark:text-white"
+                    >
+                      Email
+                    </label>
+                    <Controller
+                      name="email"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          id="email"
+                          placeholder="name@company.com"
+                          className={errors.email ? "border-red-500" : ""}
+                        />
+                      )}
+                    />
+                    {errors.email && (
+                      <p className="text-red-500 mt-1 text-sm">
+                        {errors.email.message}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="password"
+                      className="block mb-1 text-sm font-medium text-gray-800 dark:text-white"
+                    >
+                      Password
+                    </label>
+                    <Controller
+                      name="password"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          type="password"
+                          {...field}
+                          id="password"
+                          placeholder="••••••••"
+                          className={errors.password ? "border-red-500" : ""}
+                        />
+                      )}
+                    />
+                    {errors.password && (
+                      <p className="text-red-500 mt-1 text-sm">
+                        {errors.password.message}
+                      </p>
+                    )}
+                  </div>
+                  <Button
+                    disabled={loading}
+                    type="submit"
+                    className="text-center w-full"
+                  >
+                    {loading && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Sign in
+                  </Button>
+                  <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                    Don't have an account?{" "}
+                    <Link
+                      href="/signup"
+                      className="font-medium text-primary hover:underline dark:text-primary-500"
+                    >
+                      Signup here
+                    </Link>
+                  </p>
+                </form>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </GoogleOAuthProvider>
   );
 };
 

@@ -9,7 +9,7 @@ import MongoProvider from "@/components/MongoProvider";
 import GoogleTagManager from "@/components/GoogleTagManager";
 import { Toaster } from "@/components/ui/toaster";
 import ContextProviders from "@/components/ContextProviders";
-
+import NextTopLoader from "nextjs-toploader";
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
@@ -36,6 +36,17 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} ${headingFont.variable}`}>
+        <NextTopLoader
+          color="#2299DD"
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={3}
+          crawl={true}
+          showSpinner={true}
+          easing="ease"
+          speed={200}
+          shadow="0 0 10px #2299DD,0 0 5px #2299DD"
+        />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -44,7 +55,7 @@ export default function RootLayout({
         >
           <MongoProvider>
             <SpeedInsights />
-            <Toaster /> 
+            <Toaster />
             <ContextProviders>{children}</ContextProviders>
           </MongoProvider>
         </ThemeProvider>
@@ -52,3 +63,6 @@ export default function RootLayout({
     </html>
   );
 }
+
+
+// https://shadcn-ui-blocks.vercel.app/#marketing

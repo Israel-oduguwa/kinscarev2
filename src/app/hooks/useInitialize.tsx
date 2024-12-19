@@ -32,75 +32,82 @@ interface UseInitializeReturn {
   authenticated: boolean;
   customerData: any;
   loadingAuth: string;
-  setApp: React.Dispatch<React.SetStateAction<Realm.App>>;
+  // setApp: React.Dispatch<React.SetStateAction<Realm.App>>;
   setClient: React.Dispatch<React.SetStateAction<MongoClient | null>>;
   setUser: React.Dispatch<React.SetStateAction<Realm.User | null>>;
   setUserData: React.Dispatch<React.SetStateAction<UserCustomData | null>>;
 }
 
-const loadingTypes = {
-  1: "authenticating",
-  2: "anonymous",
-  3: "authenticated",
-  4: "error",
-};
+// const loadingTypes = {
+//   1: "authenticating",
+//   2: "anonymous",
+//   3: "authenticated",
+//   4: "error",
+// };
 
 export const useInitialize = (): UseInitializeReturn => {
-  const id = process.env.REALM_ID!;
-  const config = { id };
-  const realmApp = new Realm.App(config);
-  const [app, setApp] = useState(realmApp);
+  const realmId = process.env.REALM_ID!;
+  const appConfig = { id: realmId };
+  const realmApp = new Realm.App(appConfig);
+
+  const [app] = useState<any>(realmApp);
+
   const [client, setClient] = useState<MongoClient | null>(null);
   const [user, setUser] = useState<Realm.User | null>(null);
   const [userData, setUserData] = useState<UserCustomData | null>(null);
   // we have 4 status authenticating, anonymous, authenticated, anonymous, error is for the login and signup page if anonymous and authenticated is there give the user access
-  const [loadingAuth, setLoadingAuth] = useState("authenticating");
+  const [loadingAuth, setLoadingAuth] = useState<any>(true);
   const [customerData, setCustomerData] = useState<any>(null);
   const [authenticated, setAuthenticated] = useState(false);
   const [searchedData, setSearchedData] = useState<any>(null);
   const [twilioToken, setTwilioToken] = useState("");
 
-  // On an avaerage, it takes 3 seconds for the autthnication to show 
-
+  // On an average, it takes 3 seconds for the authentication to show
   useEffect(() => {
-    const init = async () => {
-      setLoadingAuth("authenticating");
+    const initializeAuth = async () => {
+      setLoadingAuth(true);
       try {
         let currentUser = app.currentUser;
-        if (currentUser) {
-          setLoadingAuth("anonymous");
-        }
+
+        // log in anonymously if no user is logged in
         if (!currentUser) {
           currentUser = await app.logIn(Realm.Credentials.anonymous());
-          setLoadingAuth("anonymous");
         }
         setUser(currentUser);
         const mongoClient = currentUser.mongoClient(
           "mongodb-atlas"
         ) as MongoClient;
         setClient(mongoClient);
-        console.log(currentUser.customData)
-        if (currentUser.customData.userID && !isAnon(currentUser)) {
-          const userData = await mongoClient
-            .db("kinshealth")
-            .collection<UserCustomData>("users")
-            .findOne({ userID: currentUser.id });
-          setUserData(userData);
-          if (userData?.hash) {
-            // aliasUser(userData.hash);
-            // identifyUser(userData.hash);
+
+        if (currentUser.customData?.userID && !isAnon(currentUser)) {
+          // check if the user user is authenticated
+          const isAnonymous = !currentUser.identities.some(
+            (identity: { providerType: string }) =>
+              identity.providerType !== "anon-user"
+          );
+          if (!isAnonymous) {
+            const fetchedUserData = await mongoClient
+              .db("kinshealth")
+              .collection<UserCustomData>("users")
+              .findOne({ userID: currentUser.id });
+            if (fetchedUserData) {
+              setUserData(fetchedUserData);
+              setAuthenticated(true);
+            }
+          } else {
+            setAuthenticated(false); // User is anonymous
           }
-          setLoadingAuth("authenticated");
-          setAuthenticated(true);
         }
       } catch (error) {
-        console.error("Initialization error:", error);
-        setLoadingAuth("error");
+        console.error("Error during initialization:", error);
+        setAuthenticated(false);
+      } finally {
+        setLoadingAuth(false);
+        // loading is complete
       }
     };
-
-    init();
-  }, []);
+    initializeAuth();
+  }, [app]);
 
   return {
     app,
@@ -117,7 +124,6 @@ export const useInitialize = (): UseInitializeReturn => {
     setAuthenticated,
     authenticated,
     loadingAuth,
-    setApp,
     setClient,
     setUser,
     setUserData,

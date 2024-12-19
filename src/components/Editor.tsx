@@ -19,6 +19,8 @@ import {
   AlignLeft,
   AlignRight,
   Bold,
+  Heading1,
+  Heading3,
   Italic,
   LinkIcon,
   ListIcon,
@@ -164,7 +166,7 @@ const ToolBar = ({ editor }: Props) => {
                 }
                 className={buttonClass}
               >
-                <h1 className="text-lg font-bold">H1</h1>
+               <Heading1 strokeWidth={2.5} size={20} />
               </Toggle>
             </TooltipTrigger>
             <TooltipContent>
@@ -180,7 +182,7 @@ const ToolBar = ({ editor }: Props) => {
                 }
                 className={buttonClass}
               >
-                <h1 className="text-lg font-bold">H3</h1>
+                <Heading3 size={20} strokeWidth={2.5} />
               </Toggle>
             </TooltipTrigger>
             <TooltipContent>
@@ -894,11 +896,11 @@ function TextEditor({
                 </FloatingMenu>
               )}
             </div>
-            <div className="tiptap-resume prose ">
+            <div className="tiptap-resume  prose-lg ">
               <EditorContent editor={editor} />
             </div>
           </div>
-          <div className="word-count my-1 ">
+          <div className="word-count">
             <WordCountAndRanking editor={editor} />
           </div>
         </>

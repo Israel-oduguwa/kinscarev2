@@ -1,6 +1,6 @@
 "use client";
-import { ReactNode, useEffect, useState } from "react";
 import MongoContext from "@/app/MongoContext";
+import { ReactNode } from "react";
 import { useInitialize } from "../app/hooks/useInitialize";
 const MongoProvider = ({ children }: { children: ReactNode }) => {
   const {

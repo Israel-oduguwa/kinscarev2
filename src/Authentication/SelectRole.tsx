@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,11 +13,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import MongoContext from "@/app/MongoContext";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+import { useToast } from "@/components/ui/use-toast"; // Import Shadcn Toast hook
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-
+import { fetchUserData } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 interface IFormInputs {
   role: string;
   tel: string;
@@ -31,73 +36,193 @@ const schema = yup
 
 function SelectRole({ selectRoleModal, closeSelectModal }: any) {
   const mongoContext: any = useContext(MongoContext);
-  const { user } = mongoContext;
+  const { user, setUserData } = mongoContext;
   const [loading, setLoading] = useState(false);
+  const [validating, setValidating] = useState(false);
+  const [isPhoneValid, setIsPhoneValid] = useState<null | boolean>(null);
+  const router = useRouter();
+  const { toast } = useToast(); // Use Shadcn Toast
 
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<IFormInputs>({
     resolver: yupResolver(schema),
   });
+  const role = watch("role");
+  const validatePhoneNumber = async (phone: string | undefined) => {
+    if (!phone) {
+      toast({
+        title: "Invalid Input",
+        description: "Please enter a phone number with the country code.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setValidating(true);
+      const response = await axios.post(
+        "http://localhost:8081/api/v1/auth/phone/validate",
+        {
+          phone: phone,
+        }
+      );
+      setValidating(false);
+
+      if (response.data.success) {
+        setIsPhoneValid(true);
+        toast({
+          title: "Phone Validated",
+          description: "Your phone number is valid.",
+          variant: "default",
+        });
+      } else {
+        setIsPhoneValid(false);
+        toast({
+          title: "Validation Failed",
+          description: "Invalid phone number. Please check your input.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      setValidating(false);
+      setIsPhoneValid(false);
+      toast({
+        title: "Validation Error",
+        description: "Error validating phone number. Please try again.",
+        variant: "destructive",
+      });
+      console.error("Error validating phone number:", error);
+    }
+  };
 
   const submit: SubmitHandler<IFormInputs> = async (data) => {
     try {
       setLoading(true);
+
+      // Ensure phone number is valid before proceeding
+      if (!isPhoneValid) {
+        toast({
+          title: "Validation Required",
+          description: "Please validate your phone number first.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+      user.refreshCustomData();
       const payload = {
         userID: user.customData.userID,
+        fname:user.customData.fname,
+        lname:user.customData.lname,
         email: user.customData.email,
         role: data.role,
         tel: data.tel,
         hash: user?.customData?.hash,
       };
-    //   console.log(payload);
-      // Example of calling a function with payload
-      const results = await user.callFunction("web_add_tel_role", payload);
-      closeSelectModal();
+      console.log(payload)
+      const response = await axios.post("http://localhost:8081/api/v1/auth/update-role-tel", payload);
+      if (response.data.success) {
+        toast({
+          title: "Role and Phone Updated",
+          description: "Your information has been successfully saved.",
+        });
+        closeSelectModal();
+      }
       setLoading(false);
+      // so we need to push the user to the right page but before then lets fetch the data
+      const fetchedData:any = await fetchUserData(
+        user.customData.userID,
+        user.customData.email
+      );
+      // console.log(fetchedData);
+      setUserData(fetchedData.result);
+      if (role === "provider") {
+        router.push("/provider/candidates/all");
+      }
+      else{
+        router.push('/vitae/jobs/all')
+      }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setLoading(false);
+      toast({
+        title: "Submission Error",
+        description: "Failed to save your information. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
   return (
     <Dialog open={selectRoleModal}>
-      <DialogContent className="md:max-w-[560px]">
+      <DialogContent className="md:max-w-xl">
         <DialogHeader>
           <DialogTitle>Select Role</DialogTitle>
           <DialogDescription>
-            Add phone number and select your role, either caregiver or provider.
+            To enhance your experience, verify identity and ensure secure access
+            we need your phone number and role. <br />
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(submit)}>
-          <div className="mb-6">
-            <div className="mb-4">
-              <Label htmlFor="tel" className="text-right mb-10">
+          <div className="mb-6 space-y-4">
+            <div>
+              <Label
+                htmlFor="tel"
+                className="mb-2 block text-sm font-medium text-gray-800 dark:text-gray-300"
+              >
                 Phone Number
               </Label>
               <Controller
                 name="tel"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    {...field}
-                    id="tel"
-                    placeholder="+123-456-7890"
-                    className={errors.tel ? "border-red-500" : "mt-1"}
-                  />
+                  <div className="relative">
+                    <PhoneInput
+                      {...field}
+                      id="tel"
+                      placeholder="Enter phone number"
+                      defaultCountry="NG"
+                      label
+                      international
+                      className={`pr-10 input input-bordered w-full ${
+                        errors.tel ? "border-red-500" : "border-gray-300"
+                      } ${
+                        isPhoneValid
+                          ? "border-green-500"
+                          : isPhoneValid === false
+                          ? "border-red-500"
+                          : ""
+                      }`}
+                      onBlur={(e) => validatePhoneNumber(field.value)}
+                    />
+                    {validating && (
+                      <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 animate-spin h-6 w-6 text-gray-500" />
+                    )}
+                    {isPhoneValid && !validating && (
+                      <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-500" />
+                    )}
+                    {isPhoneValid === false && !validating && (
+                      <AlertCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-red-500" />
+                    )}
+                  </div>
                 )}
               />
               {errors.tel && (
-                <p className="text-red-500 text-sm col-span-4 text-right">
+                <p className="mt-1 text-sm text-red-500">
                   {errors.tel.message}
                 </p>
               )}
             </div>
-            <div className="">
-              <Label htmlFor="role" className="text-right mb-1">
+
+            <div>
+              <Label
+                htmlFor="role"
+                className="mb-2 block text-sm font-medium text-gray-800 dark:text-gray-300"
+              >
                 Role
               </Label>
               <Controller
@@ -109,6 +234,7 @@ function SelectRole({ selectRoleModal, closeSelectModal }: any) {
                     defaultValue={field.value}
                     onValueChange={field.onChange}
                     className="mt-1"
+                    disabled={!isPhoneValid}
                   >
                     <div className="flex items-center mb-2 space-x-2">
                       <RadioGroupItem value="caregiver" id="caregiver" />
@@ -132,16 +258,18 @@ function SelectRole({ selectRoleModal, closeSelectModal }: any) {
                 )}
               />
               {errors.role && (
-                <p className="text-red-500 text-sm col-span-4 text-right">
+                <p className="mt-1 text-sm text-red-500">
                   {errors.role.message}
                 </p>
               )}
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading || !isPhoneValid}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save changes
+              {role === "provider"
+                ? "Get perfect caregiver"
+                : "Get the job you seek"}
             </Button>
           </DialogFooter>
         </form>

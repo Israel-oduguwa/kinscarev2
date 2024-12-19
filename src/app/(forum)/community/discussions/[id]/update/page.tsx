@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import axios, { AxiosError } from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { CreateThreadPayload } from "@/lib/validators/discussionSchema";
@@ -16,6 +16,7 @@ import Editor from "@/components/Editor";
 import ImageUpload from "@/components/ImageUpload";
 import ForumNavbar from "@/Forum/Navbar/ForumNavbar";
 import CategoryChipInput from "@/components/ui/CategoryChipInput";
+import ForumDynamicNavbar from "@/Forum/Navbar/ForumDynamicNavbar";
 // title, content, userId, categories, tags
 
 const categories = [
@@ -27,7 +28,8 @@ const categories = [
   "Provider Jobs",
 ]; // Pre-existing categories
 
-const Page = ({ params }: { params: { id: string } }) => {
+const Page = (props: { params: Promise<{ id: string }> }) => {
+  const params = use(props.params);
   const { id } = params;
   const [input, setInput] = useState("");
   const [content, setContent] = useState("");
@@ -121,7 +123,7 @@ const Page = ({ params }: { params: { id: string } }) => {
   console.log(content);
   return (
     <>
-      <ForumNavbar />
+      <ForumDynamicNavbar/>
       {!loading ? (
         <div className="mt-14 flex items-center h-full max-w-4xl mx-auto">
           <div className="relative bg-white w-full h-fit p-4 rounded-lg space-y-6">
@@ -176,7 +178,7 @@ const Page = ({ params }: { params: { id: string } }) => {
                   fields={categories}
                   selectedFields={selectedCategories}
                   setSelectedFields={setSelectedCategories}
-                  placeholder="Choose a category..."
+                  
                 />
 
                 {/* Display selected categories */}

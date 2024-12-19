@@ -8,6 +8,7 @@ import { formatDistanceToNow } from "date-fns";
 import PostMenuActions from "./PostMenuActions";
 import { Separator } from "@/components/ui/separator";
 import LikeComponent from "./UpdateForum/LikeComponent";
+import ProfileAvatar from "@/components/ProfileAvatar";
 
 polyfill();
 
@@ -19,29 +20,29 @@ async function Comments({ postID, threadID }: any) {
 
   const response = await data.json();
   const { replies }: any = response;
-
+  console.log(replies, "there are replies");
   return (
-    <div className="ml-4 relative right-[20px]"> {/* Margin to indent nested comments */}
+    <div className="ml-4 relative ">
+      {" "}
+      {/* Margin to indent nested comments */}
       {replies && replies.length > 0 ? (
         replies.map((reply: any) => {
-          const { author } = reply;
-          const avatarData = generateAvatarData(`${author.fname} ${author.lname}`);
+          const { author, authorData } = reply;
+          const avatarData = generateAvatarData(
+            `${author.fname} ${author.lname}`
+          );
 
           return (
             <div key={reply._id} className="flex flex-col mt-6 relative">
               {/* Threadline before each comment */}
-              <div className="absolute left-[1.1rem] top-0 bottom-0 w-px bg-gray-300" />
+              {/* <div className="absolute left-[1.1rem] top-0 bottom-0 w-px bg-gray-300" /> */}
               <div className="flex items-start space-x-3">
                 {/* Avatar */}
-                <Avatar className="border-gray-50 shadow-sm">
-                  <AvatarImage src={author.avatarUrl || "https://github.com/shadcn.png"} />
-                  <AvatarFallback
-                    style={{ background: avatarData.gradient }}
-                    className="border-gray-50"
-                  >
-                    {avatarData.initials}
-                  </AvatarFallback>
-                </Avatar>
+                <ProfileAvatar
+                  size="w-12 h-12"
+                  name={`${author.fname} ${author.lname}`}
+                  profileImage={authorData.profileImage}
+                />
 
                 {/* Comment Content */}
                 <div className="flex-1">
@@ -52,9 +53,12 @@ async function Comments({ postID, threadID }: any) {
                       </p>
                       <p className="text-xs text-gray-600">
                         {reply?.edited && "Edited"}{" "}
-                        {formatDistanceToNow(new Date(reply.updatedAt || reply.createdAt), {
-                          addSuffix: true,
-                        })}
+                        {formatDistanceToNow(
+                          new Date(reply.updatedAt || reply.createdAt),
+                          {
+                            addSuffix: true,
+                          }
+                        )}
                       </p>
                     </div>
                     <div>
@@ -70,7 +74,7 @@ async function Comments({ postID, threadID }: any) {
                   <div className="prose prose-blockquote:text-gray-500  prose-blockquote:bg-gray-50 prose-blockquote:py-1 prose-sm prose-gray">
                     <Interweave content={reply.content} />
                   </div>
-                    <div>
+                  <div>
                     <LikeComponent
                       threadID={reply._id}
                       initialLikeCount={reply?.likesCount}
@@ -78,7 +82,7 @@ async function Comments({ postID, threadID }: any) {
                       size="xs"
                       section="reply"
                     />
-                    </div>
+                  </div>
                   {/* Nested Replies */}
                   {reply.replies && reply.replies.length > 0 && (
                     <div className="mt-4 pl-8">

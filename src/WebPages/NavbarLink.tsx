@@ -31,20 +31,27 @@ function NavbarLink() {
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
-          <NavigationMenuItem>
+          {/* <NavigationMenuItem>
             <Link href="/subscribe" legacyBehavior passHref>
               <NavigationMenuLink active={pathname === "/subscribe"}  className={`${navigationMenuTriggerStyle()} ${pathname !== "/subscribe" && "bg-transparent"}`}>
                 Pricing/plans
               </NavigationMenuLink>
             </Link>
-          </NavigationMenuItem>
+          </NavigationMenuItem> */}
           <NavigationMenuItem>
-            <Link href="/why-kinscare" legacyBehavior passHref>
-              <NavigationMenuLink className={`${navigationMenuTriggerStyle()} ${pathname !== "/why-kinscare" && "bg-transparent"}`}>
-                Why kinscare
+            <Link href="/explore" legacyBehavior passHref>
+              <NavigationMenuLink active={pathname === "/explore"}  className={`${navigationMenuTriggerStyle()} ${pathname !== "/subscribe" && "bg-transparent"}`}>
+                Explore
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
+          {/* <NavigationMenuItem>
+            <Link href="/why-kinscare" legacyBehavior passHref>
+              <NavigationMenuLink className={`${navigationMenuTriggerStyle()} ${pathname !== "/why-kinscare" && "bg-transparent"}`}>
+                Why Kinscare
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem> */}
         </NavigationMenuList>
       </NavigationMenu>
     </ul>

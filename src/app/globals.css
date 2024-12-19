@@ -33,6 +33,14 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
@@ -60,6 +68,14 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -438,4 +454,77 @@
 }
 .embla__dot--selected:after {
   box-shadow: inset 0 0 0 0.2rem var(--text-body);
+}
+
+.prose {
+  & li > p {
+    margin: 0;
+  }
+  
+}
+
+p:empty::before {
+  content: '';
+  display: inline-block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+
+
+
+/* Style for the phone input field */
+.PhoneInputInput {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem; /* Adjust padding */
+  font-size: 1rem; /* Base font size */
+  line-height: 1.5;
+  color: #374151; /* Gray-700 */
+  background-color: #ffffff; /* White */
+  border: 1px solid #d1d5db; /* Gray-300 */
+  border-radius: 0.375rem; /* Rounded corners */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* Small shadow */
+  transition: border-color 0.2s, box-shadow 0.2s; /* Smooth interaction */
+}
+
+.PhoneInputInput:focus {
+  outline: none;
+  border-color: #3b82f6; /* Blue-500 */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* Focus ring */
+}
+
+.PhoneInputInput:disabled {
+  background-color: #f9fafb; /* Gray-50 */
+  border-color: #d1d5db; /* Gray-300 */
+  cursor: not-allowed;
+}
+
+/* Error state for the phone input */
+.PhoneInputInputError {
+  border-color: #ef4444; /* Red-500 */
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25); /* Red focus ring */
+}
+
+/* Success state for the phone input */
+.PhoneInputInputSuccess {
+  border-color: #10b981; /* Green-500 */
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25); /* Green focus ring */
+}
+
+/* Style for the phone input container */
+.PhoneInput {
+  position: relative;
+  width: 100%;
 }

@@ -20,11 +20,11 @@ const nextConfig = {
         GOOGLE_ANALYTICS_ID: "G-Y94DN6XWN3",
         MIXPANEL_TOKEN:"cd4c57a1381072532607d8bad65b9c00",
         IPAPI_KEY:"b4edc01b56d1f59a053bd88eba5a2c73",
-        PASSWORD_KEY:
-            "kinscareisaonlineregistryofcaregiversandproviderswith500000+usersandmillionsinrevenue",
+        PASSWORD_KEY:"kinscareisaonlineregistryofcaregiversandproviderswith500000+usersandmillionsinrevenue",
         CUSTOMERIO_API_KEY: "597b44bb3e15827eb48573406022562f",
         SENDGRID_API_KEY:
             "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",
+        STRIPE_PUBLIC_TEST_KEY:"pk_test_51KzQg6AoahxG9SLGESpHVcOxWL1PpnsEpvFusy1BdQ1iXLlNHZLjuzvpBmuZGUg798rnTimYfDCsRqMHBOvUrTse00GRInaoCZ",
         STRIPE_TEST_SECRETE:
             "sk_test_51KzQg6AoahxG9SLGLdejdNMSzoo1JZI7qA83sjiyrCTSeVcbsA5ShNbD7tan14k22Go2j2gx8hAt7i1Wi8s7vfr400V9OnGrof",
         STRIPE_SECRETE_KEY:

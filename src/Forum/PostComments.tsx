@@ -91,7 +91,7 @@ function PostComments({ postID, threadId }: any) {
             disabled={replyContent.length === 0 || isPending}
           >
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Post
+            Reply post
           </Button>
         ) : (
           <Button
@@ -101,7 +101,7 @@ function PostComments({ postID, threadId }: any) {
             disabled={replyContent.length === 0 || isPending}
           >
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Post
+            Reply post
           </Button>
         )}
       </div>

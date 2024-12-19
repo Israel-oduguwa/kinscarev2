@@ -1,22 +1,23 @@
 import DiscussionList from "@/Forum/DiscussionList";
+import ForumDynamicNavbar from "@/Forum/Navbar/ForumDynamicNavbar";
 import ForumNavbar from "@/Forum/Navbar/ForumNavbar";
 import LeftFilter from "@/Forum/UI/LeftFilter";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import { Suspense } from "react";
+import Head from "next/head";
 
 interface ForumPageProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     popular?: string;
     tags?: string;
     sortBy?: string;
     sortOrder?: string;
     category?: string;
-  };
+  }>;
 }
 
-// Fetch data based on query parameters (SSR)
 async function getThreads(queryParams: {
   page?: string;
   popular?: string;
@@ -35,7 +36,9 @@ async function getThreads(queryParams: {
     sortReplies,
     sortOrder = "desc",
   } = queryParams;
-  const url = `https://api.kinscare.org/api/v1/forum/threads?page=${page}&limit=10${sortReplies ? `&sortReplies=${sortReplies}` : ""} ${popular ? "&popular=1" : ""}${category ? `&categories=${category}` : ""}${
+  const url = `https://api.kinscare.org/api/v1/forum/threads?page=${page}&limit=10${
+    sortReplies ? `&sortReplies=${sortReplies}` : ""
+  }${popular ? "&popular=1" : ""}${category ? `&categories=${category}` : ""}${
     tags ? `&tags=${tags}` : ""
   }${sortBy ? `&sortBy=${sortBy}&sortOrder=${sortOrder}` : ""}`;
   console.log(url);
@@ -45,52 +48,107 @@ async function getThreads(queryParams: {
   return response.json();
 }
 
-async function page({ searchParams }: ForumPageProps) {
+async function page(props: ForumPageProps) {
+  const searchParams = await props.searchParams;
   const response = await getThreads(searchParams);
+
+  const jsonLdData = {
+    "@context": "https://schema.org",
+    "@type": "DiscussionForumPosting",
+    headline: "Join the Discussion on Our Forum",
+    description:
+      "Participate in engaging discussions, share your thoughts, and ask questions on our community forum.",
+    mainEntity: {
+      "@type": "Question",
+      name: "How do I participate in the forum?",
+      text: "Engage with other members by replying to discussions or starting a new thread.",
+    },
+    interactionStatistic: {
+      "@type": "InteractionCounter",
+      interactionType: "https://schema.org/CommentAction",
+      userInteractionCount: response?.pagination?.total || 0,
+    },
+  };
+
   return (
     <>
-      <header>
-        <ForumNavbar />
-      </header>
-
-      <main className="bg-gray-50 min-h-screen">
-        <div className="max-w-screen-2xl mx-auto p-4">
+      <Head>
+        <title>Community Forum | Engage in Discussions & Share Insights</title>
+        <meta
+          name="description"
+          content="Join our forum to participate in meaningful discussions, ask questions, and share insights with like-minded individuals."
+        />
+        <meta
+          name="keywords"
+          content="forum, community, discussions, Q&A, share ideas, participate"
+        />
+        <meta name="author" content="Kinscare" />
+        <meta property="og:title" content="Community Forum | Kinscare" />
+        <meta
+          property="og:description"
+          content="Engage in thoughtful discussions and share your insights with our community on Kinscare Forum."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://kinscare.org/forum" />
+        <meta property="og:image" content="/images/forum-banner.jpg" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Kinscare Community Forum" />
+        <meta
+          name="twitter:description"
+          content="Join the conversation on the Kinscare Community Forum."
+        />
+        <meta name="twitter:image" content="/images/forum-banner.jpg" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
+        />
+      </Head>
+      <main className="bg-gray-100 py-20 min-h-screen">
+        <div className="max-w-screen-2xl mx-auto px-6 sm:px-8">
           {/* Responsive layout: flex on large screens, stacked on small */}
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Left Sidebar: Filters for discussions */}
-            <aside className="lg:w-1/5 w-full sticky top-20   p-4 rounded-lg">
+          <div className="flex flex-col lg:flex-row gap-10">
+            {/* Left Sidebar */}
+            <aside className="lg:w-1/4 hidden lg:block w-full">
               <LeftFilter params={searchParams} />
             </aside>
-            {/* Middle: Discussion List */}
-            <section className="lg:w-2/3 w-full z-10 mx-auto p-4 mt-20 dark:bg-gray-900">
-              {/* List of discussions paginated */}
-              <Suspense fallback={<div>Loading discussions...</div>}>
-                <DiscussionList
-                  threads={response.threads}
-                  pagination={response.pagination}
-                />
-              </Suspense>
+
+            {/* Main Content */}
+            <section className="lg:w-3/5  w-full">
+              <div className="bg-white shadow-sm rounded-xl p-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  Discussions
+                </h2>
+                <Suspense fallback={<div>Loading discussions...</div>}>
+                  <DiscussionList
+                    threads={response.threads}
+                    pagination={response.pagination}
+                  />
+                </Suspense>
+              </div>
             </section>
 
-            {/* Right Sidebar: Add New Discussion */}
-            <div className="lg:w-1/5 w-full mt-20 h-fit sticky top-10 bg-white shadow-lg p-4 rounded-lg">
-              <h2 className="text-lg font-semibold mb-4">
-                Create a new discussion
-              </h2>
-              <Link
-                className={buttonVariants({
-                  className: "w-full mt-4 mb-6",
-                })}
-                href="/community/create"
-              >
-                New Discussion
-              </Link>
-            </div>
+            {/* Right Sidebar */}
+            <aside className="lg:w-1/4 w-full">
+              <div className="bg-white shadow-sm rounded-xl sticky top-10 p-6">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                  Create a Discussion
+                </h3>
+                <p className="text-sm text-gray-600 mb-6">
+                  Share your thoughts, ask questions, or start a conversation.
+                </p>
+                <Link
+                  className={buttonVariants({
+                    className: "w-full mt-4 mb-6 text-sm",
+                  })}
+                  href="/community/create"
+                >
+                  New Discussion
+                </Link>
+              </div>
+            </aside>
           </div>
         </div>
       </main>
-
-      <footer>{/* <Footer /> */}</footer>
     </>
   );
 }

@@ -16,6 +16,7 @@ import Editor from "@/components/Editor";
 import ImageUpload from "@/components/ImageUpload";
 import ForumNavbar from "@/Forum/Navbar/ForumNavbar";
 import CategoryChipInput from "@/components/ui/CategoryChipInput";
+import ForumDynamicNavbar from "@/Forum/Navbar/ForumDynamicNavbar";
 // title, content, userId, categories, tags
 
 const categories = [
@@ -31,7 +32,7 @@ const Page = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const mongodb = useContext(MongoContext);
-  const { user }: any = mongodb;
+  const { user, userData }: any = mongodb;
   const router = useRouter();
   const { loginToast }: any = useCustomToast();
   const { mutate: createThread, isPending } = useMutation({
@@ -93,9 +94,9 @@ const Page = () => {
 
   return (
     <>
-      <ForumNavbar />
-      <div className="mt-14 flex items-center h-full max-w-4xl mx-auto">
-        <div className="relative bg-white w-full h-fit p-4 rounded-lg space-y-6">
+       <ForumDynamicNavbar/>
+      <div className="mt-10 flex items-center h-full max-w-4xl mx-auto">
+        <div className="relative py-10 bg-white w-full h-fit p-4 rounded-lg space-y-6">
           <div className="flex justify-between items-center ">
             <h1 className="text-xl font-bold text-gray-800">
               Start a New discussion

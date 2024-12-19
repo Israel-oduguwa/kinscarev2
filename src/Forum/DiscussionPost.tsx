@@ -10,11 +10,13 @@ import React, { ReactNode, Suspense } from "react";
 import Comments from "./Comments";
 import PostMenuActions from "./PostMenuActions";
 import LikeComponent from "./UpdateForum/LikeComponent";
+import ProfileImage from "@/Providers/User/ProfileImage";
+import ProfileAvatar from "@/components/ProfileAvatar";
 
 polyfill();
 
 function DiscussionPost({ posts, threadID }: any) {
-  // console.log(posts)
+  console.log(posts, "tshisi s");
   return (
     <>
       <QuoteProvider>
@@ -28,7 +30,7 @@ function DiscussionPost({ posts, threadID }: any) {
             createdAt: string | number | Date;
             _id: React.Key | null | undefined;
           }) => {
-            const { author }: any = post;
+            const { author, authorData }: any = post;
             const avatarData = generateAvatarData(
               `${author.fname} ${author.lname}`
             );
@@ -39,15 +41,11 @@ function DiscussionPost({ posts, threadID }: any) {
               >
                 <div className="flex w-full justify-between">
                   <div className="flex gap-2 mb-3 items-center">
-                    <Avatar className="border-gray-50 shadow-sm">
-                      <AvatarImage src="https://canny.io/images/f9bc056c510b83265be76899e7a13028.png" />
-                      <AvatarFallback
-                        style={{ background: avatarData.gradient }}
-                        className="border-gray-50"
-                      >
-                        {avatarData.initials}
-                      </AvatarFallback>
-                    </Avatar>
+                    <ProfileAvatar
+                      size="w-12 h-12"
+                      name={`${author.fname} ${author.lname}`}
+                      profileImage={authorData.profileImage}
+                    />
                     <div>
                       <p className="text-sm mb-1 text-gray-900 font-semibold antialiased">
                         {author.fname} {author.lname}
@@ -87,7 +85,7 @@ function DiscussionPost({ posts, threadID }: any) {
                       section="reply"
                     />
                   </div>
-                  <details open className="w-full flex">
+                  <details open className="w-full flex-row">
                     <summary className="flex items-center space-x-1 text-sm font-medium mb-1 cursor-pointer">
                       <MessageSquare size={20} strokeWidth={1.5} />
                       <span>{post.replies} Replies</span>

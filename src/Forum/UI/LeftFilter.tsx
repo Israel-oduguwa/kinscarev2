@@ -1,89 +1,78 @@
 import Link from "next/link";
 import React from "react";
+import {
+  HelpCircle,
+  School,
+  Briefcase,
+  ListChecks,
+  SortAsc,
+  SortDesc,
+} from "lucide-react";
 
 function LeftFilter({ params }: any) {
-//   console.log(params);
+  const filters = [
+    {
+      label: "Questions",
+      icon: <HelpCircle className="mr-3 text-blue-600" />,
+      href: `/community?category=Questions&page=1&limit=10`,
+      active: params?.category === "Questions",
+    },
+    {
+      label: "Schools",
+      icon: <School className="mr-3 text-green-600" />,
+      href: `/community?category=Schools&page=1&limit=10`,
+      active: params?.category === "Schools",
+    },
+    {
+      label: "Programs",
+      icon: <ListChecks className="mr-3 text-yellow-600" />,
+      href: `/community?category=Programs&page=1&limit=10`,
+      active: params?.category === "Programs",
+    },
+    {
+      label: "Jobs",
+      icon: <Briefcase className="mr-3 text-orange-600" />,
+      href: `/community?category=Jobs&page=1&limit=10`,
+      active: params?.category === "Jobs",
+    },
+    {
+      label: "Least Replies",
+      icon: <SortAsc className="mr-3 text-purple-600" />,
+      href: `/community?sortReplies=least&page=1&limit=10`,
+      active: params?.sortReplies === "least",
+    },
+    {
+      label: "Most Replies",
+      icon: (
+        <div className="p-2 mr-3 rounded-md bg-purple-100">
+          <SortDesc className="text-purple-600 shrink-0" />
+        </div>
+      ),
+      href: `/community?sortReplies=most&page=1&limit=10`,
+      active: params?.sortReplies === "most",
+    },
+  ];
+
   return (
-    <div className="sticky top-10">
-      <ul className="flex-column space-y space-y-4 text-sm font-medium text-gray-500 dark:text-gray-400 md:me-4 mb-4 md:mb-0">
-        <li>
-          <Link href={`/community?category=Questions&page=1&limit=10`}>
-            <div
-              className={`inline-flex items-center px-4 py-3  ${
-                params?.category === "Questions"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-50 text-gray-900"
-              } rounded-lg w-full hover:bg-blue-600 hover:text-white`}
-            >
-              Questions
-            </div>
-          </Link>
-        </li>
-        <li>
-          <Link href={`/community?category=Schools&page=1&limit=10`}>
-            <div
-              className={`inline-flex items-center px-4 py-3 ${
-                params?.category === "Schools"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-50 text-gray-900"
-              } rounded-lg hover:bg-blue-600 w-full hover:text-white `}
-            >
-              Schools
-            </div>
-          </Link>
-        </li>
-        <li>
-          <Link href={`/community?category=Programs&page=1&limit=10`}>
-            <div
-              className={`inline-flex items-center px-4 py-3 ${
-                params?.category === "Programs"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-50 text-gray-900"
-              } rounded-lg hover:bg-blue-600 w-full hover:text-white `}
-            >
-              Programs
-            </div>
-          </Link>
-        </li>
-        <li>
-          <Link href={`/community?category=Jobs&page=1&limit=10`}>
-            <div
-              className={`inline-flex items-center px-4 py-3 ${
-                params?.category === "Jobs"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-50 text-gray-900"
-              } rounded-lg hover:bg-blue-600 w-full hover:text-white `}
-            >
-              Jobs
-            </div>
-          </Link>
-        </li>
-        <li>
-          <Link href={`/community?sortReplies=least&page=1&limit=10`}>
-            <div
-              className={`inline-flex items-center px-4 py-3 ${
-                params?.sortReplies === "least"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-50 text-gray-900"
-              } rounded-lg hover:bg-blue-600 w-full hover:text-white `}
-            >
-              Least replies
-            </div>
-          </Link>
-        </li>
-        <li>
-          <Link href={`/community?sortReplies=most&page=1&limit=10`}>
-            <div
-              className={`inline-flex items-center px-4 py-3 ${
-                params?.sortReplies === "most"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-50 text-gray-900"
-              } rounded-lg hover:bg-blue-600 w-full hover:text-white `}
-            >
-              Most replies
-            </div>
-          </Link>
-        </li>
+    <div className="sticky top-10 p-6 shadow-sm bg-white rounded-xl border border-gray-200">
+      <h2 className="text-lg font-semibold text-gray-800 mb-6">Filter by</h2>
+      <ul className="space-y-3">
+        {filters.map((filter) => (
+          <li key={filter.label}>
+            <Link href={filter.href}>
+              <div
+                className={`flex items-center px-4 py-3 rounded-lg cursor-pointer transition-colors duration-200 ${
+                  filter.active
+                    ? "bg-blue-50 border border-blue-600 text-blue-600"
+                    : "bg-white border border-gray-200 text-gray-800 hover:bg-gray-50 hover:border-gray-300"
+                }`}
+              >
+                {filter.icon}
+                <span className="font-medium">{filter.label}</span>
+              </div>
+            </Link>
+          </li>
+        ))}
       </ul>
     </div>
   );
