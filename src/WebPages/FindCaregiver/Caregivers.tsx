@@ -217,7 +217,7 @@ async function Caregivers({
   console.log(availability, licenses);
 
   let data = await fetch(
-    `http://localhost:8081/api/v1/providers/find-caregivers/filter?availability=${availability}&licenses=${licenses}&page=1&limit=10`,
+    `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${availability}&licenses=${licenses}&page=1&limit=10`,
     { cache: "no-cache" }
   );
   const response = await data.json();

@@ -63,7 +63,7 @@ const ShareDialog: React.FC<ShareDialogProps> = ({
     };
     try {
       const addPlan = await axios.post(
-        "http://localhost:8081/api/v1/auth/crud-operation",
+        "https://api.kinscare.org/api/v1/auth/crud-operation",
         payload
       );
       console.log(addPlan);
@@ -223,7 +223,7 @@ function InviteFriends() {
     };
     try {
       await axios.post(
-        "http://localhost:8081/api/v1/auth/crud-operation",
+        "https://api.kinscare.org/api/v1/auth/crud-operation",
         payload
       );
       const fetchedData: any = await fetchUserData(
@@ -268,7 +268,7 @@ function InviteFriends() {
        referrerID: userData.userID, // this is the ID of the caregiver that referred the user
      };
      const sendInviteEmail = await axios.post(
-       `http://localhost:8081/api/v1/email/invite-friend`,
+       `https://api.kinscare.org/api/v1/email/invite-friend`,
        payload
      );
      if (sendInviteEmail.data.success) {

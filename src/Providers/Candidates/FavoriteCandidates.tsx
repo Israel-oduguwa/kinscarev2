@@ -183,7 +183,7 @@ function FavoriteCandidates() {
       setError(null);
       try {
         const response = await axios.get(
-          `http://localhost:8081/api/v1/providers/favorite-caregivers/${user.customData.userID}`
+          `https://api.kinscare.org/api/v1/providers/favorite-caregivers/${user.customData.userID}`
         );
         if (response.status === 200) {
           setCandidates(response.data.data);

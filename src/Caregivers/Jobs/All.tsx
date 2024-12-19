@@ -109,7 +109,7 @@ const fetchJobs = async (
   page: number
 ): Promise<JobsApiResponse> => {
   const response = await fetch(
-    `http://localhost:8081/api/v1/caregivers/jobs/${userId}?page=${page}`
+    `https://api.kinscare.org/api/v1/caregivers/jobs/${userId}?page=${page}`
   );
   if (!response.ok) {
     throw new Error("Error fetching jobs");
@@ -124,7 +124,7 @@ const fetchFilteredJobs = async (
   geoCode: any
 ): Promise<JobsApiResponse> => {
   const response = await axios.post(
-    "http://localhost:8081/api/v1/caregivers/jobs/filter",
+    "https://api.kinscare.org/api/v1/caregivers/jobs/filter",
     {
       userID: userId,
       page,

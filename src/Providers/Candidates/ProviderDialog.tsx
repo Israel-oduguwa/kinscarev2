@@ -125,7 +125,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
         };
 
         const { data } = await axios.post(
-          "http://localhost:8081/api/v1/providers/set_favorites",
+          "https://api.kinscare.org/api/v1/providers/set_favorites",
           payload
         );
         return data;
@@ -172,7 +172,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
         to: "+2348108517789", // Replace with the caregiver's phone number
       };
       const sendMessage = await axios.post(
-        "http://localhost:8081/api/v1/twilio/sms/send",
+        "https://api.kinscare.org/api/v1/twilio/sms/send",
         sms_payload
       );
 
@@ -193,7 +193,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
         closeDialog();
         // send the caregiver an email too  and push a notification
         // send the caregiver a notification
-        await axios.post("http://localhost:8081/api/v1/notifications/send", {
+        await axios.post("https://api.kinscare.org/api/v1/notifications/send", {
           type: "message_caregiver", // provider sends message to the caregiver
           fromUserId: userData.userID, // the provider user id
           toUserId: candidate.userID, // the caregiver user id
@@ -218,7 +218,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
       // } else {
       //   // // lets generate the free trial client secrete and store to localStorage
       //   // const response = await axios.post(
-      //   //   "http://localhost:8081/api/v1/providers/create-setup-intent",
+      //   //   "https://api.kinscare.org/api/v1/providers/create-setup-intent",
       //   //   {
       //   //     customerId: user.customData.customer_id,
       //   //   }
@@ -322,7 +322,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
         paymentMethodId: selectedCard,
       };
       const response = await axios.post(
-        "http://localhost:8081/api/v1/providers/subscription",
+        "https://api.kinscare.org/api/v1/providers/subscription",
         payload,
         {
           headers: { "Content-Type": "application/json" },
@@ -351,7 +351,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
           },
         };
         const crudResponse = await axios.post(
-          "http://localhost:8081/api/v1/auth/crud-operation",
+          "https://api.kinscare.org/api/v1/auth/crud-operation",
           updatePayload,
           {
             headers: { "Content-Type": "application/json" },
@@ -392,7 +392,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
     try {
       const customerId = user.customData.customer_id;
       const response = await axios.post(
-        `http://localhost:8081/api/v1/providers/payment-methods`,
+        `https://api.kinscare.org/api/v1/providers/payment-methods`,
         { customerId }
       );
 

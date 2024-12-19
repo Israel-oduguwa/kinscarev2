@@ -102,7 +102,7 @@ function AppliedJobs() {
     try {
       setLoading(true);
       const { data }: any = await axios.get(
-        `http://localhost:8081/api/v1/caregivers/jobs/applied-job/${user.customData.userID}`
+        `https://api.kinscare.org/api/v1/caregivers/jobs/applied-job/${user.customData.userID}`
       );
       setJobs(data.jobs);
     } catch (error) {

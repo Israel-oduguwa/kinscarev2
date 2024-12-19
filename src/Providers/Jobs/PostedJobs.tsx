@@ -85,7 +85,7 @@ function PostedJobs() {
       setLoading(true);
       try {
         const response = await axios.get(
-          `http://localhost:8081/api/v1/providers/posted-jobs/${user?.customData?.hash}`
+          `https://api.kinscare.org/api/v1/providers/posted-jobs/${user?.customData?.hash}`
         );
         setJobs(response.data.jobs);
         console.log(response.data.jobs);

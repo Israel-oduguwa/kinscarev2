@@ -64,7 +64,7 @@ function RecommendedJobs() {
         }
 
         const response = await fetch(
-          "http://localhost:8081/api/v1/auth/crud-operation",
+          "https://api.kinscare.org/api/v1/auth/crud-operation",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

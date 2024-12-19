@@ -67,7 +67,7 @@ export default async function ProviderDetails({
 }) {
   // Fetch provider data
   const response = await fetch(
-    `http://localhost:8081/api/v1/caregivers/get-provider/${providerId}`,
+    `https://api.kinscare.org/api/v1/caregivers/get-provider/${providerId}`,
     { cache: "no-cache" }
   );
   const data = await response.json();

@@ -54,7 +54,7 @@ interface CandidatesApiResponse {
 const fetchCandidates = async (userID: string, page: number) => {
   try {
     const response = await axios.get(
-      `http://localhost:8081/api/v1/providers/caregivers/match/${userID}?page=${page}&limit=10`
+      `https://api.kinscare.org/api/v1/providers/caregivers/match/${userID}?page=${page}&limit=10`
     );
     return response.data;
   } catch (error) {
@@ -72,7 +72,7 @@ const fetchFilteredCandidates = async (
     const availabilityParam = availability.join(",");
     const licensesParam = licenses.join(",");
     const response = await axios.get(
-      `http://localhost:8081/api/v1/providers/find-caregivers/filter?availability=${availabilityParam}&licenses=${licensesParam}&page=${page}&limit=10`
+      `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${availabilityParam}&licenses=${licensesParam}&page=${page}&limit=10`
     );
     return response.data;
   } catch (error) {

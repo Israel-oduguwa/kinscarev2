@@ -78,7 +78,7 @@ function PricingPlan() {
     setSelectedPlan(plan);
     try {
       const response = await axios.post(
-        "http://localhost:8081/api/v1/providers/create-subscription",
+        "https://api.kinscare.org/api/v1/providers/create-subscription",
         {
           customerId: user.customData.customer_id,
           priceId: stripePriceId,
@@ -103,7 +103,7 @@ function PricingPlan() {
   const fetchSavedCards = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8081/api/v1/providers/payment-methods",
+        "https://api.kinscare.org/api/v1/providers/payment-methods",
         {
           customerId: user.customData.customer_id,
         }
@@ -138,7 +138,7 @@ function PricingPlan() {
         paymentMethodId: selectedCard,
       };
       const response = await axios.post(
-        "http://localhost:8081/api/v1/providers/subscription",
+        "https://api.kinscare.org/api/v1/providers/subscription",
         payload,
         {
           headers: { "Content-Type": "application/json" },
@@ -171,7 +171,7 @@ function PricingPlan() {
           },
         };
         const crudResponse = await axios.post(
-          "http://localhost:8081/api/v1/auth/crud-operation",
+          "https://api.kinscare.org/api/v1/auth/crud-operation",
           updatePayload,
           {
             headers: { "Content-Type": "application/json" },

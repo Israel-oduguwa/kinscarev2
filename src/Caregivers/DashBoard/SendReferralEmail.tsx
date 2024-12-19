@@ -70,7 +70,7 @@ const { closeDialog } = useDialog(); // Access the closeDialog function
     };
     try {
       const addPlan = await axios.post(
-        "http://localhost:8081/api/v1/auth/crud-operation",
+        "https://api.kinscare.org/api/v1/auth/crud-operation",
         payload
       );
       const fetchedData: any = await fetchUserData(
@@ -102,7 +102,7 @@ const { closeDialog } = useDialog(); // Access the closeDialog function
       };
       // console.log(payload)
       const sendReferEmail = await axios.post(
-        "http://localhost:8081/api/v1/email/refer-employer",
+        "https://api.kinscare.org/api/v1/email/refer-employer",
         payload
       );
       if (sendReferEmail.data.success) {

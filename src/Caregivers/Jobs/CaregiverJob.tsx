@@ -84,7 +84,7 @@ const SimilarJobs = ({ similarJobs }: any) => {
 };
 async function CaregiverJob({ jobID }: JobProps) {
   let data = await fetch(
-    `http://localhost:8081/api/v1/caregivers/job/${jobID}`,
+    `https://api.kinscare.org/api/v1/caregivers/job/${jobID}`,
     { cache: "no-cache" }
   );
   const response = await data.json();

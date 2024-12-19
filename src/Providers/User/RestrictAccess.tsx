@@ -35,7 +35,7 @@ const RestrictAccess: React.FC<RestrictAccessProps> = ({ children, mode = "wrap"
       try {
         setLoading(true);
         const response = await axios.post(
-          "http://localhost:8081/api/v1/providers/create-setup-intent",
+          "https://api.kinscare.org/api/v1/providers/create-setup-intent",
           {
             customerId: user.customData.customer_id,
           }

@@ -54,7 +54,7 @@ function ApplyNow({ jobID, job }: any) {
         providerName,
       };
       const { data } = await axios.post(
-        "http://localhost:8081/api/v1/caregivers/job/apply",
+        "https://api.kinscare.org/api/v1/caregivers/job/apply",
         payload
       );
       return data;
@@ -103,7 +103,7 @@ function ApplyNow({ jobID, job }: any) {
         action,
       };
       const { data } = await axios.post(
-        "http://localhost:8081/api/v1/caregivers/job/favorite",
+        "https://api.kinscare.org/api/v1/caregivers/job/favorite",
         payload
       );
       return data;

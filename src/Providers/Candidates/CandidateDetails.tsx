@@ -200,7 +200,7 @@ const CandidatesCard = ({ similarCaregivers }: any) => {
 
 async function CandidateDetails({ candidateID }: { candidateID: string }) {
   let data = await fetch(
-    `http://localhost:8081/api/v1/providers/caregivers/${candidateID}`,
+    `https://api.kinscare.org/api/v1/providers/caregivers/${candidateID}`,
     { cache: "no-cache" }
   );
   const response: any = await data.json();

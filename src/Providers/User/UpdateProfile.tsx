@@ -150,7 +150,7 @@ const UpdateProfile = () => {
       const formData = new FormData();
       formData.append("file", file[0]);
       const { data } = await axios.post(
-        "http://localhost:8081/api/v1/upload-file",
+        "https://api.kinscare.org/api/v1/upload-file",
         formData
       );
       setValue("profileImage", data.url);
@@ -180,7 +180,7 @@ const UpdateProfile = () => {
       }
       const payload = { fileUrl: url };
       const { data } = await axios.post(
-        "http://localhost:8081/api/v1/delete-file",
+        "https://api.kinscare.org/api/v1/delete-file",
         payload
       );
       if (data.success) {
@@ -214,7 +214,7 @@ const UpdateProfile = () => {
       };
       console.log(payload);
       await axios.post(
-        `http://localhost:8081/api/v1/providers/settings/update/${userData.userID}`,
+        `https://api.kinscare.org/api/v1/providers/settings/update/${userData.userID}`,
         payload
       );
       toast({ title: "Profile updated successfully", variant: "default" });

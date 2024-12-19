@@ -69,7 +69,7 @@ function ProtectedCandidatesDetails({
     } else {
       try {
         const response = await axios.post(
-          "http://localhost:8081/api/v1/providers/create-setup-intent",
+          "https://api.kinscare.org/api/v1/providers/create-setup-intent",
           {
             customerId: user.customData.customer_id,
           }
@@ -129,7 +129,7 @@ function ProtectedCandidatesDetails({
     try {
       const customerId = user.customData.customer_id;
       const response = await axios.post(
-        `http://localhost:8081/api/v1/providers/payment-methods`,
+        `https://api.kinscare.org/api/v1/providers/payment-methods`,
         { customerId }
       );
 
@@ -188,7 +188,7 @@ function ProtectedCandidatesDetails({
         paymentMethodId: selectedCard,
       };
       const response = await axios.post(
-        "http://localhost:8081/api/v1/providers/subscription",
+        "https://api.kinscare.org/api/v1/providers/subscription",
         payload,
         {
           headers: { "Content-Type": "application/json" },
@@ -217,7 +217,7 @@ function ProtectedCandidatesDetails({
           },
         };
         const crudResponse = await axios.post(
-          "http://localhost:8081/api/v1/auth/crud-operation",
+          "https://api.kinscare.org/api/v1/auth/crud-operation",
           updatePayload,
           {
             headers: { "Content-Type": "application/json" },

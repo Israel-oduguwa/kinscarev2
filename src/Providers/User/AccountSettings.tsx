@@ -53,7 +53,7 @@ function AccountSettings() {
     // try {
     //   // Call the API to create setup intent and get client_secret
     //   const response = await axios.post(
-    //     "http://localhost:8081/api/v1/providers/create-setup-intent",
+    //     "https://api.kinscare.org/api/v1/providers/create-setup-intent",
     //     {
     //       customerId: user.customData.customer_id,
     //     }

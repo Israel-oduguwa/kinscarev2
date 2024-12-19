@@ -27,7 +27,7 @@ function ProviderNotification() {
     try {
       console.log("fetching");
       const { data } = await axios.get(
-        `http://localhost:8081/api/v1/notifications/fetch`,
+        `https://api.kinscare.org/api/v1/notifications/fetch`,
         {
           params: { userId: user.customData.userID }, // Pass the user ID in params
         }
@@ -52,7 +52,7 @@ function ProviderNotification() {
     try {
       console.log("jos");
       await axios.post(
-        `http://localhost:8081/api/v1/notifications/mark-as-read`,
+        `https://api.kinscare.org/api/v1/notifications/mark-as-read`,
         { notificationId }
       );
       setNotifications((prev) =>

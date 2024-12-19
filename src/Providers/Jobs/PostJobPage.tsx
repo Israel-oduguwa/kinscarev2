@@ -24,7 +24,7 @@ const JobUpdatePage = ({type}:any) => {
     try {
       const payload = { userID: user.customData.userID, draft: true };
       const response = await axios.post(
-        "http://localhost:8081/api/v1/providers/post-job",
+        "https://api.kinscare.org/api/v1/providers/post-job",
         payload
       );
       const jobID = response.data.id;
@@ -41,7 +41,7 @@ const JobUpdatePage = ({type}:any) => {
   const getJobData = async (jobID: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:8081/api/v1/caregivers/job/${jobID}`
+        `https://api.kinscare.org/api/v1/caregivers/job/${jobID}`
       );
       setJob(response.data.job); // Set job data
     } catch (err: any) {

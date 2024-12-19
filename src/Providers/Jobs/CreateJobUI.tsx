@@ -132,7 +132,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
         };
         console.log(payload);
         const response = await axios.post(
-          "http://localhost:8081/api/v1/providers/post-job",
+          "https://api.kinscare.org/api/v1/providers/post-job",
           payload
         );
         toast({ title: "Profile updated successfully", variant: "default" });
@@ -147,7 +147,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
         };
         console.log(payload);
         await axios.post(
-          "http://localhost:8081/api/v1/providers/post-job",
+          "https://api.kinscare.org/api/v1/providers/post-job",
           payload
         );
         toast({ title: "Profile updated successfully", variant: "default" });
@@ -196,7 +196,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
     if (type !== "repost") {
       try {
         const save = await axios.post(
-          "http://localhost:8081/api/v1/providers/post-job",
+          "https://api.kinscare.org/api/v1/providers/post-job",
           formData
         );
         console.log(save);

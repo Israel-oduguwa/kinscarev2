@@ -100,7 +100,7 @@ const OauthApply: React.FC<OauthApplyProps> = ({ jobID, children }) => {
         });
 
         await axios.post(
-          "http://localhost:8081/api/v1/auth/create_user",
+          "https://api.kinscare.org/api/v1/auth/create_user",
           payload
         );
         setAuthenticated(true);

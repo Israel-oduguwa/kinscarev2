@@ -81,7 +81,7 @@ const JobPostModal = ({ caregiver }: any) => {
     try {
       setValidating(true);
       const response = await axios.post(
-        "http://localhost:8081/api/v1/auth/phone/validate",
+        "https://api.kinscare.org/api/v1/auth/phone/validate",
         {
           phone: phone,
         }
@@ -189,7 +189,7 @@ const JobPostModal = ({ caregiver }: any) => {
       console.log(jobPayload);
       // Post the job
       await axios.post(
-        "http://localhost:8081/api/v1/providers/post-job",
+        "https://api.kinscare.org/api/v1/providers/post-job",
         jobPayload
       );
 
@@ -213,7 +213,7 @@ const JobPostModal = ({ caregiver }: any) => {
       };
 
       const profile = await axios.post(
-        `http://localhost:8081/api/v1/providers/settings/update/${userData.userID}`,
+        `https://api.kinscare.org/api/v1/providers/settings/update/${userData.userID}`,
         profilePayload
       );
       console.log(profile);

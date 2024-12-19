@@ -110,7 +110,7 @@ function AddWorkExperience() {
     };
     try {
       const addPlan = await axios.post(
-        "http://localhost:8081/api/v1/auth/crud-operation",
+        "https://api.kinscare.org/api/v1/auth/crud-operation",
         payload
       );
       const fetchedData: any = await fetchUserData(
