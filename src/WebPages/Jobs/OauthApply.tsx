@@ -17,7 +17,7 @@ import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import { cn, fetchUserData } from "@/lib/utils";
 import { ArrowBigLeft, Loader2, Loader2Icon } from "lucide-react";
-import FacebookLogin from "react-facebook-login";
+// import FacebookLogin from "react-facebook-login";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -258,13 +258,7 @@ const OauthApply: React.FC<OauthApplyProps> = ({ jobID, children }) => {
                 theme="filled_black"
                 text="continue_with"
               />
-              <FacebookLogin
-                appId="765188364849485"
-                fields="name,email,picture"
-                callback={handleFacebookCallback}
-                textButton="Facebook"
-                cssClass="bg-blue-600 text-white py-2 px-4 rounded-lg font-medium"
-              />
+             
             </div>
           ) : (
             <>
@@ -428,6 +422,7 @@ const OauthApply: React.FC<OauthApplyProps> = ({ jobID, children }) => {
                     <input
                       {...field}
                       type="checkbox"
+                      // value=""
                       className="form-checkbox h-5 w-5 text-blue-600"
                     />
                   )}

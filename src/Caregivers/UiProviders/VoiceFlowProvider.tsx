@@ -4,10 +4,8 @@ import React, { useContext, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import MongoContext from "@/app/MongoContext";
 
-// there are 2 screnerios for when users are logged in and not
 function VoiceFlowProvider({ children }: any) {
   const { userData }: any = useContext(MongoContext);
-  console.log(userData);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -49,32 +47,20 @@ function VoiceFlowProvider({ children }: any) {
       })(document, "script");
 
       // Listen for Voiceflow messages
-      const handleVoiceflowMessage = (event: MessageEvent) => {
-        // console.log("event data", event.data)
-        if (event.origin !== "https://cdn.voiceflow.com") return; // Ensure the message is from Voiceflow
+      const handleVoiceflowMessage = async (event: MessageEvent) => {
+        if (event.origin !== "https://cdn.voiceflow.com") return;
 
-        // Example: Check for a specific event or payload structure
-        if (event.data?.type === "recommendation") {
+        // Example: Check for specific event payload
+        if (event.data?.type ) {
           const { recommendation, userID } = event.data.payload;
+          console.log(recommendation, userID)
 
-          // Save the recommendation to the database
-          // fetch("/api/save-recommendation", {
-          //   method: "POST",
-          //   headers: {
-          //     "Content-Type": "application/json",
-          //   },
-          //   body: JSON.stringify({ userID, recommendation }),
-          // })
-          //   .then((res) => res.json())
-          //   .then((data) => {
-          //     console.log("Recommendation saved successfully:", data);
-          //   })
-          //   .catch((error) => {
-          //     console.error("Error saving recommendation:", error);
-          //   });
+          // Send recommendation to MongoDB
+          // await saveRecommendationToDB({ userID, recommendation });
         }
       };
 
+      // Add event listener
       window.addEventListener("message", handleVoiceflowMessage);
 
       // Cleanup listener on unmount
@@ -83,6 +69,25 @@ function VoiceFlowProvider({ children }: any) {
       };
     }
   }, [pathname, userData]);
+
+  // // Function to send recommendation to MongoDB
+  // const saveRecommendationToDB = async (data: { userID: string; recommendation: string }) => {
+  //   try {
+  //     const response = await fetch("/api/recommendation", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(data),
+  //     });
+
+  //     if (!response.ok) {
+  //       console.error("Failed to save recommendation:", response.statusText);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error saving recommendation:", error);
+  //   }
+  // };
 
   return <>{children}</>;
 }

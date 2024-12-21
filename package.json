@@ -86,7 +86,6 @@
     "react-documents": "^1.2.1",
     "react-dom": "^18.3.1",
     "react-dropzone": "^14.2.9",
-    "react-facebook-login": "^4.1.1",
     "react-gtm-module": "^2.0.11",
     "react-hook-form": "^7.52.1",
     "react-phone-number-input": "^3.4.10",

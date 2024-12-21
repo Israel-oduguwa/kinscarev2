@@ -20,7 +20,7 @@ import { jwtDecode } from "jwt-decode";
 import { ArrowBigLeft, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useContext, useState } from "react";
-import FacebookLogin from "react-facebook-login";
+// import FacebookLogin from "react-facebook-login";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 
@@ -255,13 +255,7 @@ function GetStartedBtn({ children }: any) {
               theme="filled_black"
               text="continue_with"
             />
-            <FacebookLogin
-              appId="765188364849485"
-              fields="name,email,picture"
-              callback={handleFacebookCallback}
-              textButton="Facebook"
-              cssClass="bg-blue-600 text-white py-2 px-4 rounded-lg font-medium"
-            />
+           
           </div>
 
           <p className="mt-4 text-center text-sm text-gray-500">
