@@ -304,12 +304,14 @@ const Signin: React.FC = () => {
 
   return (
     <GoogleOAuthProvider clientId={`${process.env.GOOGLE_APP_ID}`}>
-      <div className="w-full min-h-[100vh] bg-gray-100 dark:bg-inherit">
+      <div className="relative w-full min-h-[100vh] bg-gray-100 dark:bg-inherit">
+        {/* Wavy Background */}
+
         <SelectRole
           selectRoleModal={selectRoleModal}
           closeSelectModal={closeSelectModal}
         />
-        <header className="py-8 px-8 sm:py-6">
+        <header className="py-8 px-8 z-10 sm:py-6">
           <div className="flex justify-between items-center">
             <div>
               <Link
@@ -317,11 +319,13 @@ const Signin: React.FC = () => {
                 className="flex items-center text-lg font-semibold text-gray-900 dark:text-white"
               >
                 <img
-                  className="w-12 mr-2"
+                  className="w-12 mr-1"
                   src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
                   alt="logo"
                 />
-                Kinscare
+                <p className="font-bold text-slate-900 tracking-tight">
+                  Kinscare
+                </p>
               </Link>
             </div>
             <div>
@@ -337,7 +341,8 @@ const Signin: React.FC = () => {
             </div>
           </div>
         </header>
-        <section className="py-8 mt-0 md:mt-10 max-w-lg m-auto">
+
+        <section className="py-8 mt-0 md:mt-10 z-10 relative max-w-lg m-auto">
           <div className="mx-4">
             <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden">
               <div className="p-6 space-y-6 md:space-y-6 sm:p-8">
@@ -345,7 +350,7 @@ const Signin: React.FC = () => {
                   Sign in to Kinscare
                 </h1>
                 {/* Centered Google Sign-In */}
-                <div className="flex justify-center">
+                <div className="flex w-full justify-center">
                   <GoogleLogin
                     size="large"
                     onSuccess={handleGoogleSuccess}
@@ -439,6 +444,25 @@ const Signin: React.FC = () => {
             </div>
           </div>
         </section>
+        <div className="absolute bottom-0  -z-0 left-0 w-full">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 1440 320"
+            preserveAspectRatio="none"  className="w-full h-full"
+          >
+            <defs>
+              <linearGradient id="gradient2" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#6a11cb" />
+                <stop offset="100%" stop-color="#2575fc" />
+              </linearGradient>
+            </defs>
+            <path
+              fill="url(#gradient2)"
+              fill-opacity="1"
+              d="M0,320L48,304C96,288,192,256,288,245.3C384,235,480,245,576,224C672,203,768,149,864,133.3C960,117,1056,139,1152,128C1248,117,1344,75,1392,53.3L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+            ></path>
+          </svg>
+        </div>
       </div>
     </GoogleOAuthProvider>
   );

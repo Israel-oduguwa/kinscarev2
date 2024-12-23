@@ -356,7 +356,7 @@ const Signup: React.FC = () => {
             </div>
           </div>
         </header>
-        <section className="py-8 max-w-[570px] m-auto">
+        <section className="py-8 max-w-xl absolute right-0 left-0 z-10 m-auto">
           <div className="mx-4">
             <div className="bg-white rounded-2xl shadow-xl dark:border md:mt-0 xl:p-0 dark:bg-gray-800 dark:border-gray-700">
               <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -375,7 +375,7 @@ const Signup: React.FC = () => {
                 </div>
                 <OrSeparator />
                 <form
-                  className="space-y-4 md:space-y-6"
+                  className="space-y-4 md:space-y-4"
                   onSubmit={handleSubmit(onSubmit)}
                 >
                   {/* Role Selection */}
@@ -475,7 +475,7 @@ const Signup: React.FC = () => {
                     )}
                   </div>
                   {/* Password */}
-                  <div className="flex space-x-4">
+                  <div className="flex flex-col space-y-4 sm:space-y-0 sm:space-x-4 sm:flex-row">
                     <div className="flex-1">
                       <label
                         htmlFor="password"
@@ -574,6 +574,25 @@ const Signup: React.FC = () => {
             </div>
           </div>
         </section>
+        <div className="absolute bottom-0 -z-0 left-0 w-full">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 1440 320"
+            preserveAspectRatio="none"
+          >
+            <defs>
+              <linearGradient id="gradient2" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#6a11cb" />
+                <stop offset="100%" stop-color="#2575fc" />
+              </linearGradient>
+            </defs>
+            <path
+              fill="url(#gradient2)"
+              fill-opacity="1"
+              d="M0,320L48,304C96,288,192,256,288,245.3C384,235,480,245,576,224C672,203,768,149,864,133.3C960,117,1056,139,1152,128C1248,117,1344,75,1392,53.3L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+            ></path>
+          </svg>
+        </div>
       </div>
     </GoogleOAuthProvider>
   );

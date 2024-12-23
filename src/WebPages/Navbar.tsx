@@ -69,14 +69,17 @@ function Navbar() {
             <p className="text-sm font-medium">Kinscare</p>
           </Link>
           <div className="flex items-center lg:order-2">
+              <Link href="/signin">
             <Button className="mr-2 py-2.5 font-semibold" variant="ghost">
-              <Link href="/signin">Sign in</Link>
+            Sign in
             </Button>
+            </Link>
+            <Link className="text-sm font-bold" href="/signup">
             <Button className="py-2.5">
-              <Link className="text-sm font-bold" href="/signup">
+             
                 Get started
-              </Link>
             </Button>
+            </Link>
             <div className="lg:hidden flex items-center">
               <SheetDemo />
             </div>
