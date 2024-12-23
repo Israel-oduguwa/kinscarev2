@@ -341,7 +341,9 @@ const Signup: React.FC = () => {
                   src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
                   alt="logo"
                 />
-                Kinscare
+                <p className="font-bold text-sm text-slate-900 tracking-tight">
+                  Kinscare
+                </p>
               </Link>
             </div>
             <div>

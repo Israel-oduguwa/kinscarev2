@@ -311,7 +311,7 @@ const Signin: React.FC = () => {
           selectRoleModal={selectRoleModal}
           closeSelectModal={closeSelectModal}
         />
-        <header className="py-8 px-8 z-10 sm:py-6">
+        <header className="py-8 px-8 z-10 sm:py-4">
           <div className="flex justify-between items-center">
             <div>
               <Link
@@ -323,7 +323,7 @@ const Signin: React.FC = () => {
                   src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
                   alt="logo"
                 />
-                <p className="font-bold text-slate-900 tracking-tight">
+                <p className="font-bold text-sm text-slate-900 tracking-tight">
                   Kinscare
                 </p>
               </Link>
