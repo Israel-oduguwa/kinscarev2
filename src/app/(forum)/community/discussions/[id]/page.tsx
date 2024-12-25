@@ -21,7 +21,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
           {/* Left Side: Discussion and Posts */}
           <div className=" lg:w-3/5 w-full mx-auto z-10  dark:bg-gray-900 space-y-6">
             <div className="relative w-full h-fit p-4 rounded-lg">
-              <Suspense fallback={<p>Loading feed...</p>}>
+              <Suspense fallback={<p>Loading feed...</p>} >
                 <Discussion threadID={id} />
               </Suspense>
             </div>

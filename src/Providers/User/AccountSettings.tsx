@@ -18,6 +18,7 @@ import {
   isTrialActive,
 } from "@/lib/utils";
 import PricingPlan from "./PricingPlan";
+import SubscriptionDetails from "./SubscriptionDetails";
 
 function AccountSettings() {
   const mongo: any = useContext(MongoContext);
@@ -28,15 +29,11 @@ function AccountSettings() {
   const [clientSecret, setClientSecret] = useState<string | null>(
     typeof window !== "undefined" ? localStorage.getItem("client_secret") : null
   );
+  const [subscriptionData, setSubscriptionData] = useState(null)
  useEffect(() => {
-  const f = async () =>{
-    const fetchedData: any = await fetchContactsData(
-      user.customData.userID,
-      user.customData.email
-    );
-    console.log(fetchedData);
+  if(user.customData){
+    fetchSubscriptionData()
   }
-  f()
  }, [user])
  
   const trialActive = isTrialActive(
@@ -75,6 +72,17 @@ function AccountSettings() {
   };
   console.log(trialActive, user.customData.subscribed, "trial");
  
+  const fetchSubscriptionData = async () => {
+    try {
+      const getSubData = await axios.get(`https://api.kinscare.org/api/v1/providers/subscription/${user.customData.customer_id}`);
+      setSubscriptionData(getSubData.data.subscription);
+      // console.log(getSubData.data.subscription)
+    } catch (error) {
+      console.log(error)
+    }finally{
+      
+    }
+  }
   return (
     <div className="bg-gray-100 min-h-[100vh]">
       <div className="py-6 lg:py-10">
@@ -100,9 +108,10 @@ function AccountSettings() {
 
             {/* Your Plan */}
             <div className="bg-white shadow-md rounded-md p-6">
-              <h2 className="font-bold text-xl mb-3">Your Plan</h2>
+              
               {trialActive && !user.customerData.subscribed && (
                 <>
+                <h2 className="font-bold text-xl mb-3">Your Plan</h2>
                   {" "}
                   <p className="">Free trial</p>
                   <p className="">
@@ -111,13 +120,8 @@ function AccountSettings() {
                   </p>
                 </>
               )}
-              {!trialActive && user.customData.subscribed && (
-                <p>
-                  You are on a {user.customData.plan} plan which expires on{" "}
-                  {convertISODateToNormal(
-                    user.customData?.subscription_end_date
-                  )}
-                </p>
+              {!trialActive && user.customData.subscribed && subscriptionData && (
+                <SubscriptionDetails subscription={subscriptionData} />
               )}
               {!trialActive && !user.customData.subscribed && (
                 <>
