@@ -22,23 +22,34 @@ import SubscriptionDetails from "./SubscriptionDetails";
 
 function AccountSettings() {
   const mongo: any = useContext(MongoContext);
-  const { user, userData, setUser } = mongo;
-
+  const { user, customData, userData, setUser, setCustomData } = mongo;
+  console.log(customData, "cusoomt");
   // State to track free trial modal visibility and client secret
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(
     typeof window !== "undefined" ? localStorage.getItem("client_secret") : null
   );
-  const [subscriptionData, setSubscriptionData] = useState(null)
- useEffect(() => {
-  if(user.customData){
-    fetchSubscriptionData()
-  }
- }, [user])
- 
+  const [subscriptionData, setSubscriptionData] = useState(null);
+  useEffect(() => {
+    const fetchCustomData = async () => {
+      const fetchedData: any = await fetchContactsData(
+        user.customData.userID,
+        user.customData.email
+      );
+      if (fetchedData) {
+        // console.log(fetchedData.result, "rewsulet")
+        await setCustomData(fetchedData.result);
+      }
+    };
+    fetchCustomData();
+    if(customData){
+      fetchSubscriptionData()
+    }
+  }, [user]);
+
   const trialActive = isTrialActive(
-    user.customData.trial_start_date,
-    user.customData.trial_end_date
+    customData.trial_start_date,
+    customData.trial_end_date
   );
   // const freeTrial = false; // Simulating no active trial for demonstration
   const handleStartTrial = async () => {
@@ -52,7 +63,7 @@ function AccountSettings() {
     //   const response = await axios.post(
     //     "https://api.kinscare.org/api/v1/providers/create-setup-intent",
     //     {
-    //       customerId: user.customData.customer_id,
+    //       customerId: customData.customer_id,
     //     }
     //   );
 
@@ -70,19 +81,23 @@ function AccountSettings() {
     // }
     setIsDialogOpen(true);
   };
-  console.log(trialActive, user.customData.subscribed, "trial");
- 
+  console.log(trialActive, customData.subscribed, "trial");
+
   const fetchSubscriptionData = async () => {
     try {
-      const getSubData = await axios.get(`https://api.kinscare.org/api/v1/providers/subscription/${user.customData.customer_id}`);
+      const getSubData = await axios.get(
+        `https://api.kinscare.org/api/v1/providers/subscription/${customData.customer_id}`
+      );
       setSubscriptionData(getSubData.data.subscription);
       // console.log(getSubData.data.subscription)
     } catch (error) {
-      console.log(error)
-    }finally{
-      
+      console.log(error);
+    } finally {
     }
-  }
+  };
+  const closePricingDialog = () => {
+    setIsDialogOpen(false);
+  };
   return (
     <div className="bg-gray-100 min-h-[100vh]">
       <div className="py-6 lg:py-10">
@@ -108,22 +123,20 @@ function AccountSettings() {
 
             {/* Your Plan */}
             <div className="bg-white shadow-md rounded-md p-6">
-              
-              {trialActive && !user.customerData.subscribed && (
+              {trialActive && !customData.subscribed && (
                 <>
-                <h2 className="font-bold text-xl mb-3">Your Plan</h2>
-                  {" "}
+                  <h2 className="font-bold text-xl mb-3">Your Plan</h2>{" "}
                   <p className="">Free trial</p>
                   <p className="">
                     Trial period ends on{" "}
-                    {convertISODateToNormal(user.customData?.trial_end_date)}
+                    {convertISODateToNormal(customData?.trial_end_date)}
                   </p>
                 </>
               )}
-              {!trialActive && user.customData.subscribed && subscriptionData && (
+              {!trialActive && customData.subscribed && subscriptionData && (
                 <SubscriptionDetails subscription={subscriptionData} />
               )}
-              {!trialActive && !user.customData.subscribed && (
+              {!trialActive && !customData.subscribed && (
                 <>
                   <p className="mb-3"> Pay to access premium features</p>
                   <Button
@@ -140,7 +153,7 @@ function AccountSettings() {
           {/* Dialog/Modal */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent className="h-[100vh] md:h-auto max-w-5xl overflow-y-auto">
-              <PricingPlan />
+              <PricingPlan closePricingDialog={closePricingDialog} />
             </DialogContent>
           </Dialog>
         </div>

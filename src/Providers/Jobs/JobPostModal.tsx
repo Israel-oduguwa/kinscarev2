@@ -183,6 +183,7 @@ const JobPostModal = ({ caregiver }: any) => {
         minHours: 20, // Default hours, can be edited later
         mobility: "car_needed",
         draft: true,
+        userID:userData.userID,
         profileImage: userData?.profileImage,
         hash: userData?.hash,
       };
@@ -500,7 +501,7 @@ const JobPostModal = ({ caregiver }: any) => {
             </form>
           )}
           {step === 3 && (
-            <div className="bg-gray-50 p-8 rounded-lg shadow-lg space-y-8">
+            <div className="bg-gray-50 p-8 rounded-lg shadow-lg overflow-auto h-[100vh] lg:h-fit space-y-8">
               {/* Job Title */}
               <p className="font-semibold text-blue-900 p-4 bg-blue-100 rounded-lg">
                 This preview shows how caregivers will see your job post. Once

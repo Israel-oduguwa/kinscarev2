@@ -63,6 +63,7 @@ export async function generateMetadata({
     `https://api.kinscare.org/api/v1/providers/caregivers/${params.id}`,
     { cache: "no-cache" }
   );
+  // console.log("Check Data", await data.json())
   const response: any = await data.json();
   const { caregiver } = response;
 

@@ -57,7 +57,7 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
 
   const mongo: any = useContext(MongoContext);
   const { app, client, user, setAuthenticated, setUser, setUserData } = mongo;
-
+  // console.log(userID)
   const {
     control,
     handleSubmit,
@@ -146,7 +146,19 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
             route: "Regular",
             created: new Date(),
           };
-          createUserDuringRegistration(payload);
+          await createUserDuringRegistration(payload);
+          // after saving the user to the database, we redirect to the dashboard
+          const fetchedData: any = await fetchUserData(
+            userObj.id,
+            userObj.profile.email
+          );
+          // console.log(fetchedData);
+          setUserData(fetchedData.result);
+          setUser(userObj);
+          setAuthenticated(true);
+          user.refreshCustomData();
+          // router.refresh();
+          router.push(`/provider/candidates/${userID}`);
         } else {
           const fetchedData: any = await fetchUserData(
             userObj.id,
@@ -157,7 +169,7 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
           setUser(userObj);
           setAuthenticated(true);
           user.refreshCustomData();
-          router.refresh();
+          // router.refresh();
           router.push(`/provider/candidates/${userID}`);
         }
       } catch (error) {
@@ -261,7 +273,6 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
                 theme="filled_black"
                 text="continue_with"
               />
-              
             </div>
           ) : (
             <>
@@ -424,6 +435,7 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
                   render={({ field }) => (
                     <input
                       {...field}
+                      value=""
                       type="checkbox"
                       className="form-checkbox h-5 w-5 text-blue-600"
                     />

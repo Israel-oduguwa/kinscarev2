@@ -1,16 +1,16 @@
-import React, { useContext, useState } from "react";
+import MongoContext from "@/app/MongoContext";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
+import { fetchContactsData } from "@/lib/utils";
 import {
   PaymentElement,
-  useStripe,
   useElements,
+  useStripe,
 } from "@stripe/react-stripe-js";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
-import MongoContext from "@/app/MongoContext";
 import { useRouter } from "next/navigation";
-import { fetchContactsData, fetchUserData } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
+import React, { useContext, useState } from "react";
 
 interface FrequentPaymentFormProps {
   clientSecret: string; // The client secret for SetupIntent
@@ -44,7 +44,7 @@ const FrequentPaymentForm: React.FC<FrequentPaymentFormProps> = ({
 
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const { user, setUserData, setUser }: any = useContext(MongoContext);
+  const { user, setCustomData }: any = useContext(MongoContext);
   const router = useRouter();
   console.log(subscription);
 
@@ -89,6 +89,7 @@ const FrequentPaymentForm: React.FC<FrequentPaymentFormProps> = ({
       );
       await user.refreshCustomData();
       router.refresh();
+
       // Handle success or error response
       if (response.data.success) {
         console.log("PaymentMethod ID updated successfully:", response.data);
@@ -152,9 +153,9 @@ const FrequentPaymentForm: React.FC<FrequentPaymentFormProps> = ({
       );
       // console.log(fetchedData);
       if (fetchedData) {
-        console.log(fetchedData)
-        // await setUser(fetchedData.result);
-        user.refreshCustomData();
+        console.log(fetchedData);
+        await setCustomData(fetchedData.result);
+        // await user.refreshCustomData();
         // router.refresh();
         setIsLoading(false);
         close();

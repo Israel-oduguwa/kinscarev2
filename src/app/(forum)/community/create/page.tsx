@@ -19,12 +19,7 @@ import CategoryChipInput from "@/components/ui/CategoryChipInput";
 import ForumDynamicNavbar from "@/Forum/Navbar/ForumDynamicNavbar";
 // title, content, userId, categories, tags
 
-const categories = [
-  "Programs",
-  "Schools",
-  "Jobs",
-  "Questions",
-]; // Pre-existing categories
+const categories = ["Programs", "RN program", "LPN program", "Physician Assistant", "Nurse",  "Schools", "Jobs", "Questions"]; // Pre-existing categories
 
 const Page = () => {
   const [input, setInput] = useState("");
@@ -94,7 +89,7 @@ const Page = () => {
 
   return (
     <>
-       <ForumDynamicNavbar/>
+      <ForumDynamicNavbar />
       <div className="mt-10 flex items-center h-full max-w-4xl mx-auto">
         <div className="relative py-10 bg-white w-full h-fit p-4 rounded-lg space-y-6">
           <div className="flex justify-between items-center ">
@@ -106,15 +101,19 @@ const Page = () => {
           <div className="mb-4 flex xs:flex-wrap items-center gap-2">
             <div className="p-3 rounded bg-gray-100">🗣️</div>
             <div className="w-full">
-              <h2 className="text-md font-bold antialiased">Discussions</h2>
+              <h2 className="text-md font-bold antialiased">Community</h2>
               <p className="text-sm antialiased">
-                Conversations solely for GitHub Discussions-related
-                conversations. With GitHub Discussions, the community for your
-                project can create and participate in conversations within the
-                project's repository or organization. Discussions empower a
-                project's maintainers, contributors, and visitors to gather and
-                accomplish the following goals in a central location, without
-                third-party tools. Please use 'General' for other misc topic
+                With Kinscare Community, providers and caregivers can create
+                and participate in conversations directly within the platform.
+                Discussions enable you to connect with the community to achieve
+                the following goals: Share advice, insights, and experiences to
+                foster growth and understanding. Ask and answer questions to
+                build trust and collaboration within the network. Collaborate
+                with others in a centralized, easy-to-access space designed for
+                meaningful interactions. Discussions empower both providers and
+                caregivers to build connections, share knowledge, and create a
+                stronger, more supportive community without the need for
+                third-party tools.
               </p>
             </div>
           </div>
@@ -142,7 +141,9 @@ const Page = () => {
             </div>
             <div className="py-3">
               <h2 className="mb-1 text-sm font-medium">Select Categories</h2>
-              <p className="mb-3 text-sm antialiased">Category helps you to group your post for users to see them easy</p>
+              <p className="mb-3 text-sm antialiased">
+                Category helps you to group your post for users to see them easy
+              </p>
               {/* Use the reusable ChipInput component */}
               <CategoryChipInput
                 fields={categories}
@@ -155,12 +156,13 @@ const Page = () => {
                 <h3 className="font-medium text-sm">Selected Categories</h3>
                 <ul className="list-disc list-inside">
                   {selectedCategories.map((category) => (
-                    <li className="text-sm text-gray-600" key={category}>{category}</li>
+                    <li className="text-sm text-gray-600" key={category}>
+                      {category}
+                    </li>
                   ))}
                 </ul>
               </div>
             </div>
-            
           </div>
 
           <div>
@@ -186,7 +188,12 @@ const Page = () => {
             <Button
               variant="default"
               onClick={() => createThread()}
-              disabled={input.length === 0 || selectedCategories.length < 1 || isPending || !user.customData.userID}
+              disabled={
+                input.length === 0 ||
+                selectedCategories.length < 1 ||
+                isPending ||
+                !user.customData.userID
+              }
             >
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create Discussion

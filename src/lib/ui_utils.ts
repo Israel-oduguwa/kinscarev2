@@ -21,3 +21,9 @@ export function generateAvatarData(name: string) {
     };
   }
   
+  export const sanitizeContent = (htmlContent: string) => {
+    if (htmlContent) {
+      // Remove <img> tags using regex
+      return htmlContent.replace(/<img[^>]*>/gi, "");
+    }
+  };

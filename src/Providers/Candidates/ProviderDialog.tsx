@@ -33,7 +33,7 @@ const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_TEST_KEY || "");
 
 function ProviderDialog({ candidate, similar, detailsPage }: any) {
   const mongodb: any = useContext(MongoContext);
-  const { userData, user, setUserData } = mongodb;
+  const { userData, user, setUserData, customData } = mongodb;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false); // Track if caregiver is favorite
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
@@ -45,7 +45,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
     `Hi ${candidate.fname} ${candidate.lname}, we think you're a great fit for our opening, and we would love to talk to you!`
   );
   const [isTrialExpired, setIsTrialExpired] = useState(
-    !(user?.customData?.trial || user?.customData?.subscribed)
+    !(customData.trial || customData.subscribed)
   );
   const [isSending, setIsSending] = useState(false); // Track sending state
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
@@ -63,9 +63,9 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
     }[]
   >([]);
   useEffect(() => {
-    const trialStart = user?.customData?.trial_start_date;
-    const trialEnd = user?.customData?.trial_end_date;
-    const isSubscribed = user?.customData?.subscribed;
+    const trialStart = customData.trial_start_date;
+    const trialEnd = customData.trial_end_date;
+    const isSubscribed = customData.subscribed;
 
     if (isSubscribed) {
       // If subscribed, the trial is irrelevant
@@ -78,7 +78,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
       setIsTrialExpired(!trialActive);
     } else {
       // Fallback if no trial dates exist
-      const trialFlag = user?.customData?.trial || false;
+      const trialFlag = customData.trial || false;
       setIsTrialExpired(!trialFlag);
     }
   }, [user]);
@@ -113,7 +113,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
         const payload = {
           hash: userData?.hash,
           location: candidate.city,
-          distinct_id: user?.customData?.hash,
+          distinct_id: customData.hash,
           userID: candidate.userID,
           geocode_address: candidate?.geocode_address?.coordinates,
           date_time: new Date().toISOString(),
@@ -160,11 +160,11 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
         console.error(err);
       },
     });
-
+  console.log(customData);
   // Send Message Function
   const sendMessage = async () => {
-    const trialStart = user?.customData?.trial_start_date;
-    const trialEnd = user?.customData?.trial_end_date;
+    const trialStart = customData.trial_start_date;
+    const trialEnd = customData.trial_end_date;
     setIsSending(true);
     try {
       const sms_payload = {
@@ -182,10 +182,9 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
         description: `Your message to ${candidate.fname} ${candidate.lname} has been sent successfully!`,
       });
       console.log("closed Dialogs");
-      const isNotVerified = !(
-        user?.customData?.trial === true || user?.customData?.subscribe === true
-      );
-      if (isNotVerified) {
+      // const isNotVerified = !(customData.subscribe === true
+      // );
+      if (!customData.subscribed || !customData.trial) {
         closeDialog();
         setOpenInformation(true);
         // setIsTrialDialogOpen(true);
@@ -233,8 +232,8 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
       //   console.log("closed Dialogs")
       //   closeDialog();
       //   const isNotVerified = !(
-      //     user?.customData?.trial === true ||
-      //     user?.customData?.subscribe === true
+      //     customData.trial === true ||
+      //     customData.subscribe === true
       //   );
       //   if (isNotVerified) {
       //     setOpenInformation(true)
@@ -753,7 +752,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
                   setIsTrialExpired={setIsTrialExpired}
                   clientSecret={clientSecret}
                   userID={userData.userID}
-                  customerId={user?.customData?.customer_id}
+                  customerId={customData.customer_id}
                   priceId="price_1QP2OuAoahxG9SLGNoc37Lxo"
                   intentType="setup"
                   onSuccess={(result) => {

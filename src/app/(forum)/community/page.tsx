@@ -106,14 +106,14 @@ async function page(props: ForumPageProps) {
       <main className="bg-gray-100 py-20 min-h-screen">
         <div className="max-w-screen-2xl mx-auto px-6 sm:px-8">
           {/* Responsive layout: flex on large screens, stacked on small */}
-          <div className="flex flex-col lg:flex-row gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Left Sidebar */}
-            <aside className="lg:w-1/4 hidden lg:block w-full">
-              <LeftFilter params={searchParams} />
+            <aside className="hidden lg:block lg:col-span-2">
+            <LeftFilter params={searchParams} />
             </aside>
 
             {/* Main Content */}
-            <section className="lg:w-3/5  w-full">
+            <section className="col-span-12 lg:col-span-7">
               <div className="bg-white shadow-sm rounded-xl p-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">
                   Discussions
@@ -128,8 +128,8 @@ async function page(props: ForumPageProps) {
             </section>
 
             {/* Right Sidebar */}
-            <aside className="lg:w-1/4 w-full">
-              <div className="bg-white shadow-sm rounded-xl sticky top-10 p-6">
+            <aside className="col-span-12 lg:col-span-3">
+              <div className="bg-white shadow-sm rounded-xl p-6 sticky top-10">
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">
                   Create a Discussion
                 </h3>

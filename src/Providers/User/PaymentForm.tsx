@@ -1,16 +1,16 @@
-import React, { useContext, useState } from "react";
+import MongoContext from "@/app/MongoContext";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
+import { fetchUserData } from "@/lib/utils";
 import {
   PaymentElement,
-  useStripe,
   useElements,
+  useStripe,
 } from "@stripe/react-stripe-js";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
-import MongoContext from "@/app/MongoContext";
 import { useRouter } from "next/navigation";
-import { fetchUserData } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
+import React, { useContext, useState } from "react";
 
 interface PaymentFormProps {
   clientSecret: string; // The client secret for SetupIntent
@@ -163,21 +163,16 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   const paymentElementOptions: any = {
     layout: "tabs", // "tabs" or "accordion"
   };
- 
+
   return (
     <form id="payment-form" onSubmit={handleSubmit} className="space-y-6">
       <PaymentElement id="payment-element" options={paymentElementOptions} />
-    <div className="flex justify-end">
-    <Button
-        disabled={isLoading || !stripe || !elements}
-        id="submit"
-        
-      >
-        {isLoading && (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-        )} Submit
-      </Button>
-    </div>
+      <div className="flex justify-end">
+        <Button disabled={isLoading || !stripe || !elements} id="submit">
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{" "}
+          Submit
+        </Button>
+      </div>
       {/* Show error or success messages */}
       {/* {message && (
         <div id="payment-message" className="text-red-500">

@@ -12,70 +12,139 @@ import {
 function LeftFilter({ params }: any) {
   const filters = [
     {
-      label: "Questions",
-      icon: <HelpCircle className="mr-3 text-blue-600" />,
-      href: `/community?category=Questions&page=1&limit=10`,
-      active: params?.category === "Questions",
+      label: "Newest and Recent",
+      description: "Find the latest updates",
+      icon: <HelpCircle className="text-blue-500 w-5 h-5" />,
+      href: `/community?sort=newest&page=1&limit=10`,
+      active: params?.sort === "newest",
     },
     {
-      label: "Schools",
-      icon: <School className="mr-3 text-green-600" />,
-      href: `/community?category=Schools&page=1&limit=10`,
-      active: params?.category === "Schools",
+      label: "Popular of the Day",
+      description: "Shots featured today by curators",
+      icon: <School className="text-orange-500 w-5 h-5" />,
+      href: `/community?sort=popular&page=1&limit=10`,
+      active: params?.sort === "popular",
     },
     {
-      label: "Programs",
-      icon: <ListChecks className="mr-3 text-yellow-600" />,
-      href: `/community?category=Programs&page=1&limit=10`,
-      active: params?.category === "Programs",
-    },
-    {
-      label: "Jobs",
-      icon: <Briefcase className="mr-3 text-orange-600" />,
-      href: `/community?category=Jobs&page=1&limit=10`,
-      active: params?.category === "Jobs",
-    },
-    {
-      label: "Least Replies",
-      icon: <SortAsc className="mr-3 text-purple-600" />,
-      href: `/community?sortReplies=least&page=1&limit=10`,
-      active: params?.sortReplies === "least",
-    },
-    {
-      label: "Most Replies",
+      label: "Following",
+      description: "Explore from your favorite person",
       icon: (
-        <div className="p-2 mr-3 rounded-md bg-purple-100">
-          <SortDesc className="text-purple-600 shrink-0" />
+        <div className="relative">
+          <Briefcase className="text-green-500 w-5 h-5" />
+          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5">
+            24
+          </span>
         </div>
       ),
-      href: `/community?sortReplies=most&page=1&limit=10`,
-      active: params?.sortReplies === "most",
+      href: `/community?sort=following&page=1&limit=10`,
+      active: params?.sort === "following",
     },
   ];
 
+  const tags = [
+    { label: "#javascript", count: "82,645" },
+    { label: "#bitcoin", count: "65,523", trending: true },
+    { label: "#design", count: "51,354", location: "Trending in Bangladesh" },
+    { label: "#innovation", count: "48,029" },
+    { label: "#tutorial", count: "51,354" },
+    { label: "#business", count: "82,645" },
+  ];
+
+  const pinnedGroups = [
+    { label: "#javascript", count: "82,645" },
+    { label: "#bitcoin", count: "65,523", trending: true },
+    { label: "#design", count: "51,354", location: "Trending in Bangladesh" },
+    { label: "#blogging", count: "48,029" },
+    { label: "#tutorial", count: "51,354" },
+  ];
+
   return (
-    <div className="sticky top-10 p-6 shadow-sm bg-white rounded-xl border border-gray-200">
-      <h2 className="text-lg font-semibold text-gray-800 mb-6">Filter by</h2>
-      <ul className="space-y-3">
-        {filters.map((filter) => (
-          <li key={filter.label}>
-            <Link href={filter.href}>
-              <div
-                className={`flex items-center px-4 py-3 rounded-lg cursor-pointer transition-colors duration-200 ${
-                  filter.active
-                    ? "bg-blue-50 border border-blue-600 text-blue-600"
-                    : "bg-white border border-gray-200 text-gray-800 hover:bg-gray-50 hover:border-gray-300"
-                }`}
-              >
-                {filter.icon}
-                <span className="font-medium">{filter.label}</span>
-              </div>
-            </Link>
-          </li>
-        ))}
-      </ul>
+    <div className="sticky top-10 space-y-6 bg-white shadow-sm rounded-lg p-6 border border-gray-200">
+      {/* Filters */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">
+          Discover Filters
+        </h2>
+        <ul className="space-y-4">
+          {filters.map((filter) => (
+            <li key={filter.label}>
+              <Link href={filter.href}>
+                <div
+                  className={`flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-colors duration-200 ${
+                    filter.active
+                      ? "bg-blue-50 border border-blue-500 text-blue-600"
+                      : "bg-gray-100 border border-gray-200 hover:bg-gray-200"
+                  }`}
+                >
+                  {filter.icon}
+                  <div>
+                    <p className="font-semibold antialiased text-gray-800 text-sm">
+                      {filter.label}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {filter.description}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
 
 export default LeftFilter;
+
+// Popular Tags
+// <div>
+//   <h2 className="text-lg font-semibold text-gray-800 mb-4">
+//     Popular Tags
+//   </h2>
+//   <ul className="space-y-3">
+//     {tags.map((tag) => (
+//       <li
+//         key={tag.label}
+//         className="flex items-center gap-4 p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+//       >
+//         <div className="w-8 h-8 bg-blue-100 text-blue-500 flex items-center justify-center rounded-lg font-bold text-sm">
+//           #
+//         </div>
+//         <div>
+//           <p className="text-sm font-medium">{tag.label}</p>
+//           <p className="text-xs text-gray-500">
+//             {tag.count} {tag.trending ? "• Trending" : ""}
+//             {tag.location ? ` • ${tag.location}` : ""}
+//           </p>
+//         </div>
+//       </li>
+//     ))}
+//   </ul>
+// </div>
+
+// {/* Pinned Groups */}
+// <div>
+//   <h2 className="text-lg font-semibold text-gray-800 mb-4">
+//     Pinned Groups
+//   </h2>
+//   <ul className="space-y-3">
+//     {pinnedGroups.map((group) => (
+//       <li
+//         key={group.label}
+//         className="flex items-center gap-4 p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+//       >
+//         <div className="w-8 h-8 bg-green-100 text-green-500 flex items-center justify-center rounded-lg font-bold text-sm">
+//           #
+//         </div>
+//         <div>
+//           <p className="text-sm font-medium">{group.label}</p>
+//           <p className="text-xs text-gray-500">
+//             {group.count} {group.trending ? "• Trending" : ""}
+//             {group.location ? ` • ${group.location}` : ""}
+//           </p>
+//         </div>
+//       </li>
+//     ))}
+//   </ul>
+// </div>

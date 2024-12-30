@@ -45,12 +45,12 @@ const SubscriptionDetails: React.FC<SubscriptionProps> = ({ subscription }) => {
 
   return (
     <div className="mx-auto bg-white  dark:bg-gray-800">
-      <h1 className="text-2xl font-semibold  text-gray-900 dark:text-white">
+      <h1 className="text-xl font-bold  text-gray-900 dark:text-white">
         Subscription Details
       </h1>
-      <p className="text-sm  text-gray-500 dark:text-gray-400 mb-6">
+      {/* <p className="text-sm  text-gray-500 dark:text-gray-400 mb-6">
         Manage your subscription easily.
-      </p>
+      </p> */}
       <div className="space-y-4">
         {/* Subscription ID */}
         {/* <div className="flex justify-between items-center">

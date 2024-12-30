@@ -11,6 +11,7 @@ const MongoContext: any = React.createContext({
   userData: {}, //,null,
   twilioToken: "", // twilio Token
   loadingAuth: true,
+  customData:{},
   searchedData: null,
   customerData: null,
   history: "",
@@ -29,6 +30,7 @@ const MongoContext: any = React.createContext({
   setApp: () => {},
   setClient: () => {},
   setUser: () => {},
+  setCustomData: () => {},
   setUserData: () => {},
   // For finding candidates
   setSearchedData: () => {},

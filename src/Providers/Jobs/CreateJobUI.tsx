@@ -52,6 +52,7 @@ const schema = Yup.object().shape({
   //   certifications: Yup.string(), //.required("Enter required "),
   description: Yup.string().required("Please enter job description"),
 });
+
 const groupSchedule = [
   { label: "Full time", value: "Full time" },
   { label: "Part time", value: "Part time" },

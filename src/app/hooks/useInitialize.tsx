@@ -21,10 +21,13 @@ interface UseInitializeReturn {
   app: Realm.App;
   client: MongoClient | null;
   user: Realm.User | null;
+  fetchAndUpdateCustomData:any;
   userData: UserCustomData | null;
   setCustomerData: React.Dispatch<React.SetStateAction<any>>;
   searchedData: any;
   setSearchedData: React.Dispatch<React.SetStateAction<any>>;
+  setCustomData:any;
+  customData:any;
   setLoadingAuth: React.Dispatch<React.SetStateAction<string>>;
   twilioToken: string;
   setTwilioToken: React.Dispatch<React.SetStateAction<string>>;
@@ -51,36 +54,36 @@ export const useInitialize = (): UseInitializeReturn => {
   const realmApp = new Realm.App(appConfig);
 
   const [app] = useState<any>(realmApp);
-
   const [client, setClient] = useState<MongoClient | null>(null);
-  const [user, setUser] = useState<Realm.User | null>(null);
+  const [user,  setUser] = useState<Realm.User | null>(null);
   const [userData, setUserData] = useState<UserCustomData | null>(null);
-  // we have 4 status authenticating, anonymous, authenticated, anonymous, error is for the login and signup page if anonymous and authenticated is there give the user access
+  const [customData, setCustomData] = useState<any>(null); // New state for custom data
   const [loadingAuth, setLoadingAuth] = useState<any>(true);
   const [customerData, setCustomerData] = useState<any>(null);
   const [authenticated, setAuthenticated] = useState(false);
   const [searchedData, setSearchedData] = useState<any>(null);
   const [twilioToken, setTwilioToken] = useState("");
 
-  // On an average, it takes 3 seconds for the authentication to show
   useEffect(() => {
     const initializeAuth = async () => {
       setLoadingAuth(true);
       try {
         let currentUser = app.currentUser;
 
-        // log in anonymously if no user is logged in
+        // Log in anonymously if no user is logged in
         if (!currentUser) {
           currentUser = await app.logIn(Realm.Credentials.anonymous());
         }
         setUser(currentUser);
+        setCustomData(currentUser.customData); // Initialize customData state
+
         const mongoClient = currentUser.mongoClient(
           "mongodb-atlas"
         ) as MongoClient;
         setClient(mongoClient);
 
         if (currentUser.customData?.userID && !isAnon(currentUser)) {
-          // check if the user user is authenticated
+          // Check if the user is authenticated
           const isAnonymous = !currentUser.identities.some(
             (identity: { providerType: string }) =>
               identity.providerType !== "anon-user"
@@ -103,21 +106,40 @@ export const useInitialize = (): UseInitializeReturn => {
         setAuthenticated(false);
       } finally {
         setLoadingAuth(false);
-        // loading is complete
       }
     };
     initializeAuth();
   }, [app]);
 
+  // Function to manually fetch and update custom data
+  const fetchAndUpdateCustomData = async () => {
+    if (!user || !client) return;
+
+    try {
+      const updatedCustomData = await client
+        .db("kinshealth")
+        .collection<UserCustomData>("users")
+        .findOne({ userID: user.id });
+      console.log("updating, the customerData", updatedCustomData)
+      if (updatedCustomData) {
+        setCustomData(updatedCustomData); // Update the customData state
+      }
+    } catch (error) {
+      console.error("Failed to fetch and update custom data:", error);
+    }
+  };
+
   return {
     app,
     client,
     user,
-    setLoadingAuth,
     userData,
+    customData, // Expose customData state
     setCustomerData,
+    setCustomData,
     searchedData,
     setSearchedData,
+    setLoadingAuth,
     twilioToken,
     setTwilioToken,
     customerData,
@@ -127,8 +149,10 @@ export const useInitialize = (): UseInitializeReturn => {
     setClient,
     setUser,
     setUserData,
+    fetchAndUpdateCustomData, // Expose function to manually update custom data
   };
 };
+
 
 // const userId = userData.userID;
 // const anonymousUserId = localStorage.getItem("anonymous");

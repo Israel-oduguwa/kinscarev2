@@ -1,24 +1,24 @@
 "use client";
 
-import React, { useContext, useState, useEffect } from "react";
 import MongoContext from "@/app/MongoContext";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogFooter,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { CheckCircle, CreditCard, Loader2, Trash } from "lucide-react";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import { Elements } from "@stripe/react-stripe-js";
-import PaymentForm from "../User/PaymentForm";
-import { loadStripe } from "@stripe/stripe-js";
-import { isTrialActive } from "@/lib/utils";
-import { EmailIcon } from "next-share";
 import { toast } from "@/components/ui/use-toast";
+import { fetchContactsData, isTrialActive } from "@/lib/utils";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import axios from "axios";
+import { Cloudy, CreditCard, FileText, Loader, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useContext, useEffect, useState } from "react";
+import PaymentForm from "../User/PaymentForm";
+import PricingPlan from "../User/PricingPlan";
+import Dropzone from "react-dropzone";
 
 const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_TEST_KEY || "");
 function ProtectedCandidatesDetails({
@@ -30,9 +30,11 @@ function ProtectedCandidatesDetails({
   tel: string;
   name: string;
 }) {
-  const { user, userData }: any = useContext(MongoContext);
+  const { user, userData, customData, setCustomData }: any =
+    useContext(MongoContext);
+  console.log(customData, "customData");
   const [isTrialExpired, setIsTrialExpired] = useState(
-    !(user?.customData?.trial || user?.customData?.subscribed)
+    !(customData?.trial || customData?.subscribed)
   );
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const router = useRouter();
@@ -41,6 +43,11 @@ function ProtectedCandidatesDetails({
   const [removedBlur, setRemoveBlur] = useState();
   const [isTrialDialogOpen, setIsTrialDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  // this is for the verification
+  const [currentStep, setCurrentStep] = useState<
+    "selection" | "payment" | "attestation"
+  >("selection");
+
   const [savedCards, setSavedCards] = useState<
     {
       isDefault: any;
@@ -52,15 +59,144 @@ function ProtectedCandidatesDetails({
       exp_year: number;
     }[]
   >([]);
+  const [selectedCard, setSelectedCard] = useState<string | null>(null);
+
+  const [documentLoading, setDocumentLoading] = useState(false);
+  const [attestationPreview, setAttestationPreview] = useState<string | null>(
+    null
+  );
+  const [governmentID, setGovernmentID] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  // Handle Document Upload
+  const handleDocumentUpload = async (file: File[]) => {
+    try {
+      setDocumentLoading(true);
+      const formData = new FormData();
+      formData.append("file", file[0]);
+
+      // Upload document to server
+      const { data } = await axios.post(
+        "https://api.kinscare.org/api/v1/upload-file",
+        formData
+      );
+
+      if (data.url) {
+        setAttestationPreview(data.url);
+
+        toast({
+          title: "Document uploaded successfully!",
+          description: "Your identity has been verified.",
+          variant: "default",
+        });
+      }
+    } catch (error: any) {
+      console.log(error);
+      toast({
+        title: "Error uploading document",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setDocumentLoading(false);
+    }
+  };
+  const handleGovernmentID = async (file: File[]) => {
+    try {
+      setDocumentLoading(true);
+      const formData = new FormData();
+      formData.append("file", file[0]);
+
+      // Upload document to server
+      const { data } = await axios.post(
+        "https://api.kinscare.org/api/v1/upload-file",
+        formData
+      );
+
+      if (data.url) {
+        setGovernmentID(data.url);
+        const userID = userData.userID;
+        // Update user verification status in the database
+
+        toast({
+          title: "Document uploaded successfully!",
+          description: "Your identity has been verified.",
+          variant: "default",
+        });
+      }
+    } catch (error: any) {
+      console.log(error);
+      toast({
+        title: "Error uploading document",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setDocumentLoading(false);
+    }
+  };
+
+  // Handle File Deletion
+  const deleteFile = async (file: any) => {
+    if (file === "government") {
+      console.log(file);
+      try {
+        setDocumentLoading(true);
+        const payload = { fileUrl:governmentID };
+
+        const { data } = await axios.post(
+          "https://api.kinscare.org/api/v1/delete-file",
+          payload
+        );
+
+        if (data.success) {
+          setGovernmentID(null);
+          toast({ title: "File deleted successfully", variant: "default" });
+        }
+      } catch (error: any) {
+        toast({
+          title: "Error deleting file",
+          description: error.message,
+          variant: "destructive",
+        });
+      } finally {
+        setDocumentLoading(false);
+      }
+    } else {
+      // console.log(file);
+      try {
+        setDocumentLoading(true);
+        const payload = { fileUrl: attestationPreview };
+
+        const { data } = await axios.post(
+          "https://api.kinscare.org/api/v1/delete-file",
+          payload
+        );
+
+        if (data.success) {
+          setAttestationPreview(null);
+          toast({ title: "File deleted successfully", variant: "default" });
+        }
+      } catch (error: any) {
+        toast({
+          title: "Error deleting file",
+          description: error.message,
+          variant: "destructive",
+        });
+      } finally {
+        setDocumentLoading(false);
+      }
+    }
+  };
+
   // stripe theme
   const appearance: any = {
     theme: "flat",
   };
 
   const openTrialDialogBox = async () => {
-    const trialStart = user?.customData?.trial_start_date;
-    const trialEnd = user?.customData?.trial_end_date;
-    const isSubscribed = user?.customData?.subscribed;
+    const trialStart = customData?.trial_start_date;
+    const trialEnd = customData?.trial_end_date;
+    const isSubscribed = customData?.subscribed;
 
     if (trialStart && trialEnd) {
       const trialActive = isTrialActive(trialStart, trialEnd);
@@ -82,8 +218,7 @@ function ProtectedCandidatesDetails({
         // console.log(response)
         // Close the dialog after sending
         const isNotVerified = !(
-          user?.customData?.trial === true ||
-          user?.customData?.subscribe === true
+          customData?.trial === true || customData?.subscribe === true
         );
         if (isNotVerified) {
           setIsTrialDialogOpen(true);
@@ -94,13 +229,12 @@ function ProtectedCandidatesDetails({
   const closeTrialDialogBox = () => {
     setIsTrialDialogOpen(false);
   };
-  const [selectedCard, setSelectedCard] = useState<string | null>(null);
-  // console.log(isTrialExpired);
+
   // Open dialog if trial has expired
   useEffect(() => {
-    const trialStart = user?.customData?.trial_start_date;
-    const trialEnd = user?.customData?.trial_end_date;
-    const isSubscribed = user?.customData?.subscribed;
+    const trialStart = customData?.trial_start_date;
+    const trialEnd = customData?.trial_end_date;
+    const isSubscribed = customData?.subscribed;
 
     if (isSubscribed) {
       // If subscribed, the trial is irrelevant
@@ -113,9 +247,21 @@ function ProtectedCandidatesDetails({
       setIsTrialExpired(!trialActive);
     } else {
       // Fallback if no trial dates exist
-      const trialFlag = user?.customData?.trial || false;
+      const trialFlag = customData?.trial || false;
       setIsTrialExpired(!trialFlag);
     }
+
+    const fetchCustomData = async () => {
+      const fetchedData: any = await fetchContactsData(
+        user.customData.userID,
+        user.customData.email
+      );
+      if (fetchedData) {
+        // console.log(fetchedData.result, "rewsulet")
+        await setCustomData(fetchedData.result);
+      }
+    };
+    fetchCustomData();
   }, [user]);
 
   // Fetch saved cards when the dialog opens
@@ -155,133 +301,9 @@ function ProtectedCandidatesDetails({
     }
   };
 
-  const getPriceIdByPlan = (plan: "daily" | "weekly" | "monthly"): string => {
-    const priceIds = {
-      daily: "price_1QSCmtAoahxG9SLG2kga6E01",
-      weekly: "price_1QSCneAoahxG9SLGCHhFdN4C",
-      monthly: "price_1QP2OuAoahxG9SLGNoc37Lxo",
-    };
-
-    if (!priceIds[plan]) {
-      throw new Error(
-        "Invalid plan selected. Please choose daily, weekly, or monthly."
-      );
-    }
-
-    return priceIds[plan];
+  const closePricingDialog = () => {
+    setIsDialogOpen(false);
   };
-
-  const createSubscription = async () => {
-    if (!selectedCard) {
-      console.error("No card selected.");
-      return;
-    }
-
-    const customerId = user.customData.customer_id;
-    const priceId = getPriceIdByPlan(selectedPlan);
-
-    try {
-      setLoading(true);
-      const payload = {
-        customerId,
-        priceId,
-        paymentMethodId: selectedCard,
-      };
-      const response = await axios.post(
-        "https://api.kinscare.org/api/v1/providers/subscription",
-        payload,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      if (response.data.success) {
-        console.log("Subscription created successfully:", response.data);
-        const subscription = response.data.subscription;
-        // Step 2: Update the database using the CRUD operation API
-        const updatePayload = {
-          collectionName: "contacts", // Adjust collection name as needed
-          operation: "updateOne", // Specify operation type
-          filter: { userID: userData.userID, role: "provider" }, // Customize filter
-          update: {
-            $set: {
-              subscription_id: subscription.id, // Save subscription ID
-              subscribed: true, // Mark user as subscribed
-              trial: "expired", // Mark trial as expired
-              subscription_start_date: new Date(
-                subscription.start_date * 1000
-              ).toISOString(), // Start date in ISO format
-              subscription_status: subscription.status, // Subscription status
-              plan_id: subscription.plan.id, // Save the plan ID
-              payment_verified: true, // Optionally set payment verified
-            },
-          },
-        };
-        const crudResponse = await axios.post(
-          "https://api.kinscare.org/api/v1/auth/crud-operation",
-          updatePayload,
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-        console.log(crudResponse);
-        if (crudResponse.data.success) {
-          console.log("User subscription details updated successfully.");
-          // Step 3: Refresh user data and the UI
-          await user.refreshCustomData();
-          router.refresh();
-          setIsDialogOpen(false); // Close dialog on success
-          router.refresh();
-        } else {
-          console.error(
-            "Failed to update user subscription in the database:",
-            crudResponse.data.message
-          );
-        }
-      } else {
-        throw new Error(
-          response.data.message || "Failed to create subscription."
-        );
-      }
-    } catch (error: any) {
-      console.error("Error creating subscription:", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-  const handleSetDefault = (id: string) => {
-    setSavedCards((prevCards) =>
-      prevCards.map((card) =>
-        card.id === id
-          ? { ...card, isDefault: true }
-          : { ...card, isDefault: false }
-      )
-    );
-    setSelectedCard(id);
-  };
-
-  const getCardLogo = (brand: string) => {
-    switch (brand) {
-      case "visa":
-        return (
-          <img
-            src="https://app.card-logo.com/uploads/thumbnail/128px/e0b4cdc54800b9d7abcb9c012990662978eb39d4.png"
-            alt="Visa Logo"
-            className="h-8"
-          />
-        );
-      case "mastercard":
-        return (
-          <img
-            src="https://app.card-logo.com/uploads/thumbnail/128px/d51f7a234af740dcf1ad7dc9619e18c065a31cf7.png"
-            alt="Mastercard Logo"
-            className="h-8"
-          />
-        );
-      default:
-        return null;
-    }
-  };
-
   const obfuscateText = (text: string): string => {
     // Check if the input is an email
     if (text.includes("@")) {
@@ -307,16 +329,68 @@ function ProtectedCandidatesDetails({
       })
       .join(" ");
   };
-const handleOnSuccess = () =>{
-  toast({
-    title: "Error",
-    description:"Payment Details verified successfully",
-    variant: "default",
-  });
-}
+  const handleOnSuccess = () => {
+    toast({
+      title: "Error",
+      description: "Payment Details verified successfully",
+      variant: "default",
+    });
+  };
+  console.log(tel, "this is the tel", email);
+  function formatPhoneNumberToDigitsWithPlus(phone: string): string {
+    return phone.replace(/(?!^\+)\D/g, ""); // Keep + only if it's at the start, remove other non-digits
+  }
+
   const encryptedEmail = obfuscateText(email);
-  const encryptedTel = obfuscateText(tel);
+  const encryptedTel = obfuscateText(formatPhoneNumberToDigitsWithPlus(tel));
   // console.log(isTrialExpired)
+  const submitDocument = async () => {
+    if (governmentID && attestationPreview) {
+      try {
+        setSubmitting(true);
+        const userID = userData.userID;
+        const freeTrialEndDate = new Date();
+        freeTrialEndDate.setDate(freeTrialEndDate.getDate() + 7);
+        // Update user verification status in the database
+        const payload = {
+          collectionName: "contacts", // Specify the collection to update
+          operation: "updateOne", // Specify the operation type
+          filter: { userID, role: "provider" }, // Filter by userID and role
+          update: {
+            $set: {
+              identity_verified: "pending",
+              attestation_letter: attestationPreview,
+              government_Id: governmentID,
+              trial: true, // set this as true for the sake
+              subscribed: false, // Mark subscription as inactive
+              trial_start_date: new Date().toISOString(), // Set free trial start date
+              trial_end_date: freeTrialEndDate.toISOString(), // Set free trial end date
+            },
+          },
+        };
+        await axios.post(
+          "https://api.kinscare.org/api/v1/auth/crud-operation",
+          payload,
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        setIsTrialDialogOpen(false);
+        await user.refreshCustomData();
+        setIsTrialExpired(false);
+      } catch (error) {
+      } finally {
+        setSubmitting(false);
+      }
+    } else {
+      toast({
+        title: "Error submitting",
+        description:
+          "please Download and print an attestation letter, sign it, and upload it along with a government-issued ID containing your address.",
+        variant: "destructive",
+      });
+    }
+  };
   return (
     <>
       <h2 className="text-sm font-semibold">Contacts Information</h2>
@@ -368,270 +442,258 @@ const handleOnSuccess = () =>{
 
       {/* Dialog Box Payment */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-5xl mx-auto bg-gradient-to-b from-blue-50 via-white to-gray-50 rounded-lg shadow-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-blue-600 text-center font-extrabold text-xl">
-              {!user.customData.subscribedDate && "Your 7-day trial has ended"}
-            </DialogTitle>
-            <p className="text-gray-600 text-center mt-2 text-sm">
-              Don’t miss out on connecting with the right caregivers for your
-              residents!
-            </p>
-          </DialogHeader>
-
-          <div className="mt-1 px-6 text-center">
-            <p className="text-gray-700 text-center text-sm leading-relaxed">
-              To continue enjoying Kinscare’s services, it’s time to choose a
-              plan that works for you. Unlike subscriptions, Kinscare offers a
-              <span className="font-semibold text-blue-600">
-                {" "}
-                flexible, pay-as-you-go approach
-              </span>
-              —just like Uber—designed to meet your needs without long-term
-              commitments.
-            </p>
-
-            {/* Sliding Tab for Plan Selection */}
-            <div className="mt-6 flex items-center justify-center">
-              <div className="relative w-full max-w-md">
-                <div className="flex space-x-1 bg-gray-100 p-2 rounded-full">
-                  <button
-                    className={`w-1/3 text-sm font-semibold py-2 px-4 rounded-full ${
-                      selectedPlan === "monthly"
-                        ? "bg-blue-600 text-white"
-                        : "text-gray-600"
-                    } transition`}
-                    onClick={() => setSelectedPlan("monthly")}
-                  >
-                    Monthly
-                  </button>
-                  <button
-                    className={`w-1/3 text-sm font-semibold py-2 px-4 rounded-full ${
-                      selectedPlan === "weekly"
-                        ? "bg-blue-600 text-white"
-                        : "text-gray-600"
-                    } transition`}
-                    onClick={() => setSelectedPlan("weekly")}
-                  >
-                    Weekly
-                  </button>
-                  <button
-                    className={`w-1/3 text-sm font-semibold py-2 px-4 rounded-full ${
-                      selectedPlan === "daily"
-                        ? "bg-blue-600 text-white"
-                        : "text-gray-600"
-                    } transition`}
-                    onClick={() => setSelectedPlan("daily")}
-                  >
-                    Daily
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
-              {/* Left Side - Saved Cards */}
-              <div className="space-y-4">
-                {/* Saved Card Options */}
-                {savedCards.length > 0 ? (
-                  <div className="mt-6 space-y-4">
-                    {savedCards.map((card) => (
-                      <div
-                        key={card.id}
-                        onClick={() => handleSetDefault(card.id)}
-                        className={`flex items-center cursor-pointer justify-between p-4 rounded-lg ${
-                          card.isExpired ? "bg-gray-200" : "bg-white"
-                        } shadow-sm border ${
-                          card.isDefault ? "border-blue-500" : "border-gray-300"
-                        } mb-4`}
-                      >
-                        {/* Card Info */}
-                        <div className="flex items-center space-x-4">
-                          {getCardLogo(card.brand)}
-                          <div>
-                            <p className="font-xs font-semibold antialiased text-sm text-gray-800 capitalize">
-                              use {card.brand} card ending with {card.last4}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              Exp.date {String(card.exp_month).padStart(2, "0")}
-                              /{card.exp_year}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Actions */}
-                        <div className="flex items-center space-x-4">
-                          {card.isDefault ? (
-                            <CheckCircle className="w-5 h-5 text-blue-500" />
-                          ) : card.isExpired ? (
-                            <span className="bg-red-100 text-red-600 text-xs font-semibold px-3 py-1 rounded-full">
-                              Expired
-                            </span>
-                          ) : (
-                            <button
-                              onClick={() => handleSetDefault(card.id)}
-                              className="text-blue-600 text-xs font-semibold hover:underline"
-                            >
-                              Use card
-                            </button>
-                          )}
-                          <Button
-                            onClick={() =>
-                              setSelectedCard((prev: any) =>
-                                prev.filter((c: any) => c.id !== card.id)
-                              )
-                            }
-                            variant="ghost"
-                            size="icon"
-                            className="text-blue-700 hover:text-blue-700"
-                          >
-                            <Trash className="w-5 h-5" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500 mt-6">
-                    No saved cards found. Please add a payment method in your
-                    account.
-                  </p>
-                )}
-                <p className="text-gray-700 text-sm leading-relaxed mt-3">
-                  Every dollar you invest goes directly into recruiting
-                  qualified local caregivers, ensuring that your residents
-                  continue to receive the exceptional care they deserve.
-                </p>
-                {/* Add Another Card Button */}
-                {/* <button
-                  onClick={handleAddCard}
-                  className="mt-4 text-blue-600 hover:underline text-sm"
-                >
-                  Add another card
-                </button> */}
-              </div>
-
-              {/* Right Side - Additional Content */}
-              <div className="bg-gray-100 p-6 rounded-xl">
-                <div className="flex flex-col w-full">
-                  <h4 className="text-sm font-semibold antialiased tracking-tight mb-3">
-                    Summary
-                  </h4>
-                  <div className="flex flex-col space-y-4">
-                    <div className="flex justify-between w-full">
-                      <p className="text-sm font-semibold">Plan</p>
-                      <p className="text-sm text-gray-500">{selectedPlan}</p>
-                    </div>
-                    <div className="flex justify-between w-full">
-                      <p className="text-sm font-semibold">Amount</p>
-                      <p className="text-sm">
-                        {selectedPlan === "daily"
-                          ? "$ 10"
-                          : selectedPlan === "weekly"
-                          ? "$ 20"
-                          : "$ 50"}
-                      </p>
-                    </div>
-                    <div className="flex justify-between w-full">
-                      <p className="font-bold text-sm">Plan</p>
-                      <p className="text-sm">{selectedPlan}</p>
-                    </div>
-                    <div className="flex justify-between w-full">
-                      <p className="font-bold text-sm">Plan</p>
-                      <p className="text-sm">{selectedPlan}</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex justify-center mt-6">
-                  <Button
-                    className={`${
-                      selectedCard
-                        ? "bg-blue-600 text-white hover:bg-blue-700"
-                        : "bg-gray-400 text-gray-700 cursor-not-allowed"
-                    } transition rounded px-8 py-4 flex items-center shadow-lg`}
-                    onClick={createSubscription}
-                    disabled={!selectedCard}
-                  >
-                    {loading && <Loader2 className="animate-spin" />}
-                    <CreditCard className="mr-2" />
-                    Activate Plan
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Activate Plan Button */}
-
-          <DialogFooter>
-            <p className="text-sm text-gray-500 text-center mt-6">
-              You can cancel anytime, hassle-free.
-            </p>
-          </DialogFooter>
+        <DialogContent className="max-w-6xl overflow-y-auto max-h-full mx-auto bg-gradient-to-b from-blue-50 via-white to-gray-50 rounded-lg shadow-2xl">
+          <PricingPlan closePricingDialog={closePricingDialog} />
         </DialogContent>
       </Dialog>
 
       {/* Trial DialogBox  */}
       <Dialog open={isTrialDialogOpen} onOpenChange={setIsTrialDialogOpen}>
-        <DialogContent className=" max-w-[720px] mx-auto p-6 bg-white rounded-lg shadow-md">
+        <DialogContent className="h-[100vh] md:h-auto max-w-4xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex flex-col items-center text-center">
-              <div className="mb-3">
-                <CreditCard className="w-12 h-12 text-blue-500" />
-              </div>
-              <h2 className="font-bold text-2xl text-gray-800">
-                Get Verified as a Provider
+              <h2 className="font-bold tracking-tight text-xl text-gray-800">
+                {currentStep === "selection" && "Choose a Verification Method"}
+                {currentStep === "payment" &&
+                  "Get Verified with Payment Method"}
+                {currentStep === "attestation" &&
+                  "Upload a Signed Attestation Letter Government-Issued ID"}
               </h2>
+              {currentStep === "selection" && (
+                <p className="text-sm text-gray-600">
+                  To verify your identity and ensure a safe platform for
+                  caregivers, we offer employers two verification options
+                </p>
+              )}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 text-gray-600">
-            <p className="text-sm">
-              To create a safe and professional environment for caregivers, we
-              require a valid payment method. This confirms that you’re a
-              genuine employer with sincere intent to hire {name}
-            </p>
-            <p className="text-sm text-red-500">Your card will not be charged.            </p>
-          </div>
-          <div className="mt-4">
-            <p className="text-sm mb-4">
-              Add your details now to continue your search safely and securely!
-            </p>
-            {clientSecret && userData ? (
-              <Elements
-                stripe={stripePromise}
-                options={{ clientSecret, appearance }}
+
+          {currentStep === "selection" && (
+            <div className="space-y-6">
+              <div
+                className="flex items-center p-4 border rounded-lg cursor-pointer hover:shadow-lg transition"
+                onClick={() => setCurrentStep("payment")}
               >
-                <PaymentForm
-                  close={closeTrialDialogBox}
-                  setIsTrialExpired={setIsTrialExpired}
-                  clientSecret={clientSecret}
-                  userID={userData.userID}
-                  customerId={user?.customData?.customer_id}
-                  priceId="price_1QP2OuAoahxG9SLGNoc37Lxo"
-                  intentType="setup"
-                  onSuccess={(result) => {
-                    handleOnSuccess()
-                   
-                  }}
-                  onError={(error) => {
-                    console.error("Error saving card:", error);
-                  }}
-                />
-              </Elements>
-            ) : (
-              <p>Loading...</p>
-            )}
-          </div>
-          <p className="mt-4 text-xs text-center text-gray-500">
-            By adding your payment details, you agree to our{" "}
-            <a href="/terms" className="text-blue-600 hover:underline">
-              Terms of Service
-            </a>{" "}
-            and{" "}
-            <a href="/privacy" className="text-blue-600 hover:underline">
-              Privacy Policy
-            </a>
-            .
-          </p>
+                <CreditCard className="w-10 h-10 text-blue-500 mr-4" />
+                <div>
+                  <h3 className="font-bold text-gray-800">
+                    ⁠Add a Payment Method and Billing Zip Code
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    This is a quick, secure, and widely used method to confirm
+                    your identity. Rest assured, no charges will be applied to
+                    your card.
+                  </p>
+                  <p className="mt-1 text-sm text-blue-600 font-medium">
+                    Adding a payment method is the most common and convenient
+                    way to verify your account.
+                  </p>
+                </div>
+              </div>
+
+              <div
+                className="flex items-center p-4 border rounded-lg cursor-pointer hover:shadow-lg transition"
+                onClick={() => setCurrentStep("attestation")}
+              >
+                <FileText className="w-10 h-10 text-blue-500 mr-4" />
+                <div>
+                  <h3 className="font-bold text-gray-800">
+                    Upload a Signed Attestation Letter Government-Issued ID
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    This option requires you to download and print an
+                    attestation letter, sign it, and upload it along with a
+                    government-issued ID containing your address.
+                  </p>
+                  <p className="mt-1 text-sm text-blue-600 font-medium">
+                    This process takes more time but is equally effective.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {currentStep === "payment" && (
+            <>
+              <div className="space-y-4 text-gray-600">
+                <p className="text-sm">
+                  To create a safe and professional environment for caregivers,
+                  we require a valid payment method. This confirms that you’re a
+                  genuine employer with sincere intent to hire {name}.
+                </p>
+                <p className="text-sm text-red-500">
+                  Your card will not be charged.
+                </p>
+              </div>
+              <div className="mt-4">
+                {clientSecret && userData ? (
+                  <Elements
+                    stripe={stripePromise}
+                    options={{ clientSecret, appearance }}
+                  >
+                    <PaymentForm
+                      close={closeTrialDialogBox}
+                      setIsTrialExpired={setIsTrialExpired}
+                      clientSecret={clientSecret}
+                      userID={userData.userID}
+                      customerId={customData?.customer_id}
+                      priceId="price_1QP2OuAoahxG9SLGNoc37Lxo"
+                      intentType="setup"
+                      onSuccess={(result) => {
+                        handleOnSuccess();
+                      }}
+                      onError={(error) => {
+                        console.error("Error saving card:", error);
+                      }}
+                    />
+                  </Elements>
+                ) : (
+                  <p>Loading...</p>
+                )}
+              </div>
+              <button
+                className="mt-4 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+                onClick={() => setCurrentStep("selection")}
+              >
+                Back to Verification Options
+              </button>
+            </>
+          )}
+
+          {currentStep === "attestation" && (
+            <>
+              <div className="space-y-4 text-gray-600">
+                <p className="text-sm">
+                  Download and print an attestation letter, sign it, and upload
+                  it along with a government-issued ID containing your address.
+                </p>
+              </div>
+              <div className="mt-4">
+                <p className="font-semibold tracking-tight antialiased ">
+                  Attestation letter
+                </p>
+                {attestationPreview ? (
+                  <div className="relative">
+                    <iframe
+                      src={attestationPreview}
+                      className="w-full h-[300px]"
+                    />
+                    <Button
+                      onClick={() => deleteFile(attestationPreview)}
+                      className="absolute -top-4 right-0 bg-gray-800 text-white rounded-full"
+                      size="icon"
+                      variant="ghost"
+                    >
+                      <X
+                        className={`${documentLoading && "animate-spin"}`}
+                        size={20}
+                      />
+                    </Button>
+                  </div>
+                ) : (
+                  <Dropzone
+                    onDrop={(acceptedFiles: any) => {
+                      handleDocumentUpload(acceptedFiles);
+                    }}
+                    disabled={documentLoading}
+                    accept={{
+                      "application/pdf": [".pdf"],
+                      "application/msword": [".doc", ".docx"],
+                    }}
+                    maxSize={3145728} // 3 MB limit
+                  >
+                    {({ getRootProps, getInputProps }: any) => (
+                      <div
+                        {...getRootProps()}
+                        className="p-4 border-2 border-dashed rounded-lg text-center cursor-pointer"
+                      >
+                        {documentLoading ? (
+                          <Loader className="animate-spin" />
+                        ) : (
+                          <>
+                            <input {...getInputProps()} />
+                            <div className="flex flex-col items-center gap-4">
+                              <Cloudy />
+                              <p className="text-xs font-bold antialiased">
+                                Drag and drop your attestation letter document
+                                here (PDF/DOCX) or click to select
+                              </p>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </Dropzone>
+                )}
+              </div>
+              <div className="mt-4">
+                <p className="font-semibold tracking-tight antialiased ">
+                  Government issued ID
+                </p>
+                {governmentID ? (
+                  <div className="relative">
+                    <iframe src={governmentID} className="w-full h-[300px]" />
+                    <Button
+                      onClick={() => deleteFile("government")}
+                      className="absolute -top-4 right-0 bg-gray-800 text-white rounded-full"
+                      size="icon"
+                      variant="ghost"
+                    >
+                      <X
+                        className={`${documentLoading && "animate-spin"}`}
+                        size={20}
+                      />
+                    </Button>
+                  </div>
+                ) : (
+                  <Dropzone
+                    onDrop={(acceptedFiles: any) => {
+                      handleGovernmentID(acceptedFiles);
+                    }}
+                    disabled={documentLoading}
+                    accept={{
+                      "application/pdf": [".pdf"],
+                      "application/msword": [".doc", ".docx"],
+                    }}
+                    maxSize={3145728} // 3 MB limit
+                  >
+                    {({ getRootProps, getInputProps }: any) => (
+                      <div
+                        {...getRootProps()}
+                        className="p-4 border-2 border-dashed rounded-lg text-center cursor-pointer"
+                      >
+                        {documentLoading ? (
+                          <Loader className="animate-spin" />
+                        ) : (
+                          <>
+                            <input {...getInputProps()} />
+                            <div className="flex flex-col items-center gap-4">
+                              <Cloudy />
+                              <p className="text-xs font-bold antialiased">
+                                Drag and drop your signed governmentID document
+                                here (PDF/DOCX) or click to select
+                              </p>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </Dropzone>
+                )}
+              </div>
+
+              <Button disabled={submitting} onClick={submitDocument}>
+                {" "}
+                {submitting && <Loader />} Submit Documents
+              </Button>
+              <button
+                className="mt-4 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+                onClick={() => setCurrentStep("selection")}
+              >
+                Back to Verification Options
+              </button>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </>
@@ -639,58 +701,3 @@ const handleOnSuccess = () =>{
 }
 
 export default ProtectedCandidatesDetails;
-
-// The Blur Version 
-// <div className="space-y-4 mt-4">
-// {isTrialExpired ? (
-//   <div className="space-y-3">
-//     {/* Encrypted Email and Phone */}
-//     <div className="space-y-2">
-//       <p
-//         className={`text-sm px-4 py-2 rounded-md ${
-//           isTrialExpired
-//             ? "blur-sm bg-gray-100 text-gray-500 cursor-not-allowed"
-//             : "bg-white text-gray-800"
-//         } transition duration-300 ease-in-out`}
-//       >
-//         {isTrialExpired ? encryptedEmail : email}
-//       </p>
-//       <p
-//         className={`text-sm px-4 py-2 rounded-md ${
-//           isTrialExpired
-//             ? "blur-sm bg-gray-100 text-gray-500 cursor-not-allowed"
-//             : "bg-white text-gray-800"
-//         } transition duration-300 ease-in-out`}
-//       >
-//         {isTrialExpired ? encryptedTel : tel}
-//       </p>
-//     </div>
-//     {/* Reveal Contacts Message */}
-//     <p className="text-sm font-medium text-gray-700">
-//       Click the **Reveal Contacts** button below to view {name}'s email
-//       and phone number.
-//     </p>
-//   </div>
-// ) : (
-//   <div className="space-y-2">
-//     {/* Visible Email and Phone */}
-//     <p className="text-sm px-4 py-2 rounded-md bg-white text-gray-800">
-//       {email}
-//     </p>
-//     <p className="text-sm px-4 py-2 rounded-md bg-white text-gray-800">
-//       {tel}
-//     </p>
-//   </div>
-// )}
-
-// {/* Reveal Contacts Button */}
-// {isTrialExpired && (
-//   <Button
-//     size="sm"
-//     onClick={openTrialDialogBox}
-//     className="w-full md:w-auto px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition duration-200"
-//   >
-//     Reveal Contacts
-//   </Button>
-// )}
-// </div>

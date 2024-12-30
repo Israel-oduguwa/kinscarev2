@@ -448,7 +448,8 @@ const Signin: React.FC = () => {
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 1440 320"
-            preserveAspectRatio="none"  className="w-full h-full"
+            preserveAspectRatio="none"
+            className="w-full h-full"
           >
             <defs>
               <linearGradient id="gradient2" x1="0" y1="0" x2="1" y2="1">

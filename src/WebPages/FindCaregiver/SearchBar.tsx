@@ -6,9 +6,13 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 
-const SearchBar = () => {
-  const [selectedShifts, setSelectedShifts] = useState<string[]>(["Full time"]);
-  const [selectedLicenses, setSelectedLicenses] = useState<string[]>(["HCA"]);
+const SearchBar = ({ availability, licenses }: any) => {
+  const [selectedShifts, setSelectedShifts] = useState<string[]>(
+    availability ? availability : ["Full time"]
+  );
+  const [selectedLicenses, setSelectedLicenses] = useState<string[]>(
+    licenses ? licenses : ["HCA"]
+  );
   const router = useRouter();
 
   const shiftOptions = [
@@ -66,7 +70,7 @@ const SearchBar = () => {
             className="w-full bg-blue-600 text-white hover:bg-blue-700 transition"
             onClick={handleSearch}
           >
-           <Search /> Search
+            <Search /> Search
           </Button>
         </div>
       </div>

@@ -17,6 +17,7 @@ import MultiSelectField from "@/components/MultiSelect";
 
 import { Camera, LoaderCircle, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
 // Form Validation Schema with Yup
 const schema = yup.object().shape({
   address: yup.string().required("Please enter provider's street address"), //.max(2, 'Full name can only be 6 characters long.'),
@@ -76,6 +77,7 @@ interface IFormInput {
 const UpdateProfile = () => {
   const mongodb: any = useContext(MongoContext);
   const { user, userData } = mongodb;
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -217,7 +219,9 @@ const UpdateProfile = () => {
         `https://api.kinscare.org/api/v1/providers/settings/update/${userData.userID}`,
         payload
       );
+
       toast({ title: "Profile updated successfully", variant: "default" });
+      router.push('/provider/candidates/all')
     } catch (error: any) {
       toast({
         title: "Error updating profile",
@@ -232,405 +236,413 @@ const UpdateProfile = () => {
 
   return (
     <div className="bg-gray-100 py-10">
-      <div className="max-w-6xl mx-auto px-4 py-10 md:px-10 rounded-lg shadow-lg bg-white">
-        {userData ? (
-          <>
-            <div className="mb-5">
-              <h2 className="font-bold text-xl  text-gray-900">
-                {!user?.customData?.complete
-                  ? "Add your company or provider information to find the best match"
-                  : "Update your account"}
-              </h2>
-              <p className="text-sm antialiased">
-                Update your resume for caregivers to be able to recognize you
-                and get connected faster
-              </p>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-20">
-              {/* Form Section */}
-              <div className="lg:col-span-2 w-full">
-                <form
-                  autoComplete="off"
-                  className="space-y-5 lg:col-span-8  md:col-span-8"
-                >
-                  {/* Contact Information Section */}
-                  <div className="mb-4">
-                    <div className="mb-2">
-                      <h3 className="font-semibold text-gray-700">
-                        Contact information
-                      </h3>
-                      {/* <p className="text-sm font-normal text-gray-00 antialiased">
+      <div className="max-w-6xl mx-auto ">
+        <div className="mx-4 xl:mx-0 px-4 py-10 md:px-10 rounded-lg shadow-lg bg-white">
+          {userData ? (
+            <>
+              <div className="mb-5">
+                <h2 className="font-bold text-xl  text-gray-900">
+                  {!user?.customData?.complete
+                    ? "Add your company or provider information to find the best match"
+                    : "Update your account"}
+                </h2>
+                <p className="text-sm antialiased">
+                  Update your resume for caregivers to be able to recognize you
+                  and get connected faster
+                </p>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-20">
+                {/* Form Section */}
+                <div className="lg:col-span-2 w-full">
+                  <form
+                    autoComplete="off"
+                    className="space-y-5 lg:col-span-8  md:col-span-8"
+                  >
+                    {/* Contact Information Section */}
+                    <div className="mb-4">
+                      <div className="mb-2">
+                        <h3 className="font-semibold text-gray-700">
+                          Contact information
+                        </h3>
+                        {/* <p className="text-sm font-normal text-gray-00 antialiased">
                   Enter your first and last name
                 </p> */}
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div className="mb-0">
-                        <label
-                          htmlFor="email"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          First name
-                        </label>
-                        <input
-                          type="text"
-                          id="first-name"
-                          className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          required
-                          {...register("fname")} // To connect with react-hook-form
-                        />
-                        {errors.fname && (
-                          <p className="text-red-500">{errors.fname.message}</p>
-                        )}
                       </div>
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="mb-0">
+                          <label
+                            htmlFor="email"
+                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                          >
+                            First name
+                          </label>
+                          <input
+                            type="text"
+                            id="first-name"
+                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            required
+                            {...register("fname")} // To connect with react-hook-form
+                          />
+                          {errors.fname && (
+                            <p className="text-red-500">
+                              {errors.fname.message}
+                            </p>
+                          )}
+                        </div>
 
+                        <div>
+                          <label
+                            htmlFor="text"
+                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                          >
+                            Last name
+                          </label>
+                          <input
+                            type="text"
+                            id="last-name"
+                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            required
+                            {...register("lname")} // To connect with react-hook-form
+                          />
+                          {errors.lname && (
+                            <p className="text-red-500">
+                              {errors.lname.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="w-full">
+                        <div className="mb-0">
+                          <label
+                            htmlFor="email"
+                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                          >
+                            Name of care provider
+                          </label>
+                          <input
+                            type="text"
+                            id="first-name"
+                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            required
+                            {...register("name")} // To connect with react-hook-form
+                          />
+                          {errors.name && (
+                            <p className="text-red-500">
+                              {errors.name.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 mt-4 mb-4">
+                        <div>
+                          <label
+                            htmlFor="email"
+                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                          >
+                            Email
+                          </label>
+                          <input
+                            type="email"
+                            autoComplete="new-password"
+                            id="email"
+                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            required
+                            {...register("settings.email")} // To connect with react-hook-form
+                          />
+                          {errors.settings?.email && (
+                            <p className="text-red-500">
+                              {errors.settings.email.message}
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="tel"
+                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                          >
+                            Telephone
+                          </label>
+                          <input
+                            type="tel"
+                            id="tel"
+                            autoComplete="new-password"
+                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            required
+                            {...register("settings.tel")} // To connect with react-hook-form
+                          />
+                          {errors.settings?.tel && (
+                            <p className="text-red-500 text-xs">
+                              {errors.settings.tel.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <p className="font-semibold text-gray-700 mb-2">
+                        To find caregivers close to you
+                      </p>
                       <div>
                         <label
-                          htmlFor="text"
+                          htmlFor="city"
                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                         >
-                          Last name
+                          Street address
                         </label>
                         <input
                           type="text"
                           id="last-name"
                           className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                           required
-                          {...register("lname")} // To connect with react-hook-form
+                          {...register("address")} // To connect with react-hook-form
                         />
-                        {errors.lname && (
-                          <p className="text-red-500">{errors.lname.message}</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="w-full">
-                      <div className="mb-0">
-                        <label
-                          htmlFor="email"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          Name of care provider
-                        </label>
-                        <input
-                          type="text"
-                          id="first-name"
-                          className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          required
-                          {...register("name")} // To connect with react-hook-form
-                        />
-                        {errors.name && (
-                          <p className="text-red-500">{errors.name.message}</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mt-4 mb-4">
-                      <div>
-                        <label
-                          htmlFor="email"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          Email
-                        </label>
-                        <input
-                          type="email"
-                          autoComplete="new-password"
-                          id="email"
-                          className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          required
-                          {...register("settings.email")} // To connect with react-hook-form
-                        />
-                        {errors.settings?.email && (
-                          <p className="text-red-500">
-                            {errors.settings.email.message}
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label
-                          htmlFor="tel"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          Telephone
-                        </label>
-                        <input
-                          type="tel"
-                          id="tel"
-                          autoComplete="new-password"
-                          className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          required
-                          {...register("settings.tel")} // To connect with react-hook-form
-                        />
-                        {errors.settings?.tel && (
+                        {errors.address && (
                           <p className="text-red-500 text-xs">
-                            {errors.settings.tel.message}
+                            {errors.address.message}
                           </p>
                         )}
                       </div>
+                      <div className="grid grid-cols-2 gap-4 mt-4">
+                        <div>
+                          <label
+                            htmlFor="city"
+                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                          >
+                            City
+                          </label>
+                          <input
+                            type="text"
+                            id="last-name"
+                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            required
+                            {...register("city")} // To connect with react-hook-form
+                          />
+                          {errors.city && (
+                            <p className="text-red-500 text-xs">
+                              {errors.city.message}
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="city"
+                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                          >
+                            Zipcode
+                          </label>
+                          <input
+                            type="text"
+                            id="last-name"
+                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            required
+                            {...register("zipcode")} // To connect with react-hook-form
+                          />
+                          {errors.zipcode && (
+                            <p className="text-red-500 text-xs">
+                              {errors.zipcode.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                    <p className="font-semibold text-gray-700 mb-2">
-                      To find caregivers close to you
-                    </p>
+
+                    {/* Licenses */}
                     <div>
-                      <label
-                        htmlFor="city"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Street address
-                      </label>
-                      <input
-                        type="text"
-                        id="last-name"
-                        className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        required
-                        {...register("address")} // To connect with react-hook-form
+                      <h3 className="font-semibold text-gray-700 antialiased mb-2">
+                        What kind of care provider are you?
+                      </h3>
+                      <MultiSelectField
+                        name="type_of_setting"
+                        control={control}
+                        isAnimation={true}
+                        options={groupProvider}
+                        placeholder="Kind of provider"
+                        maxCount={4} // You can limit the number of selections
+                        rules={{ required: true }} // Additional rules can be passed here
                       />
-                      {errors.address && (
+
+                      {errors.type_of_setting && (
                         <p className="text-red-500 text-xs">
-                          {errors.address.message}
+                          {errors.type_of_setting.message}
                         </p>
                       )}
                     </div>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      <div>
-                        <label
-                          htmlFor="city"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          City
-                        </label>
-                        <input
-                          type="text"
-                          id="last-name"
-                          className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          required
-                          {...register("city")} // To connect with react-hook-form
-                        />
-                        {errors.city && (
-                          <p className="text-red-500 text-xs">
-                            {errors.city.message}
-                          </p>
+                    {/* Mobility */}
+                    <div>
+                      <h3 className="font-semibold text-gray-700  mb-2">
+                        Do you offer in house training or sponsor training? In
+                        house training helps with caregiver onboarding.
+                      </h3>
+                      <Controller
+                        name="trainer"
+                        control={control}
+                        // rules={{ required: "This field is required" }}
+                        render={({ field }) => (
+                          <RadioGroup
+                            value={field.value} // Bind value to the field
+                            onValueChange={(value) => field.onChange(value)} // Ensure onChange updates the form
+                            className="flex gap-4"
+                          >
+                            <div className="flex gap-1 items-center">
+                              <RadioGroupItem
+                                value="yes"
+                                className="border-gray-600"
+                              />
+                              <Label>Yes</Label>
+                            </div>
+                            <div className="flex gap-1 items-center">
+                              <RadioGroupItem
+                                value="no"
+                                className="border-gray-600"
+                              />
+                              <Label>No</Label>
+                            </div>
+                          </RadioGroup>
                         )}
-                      </div>
-
-                      <div>
-                        <label
-                          htmlFor="city"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          Zipcode
-                        </label>
-                        <input
-                          type="text"
-                          id="last-name"
-                          className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          required
-                          {...register("zipcode")} // To connect with react-hook-form
-                        />
-                        {errors.zipcode && (
-                          <p className="text-red-500 text-xs">
-                            {errors.zipcode.message}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Licenses */}
-                  <div>
-                    <h3 className="font-semibold text-gray-700 antialiased mb-2">
-                      What kind of care provider are you?
-                    </h3>
-                    <MultiSelectField
-                      name="type_of_setting"
-                      control={control}
-                      isAnimation={true}
-                      options={groupProvider}
-                      placeholder="Kind of provider"
-                      maxCount={4} // You can limit the number of selections
-                      rules={{ required: true }} // Additional rules can be passed here
-                    />
-
-                    {errors.type_of_setting && (
-                      <p className="text-red-500 text-xs">
-                        {errors.type_of_setting.message}
-                      </p>
-                    )}
-                  </div>
-                  {/* Mobility */}
-                  <div>
-                    <h3 className="font-semibold text-gray-700  mb-2">
-                      Do you offer in house training or sponsor training? In
-                      house training helps with caregiver onboarding.
-                    </h3>
-                    <Controller
-                      name="trainer"
-                      control={control}
-                      // rules={{ required: "This field is required" }}
-                      render={({ field }) => (
-                        <RadioGroup
-                          value={field.value} // Bind value to the field
-                          onValueChange={(value) => field.onChange(value)} // Ensure onChange updates the form
-                          className="flex gap-4"
-                        >
-                          <div className="flex gap-1 items-center">
-                            <RadioGroupItem
-                              value="yes"
-                              className="border-gray-600"
-                            />
-                            <Label>Yes</Label>
-                          </div>
-                          <div className="flex gap-1 items-center">
-                            <RadioGroupItem
-                              value="no"
-                              className="border-gray-600"
-                            />
-                            <Label>No</Label>
-                          </div>
-                        </RadioGroup>
+                      />
+                      {errors.trainer && (
+                        <p className="text-red-500 text-xs">
+                          {errors.trainer.message}
+                        </p>
                       )}
-                    />
-                    {errors.trainer && (
-                      <p className="text-red-500 text-xs">
-                        {errors.trainer.message}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-700 antialiased mb-2">
-                      How do you want caregivers to contact you? [Must choose
-                      one - your contact details would not be shared]:
-                    </h3>
-                    <MultiSelectField
-                      name="settings.alert_preferences"
-                      control={control}
-                      isAnimation={true}
-                      options={groupCall}
-                      placeholder="your alert preferences for employers to contact you"
-                      maxCount={4} // You can limit the number of selections
-                      rules={{ required: true }} // Additional rules can be passed here
-                    />
-                    {errors.settings?.alert_preferences && (
-                      <p className="text-red-500 text-xs">
-                        {errors.settings.alert_preferences.message}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Submit Button */}
-                  <Button
-                    disabled={loading || isSubmitting}
-                    onClick={handleSubmit(onSubmit)}
-                    className="w-full hidden gap-2 lg:flex"
-                  >
-                    {loading && <LoaderCircle className="animate-spin" />}{" "}
-                    {loading || isSubmitting
-                      ? "Updating..."
-                      : `${
-                          !user?.customData?.complete
-                            ? "Add Details"
-                            : "Update Settings"
-                        }`}
-                  </Button>
-                </form>
-              </div>
-
-              {/* Profile Image & Resume Section */}
-              <div className="sticky top-10">
-                {/* Profile Image Upload */}
-                <div className="mb-6">
-                  <h3 className="font-semibold ">Profile Image</h3>
-                  <p className="text-sm antialiased mb-4">
-                    Set your profile image to build trust with employers Drag
-                    and drop profile image or click to select
-                  </p>
-                  {profileImagePreview ? (
-                    <div className="w-full">
-                      <div className="border-4 p-2 border-gray-200  rounded-full w-40 h-40 relative">
-                        <Avatar className="rounded-full w-full h-full">
-                          <AvatarImage
-                            src={profileImagePreview || "/default-avatar.png"}
-                            alt={"profile-image"}
-                          />
-                          <AvatarFallback>
-                            {user?.customData?.name?.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <Button
-                          onClick={() => {
-                            deleteFile(profileImagePreview, "image");
-                          }}
-                          className="absolute top-0 right-0 bg-gray-800 text-white rounded-full"
-                          size="icon"
-                          variant="ghost"
-                        >
-                          <X
-                            className={`${documentLoading && "animate-spin"}`}
-                            size={20}
-                          />
-                        </Button>
-                      </div>
                     </div>
-                  ) : (
-                    <Dropzone
-                      onDrop={(acceptedFiles: any) => {
-                        handleProfileImageUpload(acceptedFiles);
-                      }}
-                      disabled={imageLoading}
-                      accept={{ "image/*": [".jpeg", ".jpg", ".png"] }}
-                      maxSize={1048576} // 1 MB limit
+                    <div>
+                      <h3 className="font-semibold text-gray-700 antialiased mb-2">
+                        How do you want caregivers to contact you? [Must choose
+                        one - your contact details would not be shared]:
+                      </h3>
+                      <MultiSelectField
+                        name="settings.alert_preferences"
+                        control={control}
+                        isAnimation={true}
+                        options={groupCall}
+                        placeholder="your alert preferences for employers to contact you"
+                        maxCount={4} // You can limit the number of selections
+                        rules={{ required: true }} // Additional rules can be passed here
+                      />
+                      {errors.settings?.alert_preferences && (
+                        <p className="text-red-500 text-xs">
+                          {errors.settings.alert_preferences.message}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Submit Button */}
+                    <Button
+                      disabled={loading || isSubmitting}
+                      onClick={handleSubmit(onSubmit)}
+                      className="w-full hidden gap-2 lg:flex"
                     >
-                      {({ getRootProps, getInputProps }: any) => (
-                        <div
-                          {...getRootProps()}
-                          className="p-2 border-4 border-gray-100 rounded-full w-40 h-40 text-center cursor-pointer flex justify-center items-center"
-                        >
-                          {!imageLoading && <input {...getInputProps()} />}
-                          <Avatar className="w-full h-full">
+                      {loading && <LoaderCircle className="animate-spin" />}{" "}
+                      {loading || isSubmitting
+                        ? "Updating..."
+                        : `${
+                            !user?.customData?.complete
+                              ? "Add Details"
+                              : "Update Settings"
+                          }`}
+                    </Button>
+                  </form>
+                </div>
+
+                {/* Profile Image & Resume Section */}
+                <div className="sticky top-10">
+                  {/* Profile Image Upload */}
+                  <div className="mb-6">
+                    <h3 className="font-semibold ">Profile Image</h3>
+                    <p className="text-sm antialiased mb-4">
+                      Set your profile image to build trust with employers Drag
+                      and drop profile image or click to select
+                    </p>
+                    {profileImagePreview ? (
+                      <div className="w-full">
+                        <div className="border-4 p-2 border-gray-200  rounded-full w-40 h-40 relative">
+                          <Avatar className="rounded-full w-full h-full">
                             <AvatarImage
-                              src="https://kinscare-storage.s3.amazonaws.com/Firefly_Generate_a_place_holder_profile_image_cartoony_avatar_Caucasian_man_for_job_application_1309_(1)-transformed.jpeg"
-                              alt="placeholder"
+                              src={profileImagePreview || "/default-avatar.png"}
+                              alt={"profile-image"}
                             />
+                            <AvatarFallback>
+                              {user?.customData?.name?.charAt(0).toUpperCase()}
+                            </AvatarFallback>
                           </Avatar>
-                          <div className="absolute bg-gray-50 p-2 rounded-full">
-                            {" "}
-                            <Camera
-                              className={`${imageLoading && "animate-spin"}`}
+                          <Button
+                            onClick={() => {
+                              deleteFile(profileImagePreview, "image");
+                            }}
+                            className="absolute top-0 right-0 bg-gray-800 text-white rounded-full"
+                            size="icon"
+                            variant="ghost"
+                          >
+                            <X
+                              className={`${documentLoading && "animate-spin"}`}
+                              size={20}
                             />
-                          </div>
+                          </Button>
                         </div>
-                      )}
-                    </Dropzone>
-                  )}
+                      </div>
+                    ) : (
+                      <Dropzone
+                        onDrop={(acceptedFiles: any) => {
+                          handleProfileImageUpload(acceptedFiles);
+                        }}
+                        disabled={imageLoading}
+                        accept={{ "image/*": [".jpeg", ".jpg", ".png"] }}
+                        maxSize={1048576} // 1 MB limit
+                      >
+                        {({ getRootProps, getInputProps }: any) => (
+                          <div
+                            {...getRootProps()}
+                            className="p-2 border-4 border-gray-100 rounded-full w-40 h-40 text-center cursor-pointer flex justify-center items-center"
+                          >
+                            {!imageLoading && <input {...getInputProps()} />}
+                            <Avatar className="w-full h-full">
+                              <AvatarImage
+                                src="https://kinscare-storage.s3.amazonaws.com/Firefly_Generate_a_place_holder_profile_image_cartoony_avatar_Caucasian_man_for_job_application_1309_(1)-transformed.jpeg"
+                                alt="placeholder"
+                              />
+                            </Avatar>
+                            <div className="absolute bg-gray-50 p-2 rounded-full">
+                              {" "}
+                              <Camera
+                                className={`${imageLoading && "animate-spin"}`}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </Dropzone>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-20">
-              <div className="lg:col-span-2 w-full">
-                <div className="flex flex-col space-y-4">
-                  <Skeleton className="h-10 max-w-[850px] bg-slate-200" />
-                  <Skeleton className="h-10 max-w-[850px] bg-slate-100" />
-                  <Skeleton className="h-[125px] bg-slate-200 w-full rounded-xl" />
-                  <Skeleton className="h-[225px] bg-slate-100 w-full rounded-xl" />
-                  <Skeleton className="h-[225px] bg-slate-200 w-full rounded-xl" />
+            </>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-20">
+                <div className="lg:col-span-2 w-full">
+                  <div className="flex flex-col space-y-4">
+                    <Skeleton className="h-10 max-w-[850px] bg-slate-200" />
+                    <Skeleton className="h-10 max-w-[850px] bg-slate-100" />
+                    <Skeleton className="h-[125px] bg-slate-200 w-full rounded-xl" />
+                    <Skeleton className="h-[225px] bg-slate-100 w-full rounded-xl" />
+                    <Skeleton className="h-[225px] bg-slate-200 w-full rounded-xl" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-10 bg-slate-200 w-[250px]" />
+                      <Skeleton className="h-10 bg-slate-100 w-[200px]" />
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4 flex flex-col">
+                  <Skeleton className="h-32 w-32 rounded-full" />
                   <div className="space-y-2">
                     <Skeleton className="h-10 bg-slate-200 w-[250px]" />
                     <Skeleton className="h-10 bg-slate-100 w-[200px]" />
                   </div>
                 </div>
               </div>
-              <div className="space-y-4 flex flex-col">
-                <Skeleton className="h-32 w-32 rounded-full" />
-                <div className="space-y-2">
-                  <Skeleton className="h-10 bg-slate-200 w-[250px]" />
-                  <Skeleton className="h-10 bg-slate-100 w-[200px]" />
-                </div>
-              </div>
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

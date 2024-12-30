@@ -23,6 +23,7 @@ import Link from "next/link";
 import React, { useContext, useEffect, useState } from "react";
 import ProviderDialog from "./ProviderDialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { sanitizeContent } from "@/lib/ui_utils";
 
 interface Candidates {
   _id: string;
@@ -50,6 +51,7 @@ interface CandidatesApiResponse {
   totalPages: number;
   currentPage: number;
   candidates: Candidates[];
+  caregivers: Candidates[];
 }
 const fetchCandidates = async (userID: string, page: number) => {
   try {
@@ -124,6 +126,7 @@ const CandidatesCard = ({ candidate }: any) => {
     e.stopPropagation();
     e.nativeEvent.stopImmediatePropagation();
   };
+  const sanitizedContent = sanitizeContent(candidate.certifications)
   return (
     <div key={candidate.userID} className="w-full relative mb-4 ">
       <Link href={`/provider/candidates/${candidate.userID}`}>
@@ -187,11 +190,7 @@ const CandidatesCard = ({ candidate }: any) => {
                 </div>
               ))}
               {candidate.availability.map(
-                (
-                  sch:
-                    any,
-                  index: React.Key | null | undefined
-                ) => (
+                (sch: any, index: React.Key | null | undefined) => (
                   <div
                     key={index}
                     className="relative text-sm bg-gray-100 text-gray-800 rounded-lg py-1.5 px-3"
@@ -207,7 +206,7 @@ const CandidatesCard = ({ candidate }: any) => {
               Certifications
             </h4>
             <p className="text-sm text-gray-600 line-clamp-2">
-              <Interweave content={candidate.certifications} />
+            <Interweave content={sanitizedContent} />
             </p>
           </div>
 
@@ -340,19 +339,25 @@ function All() {
   // Load more candidates
   const loadMoreCandidates = async () => {
     if (page >= totalPages) return;
-    setPage((prevPage) => prevPage + 1);
 
     try {
       setLoading(true);
+      const nextPage = page + 1; // Calculate next page number
       const data: CandidatesApiResponse = isFilteredSearch
         ? await fetchFilteredCandidates(
             selectedShifts,
             selectedLicenses,
-            page + 1
+            nextPage
           )
-        : await fetchCandidates(userID, page + 1);
+        : await fetchCandidates(userID, nextPage);
 
-      setCandidates((prev) => [...prev, ...data.candidates]);
+      console.log(data);
+
+      // Prepend new candidates to the existing list
+      setCandidates((prev) => [...data.caregivers, ...prev]);
+
+      // Update the page after a successful API call
+      setPage(nextPage);
     } catch (err) {
       setError((err as Error).message);
     } finally {

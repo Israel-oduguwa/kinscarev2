@@ -2,10 +2,10 @@ import OAuthDialog from "@/Authentication/OAuthDialog";
 import ProfileAvatar from "@/components/ProfileAvatar";
 import { Button } from "@/components/ui/button";
 import { Interweave } from "interweave";
-import { MapPin, Send } from "lucide-react";
-import Link from "next/link";
-import SearchBar from "./SearchBar";
 import { polyfill } from "interweave-ssr";
+import { MapPin, Send } from "lucide-react";
+import { Metadata } from "next";
+import Link from "next/link";
 import {
   JSXElementConstructor,
   Key,
@@ -13,9 +13,15 @@ import {
   ReactNode,
   ReactPortal,
 } from "react";
-import { Metadata } from "next";
+import SearchBar from "./SearchBar";
 polyfill();
 
+const sanitizeContent = (htmlContent: string) => {
+  if (htmlContent) {
+    // Remove <img> tags using regex
+    return htmlContent.replace(/<img[^>]*>/gi, "");
+  }
+};
 const obfuscateName = (name: string): string => {
   const words = name.split(" ");
   return words
@@ -48,6 +54,7 @@ const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
     ? candidate.name
     : obfuscateName(candidate.name);
 
+  const sanitizedContent = sanitizeContent(candidate.certifications);
   return (
     <div className="w-full mb-4 relative">
       <Link href={`caregivers/${candidate.userID}`}>
@@ -135,7 +142,7 @@ const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
               Certifications
             </h4>
             <div className="text-sm text-gray-600 line-clamp-2">
-              <Interweave content={candidate.certifications} />
+              <Interweave content={sanitizedContent} />
             </div>
           </div>
         </div>
@@ -245,16 +252,24 @@ async function Caregivers({
     },
     description: caregiver.description || "Experienced caregiver available.",
   }));
-  // console.log(caregivers);
+
+  
+  // convert the queries into an array
+  const availabilityArray = Array.isArray(availability)
+    ? availability
+    : availability.split(",");
+  const licensesArray = Array.isArray(licenses)
+    ? licenses
+    : licenses.split(",");
   return (
     <div className="w-full">
       <div className="bg-gray-100 min-h-[100vh] p-3">
         <div className="max-w-6xl py-10 mx-auto">
           <div className="mb-6">
-            <SearchBar />
+            <SearchBar availability={availabilityArray} licenses={licensesArray} />
           </div>
           <h1 className="text-md text-gray-800 tracking-tight antialiased font-bold mb-4">
-            There are {totalCaregivers}  caregivers near you with {licenses} 
+            There are {totalCaregivers} caregivers near you with {licenses}
           </h1>
           <div>
             {caregivers.map((caregiver: any, idx: any) => (
