@@ -12,18 +12,17 @@ import * as Realm from "realm-web";
 import { Input } from "@/components/ui/input";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
-import { cn, fetchUserData } from "@/lib/utils";
+import { cn, fetchContactsData, fetchUserData } from "@/lib/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import { ArrowBigLeft, Loader2 } from "lucide-react";
+import { ArrowBigLeft, Loader2, Loader2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useContext, useState } from "react";
 // import FacebookLogin from "react-facebook-login";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-
 
 // Validation schema for the email signup form
 const schema = yup.object().shape({
@@ -46,7 +45,15 @@ function GetStartedBtn({ children }: any) {
   const router = useRouter();
 
   const mongo: any = useContext(MongoContext);
-  const { app, client, user, setAuthenticated, setUser, setUserData } = mongo;
+  const {
+    app,
+    client,
+    user,
+    setAuthenticated,
+    setCustomData,
+    setUser,
+    setUserData,
+  } = mongo;
 
   const {
     control,
@@ -113,7 +120,7 @@ function GetStartedBtn({ children }: any) {
         const decodedToken: any = jwtDecode(token);
         const credentials = Realm.Credentials.jwt(token);
         const userObj = await app.logIn(credentials);
-
+        console.log(userObj);
         const existingUser = await client
           ?.db("kinshealth")
           .collection("contacts")
@@ -121,7 +128,6 @@ function GetStartedBtn({ children }: any) {
             userID: userObj.id,
             email: userObj.profile.email,
           });
-
         if (!existingUser) {
           const payload = {
             email: userObj.profile.email,
@@ -135,31 +141,50 @@ function GetStartedBtn({ children }: any) {
             route: "Regular",
             created: new Date(),
           };
-
-          createUserDuringRegistration(payload);
+          await createUserDuringRegistration(payload);
+          await setUser(userObj);
+          await user.refreshCustomData();
+          console.log(userObj.id, userObj.profile.email);
           const fetchedData: any = await fetchUserData(
             userObj.id,
             userObj.profile.email
           );
-          // console.log(fetchedData);
-          setUserData(fetchedData.result);
+          const fetchedCustomData: any = await fetchContactsData(
+            userObj.id,
+            userObj.profile.email
+          );
+          if (fetchedData.result) {
+            console.log(fetchedData);
+            setAuthenticated(true);
+            await user.refreshCustomData();
+            setCustomData(fetchedCustomData.result);
+            setUserData(fetchedData.result);
+            router.push(`/vitae/career-plan`);
+          }
         } else {
-          setUser(userObj);
+          await user.refreshCustomData();
           const fetchedData: any = await fetchUserData(
             userObj.id,
             userObj.profile.email
           );
-          // console.log(fetchedData);
-          setUserData(fetchedData.result);
-          setAuthenticated(true);
+          const fetchedCustomData: any = await fetchContactsData(
+            userObj.id,
+            userObj.profile.email
+          );
+          setUser(userObj);
+          console.log(fetchedData.result);
+          if (fetchedData.result) {
+            setUserData(fetchedData.result);
+            await user.refreshCustomData();
+            setCustomData(fetchedCustomData.result);
+            setAuthenticated(true);
+            router.push(`/vitae/career-plan`);
+          }
         }
-
-        user.refreshCustomData();
-        router.refresh();
-        router.push(`/vitae/career-plan`);
-        setLoading(false);
       } catch (error) {
         handleError(error);
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -171,16 +196,16 @@ function GetStartedBtn({ children }: any) {
     });
   };
 
-  const handleFacebookCallback = (response: any) => {
-    if (response?.status === "unknown") {
-      toast({
-        variant: "destructive",
-        description: "Facebook Login Failed. Please try again.",
-      });
-      return;
-    }
-    console.log(response);
-  };
+  // const handleFacebookCallback = (response: any) => {
+  //   if (response?.status === "unknown") {
+  //     toast({
+  //       variant: "destructive",
+  //       description: "Facebook Login Failed. Please try again.",
+  //     });
+  //     return;
+  //   }
+  //   console.log(response);
+  // };
 
   const onSubmit = async (data: any) => {
     try {
@@ -247,29 +272,38 @@ function GetStartedBtn({ children }: any) {
             </DialogDescription>
           </div>
 
-          <div className="flex justify-center gap-4">
-            <GoogleLogin
-              size="large"
-              onSuccess={handleGoogleSuccess}
-              onError={handleGoogleError}
-              theme="filled_black"
-              text="continue_with"
-            />
-           
-          </div>
+          {!loading ? (
+            <div className="flex justify-center gap-4">
+              <GoogleLogin
+                size="large"
+                onSuccess={handleGoogleSuccess}
+                onError={handleGoogleError}
+                theme="filled_black"
+                text="continue_with"
+              />
+            </div>
+          ) : (
+            <>
+              <div className="flex justify-center w-full items-center">
+                <Loader2Icon size={30} className="animate-spin" />
+              </div>
+            </>
+          )}
 
-          <p className="mt-4 text-center text-sm text-gray-500">
-            Don’t have social accounts?{" "}
-            <button
-              onClick={() => {
-                setIsDialogOpen(false);
-                setIsEmailDialogOpen(true);
-              }}
-              className="text-blue-500 underline"
-            >
-              Signup with email
-            </button>
-          </p>
+          {!loading && (
+            <p className="mt-4 text-center text-sm text-gray-500">
+              Don’t have social accounts?{" "}
+              <button
+                onClick={() => {
+                  setIsDialogOpen(false);
+                  setIsEmailDialogOpen(true);
+                }}
+                className="text-blue-500 underline"
+              >
+                Signup with email
+              </button>
+            </p>
+          )}
         </DialogContent>
       </Dialog>
 
@@ -410,6 +444,7 @@ function GetStartedBtn({ children }: any) {
                     <input
                       {...field}
                       type="checkbox"
+                      value=""
                       className="form-checkbox h-5 w-5 text-blue-600"
                     />
                   )}

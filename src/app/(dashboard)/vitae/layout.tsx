@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/ui/vitae-app-sidebar";
 import VoiceFlowProvider from "@/Caregivers/UiProviders/VoiceFlowProvider";
-import CaregiverAuthProvider from "@/Caregivers/UiProviders/CaregiverAuthProvider";
+import CaregiverAuth from "@/Caregivers/UiProviders/CaregiverAuthProvider";
 export default function DashboardLayout({
   children,
 }: {
@@ -12,7 +12,7 @@ export default function DashboardLayout({
 }) {
   // this is the dashboard ui and layout page
   return (
-    <CaregiverAuthProvider>
+    <CaregiverAuth>
       <SidebarProvider>
         <AppSidebar>
           <CareerProvider>
@@ -25,6 +25,6 @@ export default function DashboardLayout({
           </CareerProvider>
         </AppSidebar>
       </SidebarProvider>
-    </CaregiverAuthProvider>
+    </CaregiverAuth>
   );
 }

@@ -261,7 +261,6 @@ const ReferProvider: React.FC<ReferProviderProps> = ({
                 theme="filled_black"
                 text="continue_with"
               />
-             
             </div>
           ) : (
             <>
@@ -424,6 +423,7 @@ const ReferProvider: React.FC<ReferProviderProps> = ({
                   render={({ field }) => (
                     <input
                       {...field}
+                      value=""
                       type="checkbox"
                       className="form-checkbox h-5 w-5 text-blue-600"
                     />

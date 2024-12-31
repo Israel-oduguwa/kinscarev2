@@ -28,10 +28,10 @@ type ShareDialogProps = {
   onClose: () => void;
   platform: "email" | "facebook" | "instagram";
   setPoints: any;
-  setUserData:any;
+  setUserData: any;
   social: boolean;
   setSocialShared: any;
-  socialShareCount:number;
+  socialShareCount: number;
   points: number;
   userData: any;
 };
@@ -66,7 +66,7 @@ const ShareDialog: React.FC<ShareDialogProps> = ({
         "https://api.kinscare.org/api/v1/auth/crud-operation",
         payload
       );
-      console.log(addPlan);
+      // console.log(addPlan);
     } catch (error) {
       console.log(error);
     }
@@ -77,7 +77,7 @@ const ShareDialog: React.FC<ShareDialogProps> = ({
       "careerProfile.inviteFriends.points": points + 10,
       "careerProfile.inviteFriends.socialShared": true,
       "careerProfile.inviteFriends.socialShareCount": socialShareCount + 1,
-      
+
       "careerProfile.inviteFriends.updated": new Date(),
     });
     const fetchedData: any = await fetchUserData(
@@ -95,11 +95,11 @@ const ShareDialog: React.FC<ShareDialogProps> = ({
     onClose();
   };
 
-  const handleInstagramShare = () => {
-    const instagramUrl = `https://instagram.com/stories/create`;
-    window.open(instagramUrl, "_blank");
-    handleRewardUser();
-  };
+  // const handleInstagramShare = () => {
+  //   const instagramUrl = `https://instagram.com/stories/create`;
+  //   window.open(instagramUrl, "_blank");
+  //   handleRewardUser();
+  // };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -150,10 +150,9 @@ const schema = yup.object().shape({
 });
 
 function InviteFriends() {
-  const mongodb: any = useContext(MongoContext); 
+  const mongodb: any = useContext(MongoContext);
   const { userData, setUserData } = mongodb;
   const { closeDialog } = useDialog(); // Access the closeDialog function
-
 
   // Points system state
   const [points, setPoints] = useState({
@@ -165,7 +164,7 @@ function InviteFriends() {
   const [loading, setLoading] = useState(false); // Loading state
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [socialShared, setHasShared] = useState<boolean>(false);
-  const [socialShareCount, setSocialShareCount] = useState<number>(0)
+  const [socialShareCount, setSocialShareCount] = useState<number>(0);
   const [selectedPlatform, setSelectedPlatform] = useState<
     "email" | "facebook" | "instagram"
   >("email");
@@ -199,8 +198,9 @@ function InviteFriends() {
       setHasShared(
         userData.careerProfile?.inviteFriends?.socialShared || false
       );
-      setSocialShareCount(userData.careerProfile?.inviteFriends?.socialShareCount)
-
+      setSocialShareCount(
+        userData.careerProfile?.inviteFriends?.socialShareCount
+      );
     }
   }, [userData]);
 
@@ -228,7 +228,7 @@ function InviteFriends() {
       );
       const fetchedData: any = await fetchUserData(
         userData.userID,
-        userData.settings.email,
+        userData.settings?.email ? userData.settings.email : userData.auth.email
       );
       // console.log(fetchedData);
       setUserData(fetchedData.result);
@@ -257,39 +257,36 @@ function InviteFriends() {
       totalPoints: newPoints,
     });
 
-   try {
-     // Set last invitee name for confirmation message
-     setLastInvitee(data.name);
-     // send the email
-     const payload = {
-       to: data.email,
-       senderName: `${userData.fname} ${userData.lname}`,
-       recipientName: data.name,
-       referrerID: userData.userID, // this is the ID of the caregiver that referred the user
-     };
-     const sendInviteEmail = await axios.post(
-       `https://api.kinscare.org/api/v1/email/invite-friend`,
-       payload
-     );
-     if (sendInviteEmail.data.success) {
-       // Update the database with invite info
-       await updateDatabase({
-         invites: newInvites,
-         totalPoints: newPoints,
-       });
-       reset();
-     }
-     
-    
-   } catch (error) {
-     setLoading(false)
-     console.log(error)
-   }
-   finally{
- // Reset form fields
- reset();
- setLoading(false); // Reset loading state when done
-   }
+    try {
+      // Set last invitee name for confirmation message
+      setLastInvitee(data.name);
+      // send the email
+      const payload = {
+        to: data.email,
+        senderName: `${userData.fname} ${userData.lname}`,
+        recipientName: data.name,
+        referrerID: userData.userID, // this is the ID of the caregiver that referred the user
+      };
+      const sendInviteEmail = await axios.post(
+        `https://api.kinscare.org/api/v1/email/invite-friend`,
+        payload
+      );
+      if (sendInviteEmail.data.success) {
+        // Update the database with invite info
+        await updateDatabase({
+          invites: newInvites,
+          totalPoints: newPoints,
+        });
+        reset();
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    } finally {
+      // Reset form fields
+      reset();
+      setLoading(false); // Reset loading state when done
+    }
   };
 
   // Handle sharing to social media
@@ -381,7 +378,7 @@ function InviteFriends() {
             {/* Send Invite Button */}
             <div className="flex justify-end">
               <Button type="submit" disabled={loading}>
-                {loading &&  <Loader2 className="animate-spin"/>}
+                {loading && <Loader2 className="animate-spin" />}
                 {loading ? "Sending..." : "Invite Friend"}
               </Button>
             </div>

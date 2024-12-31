@@ -58,8 +58,8 @@ function SheetDemo() {
   );
 }
 
-const UserAvatar = ({ userData, user, LogOutUser }: any) => {
-  // console.log(user.customData);
+const UserAvatar = ({ userData, customData, user, LogOutUser }: any) => {
+  // console.log(customData);
   const userImg =
     "https://cdn.dribbble.com/users/7083770/avatars/normal/3d8dff526cb837d420cd4ae1fb73db01.png?1723696294";
   return (
@@ -73,10 +73,10 @@ const UserAvatar = ({ userData, user, LogOutUser }: any) => {
                   userData.profileImage ||
                   "https://kinscare-storage.s3.amazonaws.com/Firefly_Generate_a_place_holder_profile_image_cartoony_avatar_Caucasian_man_for_job_application_1309_(1)-transformed.jpeg"
                 }
-                alt={user?.customData?.name}
+                alt={customData.name}
               />
               <AvatarFallback>
-                {user?.customData?.name?.charAt(0).toUpperCase()}
+                {customData.name?.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </div>
@@ -102,10 +102,10 @@ const UserAvatar = ({ userData, user, LogOutUser }: any) => {
                   userData.profileImage ||
                   "https://kinscare-storage.s3.amazonaws.com/Firefly_Generate_a_place_holder_profile_image_cartoony_avatar_Caucasian_man_for_job_application_1309_(1)-transformed.jpeg"
                 }
-                alt={user?.customData?.name}
+                alt={customData.name}
               />
               <AvatarFallback>
-                {user?.customData?.name?.charAt(0).toUpperCase()}
+                {customData.name?.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
@@ -183,8 +183,10 @@ function CaregiverNavbarRight() {
     setClient,
     setLoadingAuth,
     setUserData,
+    customData
   } = mongodb;
-  const router = useRouter()
+  const router = useRouter();
+  console.log(user)
   const LogOutUser = async () => {
     try {
       if (!user || !app?.currentUser) return;
@@ -194,15 +196,15 @@ function CaregiverNavbarRight() {
       //     event: "sign_out",
       //     added: new Date(),
       //     date_time: new Date().toISOString(),
-      //     distinct_id: user?.customData?.hash,
-      //     role: user?.customData?.role,
+      //     distinct_id: customData.hash,
+      //     role: customData.role,
       //     userId: `${user?.id}`,
       //   },
       // };
       // const payload = {
       //   added: new Date(),
       //   date_time: new Date().toISOString(),
-      //   role: user?.customData?.role,
+      //   role: customData.role,
       //   userId: `${user?.id}`,
       // };
 
@@ -227,10 +229,10 @@ function CaregiverNavbarRight() {
 
   return (
     <div className="flex items-center  p-2">
-      {user && userData && user.customData.userID ? (
+      {user && userData && customData.userID ? (
         <>
           <CaregiverNotification />{" "}
-          <UserAvatar LogOutUser={LogOutUser} user={user} userData={userData} />
+          <UserAvatar LogOutUser={LogOutUser} user={user} customData={customData} userData={userData} />
         </>
       ) : (
         <>

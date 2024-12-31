@@ -6,16 +6,16 @@ import { useRouter } from "next/navigation";
 import DashboardSkeleton from "@/Providers/DashboardSkelenton";
 
 
-interface ProviderAuthProps {
+interface CaregiverAuthProps {
   children: ReactNode;
 }
 
-function ProviderAuth({ children }: ProviderAuthProps) {
+function CaregiverAuth({ children }: CaregiverAuthProps) {
   const mongoClient: any = useContext(MongoContext);
   const { authenticated, loadingAuth } = mongoClient;
   const router = useRouter();
 
-  useEffect(() => {
+  useEffect(() => { 
     // Redirect if not authenticated after loading auth state
     if (!loadingAuth && !authenticated) {
       router.replace("/signin"); // Adjust this path based on your app's routing
@@ -38,4 +38,4 @@ function ProviderAuth({ children }: ProviderAuthProps) {
   return null;
 }
 
-export default ProviderAuth;
+export default CaregiverAuth;

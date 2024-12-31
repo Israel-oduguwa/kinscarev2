@@ -66,7 +66,7 @@ function AddWorkExperience() {
   } = useForm({
     resolver: yupResolver(workExperienceSchema),
     defaultValues: {
-      workExperiences: userData.careerProfile.experience.workExperiences,
+      workExperiences: userData?.careerProfile?.experience?.workExperiences,
     },
   });
   // cons

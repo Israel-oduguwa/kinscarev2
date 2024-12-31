@@ -14,6 +14,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast"; // For notifications
+import { useRouter } from "next/navigation";
 
 interface JobPostActionsProps {
   jobID: string;
@@ -25,7 +26,7 @@ const JobPostActions: React.FC<JobPostActionsProps> = ({ jobID }) => {
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const { toast } = useToast();
-
+  const router = useRouter()
   const handleDelete = async () => {
     setLoading(true);
     try {
@@ -38,6 +39,7 @@ const JobPostActions: React.FC<JobPostActionsProps> = ({ jobID }) => {
           description: "Job post has been successfully deleted.",
         });
         // Optionally: Add logic to remove the deleted job from UI or navigate away
+        router.push("/provider/job/all")
       }
     } catch (err) {
       toast({

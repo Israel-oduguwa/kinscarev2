@@ -31,7 +31,7 @@ function ScoreBoardUi({ userData }: any) {
     if (userData) {
       const totalPoint = calculateTotalScore();
       setTotalScore(totalPoint);
-      fetchUserRank(totalPoint); // Fetch rank when score changes
+      // fetchUserRank(totalPoint); // Fetch rank when score changes
     }
   }, [userData]);
 
