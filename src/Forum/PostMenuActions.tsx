@@ -44,12 +44,12 @@ function PostMenuActions({ postID, content, authorID, replyID, usage }: any) {
             <Ellipsis  />
           </MenubarTrigger>
           <MenubarContent>
-            <MenubarItem>
+            {/* <MenubarItem>
               <p className="text-gray-800 antialiased">Share Link</p>
-            </MenubarItem>
+            </MenubarItem> */}
             {user && (
               <>
-                <MenubarSeparator />
+                {/* <MenubarSeparator /> */}
                 <MenubarItem>
                   <QuoteButton id={postID} content={content} />
                 </MenubarItem>

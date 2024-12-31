@@ -20,7 +20,7 @@ async function Comments({ postID, threadID }: any) {
 
   const response = await data.json();
   const { replies }: any = response;
-  console.log(replies, "there are replies");
+  // console.log(replies, "there are replies");
   return (
     <div className="ml-4 relative ">
       {" "}

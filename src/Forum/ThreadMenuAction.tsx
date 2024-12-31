@@ -49,14 +49,14 @@ const del = async () => {
             <Ellipsis />
           </MenubarTrigger>
           <MenubarContent> 
-            <MenubarItem>
+            {/* <MenubarItem>
               <p className="text-gray-800 antialiased">Share Link</p>
-            </MenubarItem>
+            </MenubarItem> */}
           
             <div className="py-2">
               {user && user.customData.userID === authorID ? (
                 <>
-                  <MenubarSeparator className="border-gray-100 border" />
+                  {/* <MenubarSeparator className="border-gray-100 border" /> */}
 
                  <Link href={`/community/discussions/${threadID}/update`}>
                  <MenubarItem onClick={openEditDialog}>

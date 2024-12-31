@@ -13,7 +13,7 @@ async function DiscussionPosts({ threadID }: PostProps) {
   // So the discussion are refreshed every 60 minutes to prevent the excess update from the server
   const response = await data.json();
   const { posts }: any = response;
-  // console.log(response);
+  // console.log(response.posts);
 
   return (
     <div>

@@ -119,3 +119,35 @@ export const   convertISODateToNormal = (isoString: string | number | Date) => {
   const options:any = { year: 'numeric', month: 'long', day: 'numeric' };
   return date.toLocaleDateString(undefined, options); 
 }
+
+export function truncateHtml(html: string, maxLength: number, ellipsis = '...'): string {
+  let currentLength = 0;
+  const div = document.createElement('div');
+  div.innerHTML = html;
+
+  const truncateNode = (node: ChildNode): boolean => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent || '';
+      if (currentLength + text.length > maxLength) {
+        node.textContent = text.slice(0, maxLength - currentLength) + ellipsis;
+        return true; // Truncation complete
+      }
+      currentLength += text.length;
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      const childNodes = Array.from(node.childNodes);
+      for (const child of childNodes) {
+        if (truncateNode(child)) {
+          // If truncated inside a child node, remove remaining siblings
+          while (node.lastChild && node.lastChild !== child) {
+            node.removeChild(node.lastChild);
+          }
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  truncateNode(div);
+  return div.innerHTML;
+}

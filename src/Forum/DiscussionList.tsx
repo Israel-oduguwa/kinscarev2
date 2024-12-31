@@ -25,7 +25,7 @@ export default function DiscussionList({
   pagination: any;
 }) {
   const { page, pages } = pagination; // Extract the pagination details from the API
-  console.log(threads, "sjhs");
+  // console.log(threads, "sjhs");
   return (
     <div>
       {threads.map((thread: any) => {

@@ -16,7 +16,7 @@ import ProfileAvatar from "@/components/ProfileAvatar";
 polyfill();
 
 function DiscussionPost({ posts, threadID }: any) {
-  console.log(posts, "tshisi s");
+  // console.log(posts, "tshisi s"); 
   return (
     <>
       <QuoteProvider>

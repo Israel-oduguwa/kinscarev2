@@ -98,6 +98,7 @@
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "tippy.js": "^6.3.7",
+    "truncate-html": "^1.1.2",
     "twilio": "^5.3.6",
     "vaul": "^0.9.1",
     "yup": "^1.4.0",
