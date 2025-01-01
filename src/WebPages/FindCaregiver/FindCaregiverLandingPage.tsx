@@ -16,7 +16,7 @@ const FindLandingPage = async () => {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6">
+        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6 pt-20 lg:pt-0">
           {/* Headline */}
           <h1 className="text-white text-4xl md:text-6xl font-extrabold leading-tight mb-4">
             Find the{" "}
@@ -38,9 +38,8 @@ const FindLandingPage = async () => {
           </p>
 
           {/* Search Bar */}
-          <div className="mb-6">
+         
             <SearchBar />
-          </div>
           <p className="text-gray-300 text-lg max-w-2xl mb-8">
             Over{" "}
             <span className="text-white font-bold">100 new caregivers</span>{" "}

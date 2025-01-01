@@ -337,7 +337,7 @@ const Signup: React.FC = () => {
         closeSelectModal={closeSelectModal}
       />
 
-      <header className="py-6 px-8 sm:py-4">
+      <header className="py-6 px-6 sm:py-4">
         <div className="flex justify-between items-center">
           <div>
             <Link
@@ -405,7 +405,7 @@ const Signup: React.FC = () => {
                         <div className="flex items-center mb-2 space-x-2">
                           <RadioGroupItem value="caregiver" id="r1" />
                           <Label
-                            className="text-sm font-normal text-gray-900 dark:text-white"
+                            className="text-sm font-normal text-gray-700 dark:text-white"
                             htmlFor="r1"
                           >
                             I AM A CAREGIVER LOOKING FOR A JOB
@@ -414,7 +414,7 @@ const Signup: React.FC = () => {
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="provider" id="r2" />
                           <Label
-                            className="text-sm font-normal text-gray-900 dark:text-white"
+                            className="text-sm font-normal text-gray-700 dark:text-white"
                             htmlFor="r2"
                           >
                             I AM A PROVIDER SEARCHING FOR CAREGIVER(S)/NACs

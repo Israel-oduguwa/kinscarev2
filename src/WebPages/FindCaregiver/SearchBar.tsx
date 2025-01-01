@@ -42,7 +42,7 @@ const SearchBar = ({ availability, licenses }: any) => {
   };
 
   return (
-    <div className="w-full max-w-6xl p-6 bg-white rounded-lg ">
+    <div className="w-full max-w-6xl mb-6 p-6 bg-white rounded-lg ">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Multi-Select: Shift Types */}
         <MultiSelect

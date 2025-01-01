@@ -316,7 +316,7 @@ const Signin: React.FC = () => {
           selectRoleModal={selectRoleModal}
           closeSelectModal={closeSelectModal}
         />
-        <header className=" mx-auto py-6 px-8 z-10 sm:py-4">
+        <header className=" mx-auto py-6 px-6 z-10 sm:py-4">
           <div className="flex justify-between items-center">
             <div>
               <Link
