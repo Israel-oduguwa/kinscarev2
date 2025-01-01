@@ -301,11 +301,8 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
 
       {/* Email Signup Dialog */}
       <Dialog open={isEmailDialogOpen} onOpenChange={setIsEmailDialogOpen}>
-        <DialogContent className="rounded-lg shadow-xl p-6 bg-white max-w-lg">
-          <div className="flex w-full space-x-10">
-            <Button onClick={goBack} size="icon" variant="outline">
-              <ArrowBigLeft />
-            </Button>
+        <DialogContent className="rounded-lg shadow-xl max-h-full md:h-auto overflow-y-auto p-6 bg-white max-w-lg">
+          <div className="">
             <DialogTitle className="text-3xl justify-center font-bold tracking-tight mb-2 text-center">
               Signup with Email
             </DialogTitle>
@@ -465,6 +462,9 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
               ) : (
                 "Signup"
               )}
+            </Button>
+            <Button onClick={goBack} variant="outline">
+              <ArrowBigLeft /> Back to social signup
             </Button>
           </form>
         </DialogContent>

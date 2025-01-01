@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Interweave } from "interweave";
 import { polyfill } from "interweave-ssr";
 import { MapPin, Send } from "lucide-react";
-import { Metadata } from "next";
 import Link from "next/link";
+import truncateHtml from 'html-truncate'; // Ensure this is installed: `npm install html-truncate`
+import { Metadata } from 'next';
 import {
   JSXElementConstructor,
   Key,
@@ -148,7 +149,7 @@ const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
         </div>
       </Link>
       <OAuthDialog userID={candidate.userID} message="caregiver">
-        <Button className="absolute top-3 right-3">
+        <Button className="relative md:absolute w-full md:w-auto -top-5 md:top-3 md:right-3">
           <span className="flex space-x-1 items-center gap-2">
             <Send size={16} /> Message caregiver
           </span>{" "}
@@ -159,60 +160,84 @@ const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
 };
 
 export async function generateMetadata({
-  params,
+  searchParams,
 }: {
-  params: any;
+  searchParams: { availability: string; licenses: string };
 }): Promise<Metadata> {
-  const availability = params.availability || "all";
-  const licenses = params.licenses || "all";
-  const currentPage = params.page || 1;
+  const { availability, licenses } = searchParams;
 
-  const title = `Caregivers Near You | ${availability} Availability | ${licenses} Licenses`;
-  const description = `Discover the best caregivers near you with ${availability} availability and licensed for ${licenses}. Find top-rated caregivers easily.`;
+  try {
+    const response = await fetch(
+      `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${availability}&licenses=${licenses}&page=1&limit=10`,
+      { cache: 'no-cache' }
+    );
+    const { caregivers } = await response.json();
+    console.log(caregivers, "metasdata")
 
-  const baseUrl = "https://yourwebsite.com/caregivers";
-  const prevPage =
-    currentPage > 1
-      ? `${baseUrl}?availability=${availability}&licenses=${licenses}&page=${
-          currentPage - 1
-        }`
-      : null;
-  const nextPage = `${baseUrl}?availability=${availability}&licenses=${licenses}&page=${
-    currentPage + 1
-  }`;
+    // Truncate caregiver descriptions while preserving HTML
+    const truncatedDescription = caregivers
+      .map(
+        (caregiver: any) =>
+          `${caregiver.fname} ${caregiver.lname} - ${truncateHtml(
+            caregiver.certifications,
+            150,
+            { ellipsis: '...' }
+          )}`
+      )
+      .slice(0, 3)
+      .join(', ');
 
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      url: `${baseUrl}?availability=${availability}&licenses=${licenses}&page=${currentPage}`,
-      type: "website",
-      images: [
+    // Generate JSON-LD for rich results
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      itemListElement: caregivers.map((caregiver: any, index: number) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'Person',
+          name: `${caregiver.fname} ${caregiver.lname}`,
+          description: caregiver.certifications, // Keep HTML content
+          address: caregiver.address,
+          image: caregiver.profileImage,
+          jobTitle: 'Caregiver',
+          worksFor: {
+            '@type': 'Organization',
+            name: 'Kinscare',
+          },
+        },
+      })),
+    };
+
+    return {
+      title: `Find Caregivers - ${licenses} Available`,
+      description: truncatedDescription,
+      openGraph: {
+        title: `Find Caregivers - ${licenses}`,
+        description: truncatedDescription,
+      },
+      twitter: {
+        title: `Caregivers with ${licenses}`,
+        description: truncatedDescription,
+      },
+      script: [
         {
-          url: "https://yourwebsite.com/og-image.jpg", // Replace with your image
-          width: 1200,
-          height: 630,
-          alt: "Caregivers Near You",
+          type: 'application/ld+json',
+          children: JSON.stringify(jsonLd),
         },
       ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: ["https://yourwebsite.com/og-image.jpg"], // Replace with your image
-    },
-    alternates: {
-      canonical: `${baseUrl}?availability=${availability}&licenses=${licenses}&page=${currentPage}`,
-    },
-    link: [
-      prevPage && { rel: "prev", href: prevPage },
-      { rel: "next", href: nextPage },
-    ].filter(Boolean),
-  };
+    };
+  } catch (error) {
+    console.error('Failed to fetch caregivers for metadata', error);
+    return {
+      title: 'Caregivers - Search',
+      description: 'Find caregivers available near you.',
+    };
+  }
 }
+
+
+
 
 async function Caregivers({
   availability,
@@ -232,28 +257,8 @@ async function Caregivers({
     caregivers,
     pagination: { totalCaregivers, totalPages, currentPage, limit },
   } = response;
-  // JSON-LD for caregivers
-  const caregiversStructuredData = caregivers.map((caregiver: any) => ({
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name: `${caregiver.fname} ${caregiver.lname}`,
-    jobTitle: "Caregiver",
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: caregiver.city,
-      addressRegion: caregiver.state || "N/A",
-      postalCode: caregiver.zipcode,
-    },
-    telephone: caregiver.telephone,
-    email: caregiver.email,
-    worksFor: {
-      "@type": "Organization",
-      name: caregiver.company || "Independent",
-    },
-    description: caregiver.description || "Experienced caregiver available.",
-  }));
+  // console.log(caregivers)
 
-  
   // convert the queries into an array
   const availabilityArray = Array.isArray(availability)
     ? availability
