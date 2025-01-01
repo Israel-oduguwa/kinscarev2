@@ -19,7 +19,6 @@ import * as yup from "yup";
 import SelectRole from "./SelectRole";
 import {
   GoogleLogin,
-  googleLogout,
   GoogleOAuthProvider,
 } from "@react-oauth/google";
 
@@ -306,7 +305,7 @@ const Signin: React.FC = () => {
   };
   const closeSelectModal = () => setSelectRoleModal(false);
   // for google one tap login
-  googleLogout();
+  // googleLogout();
   return (
     <GoogleOAuthProvider clientId={`${process.env.GOOGLE_APP_ID}`}>
       <div className="relative w-full min-h-[100vh] bg-gray-100 dark:bg-inherit">
@@ -362,7 +361,7 @@ const Signin: React.FC = () => {
                     onError={handleGoogleError}
                     theme="outline"
                     text="continue_with"
-                    useOneTap
+                    // useOneTap
                   />
                 </div>
                 <OrSeparator />
