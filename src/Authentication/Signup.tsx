@@ -22,7 +22,6 @@ import * as yup from "yup";
 import SelectRole from "./SelectRole";
 import {
   GoogleLogin,
-  googleLogout,
 } from "@react-oauth/google";
 
 const OrSeparator: React.FC = () => {
@@ -324,7 +323,7 @@ const Signup: React.FC = () => {
 
   const closeSelectModal = () => setSelectRoleModal(false);
 //  for one tap login 
-  googleLogout();
+  // googleLogout();
 
   if (loadingAuth === "authenticating") {
     return <>loading....</>;
@@ -381,7 +380,7 @@ const Signup: React.FC = () => {
                   onError={handleGoogleError}
                   theme="outline"
                   text="continue_with"
-                  useOneTap
+                  // useOneTap
                 />
               </div>
               <OrSeparator />
