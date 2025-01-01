@@ -80,7 +80,7 @@ function Page() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />{" "}
-      {/* <Signin /> */}
+      <Signin />
     </>
   );
 }
