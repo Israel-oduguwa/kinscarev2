@@ -1,6 +1,7 @@
 import React from "react";
 import Signup from "@/Authentication/Signup";
 import { Metadata } from "next";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 // Define Metadata for SEO
 export const metadata: Metadata = {
@@ -75,7 +76,9 @@ function Page() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <GoogleOAuthProvider clientId={`${process.env.GOOGLE_APP_ID}`}>
       <Signup />
+      </GoogleOAuthProvider>
     </>
   );
 }
