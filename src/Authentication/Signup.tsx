@@ -329,7 +329,7 @@ const Signup: React.FC = () => {
           selectRoleModal={selectRoleModal}
           closeSelectModal={closeSelectModal}
         />
-        <header className="py-8 px-8 sm:py-4">
+        <header className="py-6 px-8 sm:py-4">
           <div className="flex justify-between items-center">
             <div>
               <Link
@@ -358,7 +358,7 @@ const Signup: React.FC = () => {
             </div>
           </div>
         </header>
-        <section className="py-8 max-w-xl absolute right-0 left-0 z-10 m-auto">
+        <section className="py-6 max-w-xl absolute right-0 left-0 z-10 m-auto">
           <div className="mx-4">
             <div className="bg-white rounded-2xl shadow-xl dark:border md:mt-0 xl:p-0 dark:bg-gray-800 dark:border-gray-700">
               <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -590,7 +590,7 @@ const Signup: React.FC = () => {
             </defs>
             <path
               fill="url(#gradient2)"
-              fill-opacity="1"
+              fillOpacity="1"
               d="M0,320L48,304C96,288,192,256,288,245.3C384,235,480,245,576,224C672,203,768,149,864,133.3C960,117,1056,139,1152,128C1248,117,1344,75,1392,53.3L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
             ></path>
           </svg>
