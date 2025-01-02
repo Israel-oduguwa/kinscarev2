@@ -165,7 +165,7 @@ async function ForumPage({ searchParams }: { searchParams: any }) {
       <div className="max-w-screen-2xl mx-auto px-4 2xl:px-0">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Sidebar */}
-          <aside className="hidden xl:block xl:col-span-2">
+          <aside className="xl:col-span-2 col-span-12">
             <LeftFilter params={searchParams} />
           </aside>
 

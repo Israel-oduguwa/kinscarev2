@@ -166,22 +166,22 @@ export default async function Page({ params }: { params: { id: string } }) {
 
   return (
     <div className="bg-gray-100 py-20 min-h-screen">
-    <div className="max-w-screen-2xl mx-auto px-4 2xl:px-0">
+    <div className="max-w-screen-2xl mx-auto px-2 2xl:px-0">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Sidebar */}
-        <aside className="hidden xl:block xl:col-span-2">
-          <LeftFilter />
-        </aside>
+        <aside className="xl:col-span-2 col-span-12">
+            <LeftFilter  />
+          </aside>
 
         {/* Main Content */}
         <section className="col-span-12 xl:col-span-7">
-          <div className="relative w-full h-fit p-4 rounded-lg">
+          <div className="relative w-full h-fit mb-4  rounded-lg">
             <Suspense fallback={<DiscussionSkeleton/>}>
               <Discussion threadID={id} />
             </Suspense>
           </div>
 
-          <div className="relative w-full h-fit p-4 rounded-lg">
+          <div className="relative w-full h-fit  rounded-lg">
             <Suspense fallback={<DiscussionPostSkeleton/>}>
               <DiscussionPosts threadID={id} />
             </Suspense>

@@ -29,7 +29,6 @@ async function Discussion({ threadID }: { threadID: string }) {
       <div className="p-6">
         <div className="flex items-center mb-6 gap-2">
           {/* <div className="vote border rounded-md border-gray-300">
-            
           </div> */}
           <h1 className="font-semibold antialiased text-gray-900 text-xl ">
             {thread.title}

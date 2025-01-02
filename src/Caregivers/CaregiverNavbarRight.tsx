@@ -139,9 +139,9 @@ const UserAvatar = ({ userData, customData, user, LogOutUser }: any) => {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="p-3 border border-gray-50" asChild>
-          <Link href="/conversations">
+          <Link href="/community">
             <MessageCircle className="mr-2 h-4 w-4" />
-            Conversations
+            Community
           </Link>
         </DropdownMenuItem>
         {/* <DropdownMenuItem className="p-3 border border-gray-50" asChild>

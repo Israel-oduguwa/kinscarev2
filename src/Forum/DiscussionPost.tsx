@@ -75,8 +75,8 @@ function DiscussionPost({ posts, threadID }: any) {
                   <div dangerouslySetInnerHTML={{ __html: post.content }} />
                 </div>
 
-                <div className="flex gap-2 items-baseline">
-                  <div className="flex  justify-between text-gray-600">
+                <div className="flex gap-2 items-baseline relative">
+                  <div className="flex absolute right-0 -top-1 justify-between text-gray-600">
                     <LikeComponent
                       threadID={post._id}
                       initialLikeCount={post?.likesCount}

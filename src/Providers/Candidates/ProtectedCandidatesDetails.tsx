@@ -141,7 +141,7 @@ function ProtectedCandidatesDetails({
       console.log(file);
       try {
         setDocumentLoading(true);
-        const payload = { fileUrl:governmentID };
+        const payload = { fileUrl: governmentID };
 
         const { data } = await axios.post(
           "https://api.kinscare.org/api/v1/delete-file",
@@ -486,7 +486,8 @@ function ProtectedCandidatesDetails({
                   </p>
                   <p className="mt-1 text-sm text-blue-600 font-medium">
                     Adding a payment method is the most common and convenient
-                    way to verify your account.
+                    way to verify your account. We recommend this option for a
+                    faster, hassle-free experience!
                   </p>
                 </div>
               </div>

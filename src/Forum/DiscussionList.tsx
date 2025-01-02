@@ -37,7 +37,7 @@ export default function DiscussionList({
             <div className="p-4 mb-4 flex gap-4 flex-col md:flex-row items-center bg-white dark:bg-gray-800 border border-gray-50 dark:border-gray-700 rounded-lg shadow-sm max-w-full md:max-w-5xl">
               <div className="flex flex-col justify-between py-3 px-1 leading-normal w-full">
                 <div>
-                  <h1 className="text-xl mb-3 font-semibold  tracking-tight text-gray-900 dark:text-white">
+                  <h1 className="text-xl mb-3 font-semibold tracking-tight text-gray-800 dark:text-white">
                     {thread.title}
                   </h1>
                   <div className="flex flex-wrap gap-2 mb-4">
