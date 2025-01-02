@@ -5,8 +5,8 @@ import { Interweave } from "interweave";
 import { polyfill } from "interweave-ssr";
 import { MapPin, Send } from "lucide-react";
 import Link from "next/link";
-import truncateHtml from 'html-truncate'; // Ensure this is installed: `npm install html-truncate`
-import { Metadata } from 'next';
+import truncateHtml from "html-truncate"; // Ensure this is installed: `npm install html-truncate`
+import { Metadata } from "next";
 import {
   JSXElementConstructor,
   Key,
@@ -57,185 +57,84 @@ const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
 
   const sanitizedContent = sanitizeContent(candidate.certifications);
   return (
-    <div className="w-full mb-4 relative">
-      <Link href={`caregivers/${candidate.userID}`}>
-        <div className="mb-1 flex bg-white flex-col space-y-4 shadow-md border border-gray-50 rounded-lg p-6">
-          <div className="flex justify-between">
-            <div className="flex space-x-2 items-center">
+    <div className="w-full mb-6">
+      <div className="bg-white flex flex-col lg:flex-row items-start lg:items-center justify-between shadow-md border border-gray-100 rounded-lg p-6">
+        <Link href={`caregivers/${candidate.userID}`} className="flex-1">
+          {/* Candidate Info */}
+          <div className="flex mb-3 flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-4">
+            <div className="flex items-center space-x-4">
               <ProfileAvatar
-                size="w-12 h-12"
+                size="w-16 h-16"
                 name={candidate.name}
                 profileImage={candidate?.profileImage}
               />
               <div>
-                <p className="antialiased flex space-x-2 font-bold relative text-gray-900">
+                <p className="flex items-center text-lg font-bold text-gray-900">
                   {displayName}{" "}
                   {availability && (
-                    <span className="relative flex h-3 w-3">
+                    <span className="ml-2 relative flex h-3 w-3">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                     </span>
                   )}
                 </p>
-                <p className="text-sm text-gray-600 flex flex-wrap gap-0.5 space-x-1 items-center">
+                <p className="text-sm text-gray-600 flex items-center gap-2">
                   <MapPin size={15} />
                   {candidate.city}, {candidate.zipcode}{" "}
-                  <span className="h-1 w-1 bg-gray-700 rounded-full"></span>
                   {availability && (
-                    <span className="text-sm text-green-600 antialiased">
+                    <span className="text-sm text-green-600 font-medium">
                       Available now
                     </span>
                   )}
                 </p>
               </div>
             </div>
+
+           
           </div>
-          <div className="w-full">
-            <div className="w-full flex-wrap gap-4 flex">
-              {candidate.licenses.map((license: any, index: any) => (
-                <div
+           {/* Licenses and Availability */}
+           <div className="flex flex-wrap gap-2 mt-4 lg:mt-0">
+              {candidate.licenses.map((license: string, index: number) => (
+                <span
                   key={index}
-                  className="relative text-sm bg-gray-100 text-gray-800 rounded-lg py-1.5 px-3"
+                  className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg"
                 >
-                  <span className="text-sm text-gray-600">{license}</span>
-                </div>
+                  {license}
+                </span>
               ))}
-              {candidate.availability.map(
-                (
-                  sch:
-                    | string
-                    | number
-                    | bigint
-                    | boolean
-                    | ReactElement<unknown, string | JSXElementConstructor<any>>
-                    | Iterable<ReactNode>
-                    | ReactPortal
-                    | Promise<
-                        | string
-                        | number
-                        | bigint
-                        | boolean
-                        | ReactPortal
-                        | ReactElement<
-                            unknown,
-                            string | JSXElementConstructor<any>
-                          >
-                        | Iterable<ReactNode>
-                        | null
-                        | undefined
-                      >
-                    | null
-                    | undefined,
-                  index: Key | null | undefined
-                ) => (
-                  <div
-                    key={index}
-                    className="relative text-sm bg-gray-100 text-gray-800 rounded-lg py-1.5 px-3"
-                  >
-                    <span className="text-sm text-gray-600">{sch}</span>
-                  </div>
-                )
-              )}
+              {candidate.availability.map((sch: string, index: number) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg"
+                >
+                  {sch}
+                </span>
+              ))}
             </div>
-          </div>
-          <div className="w-full ">
-            <h4 className="flex mb-2 text-sm font-bold items-center">
-              Certifications
-            </h4>
+
+          {/* Certifications */}
+          <div className="mt-4">
+            <h4 className="text-sm font-bold text-gray-800">Certifications</h4>
             <div className="text-sm text-gray-600 line-clamp-2">
               <Interweave content={sanitizedContent} />
             </div>
           </div>
+        </Link>
+
+        {/* Message Button */}
+        <div className="mt-6 w-full lg:w-auto lg:mt-0 lg:ml-4 flex-shrink-0">
+          <OAuthDialog userID={candidate.userID} message="caregiver">
+            <Button className="px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md w-full lg:w-auto">
+              <span className="flex items-center gap-2">
+                <Send size={16} /> Message Caregiver
+              </span>
+            </Button>
+          </OAuthDialog>
         </div>
-      </Link>
-      <OAuthDialog userID={candidate.userID} message="caregiver">
-        <Button className="relative md:absolute w-full md:w-auto -top-5 md:top-3 md:right-3">
-          <span className="flex space-x-1 items-center gap-2">
-            <Send size={16} /> Message caregiver
-          </span>{" "}
-        </Button>
-      </OAuthDialog>
+      </div>
     </div>
   );
 };
-
-export async function generateMetadata({
-  searchParams,
-}: {
-  searchParams: { availability: string; licenses: string };
-}): Promise<Metadata> {
-  const { availability, licenses } = searchParams;
-
-  try {
-    const response = await fetch(
-      `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${availability}&licenses=${licenses}&page=1&limit=10`,
-      { cache: 'no-cache' }
-    );
-    const { caregivers } = await response.json();
-    console.log(caregivers, "metasdata")
-
-    // Truncate caregiver descriptions while preserving HTML
-    const truncatedDescription = caregivers
-      .map(
-        (caregiver: any) =>
-          `${caregiver.fname} ${caregiver.lname} - ${truncateHtml(
-            caregiver.certifications,
-            150,
-            { ellipsis: '...' }
-          )}`
-      )
-      .slice(0, 3)
-      .join(', ');
-
-    // Generate JSON-LD for rich results
-    const jsonLd = {
-      '@context': 'https://schema.org',
-      '@type': 'ItemList',
-      itemListElement: caregivers.map((caregiver: any, index: number) => ({
-        '@type': 'ListItem',
-        position: index + 1,
-        item: {
-          '@type': 'Person',
-          name: `${caregiver.fname} ${caregiver.lname}`,
-          description: caregiver.certifications, // Keep HTML content
-          address: caregiver.address,
-          image: caregiver.profileImage,
-          jobTitle: 'Caregiver',
-          worksFor: {
-            '@type': 'Organization',
-            name: 'Kinscare',
-          },
-        },
-      })),
-    };
-
-    return {
-      title: `Find Caregivers - ${licenses} Available`,
-      description: truncatedDescription,
-      openGraph: {
-        title: `Find Caregivers - ${licenses}`,
-        description: truncatedDescription,
-      },
-      twitter: {
-        title: `Caregivers with ${licenses}`,
-        description: truncatedDescription,
-      },
-      script: [
-        {
-          type: 'application/ld+json',
-          children: JSON.stringify(jsonLd),
-        },
-      ],
-    };
-  } catch (error) {
-    console.error('Failed to fetch caregivers for metadata', error);
-    return {
-      title: 'Caregivers - Search',
-      description: 'Find caregivers available near you.',
-    };
-  }
-}
-
 
 
 
@@ -271,7 +170,10 @@ async function Caregivers({
       <div className="bg-gray-100 min-h-[100vh] p-3">
         <div className="max-w-6xl py-10 mx-auto">
           <div className="mb-6">
-            <SearchBar availability={availabilityArray} licenses={licensesArray} />
+            <SearchBar
+              availability={availabilityArray}
+              licenses={licensesArray}
+            />
           </div>
           <h1 className="text-md text-gray-800 tracking-tight antialiased font-bold mb-4">
             There are {totalCaregivers} caregivers near you with {licenses}

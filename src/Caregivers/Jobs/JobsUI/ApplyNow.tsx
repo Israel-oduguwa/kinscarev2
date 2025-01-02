@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation"; // For refreshing
 import MongoContext from "@/app/MongoContext";
 import { Button } from "@/components/ui/button";
-import { Bookmark, Share2Icon } from "lucide-react";
+import { Bookmark, Loader, Loader2, Share2Icon } from "lucide-react";
 import axios, { AxiosError } from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { fetchUserData } from "@/lib/utils";
@@ -21,10 +21,10 @@ function ApplyNow({ jobID, job }: any) {
   const providerName = job.provider;
   // Check if the job is already favorite when the page loads
   // console.log(userData)
-  console.log(applicants)
+  console.log(applicants);
   useEffect(() => {
     if (userData?.favorite_jobs) {
-      console.log("check")
+      console.log("check");
       const isFav = userData.favorite_jobs.some(
         (favorite: any) => favorite.jobID === jobID || favorite.jobId === jobID // Check both fields
       );
@@ -35,7 +35,7 @@ function ApplyNow({ jobID, job }: any) {
       const alreadyApplied = applicants.some(
         (applicant: any) => applicant?.userID === userData.userID
       );
-      console.log(alreadyApplied)
+      console.log(alreadyApplied);
       setHasApplied(alreadyApplied);
     }
   }, [userData, jobID, applicants]);
@@ -134,12 +134,12 @@ function ApplyNow({ jobID, job }: any) {
       <div className="flex gap-2">
         {/* Apply Button */}
         <Button
-          className="rounded-lg"
+          className="rounded-lg w-full lg:w-auto"
           variant="default"
           onClick={() => applyForJob()}
           disabled={isApplying || hasApplied} // Disable if user is applying or has already applied
         >
-          {isApplying
+         {isApplying && <Loader2 className="animate-spin"/>} {isApplying
             ? "Applying..."
             : hasApplied
             ? "Already Applied"
@@ -163,9 +163,9 @@ function ApplyNow({ jobID, job }: any) {
         </Button>
 
         {/* Share Button */}
-        <Button size="icon" variant="outline">
+        {/* <Button size="icon" variant="outline">
           <Share2Icon size={18} />
-        </Button>
+        </Button> */}
       </div>
 
       {/* Error Messages */}

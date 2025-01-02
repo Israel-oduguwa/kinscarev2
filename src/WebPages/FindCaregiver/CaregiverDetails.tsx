@@ -302,7 +302,7 @@ async function CaregiverDetails({ candidateID }: { candidateID: string }) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto py-12 px-6 xl:px-0 space-y-10">
+    <div className="max-w-6xl mx-auto py-12 px-2 xl:px-0 space-y-10">
       {/* Main Profile Card */}
       <div className="relative shadow-lg border bg-white border-gray-100 rounded-2xl p-8">
         {/* Header Section */}

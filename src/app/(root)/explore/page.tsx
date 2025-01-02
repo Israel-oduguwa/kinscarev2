@@ -1,11 +1,81 @@
 import GetStartedBtn from "@/WebPages/Explore/GetStartedBtn";
 import Footer from "@/WebPages/Footer";
-import React from "react";
 import NavBar from "@/WebPages/Navbar";
 import TextAnimation from "@/WebPages/Explore/TextAnimation";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Explore Nursing & Allied Healthcare Careers - KinsCare",
+  description:
+    "Discover fulfilling careers in nursing and allied healthcare. Join the KinsCare community, find local training institutions, and explore rewarding career opportunities.",
+  openGraph: {
+    title: "Explore Nursing & Allied Healthcare Careers - KinsCare",
+    description:
+      "Discover fulfilling careers in nursing and allied healthcare. Join the KinsCare community, find local training institutions, and explore rewarding career opportunities.",
+    url: "https://yourwebsite.com/explore",
+    images: [
+      {
+        url: "https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Explore.png?alt=media&token=306410a8-a11b-461b-a745-545cb74064d7",
+        alt: "KinsCare Careers",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Explore Nursing & Allied Healthcare Careers - KinsCare",
+    description:
+      "Discover fulfilling careers in nursing and allied healthcare. Join the KinsCare community, find local training institutions, and explore rewarding career opportunities.",
+    images: [
+      "https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Explore.png?alt=media&token=306410a8-a11b-461b-a745-545cb74064d7",
+    ],
+  },
+  alternates: {
+    canonical: "https://yourwebsite.com/explore",
+  },
+};
+
 function page() {
+  const jsonLd = {
+    type: "application/ld+json",
+    children: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: "Explore Nursing & Allied Healthcare Careers",
+      description:
+        "Discover fulfilling careers in nursing and allied healthcare. Join the KinsCare community, find local training institutions, and explore rewarding career opportunities.",
+      url: "https://yourwebsite.com/explore",
+      mainEntity: [
+        {
+          "@type": "EducationalOccupationalProgram",
+          name: "Nursing Training Institutions",
+          description:
+            "Find local colleges, universities, and vocational programs that provide the education and training needed to enter nursing and allied healthcare professions.",
+          provider: {
+            "@type": "EducationalOrganization",
+            name: "KinsCare Training Institutions",
+          },
+        },
+        {
+          "@type": "Community",
+          name: "KinsCare Community",
+          description:
+            "A vibrant community for aspiring and current healthcare professionals to exchange job opportunities, resources, and insights.",
+        },
+      ],
+      potentialAction: {
+        "@type": "SearchAction",
+        target: "https://yourwebsite.com/explore?q={search_term_string}",
+        "query-input": "required name=search_term_string",
+      },
+    }),
+  };
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <NavBar />
       {/* Hero Section */}
       <section className="bg-gradient-to-br h-[100vh]  overflow-y-hidden from-blue-50 via-white to-purple-400 text-gray-800  items-center py-20">
@@ -42,7 +112,6 @@ function page() {
           <div className="w-full">
             <h2 className="text-4xl mb-4 max-w-xl mx-auto font-bold text-gray-900  tracking-tight text-center">
               Explore the world of nursing and allied healthcare—industries
-              
             </h2>
             <p className="max-w-4xl mx-auto text-gray-600 mb-6 text-center">
               filled with rewarding opportunities. From registered nurses to
@@ -50,7 +119,7 @@ function page() {
               offer diverse career paths with high demand now and an even
               brighter future ahead.
             </p>
-            <p className= " max-w-4xl mx-auto text-center text-gray-600 mb-6">
+            <p className=" max-w-4xl mx-auto text-center text-gray-600 mb-6">
               Enjoy flexibility in your work settings, from hospitals and
               clinics to private homes and research facilities, while making a
               meaningful difference in the lives of others every day.

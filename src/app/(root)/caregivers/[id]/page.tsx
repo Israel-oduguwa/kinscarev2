@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import Navbar from "@/WebPages/Navbar";
 import CaregiverDetails from "@/WebPages/FindCaregiver/CaregiverDetails";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Metadata } from "next";
 
 // Skeleton Component
 const CandidateDetailsSkeleton = () => {
@@ -52,6 +53,114 @@ const CandidateDetailsSkeleton = () => {
     </div>
   );
 };
+
+const obfuscateName = (name: string): string => {
+  const words = name.split(' ');
+  return words
+    .map((word) => {
+      if (word.length <= 2) return word;
+      if (word.length <= 6) {
+        const first = word.slice(0, 1);
+        const last = word.slice(-1);
+        return `${first}${'*'.repeat(word.length - 2)}${last}`;
+      } else {
+        const first = word.slice(0, 3);
+        const last = word.slice(-3);
+        return `${first}${'*'.repeat(word.length - 6)}${last}`;
+      }
+    })
+    .join(' ');
+};
+
+const obfuscateEmail = (email: string): string => {
+  const [localPart, domain] = email.split('@');
+  if (!localPart || !domain) return email;
+  const obfuscatedLocalPart = `${localPart.slice(0, 3)}${'*'.repeat(
+    Math.max(localPart.length - 6, 0)
+  )}${localPart.slice(-3)}`;
+  return `${obfuscatedLocalPart}@${domain}`;
+};
+
+// Metadata function
+export async function generateMetadata({
+  params,
+}: {
+  params: { candidateID: string };
+}): Promise<Metadata> {
+  const { candidateID } = params;
+
+  try {
+    const response = await fetch(
+      `https://api.kinscare.org/api/v1/providers/caregivers/${candidateID}`,
+      { cache: 'no-cache' }
+    );
+    const { caregiver } = await response.json();
+
+    // Obfuscate sensitive details
+    const obfuscatedName = `${obfuscateName(caregiver.fname)} ${obfuscateName(
+      caregiver.lname
+    )}`;
+    const obfuscatedEmail = obfuscateEmail(caregiver.settings.email);
+
+    // Truncate caregiver description while keeping HTML tags
+    const truncatedCertifications = caregiver.certifications;
+
+    // Generate JSON-LD for caregiver rich results
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      name: obfuscatedName,
+      email: obfuscatedEmail,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: caregiver.city,
+        addressRegion: 'WA', // Assuming Washington, adjust if needed
+        postalCode: caregiver.zipcode,
+        addressCountry: 'US',
+      },
+      image: caregiver.profileImage || 'https://default-profile-image.com',
+      jobTitle: 'Caregiver',
+      description: truncatedCertifications,
+      knowsAbout: caregiver.licenses.slice(0, 3), // Top licenses
+    };
+
+    return {
+      title: `${obfuscatedName} - Caregiver in ${caregiver.city}`,
+      description: truncatedCertifications,
+      openGraph: {
+        title: `${obfuscatedName} - Caregiver Profile`,
+        description: truncatedCertifications,
+        url: `https://yourwebsite.com/caregivers/${candidateID}`,
+        images: [
+          {
+            url: caregiver.profileImage || 'https://default-profile-image.com',
+            alt: obfuscatedName,
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `${obfuscatedName} - Caregiver Profile`,
+        description: truncatedCertifications,
+        images: [
+          caregiver.profileImage || 'https://default-profile-image.com',
+        ],
+      },
+      script: [
+        {
+          type: 'application/ld+json',
+          children: JSON.stringify(jsonLd),
+        },
+      ],
+    };
+  } catch (error) {
+    console.error('Failed to fetch caregiver details for metadata', error);
+    return {
+      title: 'Caregiver Details',
+      description: 'Explore caregiver profiles with Kinscare.',
+    };
+  }
+}
 
 async function page(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
