@@ -420,7 +420,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                   tooltip="Dashboard"
                 >
                   <Speech />
-                  <Link href="/vitae">
+                  <Link href="/community">
                     <span className="text-md">Community</span>
                   </Link>
                 </SidebarMenuButton>

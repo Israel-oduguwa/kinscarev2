@@ -31,63 +31,82 @@ interface Job {
 const JobPostCard: React.FC<{ job: Job }> = ({ job }) => {
   // console.log(job);
   return (
-    <div className="bg-white shadow-sm relative rounded-lg p-6 my-4 w-full mx-auto">
-      <Link href={`/vitae/jobs/${job._id}`}>
-        <div className="flex gap-4 items-center mb-3">
-          {job.profileImage && (
-            <img
-              className="h-8 w-8"
-              src={
-                job.profileImage
-                  ? job.profileImage
-                  : "profileImage:userData?.profileImage,"
-              }
-              alt="company logo"
-            />
-          )}
-          <div className="lg:max-w-lg xl:max-w-2xl">
-            <h2 className="text-lg font-semibold text-gray-800">{job.title}</h2>
-            <p className="text-sm text-gray-600">
-              {job.contacts.address}, {job.contacts.city},{" "}
-              {job.contacts.zipcode}
-            </p>
+    <div className="bg-white shadow-md border border-gray-100 rounded-lg p-6 my-4 w-full mx-auto">
+      <div className="flex flex-col lg:flex-row items-center lg:items-start lg:justify-between gap-6">
+        {/* Job Content */}
+        <Link href={`/vitae/jobs/${job._id}`} className="flex-1">
+          <div>
+            {/* Job Header */}
+            <div className="flex items-center gap-4 mb-4">
+              {job.profileImage && (
+                <img
+                  className="h-12 w-12 rounded-full object-cover"
+                  src={
+                    job.profileImage ||
+                    "https://lh3.googleusercontent.com/-g8IwNe70-kE/AAAAAAAAAAI/AAAAAAAAAAA/ALKGfkl1tpVAKXAezzCNWmKH5JWvlgr_xw/photo.jpg?sz=46"
+                  }
+                  alt="company logo"
+                />
+              )}
+              <div>
+                <h2 className="font-bold tracking-tight text-gray-800">
+                  {job.title}
+                </h2>
+                <p className="text-sm text-gray-600">
+                  {job.contacts.address}, {job.contacts.city},{" "}
+                  {job.contacts.zipcode}
+                </p>
+              </div>
+            </div>
+
+            {/* Certifications */}
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 line-clamp-2">
+                <Interweave content={job.certifications} />
+              </p>
+            </div>
+
+            {/* Licenses and Schedule */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              {job.licenses.map((license, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg"
+                >
+                  {license}
+                </span>
+              ))}
+              {job.schedule.map((sch, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg"
+                >
+                  {sch}
+                </span>
+              ))}
+            </div>
+
+            {/* Min Hours */}
+            <div>
+              <p className="text-sm text-gray-500">
+                Min Hours:{" "}
+                <span className="text-gray-700 font-medium">
+                  {job.minHours} hours/week
+                </span>
+              </p>
+            </div>
           </div>
+        </Link>
+
+        {/* Apply Button */}
+        <div className="flex-shrink-0 w-full lg:w-auto ">
+          <ApplyNow
+            providerName={job.provider}
+            job={job}
+            jobID={job._id}
+            className="w-full lg:w-auto px-6 py-3 bg-blue-600 text-white text-sm rounded-lg shadow-md hover:bg-blue-700 transition-all"
+          />
         </div>
-        <div className="w-full mb-3">
-          <p className="text-sm text-gray-600 line-clamp-2">
-            <Interweave content={job.certifications} />
-          </p>
-        </div>
-        <div className="w-full flex-wrap gap-4 flex mb-3">
-          {job.licenses.map((license, index) => (
-            <div
-              key={index}
-              className="relative text-sm bg-gray-100 text-gray-800 rounded-lg py-1.5 px-3"
-            >
-              <span className="text-sm text-gray-600">{license}</span>
-            </div>
-          ))}
-          {job.schedule.map((sch, index) => (
-            <div
-              key={index}
-              className="relative text-sm bg-gray-100 text-gray-800 rounded-lg py-1.5 px-3"
-            >
-              <span className="text-sm text-gray-600">{sch}</span>
-            </div>
-          ))}
-        </div>
-        <div className="w-full gap-4 items-center flex">
-          <p className="text-gray-500 text-sm">
-            Min Hours:{" "}
-            <span className="text-gray-600">{job.minHours} hours/week</span>
-          </p>
-          <p className="text-gray-600 flex gap-1 items-center text-sm">
-            💵 {job.compensation}
-          </p>
-        </div>
-      </Link>
-      <div className="absolute hidden lg:block lg:top-6 lg:right-6 ">
-        <ApplyNow providerName={job.provider} job={job} jobID={job._id} />
       </div>
     </div>
   );
