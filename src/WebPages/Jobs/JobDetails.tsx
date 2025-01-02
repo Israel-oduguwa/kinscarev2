@@ -9,10 +9,11 @@ import { Separator } from "@/components/ui/separator";
 import ProfileAvatar from "@/components/ProfileAvatar";
 import OAuthDialog from "@/Authentication/OAuthDialog";
 import OauthApply from "./OauthApply";
+
 polyfill();
 
 const SimilarJobs = ({ similarJobs }: any) => {
-  console.log(similarJobs);
+  // console.log(similarJobs);
   return (
     <div className="w-full">
       <p className="text-sm antialiased font-medium">Similar Jobs</p>
@@ -73,6 +74,8 @@ const SimilarJobs = ({ similarJobs }: any) => {
   );
 };
 
+
+
 async function JobDetails({ jobID }: { jobID: string }) {
   let data = await fetch(
     `https://api.kinscare.org/api/v1/caregivers/job/${jobID}`,
@@ -81,132 +84,120 @@ async function JobDetails({ jobID }: { jobID: string }) {
   const response = await data.json();
   const { job, similarJobs } = response;
   return (
-    <div>
-      <div className="max-w-6xl py-20 mx-auto p-4">
+    <div className="py-16 px-4 bg-gray-50 min-h-screen">
+      <div className="max-w-6xl mx-auto">
         {/* Grid container */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          {/* Left Column (Wider on larger screens, full-width on small screens) */}
-          <div className="lg:col-span-2 w-full">
-            {/* <ShowContactsCard job={job} /> */}
-            {/* Add your job details or content here */}
-            <div className="w-full mb-4">
-              <div className="flex gap-4  flex-wrap items-center lg:flex-nowrap justify-between">
-                <h2 className="text-2xl tracking-tight antialiased font-semibold">
-                  {job.title}
-                </h2>
-                <div>
-                  <OauthApply jobID={job._id}>
-                    <Button>Apply Now</Button>
-                  </OauthApply>
-                </div>
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column */}
+          <div className="lg:col-span-2">
+            {/* Job Header */}
+            <div className="flex flex-wrap lg:flex-nowrap justify-between items-center mb-6 gap-4">
+              <h2 className="text-3xl tracking-tight font-bold text-gray-800">
+                {job.title}
+              </h2>
+              <OauthApply jobID={job._id}>
+                <Button className="px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md">
+                  Apply Now
+                </Button>
+              </OauthApply>
             </div>
-            <div className="mb-10">
-              <div className="flex items-center">
-                {job.profileImage && (
-                  <img
-                    className="h-8 w-8"
-                    src={
-                      job.profileImage
-                        ? job.profileImage
-                        : "profileImage:userData?.profileImage,"
-                    }
-                    alt="company logo"
-                  />
-                )}
-                <div>
-                  <div className="flex gap-2 mb-3">
-                    <p className="text-sm text-blue-600 font-medium antialiased">
-                      {job.provider}
-                    </p>
-                    <p className="flex  text-xs antialiased items-center">
-                      <MapPinCheckIcon size={16} /> {job.contacts.city}
-                    </p>
-                  </div>
-                  <div className="w-full flex-wrap gap-4 flex">
-                    {/* Display only the first 2 licenses */}
-                    {job.licenses
-                      .slice(0, 3)
-                      .map(
-                        (license: any, index: React.Key | null | undefined) => (
-                          <div
-                            key={index}
-                            className="relative text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
-                          >
-                            <span className="text-xs antialiased text-gray-600">
-                              {license}
-                            </span>
-                          </div>
-                        )
-                      )}
 
-                    {/* Display only the first 2 schedules */}
-                    {job.schedule
-                      .slice(0, 3)
-                      .map((sch: any, index: React.Key | null | undefined) => (
-                        <div
-                          key={index}
-                          className="relative text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
-                        >
-                          <span className="text-xs antialiased text-gray-600">
-                            {sch}
-                          </span>
-                        </div>
-                      ))}
-                  </div>
+            {/* Job Details */}
+            <div className="flex items-start gap-4 mb-6">
+              {job.profileImage && (
+                <img
+                  className="h-12 w-12 rounded-full object-cover"
+                  src={
+                    job.profileImage || "profileImage:userData?.profileImage"
+                  }
+                  alt="company logo"
+                />
+              )}
+              <div className="flex-1 mb-2">
+                <p className="text-sm mb-1 font-medium text-blue-600">
+                  {job.provider}
+                </p>
+                <p className="text-sm font-bold text-gray-700 flex items-center gap-1">
+                  <MapPin size={20} />
+                  {job.contacts.city}
+                </p>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {job.licenses.slice(0, 3).map((license: any, index: any) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 text-xs bg-gray-100 text-gray-800 rounded-lg"
+                    >
+                      {license}
+                    </span>
+                  ))}
+                  {job.schedule.slice(0, 3).map((sch: any, index: any) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 text-xs bg-gray-100 text-gray-800 rounded-lg"
+                    >
+                      {sch}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
-            <div className="mb-4">
-              <p className="text-sm font-semibold text-gray-900 ">
-                About this role
-              </p>
-              <div className="w-full text-sm prose-p:text-sm text-gray-600 mb-4">
+
+            {/* Job Description */}
+            <div className="mb-6">
+              <h3 className="font-semibold tracking-tight text-gray-800 mb-2">
+                About this Role
+              </h3>
+              <div className="text-sm prose-sm text-gray-700 leading-relaxed mb-4">
                 <Interweave content={job.description} />
               </div>
-              {/* <p className="text-sm font-bold mb-2 antialiased">Certification</p> */}
-              <div className="text-sm  prose-p:text-sm text-gray-600 mb-4">
+              <div className="text-sm prose-sm text-gray-700 leading-relaxed mb-4">
                 <Interweave content={job.certifications} />
               </div>
-              <div className="mb-4">
-                <p className="text-sm font-normal antialiased">
-                  {job.mobility}
-                </p>
-              </div>
-              <div className="mb-4">
-                <p className="w-full text-sm font-semibold mb-2 text-gray-900">
-                  Compensation
-                </p>
-                <p className="text-sm font-normal antialiased">
-                  {job.compensation}
-                </p>
-              </div>
             </div>
-            {job.alert_preferences && (
-              <div className="mb-4">
-                <p className="text-sm font-semibold mb-2 text-gray-900">
-                  Alert Preferences
+
+            {/* Mobility */}
+            {job.mobility && (
+              <div className="mb-6">
+                <p className="text-sm text-gray-700">
+                  <strong>Mobility:</strong> {job.mobility}
                 </p>
+              </div>
+            )}
+
+            {/* Compensation */}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                Compensation
+              </h3>
+              <p className="text-sm text-gray-700">{job.compensation}</p>
+            </div>
+
+            {/* Alert Preferences */}
+            {job.alert_preferences && (
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                  Alert Preferences
+                </h3>
                 <div className="flex flex-wrap gap-2">
-                  {job.alert_preferences.map((alert: string, idx: number) => (
-                    <div
-                      className="relative text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
+                  {job.alert_preferences.map((alert: any, idx: any) => (
+                    <span
                       key={idx}
+                      className="px-3 py-1 text-xs bg-gray-100 text-gray-800 rounded-lg"
                     >
-                      <span className="text-xs antialiased text-gray-600">
-                        {alert}
-                      </span>
-                    </div>
+                      {alert}
+                    </span>
                   ))}
                 </div>
               </div>
             )}
           </div>
-          {/* Right Column (Narrower on larger screens, full-width below) */}
-          <div className="">
-            {/* Add your sidebar or related jobs content here */}
+
+          {/* Right Column */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              Similar Jobs
+            </h3>
             <SimilarJobs similarJobs={similarJobs} />
-            {/* <p>Other Jobs from {job.provider}</p> */}
           </div>
         </div>
       </div>

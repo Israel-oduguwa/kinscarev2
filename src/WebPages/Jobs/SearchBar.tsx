@@ -8,8 +8,8 @@ import { useRouter } from "next/navigation";
 
 const SearchBar: React.FC = ({}) => {
   const [filters, setFilters] = useState({
-    schedule: [] as string[],
-    licenses: [] as string[],
+    schedule: ["Full time"] as string[],
+    licenses: ["CNA or NAC"] as string[],
     minHours: 8,
   });
   const [loading, setLoading] = useState(false);

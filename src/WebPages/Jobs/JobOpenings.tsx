@@ -9,67 +9,76 @@ import OauthApply from "./OauthApply";
 const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
   console.log(job);
   return (
-    <div className="bg-white shadow-sm relative border-gray-50 border rounded-lg p-6 my-4 w-full mx-auto">
-      <Link href={`/jobs/${job._id}`}>
-        <div className="flex gap-2 items-center mb-3">
-          {/* add the verification badge is the user is verified  */}
-          {job.profileImage && (
-            <img
-              className="h-10 w-10"
-              src={
-                job.profileImage
-                  ? job.profileImage
-                  : "https://lh3.googleusercontent.com/-g8IwNe70-kE/AAAAAAAAAAI/AAAAAAAAAAA/ALKGfkl1tpVAKXAezzCNWmKH5JWvlgr_xw/photo.jpg?sz=46"
-              }
-              alt="company logo"
-            />
-          )}
+    <div className="bg-white shadow-sm border border-gray-200 rounded-lg p-6 my-4 w-full mx-auto">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <Link href={`/jobs/${job._id}`} className="flex-1">
+          {/* Header Section */}
+          <div className="flex gap-4 items-center mb-4">
+            {job.profileImage && (
+              <img
+                className="h-12 w-12 rounded-full object-cover"
+                src={
+                  job.profileImage ||
+                  "https://lh3.googleusercontent.com/-g8IwNe70-kE/AAAAAAAAAAI/AAAAAAAAAAA/ALKGfkl1tpVAKXAezzCNWmKH5JWvlgr_xw/photo.jpg?sz=46"
+                }
+                alt="company logo"
+              />
+            )}
+            <div>
+              <h2 className="text-lg font-semibold text-gray-800">
+                {job.title}
+              </h2>
+              <p className="text-sm text-gray-600">
+                {job.contacts.address}, {job.contacts.city},{" "}
+                {job.contacts.zipcode}
+              </p>
+            </div>
+          </div>
 
-          <div className="lg:max-w-lg xl:max-w-2xl">
-            <h2 className="text-lg font-semibold text-gray-800">{job.title}</h2>
-            <p className="text-sm text-gray-600">
-              {job.contacts.address}, {job.contacts.city},{" "}
-              {job.contacts.zipcode}
+          {/* Description Section */}
+          <div className="mb-4">
+            <p className="text-sm text-gray-600 line-clamp-2">
+              <Interweave content={job.certifications} />
             </p>
           </div>
-        </div>
-        <div className="w-full mb-3">
-          <div className="text-sm text-gray-600 line-clamp-2">
-            <Interweave content={job.certifications} />
+
+          {/* Licenses and Schedule */}
+          <div className="flex flex-wrap gap-3 mb-4">
+            {job.licenses.map((license: string, index: number) => (
+              <div
+                key={index}
+                className="text-sm bg-gray-100 text-gray-800 rounded-lg py-1 px-3"
+              >
+                {license}
+              </div>
+            ))}
+            {job.schedule.map((sch: string, index: number) => (
+              <div
+                key={index}
+                className="text-sm bg-gray-100 text-gray-800 rounded-lg py-1 px-3"
+              >
+                {sch}
+              </div>
+            ))}
           </div>
+
+          {/* Additional Info */}
+          <div className="flex items-center gap-6">
+            <p className="text-sm text-gray-600">
+              Min Hours:{" "}
+              <span className="font-medium">{job.minHours} hours/week</span>
+            </p>
+          </div>
+        </Link>
+
+        {/* Apply Button Section */}
+        <div className="flex-shrink-0 w-full lg:w-auto self-center lg:self-start">
+          <OauthApply jobID={job._id}>
+            <Button className="w-full lg:w-auto px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg">
+              Apply Now
+            </Button>
+          </OauthApply>
         </div>
-        <div className="w-full flex-wrap gap-4 flex mb-3">
-          {job.licenses.map((license: string, index: number) => (
-            <div
-              key={index}
-              className="relative text-sm bg-gray-100 text-gray-800 rounded-lg py-1.5 px-3"
-            >
-              <span className="text-sm text-gray-600">{license}</span>
-            </div>
-          ))}
-          {job.schedule.map((sch: string, index: number) => (
-            <div
-              key={index}
-              className="relative text-sm bg-gray-100 text-gray-800 rounded-lg py-1.5 px-3"
-            >
-              <span className="text-sm text-gray-600">{sch}</span>
-            </div>
-          ))}
-        </div>
-        <div className="w-full gap-4 items-center flex">
-          <p className="text-gray-500 text-sm">
-            Min Hours:{" "}
-            <span className="text-gray-600">{job.minHours} hours/week</span>
-          </p>
-          {/* <p className="text-gray-600 flex gap-1 items-center text-sm">
-            💵 {job.compensation}
-          </p> */}
-        </div>
-      </Link>
-      <div className="absolute hidden lg:block lg:top-6 lg:right-6 ">
-        <OauthApply jobID={job._id}>
-          <Button>Apply Now</Button>
-        </OauthApply>
       </div>
     </div>
   );
@@ -82,14 +91,14 @@ async function All({
   schedule: string;
   licenses: string;
 }) {
-  let data = null
+  let data = null;
   if (schedule) {
-     data = await fetch(
+    data = await fetch(
       `https://api.kinscare.org/api/v1/caregivers/jobs-search?schedule=${schedule}&licenses=${licenses}&page=1&limit=10`,
       { cache: "no-cache" }
     );
   } else {
-     data = await fetch(
+    data = await fetch(
       `https://api.kinscare.org/api/v1/caregivers/jobs-search`,
       { cache: "no-cache" }
     );
@@ -101,26 +110,39 @@ async function All({
     success,
     pagination: { totalJobs, totalPages, currentPage, limit },
   } = response;
-  const handleLoad  = () =>{
-
-  }
+  const handleLoad = () => {};
   return (
-    <div className="py-20  px-2 bg-gray-100 md:px-4 min-h-[100vh]">
+    <div className="py-16 px-4 bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto">
         {/* Job Search Header */}
-        <SearchBar />
-        <h1 className="text-md text-gray-800 tracking-tight antialiased font-bold mb-4">
-          There are {totalJobs} caregivers near you with {licenses} requirements
-        </h1>
+        <div className="mb-8">
+          <SearchBar />
+          <h1 className="text-lg font-semibold text-gray-800 mt-6">
+            There are <span className="text-blue-600">{totalJobs}</span>{" "}
+            caregivers near you with
+            <span className="text-blue-700"> {licenses} </span> requirements
+          </h1>
+        </div>
+
         {/* Job Listings */}
-        <div>
+        <div className="space-y-6">
           {jobs.map((job: any) => (
             <JobPostCard key={job._id} job={job} />
           ))}
         </div>
+
+        {/* Load More Button */}
         {currentPage < totalPages && (
-          <Link href={`/find-jobs?schedule=${schedule}&licenses=${licenses}`}>
-          <Button  className="mt-4">Load More</Button></Link>
+          <div className="mt-8 flex justify-center">
+            <Link
+              href={`/find-jobs?schedule=${schedule}&licenses=${licenses}`}
+              className="inline-block"
+            >
+              <Button className="px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg">
+                Load More
+              </Button>
+            </Link>
+          </div>
         )}
       </div>
     </div>

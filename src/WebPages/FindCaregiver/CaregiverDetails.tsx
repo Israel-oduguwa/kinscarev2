@@ -302,134 +302,122 @@ async function CaregiverDetails({ candidateID }: { candidateID: string }) {
   };
 
   return (
-    <div className="max-w-6xl py-10 space-y-7 mx-auto">
-      {/* Grid container */}
-      <div className="relative shadow-sm border bg-white border-gray-200 rounded-lg p-6 space-y-6">
-          {/* Header Section */}
-          <div className="flex flex-col sm:flex-row space-y-3 items-start sm:items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <ProfileAvatar
-                  size="w-20 h-20"
-                  name={`${caregiver?.fname} ${caregiver?.lname}`}
-                  profileImage={caregiver?.profileImage}
-                />
-                {availability && (
-                  <span className="absolute top-1 right-1">
-                    <span className="relative flex h-4 w-4 items-center">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                    </span>
+    <div className="max-w-6xl mx-auto py-12 px-6 xl:px-0 space-y-10">
+      {/* Main Profile Card */}
+      <div className="relative shadow-lg border bg-white border-gray-100 rounded-2xl p-8">
+        {/* Header Section */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-6 sm:space-y-0">
+          {/* Profile Info */}
+          <div className="flex items-center space-x-6">
+            <div className="relative">
+              <ProfileAvatar
+                size="w-24 h-24"
+                name={`${caregiver?.fname} ${caregiver?.lname}`}
+                profileImage={caregiver?.profileImage}
+              />
+              {availability && (
+                <span className="absolute top-2 right-2">
+                  <span className="relative flex h-4 w-4 items-center">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                   </span>
-                )}
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
-                  {fName} {lname}
-                </h2>
-                <p className="text-sm text-gray-600 flex items-center gap-1 mt-1">
-                  <MapPin size={14} />
-                  {caregiver.address && caregiver.address} {caregiver.city},{" "}
-                  {caregiver.zipcode}
-                </p>
-              </div>
-              
+                </span>
+              )}
             </div>
-          </div>
-          <p className="text-sm ">
-                {obfuscateText(caregiver.settings.email)}
-              </p>
-          {/* Licenses and Availability */}
-          <div className="w-full flex-wrap gap-4 flex">
-            
-            {/* Display only the first 2 licenses */}
-            {caregiver.licenses
-              .slice(0, 3)
-              .map((license: any, index: React.Key | null | undefined) => (
-                <div
-                  key={index}
-                  className="relative text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
-                >
-                  <span className="text-xs antialiased text-gray-600">
-                    {license}
-                  </span>
-                </div>
-              ))}
-            {/* Display only the first 2 schedules */}
-            {caregiver.availability
-              .slice(0, 3)
-              .map((sch: any, index: React.Key | null | undefined) => (
-                <div
-                  key={index}
-                  className="relative text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
-                >
-                  <span className="text-xs antialiased text-gray-600">
-                    {sch}
-                  </span>
-                </div>
-              ))}
-          </div>
-
-          {/* Contact Details */}
-          <div className="mt-6">
-          <OAuthDialog userID={caregiver.userID} message="caregiver">
-                <Button className="absolute top-3 right-3">
-                  <span className="flex space-x-1 items-center gap-2">
-                    <Send size={16} /> Message caregiver
-                  </span>{" "}
-                </Button>
-              </OAuthDialog>
-          </div>
-
-          {/* About Section */}
-          <div className="space-y-4 mt-6">
-            <h3 className="text-sm font-semibold text-gray-900">About Me</h3>
-            <div className="text-sm text-gray-700 leading-relaxed">
-              <Interweave content={caregiver.certifications} />
-            </div>
-          </div>
-
-          {/* Additional Information */}
-          {caregiver.mobility && (
-            <div className="mt-6">
-              <p className="text-sm">
-                <strong className="font-semibold text-gray-900">
-                  Mobility:
-                </strong>{" "}
-                {caregiver.mobility}
+            <div>
+              <h2 className="text-2xl font-semibold text-gray-900">
+                {fName} {lname}
+              </h2>
+              <p className="text-sm text-gray-600 flex items-center gap-2 mt-2">
+                <MapPin size={16} />
+                {caregiver.address && caregiver.address} {caregiver.city},{" "}
+                {caregiver.zipcode}
               </p>
             </div>
-          )}
-          {caregiver.settings.alert_preferences && (
-            <div className="mt-6">
-              <h3 className="text-sm font-semibold text-gray-900">
-                Alert Preferences
-              </h3>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {caregiver.settings.alert_preferences.map(
-                  (alert: any, idx: number) => (
-                    <div
-                      key={idx}
-                      className="bg-gray-100 text-gray-800 text-xs rounded-full px-3 py-1"
-                    >
-                      {alert}
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
-          )}
+          </div>
+        </div>
+        {/* Email */}
+        <p className="text-sm mt-3 text-gray-700">
+          {obfuscateText(caregiver.settings.email)}
+        </p>
+
+        {/* Licenses and Availability */}
+        <div className="mt-4 flex flex-wrap gap-3">
+          {caregiver.licenses.slice(0, 3).map((license, index) => (
+            <span
+              key={index}
+              className="text-xs px-3 py-1 rounded-full bg-blue-50 text-blue-600"
+            >
+              {license}
+            </span>
+          ))}
+          {caregiver.availability.slice(0, 3).map((schedule, index) => (
+            <span
+              key={index}
+              className="text-xs px-3 py-1 rounded-full bg-gray-50 text-gray-600"
+            >
+              {schedule}
+            </span>
+          ))}
         </div>
 
-      {/* Right Column (Narrower on larger screens, full-width below) */}
-      <p className="antialiased font-bold ">Similar Caregivers</p>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-        {/* Map through your caregivers and display each card */}
-        {similarCaregivers.map((caregiver: any) => (
-          <div key={caregiver.id}>
-            <CandidatesCard similarCaregivers={caregiver} />
+        {/* Contact Button */}
+        <div className="mt-4">
+          <OAuthDialog userID={caregiver.userID} message="caregiver">
+            <Button className="w-full sm:w-auto px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
+              <span className="flex items-center gap-2">
+                <Send size={18} /> Message Caregiver
+              </span>
+            </Button>
+          </OAuthDialog>
+        </div>
+
+        {/* About Section */}
+        <div className="mt-10 space-y-4">
+          <h3 className="text-lg font-semibold text-gray-900">About Me</h3>
+          <div className="text-sm text-gray-700 leading-relaxed">
+            <Interweave content={caregiver.certifications} />
           </div>
-        ))}
+        </div>
+
+        {/* Additional Information */}
+        {caregiver.mobility && (
+          <div className="mt-6">
+            <p className="text-sm">
+              <strong className="font-semibold text-gray-900">Mobility:</strong>{" "}
+              {caregiver.mobility}
+            </p>
+          </div>
+        )}
+        {caregiver.settings.alert_preferences && (
+          <div className="mt-6">
+            <h3 className="text-sm font-semibold text-gray-900">
+              Alert Preferences
+            </h3>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {caregiver.settings.alert_preferences.map((alert, idx) => (
+                <span
+                  key={idx}
+                  className="text-xs px-3 py-1 rounded-full bg-gray-50 text-gray-600"
+                >
+                  {alert}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Similar Caregivers Section */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">
+          Similar Caregivers
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {similarCaregivers.map((caregiver) => (
+            <CandidatesCard key={caregiver.id} similarCaregivers={caregiver} />
+          ))}
+        </div>
       </div>
     </div>
   );
