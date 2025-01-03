@@ -402,7 +402,7 @@ export function EmployerAppSidebar({
           <SidebarTrigger className="-ml-1" />
 
           {/* Navigation Links */}
-          <NavigationMenu>
+          <NavigationMenu className="hidden md:block">
             <NavigationMenuList>
               <NavigationMenuItem>
                 <Link href="/provider/candidates/all" legacyBehavior passHref>
@@ -413,7 +413,7 @@ export function EmployerAppSidebar({
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
-          <NavigationMenu>
+          <NavigationMenu className="hidden md:block">
             <NavigationMenuList>
               <NavigationMenuItem>
                 <Link href="/provider/job/update/new" legacyBehavior passHref>

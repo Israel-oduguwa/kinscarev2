@@ -434,7 +434,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
         <div className="flex items-center  h-16 shrink-0 my-1 px-2 gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 mx-auto w-full xl:max-w-screen-xl">
           <SidebarTrigger className="-ml-1" />
           {/* Navigation Links */}
-          <NavigationMenu className="hidden">
+          <NavigationMenu className="hidden md:block">
             <NavigationMenuList>
               <NavigationMenuItem>
                 <Link href="/vitae/jobs/all" legacyBehavior passHref>
@@ -445,7 +445,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
-          <NavigationMenu className="hidden">
+          <NavigationMenu className="hidden md:block">
             <NavigationMenuList>
               <NavigationMenuItem>
                 <Link href="/vitae/career-plan" legacyBehavior passHref>

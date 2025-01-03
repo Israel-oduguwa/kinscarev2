@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -60,6 +61,10 @@ function ProtectedCandidatesDetails({
     }[]
   >([]);
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
+
+  //count down
+  const [countdown, setCountdown] = useState(0); // Countdown state (0 means not started)
+  const [showCountDownDialog, setShowCountDownDialog] = useState(false);
 
   const [documentLoading, setDocumentLoading] = useState(false);
   const [attestationPreview, setAttestationPreview] = useState<string | null>(
@@ -193,40 +198,71 @@ function ProtectedCandidatesDetails({
     theme: "flat",
   };
 
-  const openTrialDialogBox = async () => {
-    const trialStart = customData?.trial_start_date;
-    const trialEnd = customData?.trial_end_date;
-    const isSubscribed = customData?.subscribed;
-
-    if (trialStart && trialEnd) {
-      const trialActive = isTrialActive(trialStart, trialEnd);
-      // open the payment subscribe modal
-      setIsDialogOpen(true);
-    } else {
-      try {
-        const response = await axios.post(
-          "https://api.kinscare.org/api/v1/providers/create-setup-intent",
-          {
-            customerId: user.customData.customer_id,
-          }
-        );
-        console.log(response.data);
-        const { clientSecret } = response.data;
-        // Store the client secret in localStorage to persist across reloads
-        localStorage.setItem("client_secret", clientSecret);
-        setClientSecret(clientSecret);
-        // console.log(response)
-        // Close the dialog after sending
-        const isNotVerified = !(
-          customData?.trial === true || customData?.subscribe === true
-        );
-        if (isNotVerified) {
-          setIsTrialDialogOpen(true);
+  const getSecrete = async () => {
+    try {
+      const response = await axios.post(
+        "https://api.kinscare.org/api/v1/providers/create-setup-intent",
+        {
+          customerId: user.customData.customer_id,
         }
-      } catch (error) {}
+      );
+      console.log(response.data);
+      const { clientSecret } = response.data;
+      // Store the client secret in localStorage to persist across reloads
+      localStorage.setItem("client_secret", clientSecret);
+      setClientSecret(clientSecret);
+      // console.log(response)
+      // Close the dialog after sending
+      const isNotVerified = !(
+        customData?.trial === true || customData?.subscribe === true
+      );
+      if (isNotVerified) {
+        setIsTrialDialogOpen(true);
+      }
+    } catch (error) {}
+  };
+
+  const openRevealContacts = async () => {
+    if (customData && !customData.viewed_once) {
+      if (countdown === 0) {
+        // Start countdown from 4
+        setCountdown(3);
+        setIsTrialExpired(false);
+        // Simple manual countdown loop
+        const interval = setInterval(() => {
+          setCountdown((prev) => {
+            if (prev > 1) {
+              return prev - 1; // Decrease countdown
+            } else {
+              clearInterval(interval); // Stop interval at 0
+              setIsTrialExpired(true);
+              setShowCountDownDialog(true); // Show dialog when countdown ends
+              return 0;
+            }
+          });
+        }, 1000);
+      }
+      // set timer after timer is off then update the database
+    } else {
+      const trialStart = customData?.trial_start_date;
+      const trialEnd = customData?.trial_end_date;
+      const isSubscribed = customData?.subscribed;
+      if (trialStart && trialEnd) {
+        const trialActive = isTrialActive(trialStart, trialEnd);
+        // open the payment subscribe modal
+        setIsDialogOpen(true);
+      } else {
+        getSecrete();
+      }
     }
   };
-  const closeTrialDialogBox = () => {
+
+  const openVerifyIdentity = async () => {
+    await getSecrete();
+    setShowCountDownDialog(false);
+  };
+
+  const closeRevealContacts = () => {
     setIsTrialDialogOpen(false);
   };
 
@@ -432,13 +468,29 @@ function ProtectedCandidatesDetails({
         {isTrialExpired && (
           <Button
             size="sm"
-            onClick={openTrialDialogBox}
+            onClick={openRevealContacts}
             className="w-full md:w-auto px-6 py-2 text-sm font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-lg transition duration-200"
           >
             Reveal Contacts
           </Button>
         )}
       </div>
+
+      <Dialog open={showCountDownDialog} onOpenChange={setShowCountDownDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Verify Your Identity</DialogTitle>
+            <DialogDescription>
+              Great! Now you’ve seen how easy it is to access caregivers’ phone
+              numbers and emails to connect with them directly. To continue
+              viewing contact details, please verify your identity as an
+              employer—it’s quick, secure, and ensures a safe experience for
+              everyone.
+            </DialogDescription>
+            <Button onClick={openVerifyIdentity}>Verify Your Identity</Button>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
 
       {/* Dialog Box Payment */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -470,28 +522,45 @@ function ProtectedCandidatesDetails({
 
           {currentStep === "selection" && (
             <div className="space-y-6">
-              <div
-                className="flex items-center p-4 border rounded-lg cursor-pointer hover:shadow-lg transition"
-                onClick={() => setCurrentStep("payment")}
-              >
-                <CreditCard className="w-10 h-10 text-blue-500 mr-4" />
-                <div>
-                  <h3 className="font-bold text-gray-800">
-                    ⁠Add a Payment Method and Billing Zip Code
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    This is a quick, secure, and widely used method to confirm
-                    your identity. Rest assured, no charges will be applied to
-                    your card.
+              <>
+                <div className="space-y-4 text-gray-600">
+                  <p className="text-sm">
+                    To create a safe and professional environment for
+                    caregivers, we require a valid payment method. This confirms
+                    that you’re a genuine employer with sincere intent to hire{" "}
+                    {name}.
                   </p>
-                  <p className="mt-1 text-sm text-blue-600 font-medium">
-                    Adding a payment method is the most common and convenient
-                    way to verify your account. We recommend this option for a
-                    faster, hassle-free experience!
+                  <p className="text-sm text-red-500">
+                    Your card will not be charged.
                   </p>
                 </div>
-              </div>
-
+                <div className="mt-4">
+                  {clientSecret && userData ? (
+                    <Elements
+                      stripe={stripePromise}
+                      options={{ clientSecret, appearance }}
+                    >
+                      <PaymentForm
+                        close={closeRevealContacts}
+                        setIsTrialExpired={setIsTrialExpired}
+                        clientSecret={clientSecret}
+                        userID={userData.userID}
+                        customerId={customData?.customer_id}
+                        priceId="price_1QP2OuAoahxG9SLGNoc37Lxo"
+                        intentType="setup"
+                        onSuccess={(result) => {
+                          handleOnSuccess();
+                        }}
+                        onError={(error) => {
+                          console.error("Error saving card:", error);
+                        }}
+                      />
+                    </Elements>
+                  ) : (
+                    <p>Loading...</p>
+                  )}
+                </div>
+              </>
               <div
                 className="flex items-center p-4 border rounded-lg cursor-pointer hover:shadow-lg transition"
                 onClick={() => setCurrentStep("attestation")}
@@ -512,53 +581,6 @@ function ProtectedCandidatesDetails({
                 </div>
               </div>
             </div>
-          )}
-
-          {currentStep === "payment" && (
-            <>
-              <div className="space-y-4 text-gray-600">
-                <p className="text-sm">
-                  To create a safe and professional environment for caregivers,
-                  we require a valid payment method. This confirms that you’re a
-                  genuine employer with sincere intent to hire {name}.
-                </p>
-                <p className="text-sm text-red-500">
-                  Your card will not be charged.
-                </p>
-              </div>
-              <div className="mt-4">
-                {clientSecret && userData ? (
-                  <Elements
-                    stripe={stripePromise}
-                    options={{ clientSecret, appearance }}
-                  >
-                    <PaymentForm
-                      close={closeTrialDialogBox}
-                      setIsTrialExpired={setIsTrialExpired}
-                      clientSecret={clientSecret}
-                      userID={userData.userID}
-                      customerId={customData?.customer_id}
-                      priceId="price_1QP2OuAoahxG9SLGNoc37Lxo"
-                      intentType="setup"
-                      onSuccess={(result) => {
-                        handleOnSuccess();
-                      }}
-                      onError={(error) => {
-                        console.error("Error saving card:", error);
-                      }}
-                    />
-                  </Elements>
-                ) : (
-                  <p>Loading...</p>
-                )}
-              </div>
-              <button
-                className="mt-4 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-                onClick={() => setCurrentStep("selection")}
-              >
-                Back to Verification Options
-              </button>
-            </>
           )}
 
           {currentStep === "attestation" && (
