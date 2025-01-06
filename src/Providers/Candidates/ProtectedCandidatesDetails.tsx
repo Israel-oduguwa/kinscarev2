@@ -639,7 +639,7 @@ function ProtectedCandidatesDetails({
         <DialogContent className="h-[100vh] md:h-auto max-w-4xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex flex-col items-center text-center">
-              <h2 className="font-bold tracking-tight text-xl text-gray-800">
+              <h2 className="font-bold tracking-tight text-2xl text-gray-800">
                 {currentStep === "selection" && "Choose a Verification Method"}
                 {currentStep === "payment" &&
                   "Get Verified with Payment Method"}
@@ -647,7 +647,7 @@ function ProtectedCandidatesDetails({
                   "Upload a Signed Attestation Letter & Government-Issued ID"}
               </h2>
               {currentStep === "selection" && (
-                <p className="text-sm text-gray-600">
+                <p className=" text-gray-700">
                   To protect caregivers and ensure a safe platform, choose one
                   of these verification options:
                 </p>
@@ -659,12 +659,12 @@ function ProtectedCandidatesDetails({
             <div className="space-y-6">
               <div className="space-y-4 text-gray-800">
                 <div className="space">
-                  <p className="text-md font-bold">
+                  <p className="text-md">
                     <span className="font-bold">
                       1. Verify Identity with Payment Details
                     </span>{" "}
                     <span className="italic">
-                      (Preferred by most employers)
+                      (preferred by most employers)
                     </span>
                   </p>
                   <p className="text-sm">
@@ -699,15 +699,16 @@ function ProtectedCandidatesDetails({
                   <p>Loading...</p>
                 )}
               </div>
+               <h3 className="font-bold text-gray-800">
+                   2. Upload a Signed Attestation Letter & Government-Issued ID
+                  </h3>
               <div
                 className="flex items-center p-4 border shadow-lg rounded-lg cursor-pointer hover:shadow-lg transition"
                 onClick={() => setCurrentStep("attestation")}
               >
                 <FileText className="w-10 h-10 text-blue-500 mr-4" />
                 <div>
-                  <h3 className="font-bold text-gray-800">
-                    Upload a Signed Attestation Letter & Government-Issued ID
-                  </h3>
+                 
                   <p className="text-sm text-gray-600">
                     Download and print a signable attestation letter, then
                     upload it along with a government-issued ID that includes
