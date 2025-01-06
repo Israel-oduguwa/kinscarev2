@@ -350,6 +350,7 @@ function ProtectedCandidatesDetails({
       setIsTrialExpired(!trialActive);
     } else {
       const trialFlag = customData?.trial || false;
+      console.log(trialFlag)
       setIsTrialExpired(!trialFlag);
     }
 
@@ -658,7 +659,7 @@ function ProtectedCandidatesDetails({
             <div className="space-y-6">
               <div className="space-y-4 text-gray-800">
                 <div className="space">
-                  <p className="text-sm font-bold">
+                  <p className="text-md font-bold">
                     <span className="font-bold">
                       1. Verify Identity with Payment Details
                     </span>{" "}
