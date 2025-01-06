@@ -15,28 +15,26 @@ import FrequentPaymentForm from "./FrequentPaymentForm";
 const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_TEST_KEY || "");
 
 function PricingPlan({ closePricingDialog }: any) {
-  const { user, userData, customData, setUser, setCustomData }: any =
-    useContext(MongoContext); // User from context
+  const { user, customData, setCustomData }: any = useContext(MongoContext);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [savedCards, setSavedCards] = useState<any[]>([]);
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
   const [isCardDialogOpen, setIsCardDialogOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<string>("daily"); // Default plan is daily
-  const [loading, setLoading] = useState(false); // Show a loader during client secret generation
-  const [isFetchingSecrete, setIsFetchingSecrete] = useState<boolean>(false);
+  const [selectedPlan, setSelectedPlan] = useState<string>("daily");
+  const [loading, setLoading] = useState(false);
+  const [isFetchingSecret, setIsFetchingSecret] = useState<boolean>(false);
   const [openPaymentForm, setOpenPaymentForm] = useState<boolean>(false);
   const [subscription, setSubscription] = useState<any>(null);
   const [subscriptionID, setSubscriptionID] = useState<string>("");
   const router = useRouter();
-  // Pricing plans with details
+
   const pricingPlans = [
     {
       id: "daily",
       title: "Daily Plan",
       price: "$23.99",
       stripePriceId: "price_1QXcozAoahxG9SLGGelfYlKJ",
-      description:
-        "Perfect for short-term projects or temporary needs. Get access for 24 hours.",
+      description: "Perfect for short-term projects or temporary needs. Get access for 24 hours.",
       features: [
         "24-hour access",
         "Full feature set",
@@ -48,8 +46,7 @@ function PricingPlan({ closePricingDialog }: any) {
       title: "Weekly Plan",
       price: "$63.99",
       stripePriceId: "price_1QSCneAoahxG9SLGCHhFdN4C",
-      description:
-        "Ideal for weekly usage. Enjoy full access for 7 days at a discounted rate.",
+      description: "Ideal for weekly usage. Enjoy full access for 7 days at a discounted rate.",
       features: ["7-day access", "Full feature set", "Priority email support"],
     },
     {
@@ -57,20 +54,18 @@ function PricingPlan({ closePricingDialog }: any) {
       title: "Monthly Plan",
       price: "$93.99",
       stripePriceId: "price_1QXcpZAoahxG9SLGjWJp4KfP",
-      description:
-        "Best value! Get 30 days of unlimited access to all features.",
+      description: "Best value! Get 30 days of unlimited access to all features.",
       features: ["30-day access", "Full feature set", "24/7 premium support"],
     },
   ];
 
   const currentPlan = pricingPlans.find((plan) => plan.id === selectedPlan);
 
-  // Create subscription and generate client secret
-  const createSubscriptionClientSecrete = async (
+  const createSubscriptionClientSecret = async (
     plan: string,
     stripePriceId: string
   ) => {
-    setIsFetchingSecrete(true);
+    setIsFetchingSecret(true);
     setSelectedPlan(plan);
     try {
       const response = await axios.post(
@@ -89,13 +84,13 @@ function PricingPlan({ closePricingDialog }: any) {
 
       setIsCardDialogOpen(true);
       fetchSavedCards();
-    } catch (error: any) {
+    } catch (error) {
+      console.error("Error creating subscription client secret:", error);
     } finally {
-      setIsFetchingSecrete(false);
+      setIsFetchingSecret(false);
     }
   };
 
-  // Fetch saved cards
   const fetchSavedCards = async () => {
     try {
       const response = await axios.post(
@@ -115,15 +110,15 @@ function PricingPlan({ closePricingDialog }: any) {
           isDefault: card.default,
         }));
         setSavedCards(cards);
-        if (cards.length > 0) setSelectedCard(cards[0].id); // Default to first card
+        if (cards.length > 0) setSelectedCard(cards[0].id);
       }
-    } catch (error: any) {}
+    } catch (error) {
+      console.error("Error fetching saved cards:", error);
+    }
   };
 
   const createSubscription = async () => {
-    if (!selectedCard) {
-      return;
-    }
+    if (!selectedCard) return;
 
     const customerId = user.customData.customer_id;
     try {
@@ -133,7 +128,8 @@ function PricingPlan({ closePricingDialog }: any) {
         priceId: currentPlan?.stripePriceId,
         paymentMethodId: selectedCard,
       };
-      const response = await axios.post(
+
+      await axios.post(
         "https://api.kinscare.org/api/v1/providers/subscription",
         payload,
         {
@@ -143,27 +139,24 @@ function PricingPlan({ closePricingDialog }: any) {
 
       await user.refreshCustomData();
       router.refresh();
+
       const fetchedData: any = await fetchContactsData(
         user.customData.userID,
         user.customData.email
       );
       if (fetchedData) {
-        // console.log(fetchedData.result, "rewsulet")
         await setCustomData(fetchedData.result);
       }
-    } catch (error: any) {
+    } catch (error) {
+      console.error("Error creating subscription:", error);
     } finally {
-      // we close the dialog box
-      console.log(customData);
       handleCloseDialog();
       setIsCardDialogOpen(false);
       setLoading(false);
     }
   };
 
-  const handleOpenPaymentForm = () => {
-    setOpenPaymentForm(true);
-  };
+  const handleOpenPaymentForm = () => setOpenPaymentForm(true);
 
   const handleCloseDialog = () => {
     setIsCardDialogOpen(false);
@@ -173,7 +166,6 @@ function PricingPlan({ closePricingDialog }: any) {
 
   return (
     <div className="mx-auto py-10 space-y-10">
-      {/* Header */}
       <div className="text-center space-y-1">
         <h2 className="text-3xl tracking-tight font-extrabold text-gray-900">
           Choose Your Subscription Plan
@@ -184,12 +176,11 @@ function PricingPlan({ closePricingDialog }: any) {
         </p>
       </div>
 
-      {/* Pricing Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 sm:px-6 lg:px-8">
         {pricingPlans.map((plan) => (
           <div
             onClick={() =>
-              createSubscriptionClientSecrete(plan.id, plan.stripePriceId)
+              createSubscriptionClientSecret(plan.id, plan.stripePriceId)
             }
             key={plan.id}
             className="relative bg-white shadow-lg rounded-xl overflow-hidden hover:shadow-2xl transition-all transform hover:-translate-y-0.5"
@@ -209,7 +200,7 @@ function PricingPlan({ closePricingDialog }: any) {
                 {plan.features.map((feature, index) => (
                   <li
                     key={index}
-                    className="flex items-center  text-gray-700 font-medium"
+                    className="flex items-center text-gray-700 font-medium"
                   >
                     <svg
                       className="w-5 h-5 text-green-500 mr-3"
@@ -223,11 +214,10 @@ function PricingPlan({ closePricingDialog }: any) {
                   </li>
                 ))}
               </ul>
-              <Button className="mt-6 w-full" disabled={isFetchingSecrete}>
-                {isFetchingSecrete && selectedPlan === plan.id && (
+              <Button className="mt-6 w-full" disabled={isFetchingSecret}>
+                {isFetchingSecret && selectedPlan === plan.id && (
                   <Loader2 className="animate-spin" />
-                )}{" "}
-                Choose plan
+                )} Choose plan
               </Button>
             </div>
             <div className="absolute inset-0 ring-2 ring-transparent focus-visible:ring-blue-500"></div>
@@ -235,119 +225,104 @@ function PricingPlan({ closePricingDialog }: any) {
         ))}
       </div>
 
-      {/* Saved Cards Dialog */}
       <Dialog open={isCardDialogOpen} onOpenChange={setIsCardDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-auto">
-          <div className="p-6">
-            <h3 className="text-xl tracking-tight font-bold mb-4">
+        <DialogContent className="max-w-full sm:max-w-3xl max-h-[90vh] overflow-auto rounded-lg p-4 sm:p-6 bg-white shadow-lg">
+          <div className="space-y-6">
+            <h3 className="text-lg sm:text-xl font-bold tracking-tight text-gray-800">
               Choose a Payment Method
             </h3>
-            <div className="mb-6">
+
+            <div className="space-y-4">
               <h4 className="text-sm font-semibold text-gray-700">
                 Switch Plan
               </h4>
-              <div className="flex space-x-2 mt-2">
+              <div className="flex flex-wrap gap-2">
                 {pricingPlans.map((plan) => (
                   <Button
                     key={plan.id}
                     variant={selectedPlan === plan.id ? "default" : "outline"}
                     onClick={() =>
-                      createSubscriptionClientSecrete(
-                        plan.id,
-                        plan.stripePriceId
-                      )
+                      createSubscriptionClientSecret(plan.id, plan.stripePriceId)
                     }
+                    className="text-sm px-4 py-2"
                   >
                     {plan.title}
                   </Button>
                 ))}
               </div>
             </div>
-            <div className="grid-cols-none gap-4">
-              <div className="col-span-7">
-                <div className="flex flex-col space-y-10">
-                  {isFetchingSecrete ? (
-                    <Skeleton className="h-8 w-full" />
-                  ) : (
-                    <>
-                      {savedCards.length > 0 ? (
-                        <div className="space-y-4">
-                          {savedCards.map((card) => (
-                            <div
-                              key={card.id}
-                              onClick={() => setSelectedCard(card.id)}
-                              className={`flex relative items-center py-4 px-4 rounded-lg cursor-pointer ${
-                                selectedCard === card.id
-                                  ? "border-gray-400 border"
-                                  : "border-gray-300"
-                              }`}
-                            >
-                              <div className="flex items-center space-x-4">
-                                <div className="">
-                                  <CardImage cardBrand={card.brand} />
-                                </div>
-                                <div>
-                                  <p className="font-medium tracking-tight antialiased">
-                                    Use {card.brand} card ending in {card.last4}
-                                  </p>
-                                  <p className="text-xs font-medium text-gray-500">
-                                    Exp{" "}
-                                    {String(card.exp_month).padStart(2, "0")}/
-                                    {card.exp_year}
-                                  </p>
-                                </div>
-                              </div>
-                              {selectedCard === card.id && (
-                                <div className="rounded-md absolute right-12 bg-slate-800 py-0.5 px-2.5 border border-transparent text-sm text-white transition-all shadow-sm">
-                                  Default
-                                </div>
-                              )}
-                              {/* <Trash2Icon
-                                
-                                className={`w-5 h-5 ml-auto ${
-                                  selectedCard === card.id
-                                    ? "text-gray-600"
-                                    : "text-gray-300"
-                                }`}
-                              /> */}
+
+            <div className="space-y-6">
+              {isFetchingSecret ? (
+                <Skeleton className="h-8 w-full" />
+              ) : (
+                <>
+                  {savedCards.length > 0 ? (
+                    <div className="space-y-4">
+                      {savedCards.map((card) => (
+                        <div
+                          key={card.id}
+                          onClick={() => setSelectedCard(card.id)}
+                          className={`flex items-center justify-between p-4 rounded-lg cursor-pointer border ${
+                            selectedCard === card.id
+                              ? "border-blue-500 bg-blue-50"
+                              : "border-gray-300"
+                          } transition-colors`}
+                        >
+                          <div className="flex items-center gap-4">
+                            <CardImage cardBrand={card.brand} />
+                            <div>
+                              <p className="text-sm font-medium text-gray-800">
+                                Use {card.brand} card ending in {card.last4}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                Exp {String(card.exp_month).padStart(2, "0")}/
+                                {card.exp_year}
+                              </p>
                             </div>
-                          ))}
-                          <Button
-                            onClick={createSubscription}
-                            disabled={loading}
-                          >
-                            {loading && (
-                              <Loader2 className="animate-spin mr-2" />
-                            )}{" "}
-                            Pay using saved card
-                          </Button>
+                          </div>
+                          {selectedCard === card.id && (
+                            <span className="text-sm text-blue-600 font-medium">
+                              Default
+                            </span>
+                          )}
                         </div>
-                      ) : (
-                        <p className="text-gray-500">
-                          No saved cards available. Use a new card to proceed.
-                        </p>
-                      )}
-                      {/* Use New Card */}
-                      <Button onClick={handleOpenPaymentForm}>
-                        Use another card
+                      ))}
+                      <Button
+                        onClick={createSubscription}
+                        disabled={loading}
+                        className="w-full sm:w-auto mt-4 px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
+                      >
+                        {loading && <Loader2 className="animate-spin mr-2" />}
+                        Pay using saved card
                       </Button>
-                    </>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500">
+                      No saved cards available. Use a new card to proceed.
+                    </p>
                   )}
-                </div>
-              </div>
+                  <Button
+                    onClick={handleOpenPaymentForm}
+                    variant={savedCards.length === 0 ? "default" : "outline"}
+                    className="w-full mt-4 px-6 py-3 text-sm rounded-lg"
+                  >
+                    Use another card
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Payment Form Dialog */}
       <Dialog open={openPaymentForm} onOpenChange={setOpenPaymentForm}>
         <DialogContent className="[&>button]:hidden">
           {clientSecret && (
             <Elements stripe={stripePromise} options={{ clientSecret }}>
               <FrequentPaymentForm
                 clientSecret={clientSecret}
-                userID={userData.userID}
+                userID={user.customData.userID}
                 subscription={subscription}
                 plan={currentPlan?.id}
                 priceId={currentPlan?.stripePriceId || ""}
@@ -365,7 +340,9 @@ function PricingPlan({ closePricingDialog }: any) {
     </div>
   );
 }
+
 export default PricingPlan;
+
 
 const CardImage = ({ cardBrand }: { cardBrand: string }) => {
   switch (cardBrand) {

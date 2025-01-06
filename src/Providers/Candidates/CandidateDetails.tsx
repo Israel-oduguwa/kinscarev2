@@ -251,11 +251,11 @@ async function CandidateDetails({ candidateID }: { candidateID: string }) {
         />
         <meta name="twitter:image" content={caregiver.profileImage} />
       </Head>
-      <div className="max-w-6xl px-6 md:px-10 py-10 xl:px-0 mx-auto space-y-10">
+      <div className="max-w-6xl px-2 md:px-10 py-6 md:py-10 xl:px-0 mx-auto space-y-10">
         {/* Candidate Profile */}
-        <div className="relative shadow-sm border bg-white border-gray-200 rounded-lg p-6 space-y-6">
+        <div className="relative shadow-sm border bg-white border-gray-200 rounded-lg p-4 md:p-6 space-y-6">
           {/* Header Section */}
-          <div className="flex flex-col sm:flex-row space-y-3 items-start sm:items-center justify-between">
+          <div className="flex flex-col flex-wrap sm:flex-row space-y-4 items-start sm:items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="relative">
                 <ProfileAvatar
@@ -380,7 +380,7 @@ async function CandidateDetails({ candidateID }: { candidateID: string }) {
           </div>
         </div>
       </div>
-      <JobPostModal caregiver={caregiver}/>
+      <JobPostModal caregiver={caregiver} />
     </>
   );
 }

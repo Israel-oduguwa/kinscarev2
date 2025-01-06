@@ -48,6 +48,15 @@ function ApplyNow({ jobID, job }: any) {
     error: applyError,
   } = useMutation({
     mutationFn: async () => {
+      if (!userData.complete) {
+        toast({
+          title: "Upload your resume",
+          description: "Update your profile",
+          variant: "default",
+        });
+        router.push("/vitae/update");
+      }
+     else{
       const payload = {
         jobId: jobID,
         caregiverId: userData.userID,
@@ -58,22 +67,25 @@ function ApplyNow({ jobID, job }: any) {
         payload
       );
       return data;
+     }
     },
     onSuccess: async () => {
-      // Instead of refreshing, we manually update the state
-      setHasApplied(true); // Mark as applied
-      // lets update the userData
-      const fetchedData: any = await fetchUserData(
-        user.customData.userID,
-        user.customData.email
-      );
-      // console.log(fetchedData);
-      setUserData(fetchedData.result);
-      toast({
-        title: "Application Successful",
-        description: "You have successfully applied for this job.",
-        variant: "default",
-      });
+     if(userData.complete){
+       // Instead of refreshing, we manually update the state
+       setHasApplied(true); // Mark as applied
+       // lets update the userData
+       const fetchedData: any = await fetchUserData(
+         user.customData.userID,
+         user.customData.email
+       );
+       // console.log(fetchedData);
+       setUserData(fetchedData.result);
+       toast({
+         title: "Application Successful",
+         description: "You have successfully applied for this job.",
+         variant: "default",
+       });
+     }
     },
     onError: (err) => {
       toast({
@@ -139,7 +151,8 @@ function ApplyNow({ jobID, job }: any) {
           onClick={() => applyForJob()}
           disabled={isApplying || hasApplied} // Disable if user is applying or has already applied
         >
-         {isApplying && <Loader2 className="animate-spin"/>} {isApplying
+          {isApplying && <Loader2 className="animate-spin" />}{" "}
+          {isApplying
             ? "Applying..."
             : hasApplied
             ? "Already Applied"

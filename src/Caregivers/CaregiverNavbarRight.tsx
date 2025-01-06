@@ -34,6 +34,7 @@ import MongoContext from "@/app/MongoContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CaregiverNotification from "./CaregiverNotification";
 import { useRouter } from "next/navigation";
+import ProfileAvatar from "@/components/ProfileAvatar";
 
 function SheetDemo() {
   return (
@@ -67,7 +68,7 @@ const UserAvatar = ({ userData, customData, user, LogOutUser }: any) => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="p-0 relative rounded-full">
           <div className="border border-blue-200 rounded-full">
-            <Avatar className="h-10 w-10 ">
+            {/* <Avatar className="h-10 w-10 ">
               <AvatarImage
                 src={
                   userData.profileImage ||
@@ -78,7 +79,16 @@ const UserAvatar = ({ userData, customData, user, LogOutUser }: any) => {
               <AvatarFallback>
                 {customData.name?.charAt(0).toUpperCase()}
               </AvatarFallback>
-            </Avatar>
+            </Avatar> */}
+            <ProfileAvatar
+              size="w-12 h-12"
+              name={`${
+                userData.lname
+                  ? `${userData.fname} ${userData.lname}`
+                  : userData.auth.email
+              }`}
+              profileImage={userData?.profileImage}
+            />
           </div>
 
           <span className="absolute top-0 right-0">
@@ -95,8 +105,8 @@ const UserAvatar = ({ userData, customData, user, LogOutUser }: any) => {
       >
         {/* User Info */}
         <DropdownMenuLabel>
-          <div className="flex space-x-2 py-3">
-            <Avatar className="h-8 w-8">
+          <div className="flex justify-center flex-shrink-1 space-x-2 py-3">
+            {/* <Avatar className="h-8 w-8">
               <AvatarImage
                 src={
                   userData.profileImage ||
@@ -107,14 +117,30 @@ const UserAvatar = ({ userData, customData, user, LogOutUser }: any) => {
               <AvatarFallback>
                 {customData.name?.charAt(0).toUpperCase()}
               </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
+            </Avatar> */}
+            <ProfileAvatar
+              size="w-12 h-12 "
+              name={`${
+                userData.lname
+                  ? `${userData.fname} ${userData.lname}`
+                  : userData.auth.email
+              }`}
+              profileImage={userData?.profileImage}
+            />
+            
+          </div>
+          <div className="flex flex-col text-center">
               <p className="text-sm font-semibold antialiased">
-                {userData.fname} {userData.lname}
+                {userData.lname ? (
+                  <>
+                    {userData.fname} {userData.lname}
+                  </>
+                ) : (
+                  <>{userData.auth.email}</>
+                )}
               </p>
               <p className="text-xs text-gray-500 antialiased">Caregiver</p>
             </div>
-          </div>
           {/* <p>{userData && userData.auth.email}</p> */}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -160,10 +186,7 @@ const UserAvatar = ({ userData, customData, user, LogOutUser }: any) => {
         {/* Logout */}
         <DropdownMenuSeparator />
         <DropdownMenuItem className="p-4 border border-gray-50" asChild>
-          <button
-            className="w-full"
-            onClick={LogOutUser}
-          >
+          <button className="w-full" onClick={LogOutUser}>
             <LogOut className="mr-2 h-4 w-4" />
             Logout
           </button>
@@ -183,10 +206,10 @@ function CaregiverNavbarRight() {
     setClient,
     setLoadingAuth,
     setUserData,
-    customData
+    customData,
   } = mongodb;
   const router = useRouter();
-  console.log(user)
+  console.log(user);
   const LogOutUser = async () => {
     try {
       if (!user || !app?.currentUser) return;
@@ -213,7 +236,7 @@ function CaregiverNavbarRight() {
 
       await app?.currentUser?.logOut();
       // localStorage.clear();
-      console.log("logout")
+      console.log("logout");
       const anonymousUser = await app?.logIn(Realm.Credentials.anonymous());
       setUser(anonymousUser);
       router.push("/signin");
@@ -232,7 +255,12 @@ function CaregiverNavbarRight() {
       {user && userData && customData.userID ? (
         <>
           <CaregiverNotification />{" "}
-          <UserAvatar LogOutUser={LogOutUser} user={user} customData={customData} userData={userData} />
+          <UserAvatar
+            LogOutUser={LogOutUser}
+            user={user}
+            customData={customData}
+            userData={userData}
+          />
         </>
       ) : (
         <>

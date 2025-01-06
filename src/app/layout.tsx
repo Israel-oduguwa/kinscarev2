@@ -10,6 +10,7 @@ import GoogleTagManager from "@/components/GoogleTagManager";
 import { Toaster } from "@/components/ui/toaster";
 import ContextProviders from "@/components/ContextProviders";
 import NextTopLoader from "nextjs-toploader";
+import VoiceFlowProvider from "@/Caregivers/UiProviders/VoiceFlowProvider";
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
@@ -56,13 +57,14 @@ export default function RootLayout({
           <MongoProvider>
             <SpeedInsights />
             <Toaster />
-            <ContextProviders>{children}</ContextProviders>
+            <VoiceFlowProvider>
+              <ContextProviders>{children}</ContextProviders>
+            </VoiceFlowProvider>
           </MongoProvider>
         </ThemeProvider>
       </body>
     </html>
   );
 }
-
 
 // https://shadcn-ui-blocks.vercel.app/#marketing

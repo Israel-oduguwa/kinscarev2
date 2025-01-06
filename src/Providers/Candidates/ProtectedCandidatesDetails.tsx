@@ -21,7 +21,16 @@ import PaymentForm from "../User/PaymentForm";
 import PricingPlan from "../User/PricingPlan";
 import Dropzone from "react-dropzone";
 
+/** Stripe setup */
 const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_TEST_KEY || "");
+
+/**
+ * This component handles:
+ *  - Hiding/obfuscating caregiver contact info unless certain conditions (trial, subscription, or verification) are met.
+ *  - A 4-second wait the first and second times an employer clicks "Reveal Contacts" before showing the real info.
+ *  - Displaying popups prompting identity verification on the 1st and 2nd reveal attempts.
+ *  - Handling subscription/trial dialogs, uploading attestation letter & ID for verification, etc.
+ */
 function ProtectedCandidatesDetails({
   email,
   name,
@@ -33,22 +42,31 @@ function ProtectedCandidatesDetails({
 }) {
   const { user, userData, customData, setCustomData }: any =
     useContext(MongoContext);
-  console.log(customData, "customData");
+
+  /**
+   * isTrialExpired determines if contact info is obfuscated.
+   * If true -> show obfuscated info and "Reveal Contacts" button.
+   * If false -> show real contact info.
+   */
   const [isTrialExpired, setIsTrialExpired] = useState(
     !(customData?.trial || customData?.subscribed)
   );
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
+
   const router = useRouter();
+
+  /** Payment setup-intent variables */
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<any>("monthly");
-  const [removedBlur, setRemoveBlur] = useState();
+
+  /** For the "Verify Identity" trial dialog steps: selection/payment/attestation */
   const [isTrialDialogOpen, setIsTrialDialogOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  // this is for the verification
   const [currentStep, setCurrentStep] = useState<
     "selection" | "payment" | "attestation"
   >("selection");
+  const [loading, setLoading] = useState(false);
 
+  /** Payment & subscription info */
   const [savedCards, setSavedCards] = useState<
     {
       isDefault: any;
@@ -62,32 +80,45 @@ function ProtectedCandidatesDetails({
   >([]);
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
 
-  //count down
-  const [countdown, setCountdown] = useState(0); // Countdown state (0 means not started)
+  /** For the 4-second countdown approach (the user’s first or second reveal attempts) */
+  const [countdown, setCountdown] = useState(0);
   const [showCountDownDialog, setShowCountDownDialog] = useState(false);
+  const [showFirstRevealDialog, setShowFirstRevealDialog] = useState(false);
+  const [showSecondRevealDialog, setShowSecondRevealDialog] = useState(false);
 
+  /** Attestation letter + ID upload states */
   const [documentLoading, setDocumentLoading] = useState(false);
   const [attestationPreview, setAttestationPreview] = useState<string | null>(
     null
   );
   const [governmentID, setGovernmentID] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  // Handle Document Upload
+
+  /**
+   * For the new first/second reveal logic.
+   * If you store in DB (contacts collection) something like:
+   *   first_reveal_done: boolean
+   *   second_reveal_done: boolean
+   * Then:
+   */
+  const firstRevealDone = customData?.first_reveal_done === true;
+  const secondRevealDone = customData?.second_reveal_done === true;
+
+  /** THEME for Stripe Elements */
+  const appearance: any = { theme: "flat" };
+
+  /** ============== File/Document Upload Functions ============== */
   const handleDocumentUpload = async (file: File[]) => {
     try {
       setDocumentLoading(true);
       const formData = new FormData();
       formData.append("file", file[0]);
-
-      // Upload document to server
       const { data } = await axios.post(
         "https://api.kinscare.org/api/v1/upload-file",
         formData
       );
-
       if (data.url) {
         setAttestationPreview(data.url);
-
         toast({
           title: "Document uploaded successfully!",
           description: "Your identity has been verified.",
@@ -95,7 +126,6 @@ function ProtectedCandidatesDetails({
         });
       }
     } catch (error: any) {
-      console.log(error);
       toast({
         title: "Error uploading document",
         description: error.message,
@@ -105,23 +135,18 @@ function ProtectedCandidatesDetails({
       setDocumentLoading(false);
     }
   };
+
   const handleGovernmentID = async (file: File[]) => {
     try {
       setDocumentLoading(true);
       const formData = new FormData();
       formData.append("file", file[0]);
-
-      // Upload document to server
       const { data } = await axios.post(
         "https://api.kinscare.org/api/v1/upload-file",
         formData
       );
-
       if (data.url) {
         setGovernmentID(data.url);
-        const userID = userData.userID;
-        // Update user verification status in the database
-
         toast({
           title: "Document uploaded successfully!",
           description: "Your identity has been verified.",
@@ -129,7 +154,6 @@ function ProtectedCandidatesDetails({
         });
       }
     } catch (error: any) {
-      console.log(error);
       toast({
         title: "Error uploading document",
         description: error.message,
@@ -140,123 +164,168 @@ function ProtectedCandidatesDetails({
     }
   };
 
-  // Handle File Deletion
   const deleteFile = async (file: any) => {
-    if (file === "government") {
-      console.log(file);
-      try {
-        setDocumentLoading(true);
+    try {
+      setDocumentLoading(true);
+      if (file === "government") {
+        if (!governmentID) return;
         const payload = { fileUrl: governmentID };
-
         const { data } = await axios.post(
           "https://api.kinscare.org/api/v1/delete-file",
           payload
         );
-
         if (data.success) {
           setGovernmentID(null);
           toast({ title: "File deleted successfully", variant: "default" });
         }
-      } catch (error: any) {
-        toast({
-          title: "Error deleting file",
-          description: error.message,
-          variant: "destructive",
-        });
-      } finally {
-        setDocumentLoading(false);
-      }
-    } else {
-      // console.log(file);
-      try {
-        setDocumentLoading(true);
+      } else {
+        if (!attestationPreview) return;
         const payload = { fileUrl: attestationPreview };
-
         const { data } = await axios.post(
           "https://api.kinscare.org/api/v1/delete-file",
           payload
         );
-
         if (data.success) {
           setAttestationPreview(null);
           toast({ title: "File deleted successfully", variant: "default" });
         }
-      } catch (error: any) {
-        toast({
-          title: "Error deleting file",
-          description: error.message,
-          variant: "destructive",
-        });
-      } finally {
-        setDocumentLoading(false);
       }
+    } catch (error: any) {
+      toast({
+        title: "Error deleting file",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setDocumentLoading(false);
     }
   };
 
-  // stripe theme
-  const appearance: any = {
-    theme: "flat",
-  };
-
+  /** ============== Payment + Subscription Setup ============== */
   const getSecrete = async () => {
     try {
       const response = await axios.post(
         "https://api.kinscare.org/api/v1/providers/create-setup-intent",
         {
-          customerId: user.customData.customer_id,
+          customerId: user?.customData?.customer_id,
         }
       );
-      console.log(response.data);
       const { clientSecret } = response.data;
-      // Store the client secret in localStorage to persist across reloads
       localStorage.setItem("client_secret", clientSecret);
       setClientSecret(clientSecret);
-      // console.log(response)
-      // Close the dialog after sending
+
       const isNotVerified = !(
         customData?.trial === true || customData?.subscribe === true
       );
       if (isNotVerified) {
         setIsTrialDialogOpen(true);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log("Error fetching Setup Intent:", error);
+    }
   };
 
+  /** ============== Reveal Contacts ==============
+   * When user clicks "Reveal Contacts"
+   *  - If first or second reveal is not done, wait 4s, show real info, then show the appropriate popup.
+   *  - Otherwise, fallback to the existing logic for subscription or trial.
+   */
   const openRevealContacts = async () => {
-    if (customData && !customData.viewed_once) {
-      if (countdown === 0) {
-        // Start countdown from 4
-        setCountdown(3);
-        setIsTrialExpired(false);
-        // Simple manual countdown loop
-        const interval = setInterval(() => {
-          setCountdown((prev) => {
-            if (prev > 1) {
-              return prev - 1; // Decrease countdown
-            } else {
-              clearInterval(interval); // Stop interval at 0
-              setIsTrialExpired(true);
-              setShowCountDownDialog(true); // Show dialog when countdown ends
-              return 0;
-            }
-          });
-        }, 1000);
-      }
-      // set timer after timer is off then update the database
-    } else {
+    // If the user has not done the first reveal
+    if (!firstRevealDone) {
+      // Wait 4 seconds, then show real info & open first popup
+      setCountdown(4);
+      setIsTrialExpired(false);
+
+      const interval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev > 1) return prev - 1;
+          clearInterval(interval);
+          // after countdown ends, re-hide them & show the first message
+          setIsTrialExpired(true);
+          setShowCountDownDialog(false);
+          // Show the first dialog
+          setShowFirstRevealDialog(true);
+          // Mark first reveal done in DB
+          updateRevealStatus("first_reveal_done");
+          return 0;
+        });
+      }, 1000);
+    }
+    // If the user has done first but not second reveal
+    else if (firstRevealDone && !secondRevealDone) {
+      setCountdown(4);
+      setIsTrialExpired(false);
+
+      const interval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev > 1) return prev - 1;
+          clearInterval(interval);
+          setIsTrialExpired(true);
+          setShowCountDownDialog(false);
+          setShowSecondRevealDialog(true);
+          updateRevealStatus("second_reveal_done");
+          return 0;
+        });
+      }, 1000);
+    }
+    // If the user has done 2 reveals, fallback to existing logic
+    else {
+      console.log("s");
+      /**
+       *
+       * Original logic: if customData and not customData.viewed_once => do the old countdown approach
+       * or check trial dates, subscription, etc.
+       * We'll keep it minimal but you can adapt further if needed.
+       */
       const trialStart = customData?.trial_start_date;
       const trialEnd = customData?.trial_end_date;
       const isSubscribed = customData?.subscribed;
       if (trialStart && trialEnd) {
         const trialActive = isTrialActive(trialStart, trialEnd);
-        // open the payment subscribe modal
-        setIsDialogOpen(true);
+        if (!trialActive) {
+          // open the payment subscribe modal
+          setIsDialogOpen(true);
+        }
       } else {
+        setIsTrialExpired(true);
+        openVerifyIdentity();
         getSecrete();
       }
     }
   };
 
+  /** ============== DB Update: first/second reveal done ============== */
+  const updateRevealStatus = async (
+    field: "first_reveal_done" | "second_reveal_done"
+  ) => {
+    if (!userData?.userID) return;
+    try {
+      const payload = {
+        collectionName: "contacts",
+        operation: "updateOne",
+        filter: { userID: userData.userID, role: "provider" },
+        update: {
+          $set: {
+            [field]: true,
+          },
+        },
+      };
+      const setReveal = await axios.post(
+        "https://api.kinscare.org/api/v1/auth/crud-operation",
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      console.log(setReveal, "setReveal");
+      setCustomData((prev: any) => ({ ...prev, [field]: true }));
+    } catch (error) {
+      console.error("Error updating reveal status:", error);
+    }
+  };
+
+  /** If user clicks the "Verify Your Identity" button after first reveal */
   const openVerifyIdentity = async () => {
     await getSecrete();
     setShowCountDownDialog(false);
@@ -266,41 +335,38 @@ function ProtectedCandidatesDetails({
     setIsTrialDialogOpen(false);
   };
 
-  // Open dialog if trial has expired
+  /** ============== On Mount: Check Subscription/Trial ============== */
   useEffect(() => {
     const trialStart = customData?.trial_start_date;
     const trialEnd = customData?.trial_end_date;
     const isSubscribed = customData?.subscribed;
 
     if (isSubscribed) {
-      // If subscribed, the trial is irrelevant
       setIsTrialExpired(false);
       return;
     }
     if (trialStart && trialEnd) {
-      // Calculate trial status based on dates
       const trialActive = isTrialActive(trialStart, trialEnd);
       setIsTrialExpired(!trialActive);
     } else {
-      // Fallback if no trial dates exist
       const trialFlag = customData?.trial || false;
       setIsTrialExpired(!trialFlag);
     }
 
-    const fetchCustomData = async () => {
+    const fetchCustomDataAPI = async () => {
+      if (!user?.customData?.userID || !user?.customData?.email) return;
       const fetchedData: any = await fetchContactsData(
         user.customData.userID,
         user.customData.email
       );
       if (fetchedData) {
-        // console.log(fetchedData.result, "rewsulet")
         await setCustomData(fetchedData.result);
       }
     };
-    fetchCustomData();
+    fetchCustomDataAPI();
   }, [user]);
 
-  // Fetch saved cards when the dialog opens
+  /** ============== Payment Cards: If dialog opens, fetch saved cards ============== */
   useEffect(() => {
     if (isDialogOpen) {
       fetchSavedCards();
@@ -309,12 +375,12 @@ function ProtectedCandidatesDetails({
 
   const fetchSavedCards = async () => {
     try {
-      const customerId = user.customData.customer_id;
+      const customerId = user?.customData?.customer_id;
+      if (!customerId) return;
       const response = await axios.post(
-        `https://api.kinscare.org/api/v1/providers/payment-methods`,
+        "https://api.kinscare.org/api/v1/providers/payment-methods",
         { customerId }
       );
-
       if (response.data.success) {
         const cards = response.data.data.map((card: any) => ({
           id: card.id,
@@ -324,8 +390,6 @@ function ProtectedCandidatesDetails({
           exp_year: card.card.exp_year,
         }));
         setSavedCards(cards);
-
-        // Default to the first card if available
         if (cards.length > 0) {
           setSelectedCard(cards[0].id);
         }
@@ -340,18 +404,17 @@ function ProtectedCandidatesDetails({
   const closePricingDialog = () => {
     setIsDialogOpen(false);
   };
+
+  /** ============== Obfuscation Helpers ============== */
   const obfuscateText = (text: string): string => {
-    // Check if the input is an email
     if (text.includes("@")) {
       const [localPart, domain] = text.split("@");
-      if (localPart.length <= 2) return text; // Skip short emails
+      if (localPart.length <= 2) return text;
       const obfuscatedLocalPart = `${localPart.slice(0, 3)}${"*".repeat(
         Math.max(localPart.length - 6, 0)
       )}${localPart.slice(-3)}`;
       return `${obfuscatedLocalPart}@${domain}`;
     }
-
-    // If not an email, treat as a name
     const words = text.split(" ");
     return words
       .map((word) => {
@@ -365,56 +428,58 @@ function ProtectedCandidatesDetails({
       })
       .join(" ");
   };
-  const handleOnSuccess = () => {
-    toast({
-      title: "Error",
-      description: "Payment Details verified successfully",
-      variant: "default",
-    });
-  };
-  console.log(tel, "this is the tel", email);
+
   function formatPhoneNumberToDigitsWithPlus(phone: string): string {
-    return phone.replace(/(?!^\+)\D/g, ""); // Keep + only if it's at the start, remove other non-digits
+    return phone.replace(/(?!^\+)\D/g, "");
   }
 
   const encryptedEmail = obfuscateText(email);
   const encryptedTel = obfuscateText(formatPhoneNumberToDigitsWithPlus(tel));
-  // console.log(isTrialExpired)
+
+  /** ============== Payment success handler ============== */
+  const handleOnSuccess = () => {
+    toast({
+      title: "Success",
+      description: "Payment Details verified successfully",
+      variant: "default",
+    });
+  };
+
+  /** ============== Attestation Submission ============== */
   const submitDocument = async () => {
     if (governmentID && attestationPreview) {
       try {
         setSubmitting(true);
-        const userID = userData.userID;
+        const userID = userData?.userID;
         const freeTrialEndDate = new Date();
         freeTrialEndDate.setDate(freeTrialEndDate.getDate() + 7);
-        // Update user verification status in the database
+
         const payload = {
-          collectionName: "contacts", // Specify the collection to update
-          operation: "updateOne", // Specify the operation type
-          filter: { userID, role: "provider" }, // Filter by userID and role
+          collectionName: "contacts",
+          operation: "updateOne",
+          filter: { userID, role: "provider" },
           update: {
             $set: {
               identity_verified: "pending",
               attestation_letter: attestationPreview,
               government_Id: governmentID,
-              trial: true, // set this as true for the sake
-              subscribed: false, // Mark subscription as inactive
-              trial_start_date: new Date().toISOString(), // Set free trial start date
-              trial_end_date: freeTrialEndDate.toISOString(), // Set free trial end date
+              trial: true,
+              subscribed: false,
+              trial_start_date: new Date().toISOString(),
+              trial_end_date: freeTrialEndDate.toISOString(),
             },
           },
         };
         await axios.post(
           "https://api.kinscare.org/api/v1/auth/crud-operation",
           payload,
-          {
-            headers: { "Content-Type": "application/json" },
-          }
+          { headers: { "Content-Type": "application/json" } }
         );
         setIsTrialDialogOpen(false);
         await user.refreshCustomData();
         setIsTrialExpired(false);
       } catch (error) {
+        console.log("Error saving attestation/ID docs:", error);
       } finally {
         setSubmitting(false);
       }
@@ -422,39 +487,33 @@ function ProtectedCandidatesDetails({
       toast({
         title: "Error submitting",
         description:
-          "please Download and print an attestation letter, sign it, and upload it along with a government-issued ID containing your address.",
+          "Please download/print an attestation letter, sign it, and upload it along with a government ID.",
         variant: "destructive",
       });
     }
   };
+
   return (
     <>
       <h2 className="text-sm font-semibold">Contacts Information</h2>
       <div className="space-y-2 mt-1">
         {isTrialExpired ? (
           <div className="space-y-3">
-            {/* Encrypted Email and Phone */}
             <div className="space-y-2 max-w-sm">
-              <p
-                className={`text-sm px-4 py-2 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed border border-gray-200`}
-              >
+              <p className="text-sm px-4 py-2 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed border border-gray-200">
                 {encryptedEmail}
               </p>
-              <p
-                className={`text-sm px-4 py-2 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed border border-gray-200`}
-              >
+              <p className="text-sm px-4 py-2 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed border border-gray-200">
                 {encryptedTel}
               </p>
             </div>
-            {/* Reveal Contacts Message */}
             <p className="text-sm font-medium text-gray-600">
-              Click the **Reveal Contacts** button below to view {name}'s email
-              and phone number.
+              Click the **Reveal Contacts** button below to view {name}&apos;s
+              email and phone number.
             </p>
           </div>
         ) : (
           <div className="space-y-2 max-w-sm">
-            {/* Visible Email and Phone */}
             <p className="text-sm px-4 py-2 rounded-md bg-gray-50 text-gray-800 border border-gray-200">
               {email}
             </p>
@@ -463,8 +522,6 @@ function ProtectedCandidatesDetails({
             </p>
           </div>
         )}
-
-        {/* Reveal Contacts Button */}
         {isTrialExpired && (
           <Button
             size="sm"
@@ -476,11 +533,12 @@ function ProtectedCandidatesDetails({
         )}
       </div>
 
+      {/*  When the 3-second or 4-second countdown finishes, we show this first "Verify Identity" dialog */}
       <Dialog open={showCountDownDialog} onOpenChange={setShowCountDownDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Verify Your Identity</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="py-4">
               Great! Now you’ve seen how easy it is to access caregivers’ phone
               numbers and emails to connect with them directly. To continue
               viewing contact details, please verify your identity as an
@@ -492,14 +550,90 @@ function ProtectedCandidatesDetails({
         </DialogContent>
       </Dialog>
 
-      {/* Dialog Box Payment */}
+      {/* FIRST REVEAL DIALOG */}
+      <Dialog
+        open={showFirstRevealDialog}
+        onOpenChange={setShowFirstRevealDialog}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Excel Health Careers Training</DialogTitle>
+            <DialogDescription className="py-4">
+              Great! Now you’ve seen how easy it is to access caregivers’ phone
+              numbers and emails to connect with them directly. To continue
+              viewing contact details, please verify your identity as an
+              employer—it’s quick, secure, and ensures a safe experience for
+              everyone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-4 mt-4">
+            {/* <Button
+              variant="secondary"
+              className="bg-blue-500 text-white hover:bg-blue-600"
+              onClick={() => setShowFirstRevealDialog(false)}
+            >
+              Go Back
+            </Button> */}
+            <Button
+              className="w-full"
+              onClick={() => {
+                // If you want to jump directly to identity verification:
+                openVerifyIdentity();
+                setShowFirstRevealDialog(false);
+              }}
+            >
+              Verify Identity
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* SECOND REVEAL DIALOG */}
+      <Dialog
+        open={showSecondRevealDialog}
+        onOpenChange={setShowSecondRevealDialog}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Excel Health Careers Training</DialogTitle>
+            <DialogDescription className="py-4">
+              Protecting our caregivers is a top priority. In the past, scammers
+              have attempted to misuse our registry, which is why we now ask
+              employers like you to verify their identity. This step shows
+              caregivers that your interest in hiring them is genuine and
+              trustworthy.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-4 mt-4">
+            {/* <Button
+              variant="secondary"
+              className="bg-blue-500 text-white hover:bg-blue-600"
+              onClick={() => setShowSecondRevealDialog(false)}
+            >
+              Go Back
+            </Button> */}
+            <Button
+              className="w-full"
+              onClick={async () => {
+                // Again, open identity verification if desired:
+                await openVerifyIdentity();
+                setShowSecondRevealDialog(false);
+              }}
+            >
+              Verify Identity
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Payment / Pricing Plan Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-6xl overflow-y-auto max-h-full mx-auto bg-gradient-to-b from-blue-50 via-white to-gray-50 rounded-lg shadow-2xl">
           <PricingPlan closePricingDialog={closePricingDialog} />
         </DialogContent>
       </Dialog>
 
-      {/* Trial DialogBox  */}
+      {/* Trial Verification Dialog (Attestation, Payment, etc.) */}
       <Dialog open={isTrialDialogOpen} onOpenChange={setIsTrialDialogOpen}>
         <DialogContent className="h-[100vh] md:h-auto max-w-4xl overflow-y-auto">
           <DialogHeader>
@@ -509,12 +643,12 @@ function ProtectedCandidatesDetails({
                 {currentStep === "payment" &&
                   "Get Verified with Payment Method"}
                 {currentStep === "attestation" &&
-                  "Upload a Signed Attestation Letter Government-Issued ID"}
+                  "Upload a Signed Attestation Letter & Government-Issued ID"}
               </h2>
               {currentStep === "selection" && (
                 <p className="text-sm text-gray-600">
-                  To verify your identity and ensure a safe platform for
-                  caregivers, we offer employers two verification options
+                  To protect caregivers and ensure a safe platform, choose one
+                  of these verification options:
                 </p>
               )}
             </DialogTitle>
@@ -522,61 +656,61 @@ function ProtectedCandidatesDetails({
 
           {currentStep === "selection" && (
             <div className="space-y-6">
-              <>
-                <div className="space-y-4 text-gray-600">
+              <div className="space-y-4 text-gray-800">
+                <div className="space">
+                  <p className="text-sm font-bold">
+                    <span className="font-bold">
+                      1. Verify Identity with Payment Details
+                    </span>{" "}
+                    <span className="italic">
+                      (Preferred by most employers)
+                    </span>
+                  </p>
                   <p className="text-sm">
-                    To create a safe and professional environment for
-                    caregivers, we require a valid payment method. This confirms
-                    that you’re a genuine employer with sincere intent to hire{" "}
-                    {name}.
-                  </p>
-                  <p className="text-sm text-red-500">
-                    Your card will not be charged.
+                    Fast, secure, and no charges applied. Fill out the form
+                    below to verify instantly.
                   </p>
                 </div>
-                <div className="mt-4">
-                  {clientSecret && userData ? (
-                    <Elements
-                      stripe={stripePromise}
-                      options={{ clientSecret, appearance }}
-                    >
-                      <PaymentForm
-                        close={closeRevealContacts}
-                        setIsTrialExpired={setIsTrialExpired}
-                        clientSecret={clientSecret}
-                        userID={userData.userID}
-                        customerId={customData?.customer_id}
-                        priceId="price_1QP2OuAoahxG9SLGNoc37Lxo"
-                        intentType="setup"
-                        onSuccess={(result) => {
-                          handleOnSuccess();
-                        }}
-                        onError={(error) => {
-                          console.error("Error saving card:", error);
-                        }}
-                      />
-                    </Elements>
-                  ) : (
-                    <p>Loading...</p>
-                  )}
-                </div>
-              </>
+              </div>
+              <div className="mt-4">
+                {clientSecret && userData ? (
+                  <Elements
+                    stripe={stripePromise}
+                    options={{ clientSecret, appearance }}
+                  >
+                    <PaymentForm
+                      close={closeRevealContacts}
+                      setIsTrialExpired={setIsTrialExpired}
+                      clientSecret={clientSecret}
+                      userID={userData.userID}
+                      customerId={customData?.customer_id}
+                      priceId="price_1QP2OuAoahxG9SLGNoc37Lxo"
+                      intentType="setup"
+                      onSuccess={() => {
+                        handleOnSuccess();
+                      }}
+                      onError={(error) => {
+                        console.error("Error saving card:", error);
+                      }}
+                    />
+                  </Elements>
+                ) : (
+                  <p>Loading...</p>
+                )}
+              </div>
               <div
-                className="flex items-center p-4 border rounded-lg cursor-pointer hover:shadow-lg transition"
+                className="flex items-center p-4 border shadow-lg rounded-lg cursor-pointer hover:shadow-lg transition"
                 onClick={() => setCurrentStep("attestation")}
               >
                 <FileText className="w-10 h-10 text-blue-500 mr-4" />
                 <div>
                   <h3 className="font-bold text-gray-800">
-                    Upload a Signed Attestation Letter Government-Issued ID
+                    Upload a Signed Attestation Letter & Government-Issued ID
                   </h3>
                   <p className="text-sm text-gray-600">
-                    This option requires you to download and print an
-                    attestation letter, sign it, and upload it along with a
-                    government-issued ID containing your address.
-                  </p>
-                  <p className="mt-1 text-sm text-blue-600 font-medium">
-                    This process takes more time but is equally effective.
+                    Download and print a signable attestation letter, then
+                    upload it along with a government-issued ID that includes
+                    your address. This option is more time-consuming.
                   </p>
                 </div>
               </div>
@@ -592,7 +726,7 @@ function ProtectedCandidatesDetails({
                 </p>
               </div>
               <div className="mt-4">
-                <p className="font-semibold tracking-tight antialiased ">
+                <p className="font-semibold tracking-tight antialiased">
                   Attestation letter
                 </p>
                 {attestationPreview ? (
@@ -623,7 +757,7 @@ function ProtectedCandidatesDetails({
                       "application/pdf": [".pdf"],
                       "application/msword": [".doc", ".docx"],
                     }}
-                    maxSize={3145728} // 3 MB limit
+                    maxSize={3145728}
                   >
                     {({ getRootProps, getInputProps }: any) => (
                       <div
@@ -638,8 +772,8 @@ function ProtectedCandidatesDetails({
                             <div className="flex flex-col items-center gap-4">
                               <Cloudy />
                               <p className="text-xs font-bold antialiased">
-                                Drag and drop your attestation letter document
-                                here (PDF/DOCX) or click to select
+                                Drag and drop your attestation letter (PDF/DOCX)
+                                here or click to select
                               </p>
                             </div>
                           </>
@@ -678,7 +812,7 @@ function ProtectedCandidatesDetails({
                       "application/pdf": [".pdf"],
                       "application/msword": [".doc", ".docx"],
                     }}
-                    maxSize={3145728} // 3 MB limit
+                    maxSize={3145728}
                   >
                     {({ getRootProps, getInputProps }: any) => (
                       <div
@@ -693,8 +827,8 @@ function ProtectedCandidatesDetails({
                             <div className="flex flex-col items-center gap-4">
                               <Cloudy />
                               <p className="text-xs font-bold antialiased">
-                                Drag and drop your signed governmentID document
-                                here (PDF/DOCX) or click to select
+                                Drag and drop your government-issued ID
+                                (PDF/DOCX) here or click to select
                               </p>
                             </div>
                           </>
@@ -704,17 +838,17 @@ function ProtectedCandidatesDetails({
                   </Dropzone>
                 )}
               </div>
-
-              <Button disabled={submitting} onClick={submitDocument}>
-                {" "}
-                {submitting && <Loader />} Submit Documents
-              </Button>
-              <button
-                className="mt-4 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-                onClick={() => setCurrentStep("selection")}
+              <Button
+                disabled={submitting}
+                onClick={submitDocument}
+                className="mt-4 bg-gray-300 hover:bg-gray-400 text-gray-800"
               >
-                Back to Verification Options
-              </button>
+                {submitting && <Loader className="mr-2 animate-spin" />}
+                Submit Documents
+              </Button>
+              <Button onClick={() => setCurrentStep("selection")}>
+                Go Back
+              </Button>
             </>
           )}
         </DialogContent>
