@@ -558,7 +558,7 @@ function ProtectedCandidatesDetails({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Excel Health Careers Training</DialogTitle>
+            <DialogTitle>Kinscare</DialogTitle>
             <DialogDescription className="py-4">
               Great! Now you’ve seen how easy it is to access caregivers’ phone
               numbers and emails to connect with them directly. To continue
@@ -596,7 +596,7 @@ function ProtectedCandidatesDetails({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Excel Health Careers Training</DialogTitle>
+            <DialogTitle>Kinscare</DialogTitle>
             <DialogDescription className="py-4">
               Protecting our caregivers is a top priority. In the past, scammers
               have attempted to misuse our registry, which is why we now ask
