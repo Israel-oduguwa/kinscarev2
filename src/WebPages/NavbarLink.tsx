@@ -45,6 +45,13 @@ function NavbarLink() {
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Link href="/pricing" legacyBehavior passHref>
+              <NavigationMenuLink active={pathname === "/explore"}  className={`${navigationMenuTriggerStyle()} ${pathname !== "/subscribe" && "bg-transparent"}`}>
+               Plans & Pricing
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
           {/* <NavigationMenuItem>
             <Link href="/why-kinscare" legacyBehavior passHref>
               <NavigationMenuLink className={`${navigationMenuTriggerStyle()} ${pathname !== "/why-kinscare" && "bg-transparent"}`}>

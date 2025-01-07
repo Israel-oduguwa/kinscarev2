@@ -15,6 +15,7 @@ declare global {
       chat: {
         load: (config: any) => void;
         interact: (payload: any) => void;
+        global_element:any
       };
     };
     renderProgramDetails?: (
@@ -605,12 +606,7 @@ const VoiceFlowProvider = ({ children }: { children: React.ReactNode }) => {
                                 ""
                               }
                             </p>
-                            <p style=" font-size: 12px; color: grey; margin:0%; text-align: left;">
-                              <strong style="color: #434343;"> Length of training: </strong>
-                            </p>
-                            <p style=" font-size: 12px; color: grey; margin:0%; text-align: left;">
-                              <strong style="color: #434343;"> Degree type: </strong>
-                            </p>
+                            
                             <div style="text-align:right;">
                               <button class="learn-more" 
                                 onclick="renderProgramDetails('${

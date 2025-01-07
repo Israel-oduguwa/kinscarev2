@@ -5,9 +5,66 @@ import { cn } from "@/lib/utils";
 import HeroPic from "../Landing Page Image.png";
 import Link from "next/link";
 import Footer from "../../WebPages/Footer";
+
+export const metadata = {
+  title: "Kinscare - Connecting Caregivers with Providers Seamlessly",
+  description:
+    "Kinscare helps providers find qualified caregivers and caregivers find best-fitting jobs. Our aim is to deliver value to our users with a growing registry.",
+  keywords: [
+    "Caregivers",
+    "Providers",
+    "Kinscare",
+    "Jobs",
+    "Registry",
+    "Care Platform",
+  ],
+  openGraph: {
+    title: "Kinscare - Connecting Caregivers with Providers Seamlessly",
+    description:
+      "Kinscare helps providers find qualified caregivers and caregivers find best-fitting jobs. Our aim is to deliver value to our users with a growing registry.",
+    url: "https://www.kinscare.com",
+    siteName: "Kinscare",
+    images: [
+      {
+        url: "/path-to-social-media-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Kinscare Hero Image",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kinscare - Connecting Caregivers with Providers Seamlessly",
+    description:
+      "Kinscare helps providers find qualified caregivers and caregivers find best-fitting jobs. Our aim is to deliver value to our users with a growing registry.",
+    images: ["/path-to-social-media-image.jpg"],
+  },
+};
+
 export default function Home() {
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Kinscare",
+            url: "https://www.kinscare.com",
+            logo: "https://www.kinscare.com/logo.png",
+            description:
+              "Kinscare helps providers find qualified caregivers and caregivers find best-fitting jobs. Our aim is to deliver value to our users with a growing registry.",
+            sameAs: [
+              "https://www.facebook.com/kinscare",
+              "https://www.twitter.com/kinscare",
+              "https://www.linkedin.com/company/kinscare",
+            ],
+          }),
+        }}
+      />
       <NavBar />
       <section className="bg-orange-50 relative overflow-hidden ">
         <div className="grid max-w-screen-xl px-4 py-2 lg:py-10 xl:px-0 mt-[73px] mx-auto lg:gap-8 xl:gap-0 lg:grid-cols-12">
@@ -90,7 +147,9 @@ export default function Home() {
                   </ul>
                   <div className="py-4">
                     <Button className="py-6 px-8">
-                      <Link href="/registry">Find Quality Caregivers</Link>
+                      <Link href="/find-caregivers">
+                        Find Quality Caregivers
+                      </Link>
                     </Button>
                   </div>
                 </div>
@@ -99,7 +158,7 @@ export default function Home() {
                 <div className="m">
                   <img
                     className="w-full"
-                    src="https://opennode.com/_nuxt/img/Invoices.d214f6c.svg"
+                    src="https://firebasestorage.googleapis.com/v0/b/climare-pushbots.appspot.com/o/caregiver%20final%20(1).png?alt=media&token=30bc0150-58b7-4f59-8b51-57968abe482c"
                     alt="feature1"
                   />
                 </div>
@@ -110,7 +169,7 @@ export default function Home() {
                 <div className="m">
                   <img
                     className="w-full"
-                    src="https://assets.paystack.com/assets/img/content/Collect-Payments-for-Multiple-Channels-1.1.gif"
+                    src="https://firebasestorage.googleapis.com/v0/b/climare-pushbots.appspot.com/o/Provider%20Group%20(1).png?alt=media&token=aee75ff2-5344-49d4-986a-dd4f7125fc30"
                     alt="feature1"
                   />
                 </div>
@@ -153,72 +212,13 @@ export default function Home() {
                   </ul>
                   <div className="py-4">
                     <Button className="py-6 px-8">
-                      <Link href="/registry">Find Quality Caregivers</Link>
+                      <Link href="/find-jobs">Find Quality Job</Link>
                     </Button>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="relative z-10 py-1 gap-y-10 px-5 grid mx-auto lg:gap-8 xl:gap-0 lg:grid-cols-12">
-              <div className="mr-auto place-self-center lg:py-16 lg:px-6 py-2 lg:col-span-6">
-                <div className="m">
-                  <div className="p-1">
-                    <h3 className="mb-4 relative max-w-6xl mx-auto text-center !leading-snug text-2xl md:text-3xl text-gray-700 font-bold lg:text-left">
-                      Private Communication
-                    </h3>
-                    <p className="text-md text-gray-700 antialiased">
-                      <span></span> Communication is key in finding the right
-                      caregiver. Kinscare's built-in chat application allows you
-                      to communicate directly and securely with potential
-                      candidates. Discuss job details, ask questions, and get to
-                      know caregivers before making a decision.
-                    </p>
-                  </div>
-                  <ul className="py-3 flex flex-col gap-4">
-                    <li>
-                      <p>
-                        <span></span> Advanced Encryption: Our chat feature
-                        ensures that all your conversations are private and
-                        protected. We use advanced encryption to keep your
-                        information safe, so you can communicate with peace of
-                        mind.
-                      </p>
-                    </li>
-                    <li>
-                      <p>
-                        Seamless Integration: The chat application is integrated
-                        seamlessly into the platform, providing a cohesive and
-                        efficient experience. You can access chat histories and
-                        follow up with candidates effortlessly.
-                      </p>
-                    </li>
-                    <li>
-                      <p>
-                        Efficient Coordination: Instant messaging helps speed up
-                        the hiring process, allowing you to quickly coordinate
-                        interviews and finalize arrangements. Secure, efficient,
-                        and user-friendly—our chat application is designed to
-                        facilitate smooth communication.
-                      </p>
-                    </li>
-                  </ul>
-                  <div className="py-4">
-                    <Button className="py-6 px-8">
-                      <Link href="/registry">Find Quality Caregivers</Link>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-              <div className="mr-auto place-self-center py-2 lg:col-span-6">
-                <div className="m">
-                  <img
-                    className="w-full"
-                    src="https://opennode.com/_nuxt/img/Invoices.d214f6c.svg"
-                    alt="feature1"
-                  />
-                </div>
-              </div>
-            </div>
+            
           </div>
         </div>
       </section>
@@ -237,10 +237,6 @@ export default function Home() {
             <div className="mt-16 grid gap-8 px-6 sm:mx-auto sm:w-2/3 md:w-full md:grid-cols-2 lg:grid-cols-3">
               <div className="rounded-xl lg:m-4 transition duration-300 hover:scale-105  bg-gray-700  shadow-2xl shadow-gray-600/10 dark:-gray-700 dark:bg-gray-800 dark:shadow-none">
                 <div className="p-6">
-                  <img
-                    className="w-10"
-                    src="https://opennode.com/_nuxt/img/APIStatus.96b0f71.svg"
-                  />
                   <h4 className="text-2xl font-title font-bold py-4 text-gray-200 antialiased">
                     Intuitive Navigation
                   </h4>
@@ -257,10 +253,6 @@ export default function Home() {
               </div>
               <div className="rounded-xl lg:m-4 transition duration-300 hover:scale-105  bg-gray-700  shadow-2xl shadow-gray-600/10 dark:-gray-700 dark:bg-gray-800 dark:shadow-none">
                 <div className="p-6">
-                  <img
-                    className="w-10"
-                    src="https://opennode.com/_nuxt/img/GoGlobal.7d686ad.svg"
-                  />
                   <h4 className="text-2xl font-title font-bold py-4 text-gray-200 antialiased">
                     All-in-One Dashboard
                   </h4>
@@ -280,24 +272,15 @@ export default function Home() {
               </div>
               <div className="rounded-xl lg:m-4 transition duration-300 hover:scale-105  bg-gray-700  shadow-2xl shadow-gray-600/10 dark:-gray-700 dark:bg-gray-800 dark:shadow-none">
                 <div className="p-6">
-                  <img
-                    className="w-10"
-                    src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTMzLjY4MDEgMTcuNjcxNEwyMi4wMzc2IDM0LjU1M1YyMi4zMjg0SDEyLjcyMzZMMjQuMzY2MSA1LjQ0Njc4VjE3LjY3MTRIMzMuNjgwMVoiIGZpbGw9IiM3N0IxRjQiLz4KPHBhdGggZD0iTTI3LjI3NjggMTcuNjcxNEwxNS42MzQzIDM0LjU1M1YyMi4zMjg0SDYuMzIwMzFMMTcuOTYyOCA1LjQ0Njc4VjE3LjY3MTRIMjcuMjc2OFoiIGZpbGw9IiM4NzdDRkYiLz4KPHBhdGggZD0iTTI3LjI3NjcgMTcuNjcxNUwyMi4wMzcgMjUuMjY4MUwyMi4wMzc2IDIyLjMyODVIMTIuNzIzNkwxNy45NjI1IDE0LjczMTRMMTcuOTYyOCAxNy42NzE1SDI3LjI3NjdaIiBmaWxsPSIjNEU0M0MxIi8+Cjwvc3ZnPgo="
-                  />
                   <h4 className="text-2xl font-title font-bold py-4 text-gray-200 antialiased">
-                    Streamlined Communication
+                    Discover Fulfilling Careers in Nursing & Allied Healthcare
                   </h4>
                   <p className="text-gray-200 text-sm py-2 ">
-                    Communicate directly through our built-in messaging system.
-                    Coordinate with caregivers or providers without leaving the
-                    platform. Rest assured that all your communications are
-                    encrypted and secure, maintaining your privacy and peace of
-                    mind.
+                    Kinscare connects you to local colleges, universities, and
+                    vocational programs that provide the education and training
+                    needed to enter nursing and allied healthcare professions.
                   </p>
-                  <p className="text-gray-200 text-sm  py-2">
-                    Keep all your conversations in one place, making it easy to
-                    track and manage your interactions for effective follow-up.
-                  </p>
+                 
                   <Button variant="ghost"></Button>
                 </div>
               </div>

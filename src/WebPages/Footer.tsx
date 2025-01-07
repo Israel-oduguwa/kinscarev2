@@ -29,47 +29,7 @@ const Footer = () => {
                     as possible.
                   </Link>
                 </div>
-                <div className="flex gap-6">
-                  <Link
-                    href="#"
-                    target="_blank"
-                    aria-label="github"
-                    className="hover:text-primary dark:hover:text-primaryLight"
-                  >
-                    <span className="sr-only">Github</span>
-                    <img
-                      src="https://via.placeholder.com/20" // Replace with your GitHub icon
-                      alt="GitHub"
-                      className="h-6"
-                    />
-                  </Link>
-                  <Link
-                    href="#"
-                    target="_blank"
-                    aria-label="twitter"
-                    className="hover:text-primary dark:hover:text-primaryLight"
-                  >
-                    <span className="sr-only">Twitter</span>
-                    <img
-                      src="https://via.placeholder.com/20" // Replace with your Twitter icon
-                      alt="Twitter"
-                      className="h-6"
-                    />
-                  </Link>
-                  <Link
-                    href="#"
-                    target="_blank"
-                    aria-label="medium"
-                    className="hover:text-primary dark:hover:text-primaryLight"
-                  >
-                    <span className="sr-only">Medium</span>
-                    <img
-                      src="https://via.placeholder.com/20" // Replace with your Medium icon
-                      alt="Medium"
-                      className="h-6"
-                    />
-                  </Link>
-                </div>
+          
               </div>
             </div>
             <div className="col-span-8 md:col-span-6 lg:col-span-4">
@@ -103,22 +63,22 @@ const Footer = () => {
                         Terms
                       </Link>
                     </li>
-                    <li>
+                    {/* <li>
                       <Link
                         href="/how-to-use-kinscare"
                         className="text-sm duration-100 hover:text-primary dark:hover:text-white"
                       >
                         How to use Kinscare
                       </Link>
-                    </li>
-                    <li>
+                    </li> */}
+                    {/* <li>
                       <Link
                         href="/faqp"
                         className="text-sm duration-100 hover:text-primary dark:hover:text-white"
                       >
                         FAQs
                       </Link>
-                    </li>
+                    </li> */}
                   </ul>
                 </div>
                 <div>
@@ -128,7 +88,7 @@ const Footer = () => {
                   <ul className="mt-4 list-inside space-y-4">
                     <li>
                       <Link
-                        href="#"
+                        href="/pricing"
                         className="text-sm duration-100 hover:text-primary dark:hover:text-white"
                       >
                         Plans and Pricing
@@ -136,7 +96,7 @@ const Footer = () => {
                     </li>
                     <li>
                       <Link
-                        href="/registry"
+                        href="/find-caregivers"
                         className="text-sm duration-100 hover:text-primary dark:hover:text-white"
                       >
                         Recruit caregiver
@@ -150,22 +110,22 @@ const Footer = () => {
                         Find jobs
                       </Link>
                     </li>
-                    <li>
+                    {/* <li>
                       <Link
                         href="#"
                         className="text-sm duration-100 hover:text-primary dark:hover:text-white"
                       >
                         Job Alerts
                       </Link>
-                    </li>
-                    <li>
+                    </li> */}
+                    {/* <li>
                       <Link
                         href="/start"
                         className="text-sm duration-100 hover:text-primary dark:hover:text-white"
                       >
                         Start
                       </Link>
-                    </li>
+                    </li> */}
                   </ul>
                 </div>
               </div>
