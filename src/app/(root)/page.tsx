@@ -146,7 +146,7 @@ export default function Home() {
                     </li>
                   </ul>
                   <div className="py-4">
-                    <Button className="py-6 px-8">
+                    <Button className="py-6 px-8 w-full lg:w-auto">
                       <Link href="/find-caregivers">
                         Find Quality Caregivers
                       </Link>
@@ -164,7 +164,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="relative z-10 py-1 gap-y-10 px-5 grid mx-auto lg:gap-8 xl:gap-0 lg:grid-cols-12">
+            <div className="relative z-10 py-1 gap-y-10 px-5  grid mx-auto lg:gap-8 xl:gap-0 lg:grid-cols-12">
               <div className="mr-auto place-self-center py-2 lg:col-span-6">
                 <div className="m">
                   <img
@@ -211,7 +211,7 @@ export default function Home() {
                     </li>
                   </ul>
                   <div className="py-4">
-                    <Button className="py-6 px-8">
+                    <Button className="py-6 px-8  w-full lg:w-auto">
                       <Link href="/find-jobs">Find Quality Job</Link>
                     </Button>
                   </div>

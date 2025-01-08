@@ -20,10 +20,9 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import * as Realm from "realm-web";
 import * as yup from "yup";
 import SelectRole from "./SelectRole";
-import {
-  GoogleLogin,
-} from "@react-oauth/google";
-
+import { GoogleLogin } from "@react-oauth/google";
+import { trackEvent } from "@/lib/mixpanelUtils";
+import TagManager from "react-gtm-module";
 const OrSeparator: React.FC = () => {
   return (
     <div className="w-full flex items-center gap-2 my-4">
@@ -137,6 +136,7 @@ const Signup: React.FC = () => {
           };
           createUserDuringRegistration(payload);
           user.refreshCustomData();
+
           refresh();
           setUser(userObj);
           setSelectRoleModal(true);
@@ -166,7 +166,7 @@ const Signup: React.FC = () => {
   };
 
   // Register user during registration
-  const createUserDuringRegistration = async (payload: object) => {
+  const createUserDuringRegistration = async (payload: any) => {
     try {
       setLoading(true);
       const response = await axios.get("/api/ip");
@@ -195,6 +195,37 @@ const Signup: React.FC = () => {
         );
         console.log(createUser);
         // await user.callFunction("web_add_social_user_custom_data", payload);
+
+        const tagManagerArgs =
+          payload.auth_mode === "local-userpass"
+            ? {
+                dataLayer: {
+                  event: `${payload.role}_sign_up`,
+                  userIp: response?.data?.userIp,
+                  added: new Date(),
+                  authEmail: payload.email,
+                  authMode: payload.auth_mode,
+                  authTel: payload.tel.trim(),
+                  role: `${payload.role}`,
+                  type: "Web",
+                  userId: `${payload.userID}`,
+                },
+              }
+            : {
+                dataLayer: {
+                  event: `social_sign_up`,
+                  added: new Date(),
+                  userIp: response?.data?.userIp,
+                  authEmail: payload.email,
+                  authMode: payload.auth_mode,
+                  socialFname: payload.fname,
+                  socialLname: payload.lname,
+                  type: "Web",
+                  userId: `${payload.userID}`,
+                },
+              };
+
+        TagManager.dataLayer(tagManagerArgs);
         setAuthenticated(true);
       }
     } catch (error) {
@@ -276,7 +307,6 @@ const Signup: React.FC = () => {
     });
   };
 
-  
   // Form submit handler
 
   const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
@@ -304,6 +334,21 @@ const Signup: React.FC = () => {
         const userID = app.currentUser.id;
         const emails = app.currentUser.email;
         const user_data: any = await fetchUserData(userID, emails);
+
+        // Tracking
+
+        const mixpanelPayload = {
+          phone: data.tel,
+          role: data.role,
+          userID: app.currentUser.id,
+          email,
+          id: userID,
+          created: new Date(),
+          auth_mode: "local-userpass",
+        };
+        //track the event in mixpanel for singing up
+        trackEvent(app.currentUser.customData.hash, "Sign Up", mixpanelPayload);
+
         if (user_data) {
           setUserData(user_data.result); // set the user data
           user.refreshCustomData();
@@ -322,7 +367,7 @@ const Signup: React.FC = () => {
   };
 
   const closeSelectModal = () => setSelectRoleModal(false);
-//  for one tap login 
+  //  for one tap login
   // googleLogout();
 
   if (loadingAuth === "authenticating") {

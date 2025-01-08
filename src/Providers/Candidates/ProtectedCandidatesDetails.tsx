@@ -558,7 +558,7 @@ function ProtectedCandidatesDetails({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Kinscare</DialogTitle>
+          <DialogTitle>Verify Your Identity</DialogTitle>
             <DialogDescription className="py-4">
               Great! Now you’ve seen how easy it is to access caregivers’ phone
               numbers and emails to connect with them directly. To continue
@@ -583,7 +583,7 @@ function ProtectedCandidatesDetails({
                 setShowFirstRevealDialog(false);
               }}
             >
-              Verify Identity
+              Verify Your Identity
             </Button>
           </div>
         </DialogContent>
@@ -596,7 +596,7 @@ function ProtectedCandidatesDetails({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Kinscare</DialogTitle>
+          <DialogTitle>Verify Your Identity</DialogTitle>
             <DialogDescription className="py-4">
               Protecting our caregivers is a top priority. In the past, scammers
               have attempted to misuse our registry, which is why we now ask
@@ -621,7 +621,7 @@ function ProtectedCandidatesDetails({
                 setShowSecondRevealDialog(false);
               }}
             >
-              Verify Identity
+              Verify your Identity
             </Button>
           </div>
         </DialogContent>

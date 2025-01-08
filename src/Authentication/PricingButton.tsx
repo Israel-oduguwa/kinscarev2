@@ -24,9 +24,11 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { trackEvent } from "@/lib/mixpanelUtils";
+import TagManager from "react-gtm-module";
 
 interface PricingButtonProps {
-  plan:string;
+  plan: string;
   children: React.ReactNode; // Any button or content to act as the trigger
 }
 
@@ -43,16 +45,13 @@ const schema = yup.object().shape({
   terms: yup.bool().oneOf([true], "You must accept the Terms and Conditions"),
 });
 
-const PricingButton: React.FC<PricingButtonProps> = ({
-  children,
-  plan,
-}) => {
+const PricingButton: React.FC<PricingButtonProps> = ({ children, plan }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false); // Social login modal
   const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false); // Email signup modal
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
-  
+
   const mongo: any = useContext(MongoContext);
   const { app, client, user, setAuthenticated, setUser, setUserData } = mongo;
   // console.log(userID)
@@ -77,7 +76,7 @@ const PricingButton: React.FC<PricingButtonProps> = ({
     setLoading(false);
   };
 
-  const createUserDuringRegistration = async (payload: object) => {
+  const createUserDuringRegistration = async (payload: any) => {
     try {
       const response = await axios.get("/api/ip");
       if (response.data) {
@@ -100,13 +99,43 @@ const PricingButton: React.FC<PricingButtonProps> = ({
           returning: false,
           role: "provider",
           signup_route: "pricing_page",
-          pricing_plan_id:plan
+          pricing_plan_id: plan,
         });
 
         await axios.post(
           "https://api.kinscare.org/api/v1/auth/create_user",
           payload
         );
+        const tagManagerArgs =
+          payload.auth_mode === "local-userpass"
+            ? {
+                dataLayer: {
+                  event: `${payload.role}_sign_up`,
+                  userIp: response?.data?.userIp,
+                  added: new Date(),
+                  authEmail: payload.email,
+                  authMode: payload.auth_mode,
+                  authTel: payload.tel.trim(),
+                  role: `${payload.role}`,
+                  type: "Web",
+                  userId: `${payload.userID}`,
+                },
+              }
+            : {
+                dataLayer: {
+                  event: `social_sign_up`,
+                  added: new Date(),
+                  userIp: response?.data?.userIp,
+                  authEmail: payload.email,
+                  authMode: payload.auth_mode,
+                  socialFname: payload.fname,
+                  socialLname: payload.lname,
+                  type: "Web",
+                  userId: `${payload.userID}`,
+                },
+              };
+
+        TagManager.dataLayer(tagManagerArgs);
         setAuthenticated(true);
       }
     } catch (error) {
@@ -145,6 +174,7 @@ const PricingButton: React.FC<PricingButtonProps> = ({
             created: new Date(),
           };
           await createUserDuringRegistration(payload);
+          trackEvent(app.currentUser.customData.hash, "Sign Up", payload);
           // after saving the user to the database, we redirect to the dashboard
           const fetchedData: any = await fetchUserData(
             userObj.id,
@@ -162,6 +192,27 @@ const PricingButton: React.FC<PricingButtonProps> = ({
             userObj.id,
             userObj.profile.email
           );
+          const mixpanelPayload = {
+            auth_mode: "oauth2-google",
+            date_time: new Date().toISOString(),
+            route: "Regular",
+
+            created: new Date(),
+          };
+          //track the event in mixpanel for singing up
+          trackEvent(user?.customData?.hash, "Sign In", mixpanelPayload);
+          const tagManagerArgs = {
+            dataLayer: {
+              event: `sign_in`,
+              added: new Date(),
+              auth_mode: "oauth2-google",
+              hash: app.currentUser.customData.hash,
+              role: app.currentUser.customData.role,
+              type: "Web",
+              userId: `${app?.currentUser?.id}`,
+            },
+          };
+          TagManager.dataLayer(tagManagerArgs);
           // console.log(fetchedData);
           setUserData(fetchedData.result);
           setUser(userObj);
@@ -219,6 +270,7 @@ const PricingButton: React.FC<PricingButtonProps> = ({
         };
         // add the user to the database
         await createUserDuringRegistration(payload);
+        trackEvent(app.currentUser.customData.hash, "Sign Up", payload);
         // then we should fetch the user data to the client side
         const providerUserID = app.currentUser.id;
         const emails = app.currentUser.email;

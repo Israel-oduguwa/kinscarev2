@@ -1,6 +1,5 @@
-import React from "react";
-import Signin from "../../../Authentication/Signin";
 import { Metadata } from "next";
+import Signin from "../../../Authentication/Signin";
 
 // Define Metadata for SEO
 export const metadata: Metadata = {

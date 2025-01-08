@@ -24,6 +24,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { trackEvent } from "@/lib/mixpanelUtils";
 
 interface ReferProviderProps {
   message: string; // Customizable message for the modal
@@ -146,13 +147,23 @@ const ReferProvider: React.FC<ReferProviderProps> = ({
             route: "Regular",
             created: new Date(),
           };
-          createUserDuringRegistration(payload);
+          await createUserDuringRegistration(payload);
+          trackEvent(app.currentUser.customData.hash, "Sign Up", payload);
         } else {
           const fetchedData: any = await fetchUserData(
             userObj.id,
             userObj.profile.email
           );
           // console.log(fetchedData);
+          const mixpanelPayload = {
+            auth_mode: "oauth2-google",
+            date_time: new Date().toISOString(),
+            route: "Regular",
+
+            created: new Date(),
+          };
+          //track the event in mixpanel for singing up
+          trackEvent(user?.customData?.hash, "Sign In", mixpanelPayload);
           setUserData(fetchedData.result);
           setUser(userObj);
           setAuthenticated(true);
@@ -210,6 +221,7 @@ const ReferProvider: React.FC<ReferProviderProps> = ({
         // add the user to the database
         await createUserDuringRegistration(payload);
         // then we should fetch the user data to the client side
+        trackEvent(app.currentUser.customData.hash, "Sign Up", payload);
         const providerUserID = app.currentUser.id;
         const emails = app.currentUser.email;
         const user_data: any = await fetchUserData(providerUserID, emails);

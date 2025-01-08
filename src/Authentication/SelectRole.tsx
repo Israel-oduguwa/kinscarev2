@@ -22,6 +22,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { fetchUserData } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { trackEvent } from "@/lib/mixpanelUtils";
 interface IFormInputs {
   role: string;
   tel: string;
@@ -133,6 +134,21 @@ function SelectRole({ selectRoleModal, closeSelectModal }: any) {
         closeSelectModal();
       }
       setLoading(false);
+
+      const mixpanelPayload = {
+        userID: user.customData.userID,
+        fname:user.customData.fname,
+        lname:user.customData.lname,
+        email: user.customData.email,
+        role: data.role,
+        tel: data.tel,
+        hash: user?.customData?.hash,
+        auth_mode: "oauth2-google",
+        route: "Regular",
+        created: new Date(),
+      };
+      //track the event in mixpanel for singing up
+      trackEvent(user?.customData?.hash, "Sign Up", mixpanelPayload);
       // so we need to push the user to the right page but before then lets fetch the data
       const fetchedData:any = await fetchUserData(
         user.customData.userID,

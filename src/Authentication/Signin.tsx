@@ -16,11 +16,10 @@ import { useContext, useEffect, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import * as Realm from "realm-web";
 import * as yup from "yup";
+import TagManager from "react-gtm-module";
 import SelectRole from "./SelectRole";
-import {
-  GoogleLogin,
-  GoogleOAuthProvider,
-} from "@react-oauth/google";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import { trackEvent } from "@/lib/mixpanelUtils";
 
 const OrSeparator: React.FC = () => {
   return (
@@ -128,6 +127,7 @@ const Signin: React.FC = () => {
           refresh();
           setUser(userObj);
           setSelectRoleModal(true);
+          trackEvent(app.currentUser.customData.hash, "Sign Up", payload);
         } else {
           // console.log("hi");
           // console.log(existingUser);
@@ -138,6 +138,32 @@ const Signin: React.FC = () => {
             userObj.profile.email
           );
           // console.log(fetchedData);
+
+          // Tracking
+          console.log("hi");
+          const mixpanelPayload = {
+            auth_mode: "oauth2-google",
+            date_time: new Date().toISOString(),
+            route: "Regular",
+
+            created: new Date().toISOString(),
+          };
+          //track the event in mixpanel for singing up
+          trackEvent(user?.customData?.hash, "Sign In", mixpanelPayload);
+
+          const tagManagerArgs = {
+            dataLayer: {
+              event: `sign_in`,
+              added: new Date(),
+              auth_mode: "oauth2-google",
+              hash: app.currentUser.customData.hash,
+              role: app.currentUser.customData.role,
+              type: "Web",
+              userId: `${app?.currentUser?.id}`,
+            },
+          };
+          TagManager.dataLayer(tagManagerArgs);
+
           await setUserData(fetchedData.result);
           if (existingUser.role) {
             if (fetchedData.result.role === "provider") {
@@ -190,7 +216,7 @@ const Signin: React.FC = () => {
     }
   };
   // Register user during registration
-  const createUserDuringRegistration = async (payload: object) => {
+  const createUserDuringRegistration = async (payload: any) => {
     try {
       setLoading(true);
       const response = await axios.get("/api/ip");
@@ -219,6 +245,36 @@ const Signin: React.FC = () => {
         );
         // console.log(createUser);
         // await user.callFunction("web_add_social_user_custom_data", payload);
+        const tagManagerArgs =
+          payload.auth_mode === "local-userpass"
+            ? {
+                dataLayer: {
+                  event: `${payload.role}_sign_up`,
+                  userIp: response?.data?.userIp,
+                  added: new Date(),
+                  authEmail: payload.email,
+                  authMode: payload.auth_mode,
+                  authTel: payload.tel.trim(),
+                  role: `${payload.role}`,
+                  type: "Web",
+                  userId: `${payload.userID}`,
+                },
+              }
+            : {
+                dataLayer: {
+                  event: `social_sign_up`,
+                  added: new Date(),
+                  userIp: response?.data?.userIp,
+                  authEmail: payload.email,
+                  authMode: payload.auth_mode,
+                  socialFname: payload.fname,
+                  socialLname: payload.lname,
+                  type: "Web",
+                  userId: `${payload.userID}`,
+                },
+              };
+
+        TagManager.dataLayer(tagManagerArgs);
         setAuthenticated(true);
         setLoading(false);
       }
@@ -287,6 +343,29 @@ const Signin: React.FC = () => {
         const email = app.currentUser.email;
         const user_data: any = await fetchUserData(userID, email);
         // console.log(user_data.result);
+
+        // tracking
+        const mixpanelPayload = {
+          auth_mode: "local-userpass",
+          date_time: new Date().toISOString(),
+          email: email,
+          route: "Regular",
+          role: app.currentUser.customData.role,
+        };
+        // test the segment codes
+        trackEvent(app.currentUser.customData.hash, "Sign In", mixpanelPayload);
+        const tagManagerArgs = {
+          dataLayer: {
+            event: `sign_in`,
+            added: new Date(),
+            auth_mode: "local-userpass",
+            hash: app.currentUser.customData.hash,
+            role: app.currentUser.customData.role,
+            type: "Web",
+            userId: `${app?.currentUser?.id}`,
+          },
+        };
+        TagManager.dataLayer(tagManagerArgs);
         if (user_data) {
           setUserData(user_data.result); // set the user data
           user.refreshCustomData();

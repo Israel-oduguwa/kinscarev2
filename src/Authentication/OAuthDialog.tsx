@@ -24,6 +24,8 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { trackEvent } from "@/lib/mixpanelUtils";
+import TagManager from "react-gtm-module";
 
 interface OAuthDialogProps {
   message: string; // Customizable message for the modal
@@ -79,7 +81,7 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
     setLoading(false);
   };
 
-  const createUserDuringRegistration = async (payload: object) => {
+  const createUserDuringRegistration = async (payload: any) => {
     try {
       const response = await axios.get("/api/ip");
       if (response.data) {
@@ -109,6 +111,36 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
           "https://api.kinscare.org/api/v1/auth/create_user",
           payload
         );
+        const tagManagerArgs =
+          payload.auth_mode === "local-userpass"
+            ? {
+                dataLayer: {
+                  event: `${payload.role}_sign_up`,
+                  userIp: response?.data?.userIp,
+                  added: new Date(),
+                  authEmail: payload.email,
+                  authMode: payload.auth_mode,
+                  authTel: payload.tel.trim(),
+                  role: `${payload.role}`,
+                  type: "Web",
+                  userId: `${payload.userID}`,
+                },
+              }
+            : {
+                dataLayer: {
+                  event: `social_sign_up`,
+                  added: new Date(),
+                  userIp: response?.data?.userIp,
+                  authEmail: payload.email,
+                  authMode: payload.auth_mode,
+                  socialFname: payload.fname,
+                  socialLname: payload.lname,
+                  type: "Web",
+                  userId: `${payload.userID}`,
+                },
+              };
+
+        TagManager.dataLayer(tagManagerArgs);
         setAuthenticated(true);
       }
     } catch (error) {
@@ -132,7 +164,6 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
             userID: userObj.id,
             email: userObj.profile.email,
           });
-
         if (!existingUser) {
           const payload = {
             email: userObj.profile.email,
@@ -152,6 +183,9 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
             userObj.id,
             userObj.profile.email
           );
+
+          trackEvent(app.currentUser.customData.hash, "Sign Up", payload);
+
           // console.log(fetchedData);
           setUserData(fetchedData.result);
           setUser(userObj);
@@ -164,6 +198,27 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
             userObj.id,
             userObj.profile.email
           );
+          const mixpanelPayload = {
+            auth_mode: "oauth2-google",
+            date_time: new Date().toISOString(),
+            route: "Regular",
+
+            created: new Date(),
+          };
+          //track the event in mixpanel for singing up
+          trackEvent(user?.customData?.hash, "Sign In", mixpanelPayload);
+          const tagManagerArgs = {
+            dataLayer: {
+              event: `sign_in`,
+              added: new Date(),
+              auth_mode: "oauth2-google",
+              hash: app.currentUser.customData.hash,
+              role: app.currentUser.customData.role,
+              type: "Web",
+              userId: `${app?.currentUser?.id}`,
+            },
+          };
+          TagManager.dataLayer(tagManagerArgs);
           // console.log(fetchedData);
           setUserData(fetchedData.result);
           setUser(userObj);
@@ -221,6 +276,9 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
         };
         // add the user to the database
         await createUserDuringRegistration(payload);
+
+        //track the event in mixpanel for singing up
+        trackEvent(app.currentUser.customData.hash, "Sign Up", payload);
         // then we should fetch the user data to the client side
         const providerUserID = app.currentUser.id;
         const emails = app.currentUser.email;
