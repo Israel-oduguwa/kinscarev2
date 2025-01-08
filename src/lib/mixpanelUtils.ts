@@ -1,3 +1,4 @@
+import { Dict } from "mixpanel-browser";
 import mixpanel from "./mixpanel"
 
 interface EventProperties {
@@ -15,6 +16,12 @@ interface IdentifyUserProps {
   };
 }
 
+declare global {
+    interface Window {
+      gtag?: (...args: any[]) => void;
+    }
+  }
+  
 /**
  * Identify a user with Mixpanel
  * @param {IdentifyUserProps} params
@@ -37,15 +44,50 @@ export const identifyUser = ({ distinct_id, isLoggedIn, userDetails }: IdentifyU
   }
 };
 
+
+
 /**
  * Track events with Mixpanel
- * @param {string} distinct_id
- * @param {string} event
- * @param {EventProperties} customValue
+
  */
-export const trackEvent = (distinct_id: string, event: string, customValue: EventProperties = {}): void => {
-  mixpanel.track(event, {
-    ...customValue,
-    distinct_id,
-  });
-};
+
+
+  
+  type TrackEvent = (
+    distinctId: string | undefined,
+    eventName: string,
+    payload: any
+  ) => void;
+
+  
+export const trackEvent: TrackEvent = (distinctId, eventName, payload) => {
+    console.log(distinctId, eventName, payload)
+    if (!distinctId) {
+      console.error("Distinct ID is required for Mixpanel tracking.");
+      return;
+    }
+    if (!eventName) {
+      console.error("Event name is required for Mixpanel tracking.");
+      return;
+    }
+  
+    // Track the event in Mixpanel
+    mixpanel.track(eventName, {
+      distinct_id: distinctId,
+      ...payload,
+    });
+  
+    console.log(`Tracked event: ${eventName} with payload:`, payload);
+  
+    // Optional: Trigger Google Ads conversion for specific events
+    if (eventName === "Sign In") {
+      if (typeof window !== "undefined" && window.gtag) {
+        window.gtag("event", "conversion", {
+          send_to: "AW-11302908567/v0dpCLnB14EaEJfl0o0q", // Replace with your Conversion ID/Label
+          value: 1.0, // Optional: Conversion value
+          currency: "USD", // Optional: Currency
+        });
+        console.log("Triggered Google Ads conversion for 'Sign In'.");
+      }
+    }
+  };

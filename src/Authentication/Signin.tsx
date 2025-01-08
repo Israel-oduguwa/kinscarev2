@@ -149,7 +149,7 @@ const Signin: React.FC = () => {
             created: new Date().toISOString(),
           };
           //track the event in mixpanel for singing up
-          trackEvent(user?.customData?.hash, "Sign In", mixpanelPayload);
+          trackEvent(app.currentUser.customData.hash, "Sign In", mixpanelPayload);
 
           const tagManagerArgs = {
             dataLayer: {
@@ -354,18 +354,18 @@ const Signin: React.FC = () => {
         };
         // test the segment codes
         trackEvent(app.currentUser.customData.hash, "Sign In", mixpanelPayload);
-        const tagManagerArgs = {
-          dataLayer: {
-            event: `sign_in`,
-            added: new Date(),
-            auth_mode: "local-userpass",
-            hash: app.currentUser.customData.hash,
-            role: app.currentUser.customData.role,
-            type: "Web",
-            userId: `${app?.currentUser?.id}`,
-          },
-        };
-        TagManager.dataLayer(tagManagerArgs);
+        // const tagManagerArgs = {
+        //   dataLayer: {
+        //     event: `sign_in`,
+        //     added: new Date(),
+        //     auth_mode: "local-userpass",
+        //     hash: app.currentUser.customData.hash,
+        //     role: app.currentUser.customData.role,
+        //     type: "Web",
+        //     userId: `${app?.currentUser?.id}`,
+        //   },
+        // };
+        // TagManager.dataLayer(tagManagerArgs);
         if (user_data) {
           setUserData(user_data.result); // set the user data
           user.refreshCustomData();
