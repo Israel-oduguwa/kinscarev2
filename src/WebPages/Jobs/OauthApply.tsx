@@ -158,7 +158,7 @@ const OauthApply: React.FC<OauthApplyProps> = ({ jobID, children }) => {
           setAuthenticated(true);
           user.refreshCustomData();
           router.refresh();
-          router.push(`vitae/jobs/${jobID}`);
+          router.push(`/vitae/jobs/${jobID}`);
         }
       } catch (error) {
         handleError(error);
@@ -218,7 +218,7 @@ const OauthApply: React.FC<OauthApplyProps> = ({ jobID, children }) => {
           app.currentUser.refreshCustomData();
           user.refreshCustomData();
           router.refresh();
-          router.push(`vitae/jobs/${jobID}`);
+          router.push(`/vitae/jobs/${jobID}`);
           setLoading(false);
         }
       }
@@ -421,6 +421,7 @@ const OauthApply: React.FC<OauthApplyProps> = ({ jobID, children }) => {
                   render={({ field }) => (
                     <input
                       {...field}
+                      value=""
                       type="checkbox"
                       // value=""
                       className="form-checkbox h-5 w-5 text-blue-600"

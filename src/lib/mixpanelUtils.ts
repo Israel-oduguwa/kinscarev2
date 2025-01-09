@@ -76,17 +76,17 @@ export const trackEvent: TrackEvent = (distinctId, eventName, payload) => {
     ...payload,
   });
 
-  console.log(`Tracked event: ${eventName} with payload:`, payload);
+//   console.log(`Tracked event: ${eventName} with payload:`, payload);
 
   // Optional: Trigger Google Ads conversion for specific events
-  if (eventName === "Sign In") {
-    if (typeof window !== "undefined" && window.gtag) {
-      window.gtag("event", "conversion", {
-        send_to: "AW-11302908567/v0dpCLnB14EaEJfl0o0q", 
-        value: 1.0, // Optional: Conversion value
-        currency: "USD", // Optional: Currency
-      });
-      console.log("Triggered Google Ads conversion for 'Sign In'.");
-    }
-  }
+//   if (eventName === "Sign In") {
+//     if (typeof window !== "undefined" && window.gtag) {
+//       window.gtag("event", "conversion", {
+//         send_to: "AW-11302908567/v0dpCLnB14EaEJfl0o0q",
+//         value: 1.0, // Optional: Conversion value
+//         currency: "USD", // Optional: Currency
+//       });
+//       console.log("Triggered Google Ads conversion for 'Sign In'.");
+//     }
+//   }
 };

@@ -99,66 +99,67 @@ function AccountSettings() {
     setIsDialogOpen(false);
   };
   return (
-    <div className="bg-gray-100 min-h-[100vh]">
-      <div className="py-6 lg:py-10">
-        <div className="max-w-6xl mx-auto py-8 px-4 md:px-10">
-          <div className="flex flex-col space-y-6">
-            {/* Account Information */}
-            <div className="bg-white shadow-md rounded-md p-6">
-              <h2 className="font-bold text-xl mb-3">Account Information</h2>
-              {userData ? (
-                <div className="flex flex-col space-y-1 mb-4">
-                  {userData?.name && <p className="">{userData.name}</p>}
-                  <p className="">
-                    {userData.address} {userData.city}, {userData.zipcode}
-                  </p>
-                </div>
-              ) : (
-                <></>
-              )}
-              <Link href="/provider/account/settings/profile">
-                <Button>Update Profile</Button>
-              </Link>
+ <div className="bg-gray-50 min-h-screen">
+  <div className="py-8 lg:py-12">
+    <div className="max-w-7xl mx-auto py-10 px-6 sm:px-8 md:px-12">
+      <div className="flex flex-col space-y-8">
+        {/* Account Information */}
+        <div className="bg-white shadow-sm rounded-lg p-8">
+          <h2 className="font-bold tracking-tight text-lg text-gray-800 mb-4">Account Information</h2>
+          {userData ? (
+            <div className="flex text-sm flex-col space-y-2 text-gray-600">
+              {userData?.name && <p className="font-medium ">{userData.name}</p>}
+              <p>
+                {userData.address}, {userData.city}, {userData.zipcode}
+              </p>
             </div>
+          ) : null}
+          <Link href="/provider/account/settings/profile">
+            <Button className="mt-4 bg-blue-600 text-white hover:bg-blue-700 transition px-4 py-2 rounded-md">
+              Update Profile
+            </Button>
+          </Link>
+        </div>
 
-            {/* Your Plan */}
-            <div className="bg-white shadow-md rounded-md p-6">
-              {trialActive && !customData.subscribed && (
-                <>
-                  <h2 className="font-bold text-xl mb-3">Your Plan</h2>{" "}
-                  <p className="">Free trial</p>
-                  <p className="">
-                    Trial period ends on{" "}
-                    {convertISODateToNormal(customData?.trial_end_date)}
-                  </p>
-                </>
-              )}
-              {!trialActive && customData.subscribed && subscriptionData && (
-                <SubscriptionDetails subscription={subscriptionData} />
-              )}
-              {!trialActive && !customData.subscribed && (
-                <>
-                  <p className="mb-3"> Pay to access premium features</p>
-                  <Button
-                    className=" bg-blue-600 text-white hover:bg-blue-700 transition"
-                    onClick={handleStartTrial}
-                  >
-                    Start Plan
-                  </Button>
-                </>
-              )}
+        {/* Your Plan */}
+        <div className="bg-white shadow-sm rounded-lg p-8">
+          <h2 className="font-bold text-lg tracking-tight text-gray-800 mb-4">Your Plan</h2>
+          {trialActive && !customData.subscribed ? (
+            <>
+              <p className="text-gray-600 text-sm mb-2">Free trial</p>
+              <p className="text-gray-500 text-sm">
+                Trial period ends on{" "}
+                <span className="font-semibold">
+                  {convertISODateToNormal(customData?.trial_end_date)}
+                </span>
+              </p>
+            </>
+          ) : !trialActive && customData.subscribed && subscriptionData ? (
+            <SubscriptionDetails subscription={subscriptionData} />
+          ) : (
+            <div>
+              <p className="text-gray-500 text-sm mb-4">Pay to access premium features</p>
+              <Button
+                className="bg-blue-600 text-white hover:bg-blue-700 transition px-6 py-3 rounded-md"
+                onClick={handleStartTrial}
+              >
+                Start Plan
+              </Button>
             </div>
-          </div>
-
-          {/* Dialog/Modal */}
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogContent className="h-[100vh] md:h-auto max-w-5xl overflow-y-auto">
-              <PricingPlan closePricingDialog={closePricingDialog} />
-            </DialogContent>
-          </Dialog>
+          )}
         </div>
       </div>
+
+      {/* Dialog/Modal */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-6xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+          <PricingPlan closePricingDialog={closePricingDialog} />
+        </DialogContent>
+      </Dialog>
     </div>
+  </div>
+</div>
+
   );
 }
 

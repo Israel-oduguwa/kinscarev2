@@ -110,6 +110,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
   const { mutate: toggleFavoriteCaregiver, isPending: isTogglingFavorite } =
     useMutation({
       mutationFn: async () => {
+        const token = user?.accessToken; // Retrieve the JWT
         const payload = {
           hash: userData?.hash,
           location: candidate.city,
@@ -126,7 +127,12 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
 
         const { data } = await axios.post(
           "https://api.kinscare.org/api/v1/providers/set_favorites",
-          payload
+          payload,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Include the token
+            },
+          }
         );
         return data;
       },
@@ -165,6 +171,8 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
   const sendMessage = async () => {
     const trialStart = customData.trial_start_date;
     const trialEnd = customData.trial_end_date;
+    const token = user?.accessToken; // Retrieve the JWT
+
     setIsSending(true);
     try {
       const sms_payload = {
@@ -173,7 +181,12 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
       };
       const sendMessage = await axios.post(
         "http://localhost:8081/api/v1/twilio/sms/send",
-        sms_payload
+        sms_payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token
+          },
+        }
       );
 
       // Show success toast
@@ -387,9 +400,14 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
   const appearance: any = {
     theme: "flat",
   };
+  const refreshT = async () =>{
+   await user.refreshCustomData()
+    console.log(JSON.stringify(user.refreshToken))
+  }
   return (
     <div>
       <div className="flex space-x-2">
+        <Button onClick={refreshT}>Refresh Token</Button>
         <Button
           onClick={(e) => {
             stopPropagation(e);
