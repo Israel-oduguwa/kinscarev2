@@ -29,10 +29,12 @@ function ThreadMenuAction({ threadID, authorID }: any) {
   // Open and close handlers for dialogs
   const openEditDialog = () => setEditOpen(true);
   const closeEditDialog = () => setEditOpen(false);
-const del = async () => {
-    const del = await axios.post(`https://api.kinscare.org/api/v1/forum/threads/${threadID}`)
+  const del = async () => {
+    const del = await axios.post(
+      `https://api.kinscare.org/api/v1/forum/threads/${threadID}`
+    );
     // console.log(del)
-}
+  };
   const openDeleteDialog = () => setDeleteOpen(true);
   const closeDeleteDialog = () => setDeleteOpen(false);
 
@@ -43,44 +45,36 @@ const del = async () => {
   // when editing open a modal
   return (
     <>
-      <Menubar className="border-none">
-        <MenubarMenu>
-          <MenubarTrigger className="border-none p-2">
-            <Ellipsis />
-          </MenubarTrigger>
-          <MenubarContent> 
-            {/* <MenubarItem>
+      {user && user.customData.userID === authorID && (
+        <Menubar className="border-none">
+          <MenubarMenu>
+            <MenubarTrigger className="border-none p-2">
+              <Ellipsis />
+            </MenubarTrigger>
+            <MenubarContent>
+              {/* <MenubarItem>
               <p className="text-gray-800 antialiased">Share Link</p>
             </MenubarItem> */}
-          
-            <div className="py-2">
-              {user && user.customData.userID === authorID ? (
+
+              <div className="py-2">
                 <>
                   {/* <MenubarSeparator className="border-gray-100 border" /> */}
 
-                 <Link href={`/community/discussions/${threadID}/update`}>
-                 <MenubarItem onClick={openEditDialog}>
-                    <p className="text-gray-800 antialiased">Edit</p>
-                  </MenubarItem>
+                  <Link href={`/community/discussions/${threadID}/update`}>
+                    <MenubarItem onClick={openEditDialog}>
+                      <p className="text-gray-800 antialiased">Edit</p>
+                    </MenubarItem>
                   </Link>
-
-
                 </>
-              ) : (
-                <>
-                  <MenubarSeparator />
-                  <MenubarItem onClick={openReportDialog}>
-                    <p className="text-gray-800 antialiased">Report Content</p>
-                  </MenubarItem>
-                </>
-              )}
-              {/* <MenubarItem onClick={del}>
+
+                {/* <MenubarItem onClick={del}>
                     <p className="text-red-700 antialiased">Delete</p>
                   </MenubarItem> */}
-            </div>
-          </MenubarContent>
-        </MenubarMenu>
-      </Menubar>
+              </div>
+            </MenubarContent>
+          </MenubarMenu>
+        </Menubar>
+      )}
 
       {/* <DialogWrapper
         width="sm:max-w-[400px]"

@@ -70,10 +70,10 @@ function PostMenuActions({ postID, content, authorID, replyID, usage }: any) {
                 </>
               ) : (
                 <>
-                  <MenubarSeparator />
-                  <MenubarItem onClick={openReportDialog}>
+                  {/* <MenubarSeparator /> */}
+                  {/* <MenubarItem onClick={openReportDialog}>
                     <p className="text-gray-800 antialiased">Report Content</p>
-                  </MenubarItem>
+                  </MenubarItem> */}
                 </>
               )}
             </div>

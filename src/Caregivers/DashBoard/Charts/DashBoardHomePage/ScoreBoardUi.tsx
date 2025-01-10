@@ -1,7 +1,13 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Separator } from "@radix-ui/react-dropdown-menu";
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { useDialog } from "@/Caregivers/CaregiverContext/DialogProvider";
+import AddCoursePlan from "../../AddCoursePlan";
+import InviteFriends from "../../InviteFriends";
+import AddWorkExperience from "../../AddWorkExperience";
+import SendReferralEmail from "../../SendReferralEmail";
 import axios from "axios";
 
 function ScoreBoardUi({ userData }: any) {
@@ -9,6 +15,23 @@ function ScoreBoardUi({ userData }: any) {
   const recommendedScore = 250; // Recommended score for full progress
   const [rank, setRank] = useState<number | null>(null);
   const [totalCandidates, setTotalCandidates] = useState<number | null>(null);
+  const { openDialog } = useDialog(); // Open dialog hook
+
+  // Components for different tasks
+  const taskComponents = {
+    coursePlan: <AddCoursePlan />,
+    inviteFriends: <InviteFriends />,
+    workExperience: <AddWorkExperience />,
+    referEmployer: <SendReferralEmail />,
+  };
+
+  // Predefined max points and component mappings
+  const maxPoints = {
+    workExperience: 40,
+    inviteFriends: 60,
+    referEmployer: 70,
+    coursePlan: 100,
+  };
 
   // Calculate Total Score
   const calculateTotalScore = () => {
@@ -31,7 +54,6 @@ function ScoreBoardUi({ userData }: any) {
     if (userData) {
       const totalPoint = calculateTotalScore();
       setTotalScore(totalPoint);
-      // fetchUserRank(totalPoint); // Fetch rank when score changes
     }
   }, [userData]);
 
@@ -50,14 +72,14 @@ function ScoreBoardUi({ userData }: any) {
     }
   };
 
-  // Links recommendation logic
-  const [recommendedLink, setRecommendedLink] = useState<string>("");
+  // Recommendation logic
+  const [recommendedTask, setRecommendedTask] = useState<any>("");
 
   useEffect(() => {
-    recommendLink();
+    recommendTask();
   }, [userData]);
 
-  const recommendLink = () => {
+  const recommendTask = () => {
     if (userData) {
       const workExperiencePoints =
         userData?.careerProfile?.experience?.points || 0;
@@ -67,13 +89,6 @@ function ScoreBoardUi({ userData }: any) {
         userData?.careerProfile?.referEmployer?.points || 0;
       const coursePlanPoints = userData?.careerProfile?.coursePlan?.points || 0;
 
-      const maxPoints = {
-        workExperience: 40,
-        inviteFriends: 60,
-        referEmployer: 70,
-        coursePlan: 100,
-      };
-
       const remainingPoints = {
         workExperience: maxPoints.workExperience - workExperiencePoints,
         inviteFriends: maxPoints.inviteFriends - inviteFriendsPoints,
@@ -81,18 +96,11 @@ function ScoreBoardUi({ userData }: any) {
         coursePlan: maxPoints.coursePlan - coursePlanPoints,
       };
 
-      const links = {
-        workExperience: "/vitae/add-work-experience",
-        inviteFriends: "/vitae/refer-friends",
-        referEmployer: "/vitae/refer-employer",
-        coursePlan: "/vitae/add-course-plan",
-      };
-
-      const [recommendedTask] = Object.entries(remainingPoints).sort(
+      const [taskWithMostPoints] = Object.entries(remainingPoints).sort(
         ([, a], [, b]) => b - a
       );
 
-      setRecommendedLink(links[recommendedTask[0]]);
+      setRecommendedTask(taskWithMostPoints[0]); // Save task with most remaining points
     }
   };
 
@@ -127,30 +135,15 @@ function ScoreBoardUi({ userData }: any) {
       </div>
       <Separator className="my-4" />
 
-      {/* Ranking Section */}
-      {/* <div>
-        <p className="text-sm antialiased font-medium">Ranking</p>
-        <p className="text-xl antialiased font-semibold">
-          {rank !== null ? (
-            <>
-              <span className="font-normal">#</span>
-              {rank}{" "}
-              <span className="text-sm font-medium text-gray-500">
-                of {totalCandidates} candidates
-              </span>
-            </>
-          ) : (
-            <span className="text-gray-500 text-sm">Loading...</span>
-          )}
-        </p>
-      </div> */}
-
       {/* Recommendation Button */}
       <div className="mt-4">
-        {recommendedLink ? (
-          <Link href={recommendedLink}>
-            <Button variant="secondary">Increase Score</Button>
-          </Link>
+        {recommendedTask ? (
+          <Button
+            variant="secondary"
+            onClick={() => openDialog(taskComponents[recommendedTask])} // Open task in dialog
+          >
+            Increase Score
+          </Button>
         ) : (
           <p className="text-gray-600">No recommendations available.</p>
         )}

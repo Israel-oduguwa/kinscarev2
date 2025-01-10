@@ -8,13 +8,13 @@ import React, { Suspense } from "react";
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: { availability: string; licenses: string };
+  searchParams: { availability: string; licenses: string; page: number };
 }): Promise<Metadata> {
-  const { shifts, licenses }: any = await searchParams;
+  const { shifts, licenses, page }: any = await searchParams;
 
   try {
     const response = await fetch(
-      `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${shifts}&licenses=${licenses}&page=1&limit=10`,
+      `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${shifts}&licenses=${licenses}&page=${page}&limit=10`,
       { cache: "no-cache" }
     );
     const { caregivers } = await response.json();
@@ -51,9 +51,9 @@ export async function generateMetadata({
 async function page({
   searchParams,
 }: {
-  searchParams: { shifts?: string; licenses?: string };
+  searchParams: { shifts?: string; licenses?: string, page:number };
 }) {
-  const { shifts, licenses }: any = await searchParams;
+  const { shifts, licenses, page }: any = await searchParams;
   return (
     <div className="mt-10">
       <Navbar />
@@ -69,7 +69,7 @@ async function page({
           </div>
         }
       >
-        <Caregivers availability={shifts} licenses={licenses} />
+        <Caregivers page={page} availability={shifts} licenses={licenses} />
       </Suspense>
     </div>
   );

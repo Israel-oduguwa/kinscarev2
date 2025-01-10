@@ -81,11 +81,11 @@ const UserAvatar = ({ userData, customData, user, LogOutUser }: any) => {
               </AvatarFallback>
             </Avatar> */}
             <ProfileAvatar
-              size="w-12 h-12"
+              size="w-10 h-10"
               name={`${
-                userData.lname
-                  ? `${userData.fname} ${userData.lname}`
-                  : userData.auth.email
+                userData?.lname
+                  ? `${userData.fname} ${userData?.lname}`
+                  : userData?.auth?.email
               }`}
               profileImage={userData?.profileImage}
             />
@@ -251,7 +251,7 @@ function CaregiverNavbarRight() {
   // User Avatar and Dropdown
 
   return (
-    <div className="flex items-center  p-2">
+    <div className="flex items-center px-2">
       {user && userData && customData.userID ? (
         <>
           <CaregiverNotification />{" "}

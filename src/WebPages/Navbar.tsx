@@ -13,6 +13,10 @@ import { Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import NavbarLink from "./NavbarLink";
+import MongoContext from "@/app/MongoContext";
+import { useContext } from "react";
+import CaregiverNavbarRight from "@/Caregivers/CaregiverNavbarRight";
+import ProviderNavbarRight from "@/Providers/ProviderNavbarRight";
 
 function MobileMenu() {
   const pathname = usePathname();
@@ -75,6 +79,7 @@ function MobileMenu() {
 
 function Navbar() {
   const pathname = usePathname();
+  const { userData }: any = useContext(MongoContext);
 
   return (
     <header>
@@ -91,25 +96,44 @@ function Navbar() {
           </Link>
           {/* Right Section */}
           <div className="hidden lg:flex items-center lg:order-2">
-            <Link href="/signin">
-              <Button
-                variant="ghost"
-                className={`mr-2 py-2 px-4 font-semibold text-sm ${
-                  pathname === "/signin" ? "bg-blue-100 text-blue-600" : ""
-                }`}
-              >
-                Sign in
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button
-                className={`py-2 px-4 font-semibold text-sm ${
-                  pathname === "/signup" ? "bg-blue-500 text-white" : ""
-                }`}
-              >
-                Get started
-              </Button>
-            </Link>
+            { userData && userData.role === "caregiver" ? (
+              <>
+                <CaregiverNavbarRight />
+              </>
+            ) : (
+              <>
+                {userData && userData.role === "provider" ? (
+                  <>
+                    <ProviderNavbarRight />
+                  </>
+                ) : (
+                  <>
+                    {" "}
+                    <Link href="/signin">
+                      <Button
+                        variant="ghost"
+                        className={`mr-2 py-2 px-4 font-semibold text-sm ${
+                          pathname === "/signin"
+                            ? "bg-blue-100 text-blue-600"
+                            : ""
+                        }`}
+                      >
+                        Sign in
+                      </Button>
+                    </Link>
+                    <Link href="/signup">
+                      <Button
+                        className={`py-2 px-4 font-semibold text-sm ${
+                          pathname === "/signup" ? "bg-blue-500 text-white" : ""
+                        }`}
+                      >
+                        Get started
+                      </Button>
+                    </Link>
+                  </>
+                )}
+              </>
+            )}
           </div>
           {/* Mobile Menu */}
           <div className="lg:hidden flex items-center">

@@ -2,144 +2,150 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="border-t border-gray-300 pt-32 pb-8 dark:border-gray-800">
-      <div>
-        <div className="m-auto space-y-8 px-4 text-gray-600 dark:text-gray-400 sm:px-12 xl:max-w-6xl xl:px-0">
-          <div className="grid grid-cols-8 gap-6 md:gap-0">
-            <div className="col-span-8 md:col-span-2 lg:col-span-4">
-              <div className="flex h-full items-center justify-between gap-6 border-b border-white py-6 dark:border-gray-800 md:flex-col md:items-start md:justify-between md:space-y-6 md:border-none md:py-0">
-                <div>
-                  <Link
-                    href="/"
-                    aria-label="Kinscare logo"
-                    className="flex items-center"
-                  >
-                    <img
-                      className="h-10 pr-1 py-1 sm:h-14"
-                      src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
-                      alt="logo"
-                    />{" "}
-                    <p className="text-s text-gray-900 font-medium">Kinscare</p>
-                  </Link>
-                  <Link
-                    href="https://tailus.io"
-                    className="mt-2 inline-block text-sm max-w-sm antialiased text-gray-800"
-                  >
-                    Our goal is to match caregivers and providers as efficiently
-                    as possible.
-                  </Link>
-                </div>
-          
-              </div>
-            </div>
-            <div className="col-span-8 md:col-span-6 lg:col-span-4">
-              <div className="grid grid-cols-2 gap-6 pb-16 sm:grid-cols-2 md:pl-16">
-                <div>
-                  <h2 className="text-base font-medium text-gray-800 dark:text-gray-200">
-                    Company
-                  </h2>
-                  <ul className="mt-4 list-inside space-y-4">
-                    <li>
-                      <Link
-                        href="/"
-                        className="text-sm duration-100 hover:text-primary dark:hover:text-white"
-                      >
-                        About us
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/privacy"
-                        className="text-sm duration-100 hover:text-primary dark:hover:text-white"
-                      >
-                        Privacy
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/terms"
-                        className="text-sm duration-100 hover:text-primary dark:hover:text-white"
-                      >
-                        Terms
-                      </Link>
-                    </li>
-                    {/* <li>
-                      <Link
-                        href="/how-to-use-kinscare"
-                        className="text-sm duration-100 hover:text-primary dark:hover:text-white"
-                      >
-                        How to use Kinscare
-                      </Link>
-                    </li> */}
-                    {/* <li>
-                      <Link
-                        href="/faqp"
-                        className="text-sm duration-100 hover:text-primary dark:hover:text-white"
-                      >
-                        FAQs
-                      </Link>
-                    </li> */}
-                  </ul>
-                </div>
-                <div>
-                  <h2 className="text-base font-medium text-gray-800 dark:text-gray-200">
-                    Resources
-                  </h2>
-                  <ul className="mt-4 list-inside space-y-4">
-                    <li>
-                      <Link
-                        href="/pricing"
-                        className="text-sm duration-100 hover:text-primary dark:hover:text-white"
-                      >
-                        Plans and Pricing
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/find-caregivers"
-                        className="text-sm duration-100 hover:text-primary dark:hover:text-white"
-                      >
-                        Recruit caregiver
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="#"
-                        className="text-sm duration-100 hover:text-primary dark:hover:text-white"
-                      >
-                        Find jobs
-                      </Link>
-                    </li>
-                    {/* <li>
-                      <Link
-                        href="#"
-                        className="text-sm duration-100 hover:text-primary dark:hover:text-white"
-                      >
-                        Job Alerts
-                      </Link>
-                    </li> */}
-                    {/* <li>
-                      <Link
-                        href="/start"
-                        className="text-sm duration-100 hover:text-primary dark:hover:text-white"
-                      >
-                        Start
-                      </Link>
-                    </li> */}
-                  </ul>
-                </div>
-              </div>
-              <div className="flex justify-between text-sm md:pl-16">
-                <span>
-                  © Kinscare {new Date().getFullYear()}{" "}
-                  <span>All rights reserved</span>
-                </span>
-              </div>
-            </div>
-          </div>
+    <footer className="border-t border-[hsl(var(--border))] bg-[hsl(var(--background))] pt-20 pb-10">
+  <div className="max-w-7xl mx-auto px-6 lg:px-12">
+    {/* Upper Section */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+      {/* Brand Section */}
+      <div className="flex flex-col items-start space-y-4">
+        <Link
+          href="/"
+          aria-label="Kinscare logo"
+          className="flex items-center"
+        >
+          <img
+            className="h-12 sm:h-14"
+            src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
+            alt="logo"
+          />
+        </Link>
+        <p className="text-sm text-[hsl(var(--muted-foreground))]">
+          Our goal is to match caregivers and providers as efficiently as
+          possible.
+        </p>
+      </div>
+
+      {/* Links Section */}
+      <div className="grid grid-cols-2 gap-8">
+        <div>
+          <h2 className="text-base font-semibold text-[hsl(var(--foreground))]">
+            Company
+          </h2>
+          <ul className="mt-4 space-y-3">
+            <li>
+              <Link
+                href="/"
+                className="text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--primary))] transition"
+              >
+                About us
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/privacy"
+                className="text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--primary))] transition"
+              >
+                Privacy
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/terms"
+                className="text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--primary))] transition"
+              >
+                Terms
+              </Link>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h2 className="text-base font-semibold text-[hsl(var(--foreground))]">
+            Resources
+          </h2>
+          <ul className="mt-4 space-y-3">
+            <li>
+              <Link
+                href="/pricing"
+                className="text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--primary))] transition"
+              >
+                Plans and Pricing
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/find-caregivers"
+                className="text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--primary))] transition"
+              >
+                Recruit caregiver
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="#"
+                className="text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--primary))] transition"
+              >
+                Find jobs
+              </Link>
+            </li>
+          </ul>
         </div>
       </div>
-    </footer>
+
+      {/* Contact Section */}
+      <div className="flex flex-col space-y-4">
+        <h2 className="text-base font-semibold text-[hsl(var(--foreground))]">
+          Get in Touch
+        </h2>
+        <p className="text-sm text-[hsl(var(--muted-foreground))]">
+          Have questions? Reach out to us and we'll get back to you shortly.
+        </p>
+        <Link
+          href="/contact"
+          className="text-sm font-medium text-[hsl(var(--primary))] hover:underline"
+        >
+          Contact Us
+        </Link>
+      </div>
+    </div>
+
+    {/* Divider */}
+    <div className="border-t border-[hsl(var(--border))] my-8"></div>
+
+    {/* Lower Section */}
+    <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 text-center sm:text-left">
+      <p className="text-sm text-[hsl(var(--muted-foreground))]">
+        © Kinscare {new Date().getFullYear()} All rights reserved.
+      </p>
+      <ul className="flex space-x-4">
+        <li>
+          <Link
+            href="#"
+            className="text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--primary))] transition"
+          >
+            Facebook
+          </Link>
+        </li>
+        <li>
+          <Link
+            href="#"
+            className="text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--primary))] transition"
+          >
+            Twitter
+          </Link>
+        </li>
+        <li>
+          <Link
+            href="#"
+            className="text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--primary))] transition"
+          >
+            LinkedIn
+          </Link>
+        </li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
   );
 };
 

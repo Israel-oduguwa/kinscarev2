@@ -123,7 +123,7 @@ const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
 
         {/* Message Button */}
         <div className="mt-6 w-full lg:w-auto lg:mt-0 lg:ml-4 flex-shrink-0">
-          <OAuthDialog userID={candidate.userID} message="caregiver">
+          <OAuthDialog caregiver={candidate} userID={candidate.userID} message="caregiver">
             <Button className="px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md w-full lg:w-auto">
               <span className="flex items-center gap-2">
                 <Send size={16} /> Message Caregiver
@@ -143,6 +143,7 @@ async function Caregivers({
   licenses,
 }: {
   availability: string;
+  page:number
   licenses: string;
 }) {
   console.log(availability, licenses);

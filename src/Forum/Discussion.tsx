@@ -11,10 +11,12 @@ import CreatePosts from "./CreatePosts";
 import RichTextRendering from "@/components/RichTextRendering";
 import ThreadMenuAction from "./ThreadMenuAction";
 import LikeComponent from "./UpdateForum/LikeComponent";
+import ProfileAvatar from "@/components/ProfileAvatar";
 
 async function Discussion({ threadID }: { threadID: string }) {
   let data = await fetch(
-    `https://api.kinscare.org/api/v1/forum/threads/${threadID}`,  { cache: "no-cache" }
+    `https://api.kinscare.org/api/v1/forum/threads/${threadID}`,
+    { cache: "no-cache" }
   );
   const response = await data.json();
   const { thread, creator } = response;
@@ -36,7 +38,7 @@ async function Discussion({ threadID }: { threadID: string }) {
         </div>
         <div className="flex justify-between w-full">
           <div className="flex gap-3 mb-3 items-center">
-            <Avatar className="border-gray-50 shadow-sm">
+            {/* <Avatar className="border-gray-50 shadow-sm">
               <AvatarImage src="https://lh3.googleusercontent.com/a/ACg8ocLhJ06zIepDHxUHhZ6_sW01qSutpYn8XzXPb9cbFkFOfmOdoOs=s192-c-mo" />
               <AvatarFallback
                 style={{ background: avatarData.gradient }}
@@ -44,7 +46,12 @@ async function Discussion({ threadID }: { threadID: string }) {
               >
                 {avatarData.initials}
               </AvatarFallback>
-            </Avatar>
+            </Avatar> */}
+            <ProfileAvatar
+              size="w-12 h-12"
+              name={`${creator.fname} ${creator.lname}`}
+              profileImage={creator.profileImage}
+            />
             <div>
               <p className="text-sm mb-1 text-gray-900 font-semibold antialiased">
                 {creator.fname} {creator.lname}
@@ -85,7 +92,12 @@ async function Discussion({ threadID }: { threadID: string }) {
             ))}
           </div>
           <div>
-            <LikeComponent  threadID={threadID} initialLikeCount={thread?.likesCount} type="thread"  size="lg"  />
+            <LikeComponent
+              threadID={threadID}
+              initialLikeCount={thread?.likesCount}
+              type="thread"
+              size="lg"
+            />
           </div>
         </div>
       </div>

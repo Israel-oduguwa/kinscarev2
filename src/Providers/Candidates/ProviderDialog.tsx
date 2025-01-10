@@ -166,7 +166,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
         console.error(err);
       },
     });
-  console.log(customData);
+  // console.log(customData);
   // Send Message Function
   const sendMessage = async () => {
     const trialStart = customData.trial_start_date;
@@ -308,7 +308,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
         }
       );
       if (response.data.success) {
-        console.log("Subscription created successfully:", response.data);
+        // console.log("Subscription created successfully:", response.data);
         const subscription = response.data.subscription;
         // Step 2: Update the database using the CRUD operation API
         const updatePayload = {
@@ -336,7 +336,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
             headers: { "Content-Type": "application/json" },
           }
         );
-        console.log(crudResponse);
+        // console.log(crudResponse);
         if (crudResponse.data.success) {
           console.log("User subscription details updated successfully.");
           // Step 3: Refresh user data and the UI
@@ -402,19 +402,19 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
   };
   const refreshT = async () =>{
    await user.refreshCustomData()
-    console.log(JSON.stringify(user.refreshToken))
+    console.log(JSON.stringify(user.accessToken))
   }
   return (
     <div>
       <div className="flex space-x-2">
-        <Button onClick={refreshT}>Refresh Token</Button>
+        {/* <Button onClick={refreshT}>Refresh Token</Button> */}
         <Button
           onClick={(e) => {
             stopPropagation(e);
             e.nativeEvent.preventDefault();
             openDialog();
           }}
-          className="w-full"
+          className="w-full lg:w-auto"
         >
           <span className="flex space-x-1 items-center gap-2">
             <Send size={16} /> Message{" "}

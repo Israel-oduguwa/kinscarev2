@@ -95,7 +95,7 @@ async function JobDetails({ jobID }: { jobID: string }) {
               <h2 className="text-3xl tracking-tight font-bold text-gray-800">
                 {job.title}
               </h2>
-              <OauthApply jobID={job._id}>
+              <OauthApply job={job} jobID={job._id}>
                 <Button className="px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md">
                   Apply Now
                 </Button>

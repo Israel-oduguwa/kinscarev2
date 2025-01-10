@@ -26,10 +26,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { trackEvent } from "@/lib/mixpanelUtils";
 import TagManager from "react-gtm-module";
+import ProviderDialog from "@/Providers/Candidates/ProviderDialog";
 
 interface OAuthDialogProps {
   message: string; // Customizable message for the modal
   userID?: string; // Passed from SSR page if available
+  caregiver: any;
   children: React.ReactNode; // Any button or content to act as the trigger
 }
 
@@ -48,6 +50,7 @@ const schema = yup.object().shape({
 
 const OAuthDialog: React.FC<OAuthDialogProps> = ({
   message,
+  caregiver,
   userID,
   children,
 }) => {
@@ -58,7 +61,15 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
   const router = useRouter();
 
   const mongo: any = useContext(MongoContext);
-  const { app, client, user, setAuthenticated, setUser, setUserData } = mongo;
+  const {
+    app,
+    client,
+    user,
+    setAuthenticated,
+    setUser,
+    setUserData,
+    userData,
+  } = mongo;
   // console.log(userID)
   const {
     control,
@@ -305,229 +316,237 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
     setIsDialogOpen(true);
   };
   return (
-    <GoogleOAuthProvider clientId={`${process.env.GOOGLE_APP_ID}`}>
-      {/* Social Login Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild>{children}</DialogTrigger>
+    <>
+      {userData && userData.role === "provider" ? (
+        <>
+          <ProviderDialog candidate={caregiver} />
+        </>
+      ) : (
+        <GoogleOAuthProvider clientId={`${process.env.GOOGLE_APP_ID}`}>
+          {/* Social Login Dialog */}
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>{children}</DialogTrigger>
 
-        <DialogContent className="rounded-lg shadow-xl p-6 bg-white max-w-lg">
-          <div>
-            <DialogTitle className="text-3xl font-bold tracking-tight  text-center">
-              Welcome to Kinscare
-            </DialogTitle>
-            <DialogDescription className="text-gray-600 text-sm text-center mb-6">
-              {message === "caregiver"
-                ? "Sign in to Kinscare to connect with this caregiver."
-                : "Continue with Google or Facebook to join the Kinscare community effortlessly."}
-            </DialogDescription>
-          </div>
-
-          {!loading ? (
-            <div className="flex justify-center gap-4">
-              <GoogleLogin
-                size="large"
-                onSuccess={handleGoogleSuccess}
-                onError={handleGoogleError}
-                theme="filled_black"
-                text="continue_with"
-              />
-            </div>
-          ) : (
-            <>
-              <div className="flex justify-center w-full items-center">
-                <Loader2Icon size={30} className="animate-spin" />
+            <DialogContent className="rounded-lg shadow-xl p-6 bg-white max-w-lg">
+              <div>
+                <DialogTitle className="text-3xl font-bold tracking-tight  text-center">
+                  Welcome to Kinscare
+                </DialogTitle>
+                <DialogDescription className="text-gray-600 text-sm text-center mb-6">
+                  {message === "caregiver"
+                    ? "Sign in to Kinscare to connect with this caregiver."
+                    : "Continue with Google or Facebook to join the Kinscare community effortlessly."}
+                </DialogDescription>
               </div>
-            </>
-          )}
 
-          {!loading && (
-            <p className="mt-4 text-center text-sm text-gray-500">
-              Don’t have social accounts?{" "}
-              <button
-                onClick={() => {
-                  setIsDialogOpen(false);
-                  setIsEmailDialogOpen(true);
-                }}
-                className="text-blue-500 underline"
-              >
-                Signup with email
-              </button>
-            </p>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Email Signup Dialog */}
-      <Dialog open={isEmailDialogOpen} onOpenChange={setIsEmailDialogOpen}>
-        <DialogContent className="rounded-lg shadow-xl max-h-full md:h-auto overflow-y-auto p-6 bg-white max-w-lg">
-          <div className="">
-            <DialogTitle className="text-3xl justify-center font-bold tracking-tight mb-2 text-center">
-              Signup with Email
-            </DialogTitle>
-          </div>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="flex gap-4">
-              <div className="w-1/2">
-                <label htmlFor="fname" className="block mb-1 text-sm">
-                  First Name
-                </label>
-                <Controller
-                  name="fname"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      id="fname"
-                      placeholder="First Name"
-                      className={errors.fname ? "border-red-500" : ""}
-                    />
-                  )}
-                />
-                {errors.fname && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.fname.message}
-                  </p>
-                )}
-              </div>
-              <div className="w-1/2">
-                <label htmlFor="lname" className="block mb-1 text-sm">
-                  Last Name
-                </label>
-                <Controller
-                  name="lname"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      id="lname"
-                      placeholder="Last Name"
-                      className={errors.lname ? "border-red-500" : ""}
-                    />
-                  )}
-                />
-                {errors.lname && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.lname.message}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Additional Form Fields */}
-            <div>
-              <label htmlFor="email" className="block mb-1 text-sm">
-                Email Address
-              </label>
-              <Controller
-                name="email"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    id="email"
-                    placeholder="Email Address"
-                    className={errors.email ? "border-red-500" : ""}
+              {!loading ? (
+                <div className="flex justify-center gap-4">
+                  <GoogleLogin
+                    size="large"
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleError}
+                    theme="filled_black"
+                    text="continue_with"
                   />
-                )}
-              />
-              {errors.email && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.email.message}
-                </p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex justify-center w-full items-center">
+                    <Loader2Icon size={30} className="animate-spin" />
+                  </div>
+                </>
               )}
-            </div>
-            <div>
-              <label htmlFor="tel" className="block mb-1 text-sm">
-                Phone Number
-              </label>
-              <Controller
-                name="tel"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    id="tel"
-                    placeholder="123-456-7890"
-                    className={errors.tel ? "border-red-500" : ""}
-                  />
-                )}
-              />
-              {errors.tel && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.tel.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label htmlFor="password" className="block mb-1 text-sm">
-                Password
-              </label>
-              <Controller
-                name="password"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    id="password"
-                    type="password"
-                    placeholder="Create a password"
-                    className={errors.password ? "border-red-500" : ""}
-                  />
-                )}
-              />
-              {errors.password && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
 
-            <div>
-              <label className="inline-flex items-center space-x-2">
-                <Controller
-                  name="terms"
-                  control={control}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      value=""
-                      type="checkbox"
-                      className="form-checkbox h-5 w-5 text-blue-600"
-                    />
-                  )}
-                />
-                <span className="text-sm">
-                  I agree to the{" "}
-                  <a
-                    href="/terms"
-                    target="_blank"
+              {!loading && (
+                <p className="mt-4 text-center text-sm text-gray-500">
+                  Don’t have social accounts?{" "}
+                  <button
+                    onClick={() => {
+                      setIsDialogOpen(false);
+                      setIsEmailDialogOpen(true);
+                    }}
                     className="text-blue-500 underline"
                   >
-                    Terms and Conditions
-                  </a>
-                </span>
-              </label>
-              {errors.terms && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.terms.message}
+                    Signup with email
+                  </button>
                 </p>
               )}
-            </div>
+            </DialogContent>
+          </Dialog>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                "Signup"
-              )}
-            </Button>
-            <Button onClick={goBack} variant="outline">
-              <ArrowBigLeft /> Back to social signup
-            </Button>
-          </form>
-        </DialogContent>
-      </Dialog>
-    </GoogleOAuthProvider>
+          {/* Email Signup Dialog */}
+          <Dialog open={isEmailDialogOpen} onOpenChange={setIsEmailDialogOpen}>
+            <DialogContent className="rounded-lg shadow-xl max-h-full md:h-auto overflow-y-auto p-6 bg-white max-w-lg">
+              <div className="">
+                <DialogTitle className="text-3xl justify-center font-bold tracking-tight mb-2 text-center">
+                  Signup with Email
+                </DialogTitle>
+              </div>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div className="flex gap-4">
+                  <div className="w-1/2">
+                    <label htmlFor="fname" className="block mb-1 text-sm">
+                      First Name
+                    </label>
+                    <Controller
+                      name="fname"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          id="fname"
+                          placeholder="First Name"
+                          className={errors.fname ? "border-red-500" : ""}
+                        />
+                      )}
+                    />
+                    {errors.fname && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.fname.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="w-1/2">
+                    <label htmlFor="lname" className="block mb-1 text-sm">
+                      Last Name
+                    </label>
+                    <Controller
+                      name="lname"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          id="lname"
+                          placeholder="Last Name"
+                          className={errors.lname ? "border-red-500" : ""}
+                        />
+                      )}
+                    />
+                    {errors.lname && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.lname.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Additional Form Fields */}
+                <div>
+                  <label htmlFor="email" className="block mb-1 text-sm">
+                    Email Address
+                  </label>
+                  <Controller
+                    name="email"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        id="email"
+                        placeholder="Email Address"
+                        className={errors.email ? "border-red-500" : ""}
+                      />
+                    )}
+                  />
+                  {errors.email && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.email.message}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="tel" className="block mb-1 text-sm">
+                    Phone Number
+                  </label>
+                  <Controller
+                    name="tel"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        id="tel"
+                        placeholder="123-456-7890"
+                        className={errors.tel ? "border-red-500" : ""}
+                      />
+                    )}
+                  />
+                  {errors.tel && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.tel.message}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="password" className="block mb-1 text-sm">
+                    Password
+                  </label>
+                  <Controller
+                    name="password"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        id="password"
+                        type="password"
+                        placeholder="Create a password"
+                        className={errors.password ? "border-red-500" : ""}
+                      />
+                    )}
+                  />
+                  {errors.password && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.password.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="inline-flex items-center space-x-2">
+                    <Controller
+                      name="terms"
+                      control={control}
+                      render={({ field }) => (
+                        <input
+                          {...field}
+                          value=""
+                          type="checkbox"
+                          className="form-checkbox h-5 w-5 text-blue-600"
+                        />
+                      )}
+                    />
+                    <span className="text-sm">
+                      I agree to the{" "}
+                      <a
+                        href="/terms"
+                        target="_blank"
+                        className="text-blue-500 underline"
+                      >
+                        Terms and Conditions
+                      </a>
+                    </span>
+                  </label>
+                  {errors.terms && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.terms.message}
+                    </p>
+                  )}
+                </div>
+
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    "Signup"
+                  )}
+                </Button>
+                <Button onClick={goBack} variant="outline">
+                  <ArrowBigLeft /> Back to social signup
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </GoogleOAuthProvider>
+      )}
+    </>
   );
 };
 

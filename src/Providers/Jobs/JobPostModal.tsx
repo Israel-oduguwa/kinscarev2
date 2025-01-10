@@ -232,7 +232,7 @@ const JobPostModal = ({ caregiver }: any) => {
       setOpenDialog(false);
       setLoading(false);
     } catch (error: any) {
-      console.error("Error updating profile or posting job:", error);
+      console.log("Error updating profile or posting job:", error);
       toast({
         title: "Error",
         description: "An error occurred while posting the job.",
@@ -501,94 +501,82 @@ const JobPostModal = ({ caregiver }: any) => {
             </form>
           )}
           {step === 3 && (
-            <div className="bg-gray-50 p-8 rounded-lg shadow-lg overflow-auto h-[100vh] lg:h-fit space-y-8">
-              {/* Job Title */}
-              <p className="font-semibold text-blue-900 p-4 bg-blue-100 rounded-lg">
-                This preview shows how caregivers will see your job post. Once
-                you post it, we’ll recommend matching caregivers. Message or
-                call them directly to connect and start hiring your ideal match.
-              </p>
-              <h3 className="text-xl font-extrabold text-gray-900">
-                {previewData?.title}
-              </h3>
-
-              {/* Job Details */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {/* Left Column */}
-                <div className="space-y-4">
-                  <p className="text-sm text-gray-700">
-                    <strong className="font-semibold text-gray-900">
-                      Name
-                    </strong>{" "}
-                    {previewData?.name}
-                  </p>
-                  <p className="text-sm text-gray-700">
-                    <strong className="font-semibold text-gray-900">
-                      Phone
-                    </strong>{" "}
-                    {previewData?.telephone}
-                  </p>
-                </div>
-
-                {/* Right Column */}
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-base text-gray-700 mb-2">
-                      <strong className="font-semibold text-gray-900">
-                        Care Settings:
-                      </strong>
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {previewData?.type_of_setting &&
-                        previewData?.type_of_setting?.map(
-                          (setting: string, index: number) => (
-                            <span
-                              key={index}
-                              className="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-lg"
-                            >
-                              {setting}
-                            </span>
-                          )
-                        )}
-                    </div>
-                  </div>
-                  <p className="text-base text-gray-700">
-                    <strong className="font-semibold text-gray-900">
-                      Training:
-                    </strong>{" "}
-                    {previewData?.trainer}
-                  </p>
-                </div>
-              </div>
-
-              {/* Job Description */}
-              <div className="space-y-4">
-                <h4 className="font-bold text-gray-900">Job Description</h4>
-                <div
-                  className="text-sm text-gray-700 leading-relaxed max-h-[300px] prose-lg overflow-y-auto border border-gray-200 rounded-lg p-4 bg-white shadow-inner"
-                  dangerouslySetInnerHTML={{ __html: previewData?.description }}
-                />
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-6">
-                <Button
-                  onClick={handlePrevStep}
-                  variant="outline"
-                  className="border-gray-300 text-gray-700 hover:bg-gray-100 transition px-6 py-3"
-                >
-                  Back to Step 2
-                </Button>
-                <Button
-                  type="submit"
-                  onClick={handleSubmit(handleFormSubmit)}
-                  className="w-full bg-blue-600 text-white hover:bg-blue-700 transition px-6 py-3"
-                >
-                  {loading && <LoaderCircle className="animate-spin mr-2" />}
-                  {loading ? "Posting...." : "Post Job"}
-                </Button>
-              </div>
-            </div>
+      <div className="bg-white rounded-lg shadow-lg max-w-4xl mx-auto p-6 space-y-6 overflow-auto h-[90vh] lg:h-auto">
+      {/* Header Section */}
+      <div className="border-b pb-4">
+        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
+          Job Post Preview
+        </h1>
+        <p className="text-sm text-gray-500 mt-1">
+          This is how caregivers will see your job post. Review the details before publishing.
+        </p>
+      </div>
+    
+      {/* Job Title */}
+      <div>
+        <h2 className="text-xl font-bold text-gray-900">{previewData?.title}</h2>
+        <p className="text-sm text-gray-500 mt-1">
+          Posted by: {previewData?.name} | {previewData?.telephone}
+        </p>
+      </div>
+    
+      {/* Job Details Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-3">
+          <p className="text-sm text-gray-700">
+            <span className="font-medium text-gray-900">Care Settings:</span>
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {previewData?.type_of_setting?.map((setting: string, index: number) => (
+              <span
+                key={index}
+                className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full"
+              >
+                {setting}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="space-y-3">
+          <p className="text-sm text-gray-700">
+            <span className="font-medium text-gray-900">Training:</span> {previewData?.trainer}
+          </p>
+        </div>
+      </div>
+    
+      {/* Job Description */}
+      <div className="space-y-3">
+        <h3 className="text-lg font-semibold text-gray-900">Job Description</h3>
+        <div
+          className="p-4 border border-gray-200 rounded-lg bg-gray-50 text-sm text-gray-700 max-h-40 overflow-y-auto"
+          dangerouslySetInnerHTML={{ __html: previewData?.description }}
+        />
+      </div>
+    
+      {/* Action Buttons */}
+      <div className="flex justify-end gap-4 pt-4 border-t">
+        <button
+          onClick={handlePrevStep}
+          className="px-6 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+        >
+          Back to Step 2
+        </button>
+        <button
+          type="submit"
+          onClick={handleSubmit(handleFormSubmit)}
+          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+        >
+          {loading ? (
+            <span className="flex items-center gap-2">
+              <LoaderCircle className="animate-spin" /> Posting...
+            </span>
+          ) : (
+            "Post Job"
+          )}
+        </button>
+      </div>
+    </div>
+    
           )}
         </div>
       </DialogContent>

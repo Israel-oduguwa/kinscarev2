@@ -191,32 +191,14 @@ const CandidatesCard = ({ similarCaregivers }: any) => {
                   ))}
                 {similarCaregivers.availability
                   .slice(0, 1)
-                  .map(
-                    (
-                      sch:
-                        | string
-                        | number
-                        | bigint
-                        | boolean
-                        | React.ReactElement<
-                            any,
-                            string | React.JSXElementConstructor<any>
-                          >
-                        | Iterable<React.ReactNode>
-                        | React.ReactPortal
-                        | Promise<React.AwaitedReactNode>
-                        | null
-                        | undefined,
-                      index: React.Key | null | undefined
-                    ) => (
-                      <div
-                        key={index}
-                        className="relative text-sm bg-gray-100 text-gray-800 rounded-lg py-1.5 px-3"
-                      >
-                        <span className="text-sm text-gray-600">{sch}</span>
-                      </div>
-                    )
-                  )}
+                  .map((sch: any, index: React.Key | null | undefined) => (
+                    <div
+                      key={index}
+                      className="relative text-sm bg-gray-100 text-gray-800 rounded-lg py-1.5 px-3"
+                    >
+                      <span className="text-sm text-gray-600">{sch}</span>
+                    </div>
+                  ))}
               </div>
             </div>
             <div className="w-full ">
@@ -228,7 +210,17 @@ const CandidatesCard = ({ similarCaregivers }: any) => {
               </div>
             </div>
           </div>
-          <ProviderDialog similar candidate={similarCaregivers} />
+          <OAuthDialog
+            caregiver={similarCaregivers}
+            userID={similarCaregivers.userID}
+            message="caregiver"
+          >
+            <Button className="w-full sm:w-auto px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
+              <span className="flex items-center gap-2">
+                <Send size={18} /> Message Caregiver
+              </span>
+            </Button>
+          </OAuthDialog>
         </div>
 
         {/* Dialog Box for Hire Action */}
@@ -343,7 +335,7 @@ async function CaregiverDetails({ candidateID }: { candidateID: string }) {
 
         {/* Licenses and Availability */}
         <div className="mt-4 flex flex-wrap gap-3">
-          {caregiver.licenses.slice(0, 3).map((license, index) => (
+          {caregiver.licenses.slice(0, 3).map((license: any, index: any) => (
             <span
               key={index}
               className="text-xs px-3 py-1 rounded-full bg-blue-50 text-blue-600"
@@ -351,19 +343,25 @@ async function CaregiverDetails({ candidateID }: { candidateID: string }) {
               {license}
             </span>
           ))}
-          {caregiver.availability.slice(0, 3).map((schedule, index) => (
-            <span
-              key={index}
-              className="text-xs px-3 py-1 rounded-full bg-gray-50 text-gray-600"
-            >
-              {schedule}
-            </span>
-          ))}
+          {caregiver.availability
+            .slice(0, 3)
+            .map((schedule: any, index: number) => (
+              <span
+                key={index}
+                className="text-xs px-3 py-1 rounded-full bg-gray-50 text-gray-600"
+              >
+                {schedule}
+              </span>
+            ))}
         </div>
 
         {/* Contact Button */}
         <div className="mt-4">
-          <OAuthDialog userID={caregiver.userID} message="caregiver">
+          <OAuthDialog
+            caregiver={caregiver}
+            userID={caregiver.userID}
+            message="caregiver"
+          >
             <Button className="w-full sm:w-auto px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
               <span className="flex items-center gap-2">
                 <Send size={18} /> Message Caregiver
@@ -395,14 +393,16 @@ async function CaregiverDetails({ candidateID }: { candidateID: string }) {
               Alert Preferences
             </h3>
             <div className="flex flex-wrap gap-2 mt-2">
-              {caregiver.settings.alert_preferences.map((alert, idx) => (
-                <span
-                  key={idx}
-                  className="text-xs px-3 py-1 rounded-full bg-gray-50 text-gray-600"
-                >
-                  {alert}
-                </span>
-              ))}
+              {caregiver.settings.alert_preferences.map(
+                (alert: any, idx: number) => (
+                  <span
+                    key={idx}
+                    className="text-xs px-3 py-1 rounded-full bg-gray-50 text-gray-600"
+                  >
+                    {alert}
+                  </span>
+                )
+              )}
             </div>
           </div>
         )}
@@ -414,7 +414,7 @@ async function CaregiverDetails({ candidateID }: { candidateID: string }) {
           Similar Caregivers
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {similarCaregivers.map((caregiver) => (
+          {similarCaregivers.map((caregiver: any) => (
             <CandidatesCard key={caregiver.id} similarCaregivers={caregiver} />
           ))}
         </div>

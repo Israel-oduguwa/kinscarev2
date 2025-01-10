@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 async function FindJobs({
   searchParams,
 }: {
-  searchParams: { schedule?: string; licenses?: string };
+  searchParams: { schedule?: string; licenses?: string, minHours:string, page:number };
 }) {
-  const { schedule, licenses }: any = await searchParams;
+  const { schedule, licenses, minHours, page }: any = await searchParams;
   return (
     <div>
       <Navbar />
@@ -30,7 +30,7 @@ async function FindJobs({
           </div>
         }
       >
-        <JobOpenings schedule={schedule} licenses={licenses} />
+        <JobOpenings page={page} schedule={schedule} minHours={minHours} licenses={licenses} />
       </Suspense>
     </div>
   );

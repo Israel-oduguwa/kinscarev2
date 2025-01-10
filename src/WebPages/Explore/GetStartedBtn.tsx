@@ -23,6 +23,7 @@ import React, { useContext, useState } from "react";
 // import FacebookLogin from "react-facebook-login";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
+import Link from "next/link";
 
 // Validation schema for the email signup form
 const schema = yup.object().shape({
@@ -50,6 +51,7 @@ function GetStartedBtn({ children }: any) {
     client,
     user,
     setAuthenticated,
+    userData,
     setCustomData,
     setUser,
     setUserData,
@@ -256,8 +258,10 @@ function GetStartedBtn({ children }: any) {
     setIsDialogOpen(true);
   };
 
+  console.log(userData)
   return (
-    <GoogleOAuthProvider clientId={`${process.env.GOOGLE_APP_ID}`}>
+    <>
+      {userData && userData.role === "caregiver" ? <Link href="/vitae/career-plan">{children}</Link>: <GoogleOAuthProvider clientId={`${process.env.GOOGLE_APP_ID}`}>
       {/* Social Login Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>{children}</DialogTrigger>
@@ -477,7 +481,8 @@ function GetStartedBtn({ children }: any) {
           </form>
         </DialogContent>
       </Dialog>
-    </GoogleOAuthProvider>
+    </GoogleOAuthProvider>}
+    </>
   );
 }
 

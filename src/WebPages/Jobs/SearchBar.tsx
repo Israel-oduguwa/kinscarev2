@@ -26,8 +26,9 @@ const SearchBar: React.FC = ({}) => {
   const handleSearchJobs = () => {
     // Create a query string
     const queryParams = new URLSearchParams({
-      schedule: filters.schedule.join(","),
-      licenses: filters.licenses.join(","),
+      schedule: filters.schedule.join(","), // Convert array to string
+      licenses: filters.licenses.join(","), // Convert array to string
+      minHours: filters.minHours.toString(), // Convert number to string
     }).toString();
 
     // Redirect to the caregivers page with the query string
