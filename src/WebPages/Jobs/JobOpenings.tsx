@@ -98,11 +98,11 @@ async function All({
   let data = null;
   if (schedule) {
     data = await fetch(
-      `http://localhost:8081/api/v1/caregivers/jobs-search?schedule=${schedule}&licenses=${licenses}&minHours=${minHours}&page=${page}&limit=10`,
+      `https://api.kinscare.org/api/v1/caregivers/jobs-search?schedule=${schedule}&licenses=${licenses}&minHours=${minHours}&page=${page}&limit=10`,
       { cache: "no-cache" }
     );
   } else {
-    data = await fetch(`http://localhost:8081/api/v1/caregivers/jobs-search`, {
+    data = await fetch(`https://api.kinscare.org/api/v1/caregivers/jobs-search`, {
       cache: "no-cache",
     });
   }

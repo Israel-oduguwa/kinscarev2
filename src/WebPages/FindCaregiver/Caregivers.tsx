@@ -140,16 +140,17 @@ const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
 
 async function Caregivers({
   availability,
+  page,
   licenses,
 }: {
   availability: string;
-  page:number
+  page:number;
   licenses: string;
 }) {
   console.log(availability, licenses);
 
   let data = await fetch(
-    `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${availability}&licenses=${licenses}&page=1&limit=10`,
+    `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${availability}&licenses=${licenses}&page=${page}&limit=10`,
     { cache: "no-cache" }
   );
   const response = await data.json();

@@ -15,7 +15,7 @@ import axios from "axios";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { AlertCircle, CheckCircle, Loader2, LoaderCircle } from "lucide-react";
-import { fetchUserData } from "@/lib/utils";
+import { fetchUserData, trackEvents } from "@/lib/utils";
 
 // Yup schema for form validation
 const jobPostSchema = yup.object().shape({
@@ -202,6 +202,7 @@ const JobPostModal = ({ caregiver }: any) => {
         city: userData.city,
         zipcode: user.customData.zipcode,
         address: userData.address,
+        step: 3,
         settings: {
           ...data.settings,
           email: userData.auth.email,
@@ -218,6 +219,11 @@ const JobPostModal = ({ caregiver }: any) => {
         profilePayload
       );
       console.log(profile);
+      trackEvents(
+        user?.customData?.hash,
+        "Create Provider Profile",
+        profilePayload
+      );
       toast({
         title: "Job posted and profile updated successfully",
         variant: "default",

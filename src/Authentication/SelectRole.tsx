@@ -66,7 +66,7 @@ function SelectRole({ selectRoleModal, closeSelectModal }: any) {
     try {
       setValidating(true);
       const response = await axios.post(
-        "https://api.kinscare.org/api/v1/auth/phone/validate",
+        "http://localhost:8081/api/v1/auth/phone/validate",
         {
           phone: phone,
         }
@@ -89,6 +89,7 @@ function SelectRole({ selectRoleModal, closeSelectModal }: any) {
         });
       }
     } catch (error) {
+      console.log(error);
       setValidating(false);
       setIsPhoneValid(false);
       toast({
@@ -117,28 +118,29 @@ function SelectRole({ selectRoleModal, closeSelectModal }: any) {
       user.refreshCustomData();
       const payload = {
         userID: user.customData.userID,
-        fname:user.customData.fname,
-        lname:user.customData.lname,
+        fname: user.customData.fname,
+        lname: user.customData.lname,
         email: user.customData.email,
         role: data.role,
         tel: data.tel,
         hash: user?.customData?.hash,
       };
-      console.log(payload)
-      const response = await axios.post("https://api.kinscare.org/api/v1/auth/update-role-tel", payload);
+      console.log(payload);
+      const response = await axios.post(
+        "https://api.kinscare.org/api/v1/auth/update-role-tel",
+        payload
+      );
       if (response.data.success) {
         toast({
           title: "Role and Phone Updated",
           description: "Your information has been successfully saved.",
         });
-        closeSelectModal();
       }
-      setLoading(false);
 
       const mixpanelPayload = {
         userID: user.customData.userID,
-        fname:user.customData.fname,
-        lname:user.customData.lname,
+        fname: user.customData.fname,
+        lname: user.customData.lname,
         email: user.customData.email,
         role: data.role,
         tel: data.tel,
@@ -150,18 +152,19 @@ function SelectRole({ selectRoleModal, closeSelectModal }: any) {
       //track the event in mixpanel for singing up
       trackEvent(user?.customData?.hash, "Sign Up", mixpanelPayload);
       // so we need to push the user to the right page but before then lets fetch the data
-      const fetchedData:any = await fetchUserData(
+      const fetchedData: any = await fetchUserData(
         user.customData.userID,
         user.customData.email
       );
       // console.log(fetchedData);
-      setUserData(fetchedData.result);
+      await setUserData(fetchedData.result);
       if (role === "provider") {
         router.push("/provider/candidates/all");
+      } else {
+        router.push("/vitae/jobs/all");
       }
-      else{
-        router.push('/vitae/jobs/all')
-      }
+      closeSelectModal();
+      setLoading(false);
     } catch (error) {
       console.error(error);
       setLoading(false);
