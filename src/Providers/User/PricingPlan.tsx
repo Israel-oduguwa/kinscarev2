@@ -68,10 +68,12 @@ function PricingPlan({ closePricingDialog }: any) {
     setIsFetchingSecret(true);
     setSelectedPlan(plan);
     try {
+      console.log(JSON.stringify(user))
       const response = await axios.post(
         "https://api.kinscare.org/api/v1/providers/create-subscription",
         {
           customerId: user.customData.customer_id,
+          customerEmail: user.customData.email,
           priceId: stripePriceId,
         }
       );

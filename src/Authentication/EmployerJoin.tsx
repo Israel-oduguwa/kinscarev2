@@ -34,10 +34,6 @@ const OrSeparator: React.FC = () => {
 // Validation schema
 const schema = yup
   .object({
-    email: yup
-      .string()
-      .email("Invalid email address")
-      .required("Email is required"),
     password: yup
       .string()
       .min(6, "Password must be at least 6 characters")
@@ -46,8 +42,7 @@ const schema = yup
       .string()
       .oneOf([yup.ref("password")], "Passwords must match")
       .required("Confirm password is required"),
-    tel: yup.string().required("Phone number is required"),
-    role: yup.string().required("Role is required"),
+    tel: yup.string().required("Phone number is required")
   })
   .required();
 
@@ -56,7 +51,6 @@ interface IFormInputs {
   password: string;
   confirmPassword: string;
   tel: string;
-  role: string;
 }
 
 const EmployerJoin: React.FC = () => {
@@ -85,6 +79,8 @@ const EmployerJoin: React.FC = () => {
   });
   const [loading, setLoading] = useState(false);
   const [signupPageLoading, setSignupPageLoading] = useState(true);
+  const [emailEmployer, setEmailEmployer] = useState('');
+
   const [selectRoleModal, setSelectRoleModal] = useState(false);
   const { push, refresh } = useRouter();
   // Error handler
@@ -139,44 +135,41 @@ const EmployerJoin: React.FC = () => {
     }
   };
 
-  const RedirectUser = async (
-    user: Realm.User<
-      globalThis.Realm.DefaultFunctionsFactory &
-        globalThis.Realm.BaseFunctionsFactory,
-      { [x: string]: unknown },
-      globalThis.Realm.DefaultUserProfileData
-    >
-  ) => {
-    // this redirects users to their intended page;
-
-    if (authenticated) {
-      await user?.refreshCustomData();
-      if (!isAnon(user) && Object.keys(user?.customData || {}).length > 0) {
-        switch (user.customData.role) {
-          case "caregiver":
-            push("/vitae/jobs/all");
-            break;
-          case "provider":
-            push("/provider/candidates/all");
-            // console.log("user is a provider");
-            // push("/community");
-            break;
-          case undefined:
-            console.log("show a modal user can use to check the role");
-            // if (!user?.customData?.role) push("/select");
-            setSelectRoleModal(true);
-            break;
-        }
-        setSignupPageLoading(false);
-      } else {
-        setSignupPageLoading(false);
-        push("/signup");
+  
+  // Get email based on referal code
+  const extractEmailReferalCode = async (payload: object) => {
+      try {       
+          Object.assign(payload, {
+            referal_code_: payload.referal_code_
+             });
+          const emailID = await axios.post(
+            "https://api.kinscare.org/api/v1/email/invited-employer-email",
+            payload
+          );
+          setEmailEmployer(emailID.data.data.referral_email);
+      } catch (error) {
+        handleError(error);
       }
-    } else {
-      console.log(isAnon(user));
-      push("/signup");
-    }
-  };
+    };
+  
+
+
+
+  useEffect(() => {
+    // we check if the user Data is available if not we check is user id is available
+    // Get the current URL query parameters
+    const queryParams = new URLSearchParams(window.location.search);
+
+    // Extract the referral_code parameter
+    const referralCode = queryParams.get("referal_code");
+
+    let data = {
+      referal_code_: referralCode
+   }
+    extractEmailReferalCode(data)
+    // check google one tap login
+  }, [1]);
+
 
   const routeUser = (role: string) => {
     switch (role) {
@@ -200,7 +193,7 @@ const EmployerJoin: React.FC = () => {
   const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
     try {
       setLoading(true);
-      const email = data.email.toLowerCase();
+      const email = emailEmployer.toLowerCase()
       const password = data.password;
       await app.emailPasswordAuth.registerUser({ email, password });
       const credentials = Realm.Credentials.emailPassword(email, password);
@@ -211,7 +204,7 @@ const EmployerJoin: React.FC = () => {
         await app.currentUser.refreshCustomData(); // Try to refresh the data here
         const payload = {
           tel: data.tel,
-          role: data.role,
+          role: 'employer',
           userID: app.currentUser.id,
           email,
           auth_mode: "local-userpass",
@@ -231,7 +224,6 @@ const EmployerJoin: React.FC = () => {
           routeUser(user_data.result.role);
         }
       }
-
       setLoading(false);
     } catch (error: any) {
       handleError(error);
@@ -341,6 +333,8 @@ const EmployerJoin: React.FC = () => {
                         {...field}
                         id="email"
                         placeholder="name@company.com"
+                        value={emailEmployer}
+                        disabled
                         className={
                           errors.email ? "border-red-500" : "border-gray-300"
                         }
