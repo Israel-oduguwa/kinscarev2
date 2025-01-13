@@ -291,9 +291,6 @@ const Signup: React.FC = () => {
       case "provider":
         push("/provider/candidates/all");
         break;
-      case "employer":
-        push("/provider/candidates/all");
-        break;
       case "admin":
         push("/admin/overview");
         break;

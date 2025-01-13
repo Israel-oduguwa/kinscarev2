@@ -204,7 +204,7 @@ const EmployerJoin: React.FC = () => {
         await app.currentUser.refreshCustomData(); // Try to refresh the data here
         const payload = {
           tel: data.tel,
-          role: 'employer',
+          role: 'provider',
           userID: app.currentUser.id,
           email,
           auth_mode: "local-userpass",
