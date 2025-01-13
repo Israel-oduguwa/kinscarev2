@@ -129,6 +129,7 @@ function PricingPlan({ closePricingDialog }: any) {
         customerId,
         priceId: currentPlan?.stripePriceId,
         paymentMethodId: selectedCard,
+        customerEmail: user.customData.email
       };
 
       await axios.post(
