@@ -1,39 +1,37 @@
-import MongoContext from "@/app/MongoContext";
-import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
-import { fetchContactsData } from "@/lib/utils";
+import React, { useContext, useState } from "react";
 import {
   PaymentElement,
   useElements,
   useStripe,
 } from "@stripe/react-stripe-js";
 import axios from "axios";
-import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useContext, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
+import MongoContext from "@/app/MongoContext";
+import { fetchContactsData, trackEvents } from "@/lib/utils";
 
 interface FrequentPaymentFormProps {
-  clientSecret: string; // The client secret for SetupIntent
-  customerId: string; // Stripe Customer ID
-  priceId: string; // Stripe Price ID for the subscription
-  userID: string; // Internal user ID (to update the database)
-  onSuccess: (result: any) => void; // Callback for successful setup and subscription
+  clientSecret: string;
+  customerId: string;
+  priceId: string;
+  userID: string;
+  onSuccess: (result: any) => void;
   intentType: string;
   subscriptionID: string;
-  close: any;
+  close: () => void;
   plan: any;
   subscription: any;
-  onError?: (error: any) => void; // Optional callback for handling errors
+  onError?: (error: any) => void;
 }
 
 const FrequentPaymentForm: React.FC<FrequentPaymentFormProps> = ({
   clientSecret,
-  customerId,
   subscriptionID,
   subscription,
   intentType,
   close,
-  priceId,
   plan,
   userID,
   onSuccess,
@@ -41,151 +39,143 @@ const FrequentPaymentForm: React.FC<FrequentPaymentFormProps> = ({
 }) => {
   const stripe = useStripe();
   const elements = useElements();
+  const router = useRouter();
+  const { user, setCustomData, userData }: any = useContext(MongoContext);
 
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const { user, setCustomData }: any = useContext(MongoContext);
-  const router = useRouter();
-  console.log(subscription);
 
-  //   // Function to update PaymentMethod ID in the database
-  const updatePaymentMethod = async (subscription: any) => {
+  const updatePaymentMethod = async () => {
     try {
-      // Calculate the free trial end date (7 days from now)
       const freeTrialEndDate = new Date();
       freeTrialEndDate.setDate(freeTrialEndDate.getDate() + 7);
 
-      // Payload to update the database
-      const updatePayload = {
-        collectionName: "contacts", // Adjust collection name as needed
-        operation: "updateOne", // Specify operation type
-        filter: { userID, role: "provider" }, // Customize filter
+      const payload = {
+        collectionName: "contacts",
+        operation: "updateOne",
+        filter: { userID, role: "provider" },
         update: {
           $set: {
-            subscription_id: subscriptionID, // Save subscription ID
-            subscribed: true, // Mark user as subscribed
-            trial: "expired", // Mark trial as expired
+            subscription_id: subscriptionID,
+            subscribed: true,
+            trial: "expired",
             subscription_start_date: new Date(
               subscription.current_period_start * 1000
-            ).toISOString(), // Start date in ISO format
+            ).toISOString(),
             subscription_end_date: new Date(
               subscription.current_period_end * 1000
-            ).toISOString(), // Start date in ISO format
-            subscription_status: "complete", // Subscription status
-            plan: plan,
-            plan_id: subscription.plan.id, // Save the plan ID
-            payment_verified: true, // Optionally set payment verified
+            ).toISOString(),
+            subscription_status: "complete",
+            plan,
+            plan_id: subscription.plan.id,
+            payment_verified: true,
           },
         },
       };
 
-      // Send the request to the CRUD operation endpoint
       const response = await axios.post(
         "https://api.kinscare.org/api/v1/auth/crud-operation",
-        updatePayload,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
+        payload,
+        { headers: { "Content-Type": "application/json" } }
       );
+
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Failed to update payment data.");
+      }
+
       await user.refreshCustomData();
       router.refresh();
-
-      // Handle success or error response
-      if (response.data.success) {
-        console.log("PaymentMethod ID updated successfully:", response.data);
-      } else {
-        throw new Error(
-          response.data.message || "Failed to update PaymentMethod ID."
-        );
-      }
     } catch (error: any) {
-      console.log(error);
-      console.error("Error updating PaymentMethod ID:", error.message);
-      throw new Error(error.message);
+      console.error("Error updating payment method:", error.message);
+      throw error;
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!stripe || !elements) {
-      setMessage("Stripe has not loaded. Please try again.");
+      setMessage("Stripe is not loaded. Please try again.");
       return;
     }
+
     setIsLoading(true);
+
     try {
-      // Confirm the setup intent to save the card
       const result = await stripe.confirmPayment({
         elements,
         confirmParams: {},
         redirect: "if_required",
       });
-      console.log(result);
+
       if (result.error) {
-        // Handle errors from Stripe
-        // setMessage(result.error.message);
         toast({
           title: "Error",
           description: result.error.message || "An unknown error occurred.",
           variant: "destructive",
         });
-        console.log(result.error);
         if (onError) onError(result.error);
         setIsLoading(false);
         return;
       }
-      // Extract the PaymentMethod ID
-      const paymentMethodID: any = result.paymentIntent?.payment_method;
-      //   console.log(paymentMethodID);
-      if (!paymentMethodID) {
-        throw new Error("PaymentMethod ID is missing.");
-      }
-      // Update the database with the PaymentMethod ID
-      await updatePaymentMethod(subscription);
-      // Create the subscription with the backend API
-      // const subscription = await createSubscription();
-      // Success! Notify parent component
+
+      const paymentMethodID = result.paymentIntent?.payment_method;
+      if (!paymentMethodID) throw new Error("Payment method ID is missing.");
+
+      await updatePaymentMethod();
+
+      const eventPayload = {
+        subscription_id: subscriptionID,
+        settings: userData?.settings,
+        lname: userData?.lname,
+        subscription_status: "complete",
+        plan,
+        subscription_start_date: new Date(
+          subscription.current_period_start * 1000
+        ).toISOString(),
+        fname: userData?.fname,
+        tel: userData?.auth?.tel,
+        plan_id: subscription.plan.id,
+        zipcode: userData?.zipcode,
+        city: userData?.city,
+        payment_verified: true,
+        email: userData?.auth?.email,
+      };
+
+      trackEvents(user?.customData?.hash, "Purchase Plan", eventPayload);
+
       onSuccess({ paymentMethodID });
-      //   setMessage("free trial started!");
-      // we would fetch the userData and update the context
-      const fetchedData: any = await fetchContactsData(
+
+      const updatedData = await fetchContactsData(
         user.customData.userID,
         user.customData.email
       );
-      // console.log(fetchedData);
-      if (fetchedData) {
-        console.log(fetchedData);
-        await setCustomData(fetchedData.result);
-        // await user.refreshCustomData();
-        // router.refresh();
-        setIsLoading(false);
+      if (updatedData) {
+        await setCustomData(updatedData.result);
         close();
       }
     } catch (error: any) {
-      setMessage(error.message);
+      toast({
+        title: "Payment Failed",
+        description: error.message || "An error occurred.",
+        variant: "destructive",
+      });
       if (onError) onError(error);
+    } finally {
       setIsLoading(false);
     }
   };
 
-  const paymentElementOptions: any = {
-    layout: "tabs", // "tabs" or "accordion"
-  };
-
   return (
     <form id="payment-form" onSubmit={handleSubmit} className="space-y-6">
-      <PaymentElement id="payment-element" options={paymentElementOptions} />
+      <PaymentElement id="payment-element" options={{ layout: "tabs" }} />
       <div className="flex justify-end">
         <Button disabled={isLoading || !stripe || !elements} id="submit">
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{" "}
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Submit
         </Button>
       </div>
-      {/* Show error or success messages */}
-      {/* {message && (
-        <div id="payment-message" className="text-red-500">
-          {message}
-        </div>
-      )} */}
+      {message && <p className="text-red-500">{message}</p>}
     </form>
   );
 };

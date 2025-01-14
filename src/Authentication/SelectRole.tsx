@@ -66,7 +66,7 @@ function SelectRole({ selectRoleModal, closeSelectModal }: any) {
     try {
       setValidating(true);
       const response = await axios.post(
-        "http://localhost:8081/api/v1/auth/phone/validate",
+        "https://api.kinscare.org/api/v1/auth/phone/validate",
         {
           phone: phone,
         }
@@ -160,11 +160,13 @@ function SelectRole({ selectRoleModal, closeSelectModal }: any) {
       await setUserData(fetchedData.result);
       if (role === "provider") {
         router.push("/provider/candidates/all");
+        closeSelectModal();
+        setLoading(false);
       } else {
         router.push("/vitae/jobs/all");
+        closeSelectModal();
+        setLoading(false);
       }
-      closeSelectModal();
-      setLoading(false);
     } catch (error) {
       console.error(error);
       setLoading(false);

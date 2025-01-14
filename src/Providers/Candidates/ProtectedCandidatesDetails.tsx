@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/use-toast";
-import { fetchContactsData, isTrialActive } from "@/lib/utils";
+import { fetchContactsData, isTrialActive, trackEvents } from "@/lib/utils";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
@@ -99,13 +99,18 @@ function ProtectedCandidatesDetails({
    * If you store in DB (contacts collection) something like:
    *   first_reveal_done: boolean
    *   second_reveal_done: boolean
-   * Then:
    */
   const firstRevealDone = customData?.first_reveal_done === true;
   const secondRevealDone = customData?.second_reveal_done === true;
 
   /** THEME for Stripe Elements */
   const appearance: any = { theme: "flat" };
+
+  /**
+   * NEW STATE: Attestation Confirmation Modal (shown right after user uploads docs)
+   */
+  const [showAttestationConfirmation, setShowAttestationConfirmation] =
+    useState(false);
 
   /** ============== File/Document Upload Functions ============== */
   const handleDocumentUpload = async (file: File[]) => {
@@ -225,15 +230,10 @@ function ProtectedCandidatesDetails({
     }
   };
 
-  /** ============== Reveal Contacts ==============
-   * When user clicks "Reveal Contacts"
-   *  - If first or second reveal is not done, wait 4s, show real info, then show the appropriate popup.
-   *  - Otherwise, fallback to the existing logic for subscription or trial.
-   */
+  /** ============== Reveal Contacts ============== */
   const openRevealContacts = async () => {
     // If the user has not done the first reveal
     if (!firstRevealDone) {
-      // Wait 4 seconds, then show real info & open first popup
       setCountdown(4);
       setIsTrialExpired(false);
 
@@ -272,12 +272,6 @@ function ProtectedCandidatesDetails({
     // If the user has done 2 reveals, fallback to existing logic
     else {
       console.log("s");
-      /**
-       *
-       * Original logic: if customData and not customData.viewed_once => do the old countdown approach
-       * or check trial dates, subscription, etc.
-       * We'll keep it minimal but you can adapt further if needed.
-       */
       const trialStart = customData?.trial_start_date;
       const trialEnd = customData?.trial_end_date;
       const isSubscribed = customData?.subscribed;
@@ -350,7 +344,7 @@ function ProtectedCandidatesDetails({
       setIsTrialExpired(!trialActive);
     } else {
       const trialFlag = customData?.trial || false;
-      console.log(trialFlag)
+      console.log(trialFlag);
       setIsTrialExpired(!trialFlag);
     }
 
@@ -464,10 +458,10 @@ function ProtectedCandidatesDetails({
               identity_verified: "pending",
               attestation_letter: attestationPreview,
               government_Id: governmentID,
-              trial: true,
+              trial: false,
               subscribed: false,
-              trial_start_date: new Date().toISOString(),
-              trial_end_date: freeTrialEndDate.toISOString(),
+              // trial_start_date: new Date().toISOString(),
+              // trial_end_date: freeTrialEndDate.toISOString(),
             },
           },
         };
@@ -476,7 +470,28 @@ function ProtectedCandidatesDetails({
           payload,
           { headers: { "Content-Type": "application/json" } }
         );
+
+        const payloadEvent = {
+          settings: userData?.settings,
+          lname: userData?.lname,
+          fname: userData?.fname,
+          tel: userData?.auth?.tel,
+          zipcode: userData?.zipcode,
+          city: userData?.city,
+          email: userData?.auth?.email,
+        };
+        trackEvents(
+          user?.customData?.hash,
+          "Upload Attestation Document",
+          payloadEvent
+        );
+
+        // Close the main trial dialog
         setIsTrialDialogOpen(false);
+        // Show the new confirmation modal
+        setShowAttestationConfirmation(true);
+
+        // Refresh user data, and set trial as active (no longer expired)
         await user.refreshCustomData();
         setIsTrialExpired(false);
       } catch (error) {
@@ -534,7 +549,7 @@ function ProtectedCandidatesDetails({
         )}
       </div>
 
-      {/*  When the 3-second or 4-second countdown finishes, we show this first "Verify Identity" dialog */}
+      {/* ============== COUNTDOWN DIALOG ============== */}
       <Dialog open={showCountDownDialog} onOpenChange={setShowCountDownDialog}>
         <DialogContent>
           <DialogHeader>
@@ -551,14 +566,14 @@ function ProtectedCandidatesDetails({
         </DialogContent>
       </Dialog>
 
-      {/* FIRST REVEAL DIALOG */}
+      {/* ============== FIRST REVEAL DIALOG ============== */}
       <Dialog
         open={showFirstRevealDialog}
         onOpenChange={setShowFirstRevealDialog}
       >
         <DialogContent>
           <DialogHeader>
-          <DialogTitle>Verify Your Identity</DialogTitle>
+            <DialogTitle>Verify Your Identity</DialogTitle>
             <DialogDescription className="py-4">
               Great! Now you’ve seen how easy it is to access caregivers’ phone
               numbers and emails to connect with them directly. To continue
@@ -568,17 +583,9 @@ function ProtectedCandidatesDetails({
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end space-x-4 mt-4">
-            {/* <Button
-              variant="secondary"
-              className="bg-blue-500 text-white hover:bg-blue-600"
-              onClick={() => setShowFirstRevealDialog(false)}
-            >
-              Go Back
-            </Button> */}
             <Button
               className="w-full"
               onClick={() => {
-                // If you want to jump directly to identity verification:
                 openVerifyIdentity();
                 setShowFirstRevealDialog(false);
               }}
@@ -589,14 +596,16 @@ function ProtectedCandidatesDetails({
         </DialogContent>
       </Dialog>
 
-      {/* SECOND REVEAL DIALOG */}
+      {/* ============== SECOND REVEAL DIALOG ============== */}
+
+      {/* ============== SECOND REVEAL DIALOG ============== */}
       <Dialog
         open={showSecondRevealDialog}
         onOpenChange={setShowSecondRevealDialog}
       >
         <DialogContent>
           <DialogHeader>
-          <DialogTitle>Verify Your Identity</DialogTitle>
+            <DialogTitle>Verify Your Identity</DialogTitle>
             <DialogDescription className="py-4">
               Protecting our caregivers is a top priority. In the past, scammers
               have attempted to misuse our registry, which is why we now ask
@@ -606,13 +615,6 @@ function ProtectedCandidatesDetails({
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end space-x-4 mt-4">
-            {/* <Button
-              variant="secondary"
-              className="bg-blue-500 text-white hover:bg-blue-600"
-              onClick={() => setShowSecondRevealDialog(false)}
-            >
-              Go Back
-            </Button> */}
             <Button
               className="w-full"
               onClick={async () => {
@@ -627,27 +629,28 @@ function ProtectedCandidatesDetails({
         </DialogContent>
       </Dialog>
 
-      {/* Payment / Pricing Plan Dialog */}
+      {/* ============== PAYMENT/PRICING PLAN DIALOG ============== */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-6xl overflow-y-auto max-h-full mx-auto bg-gradient-to-b from-blue-50 via-white to-gray-50 rounded-lg shadow-2xl">
           <PricingPlan closePricingDialog={closePricingDialog} />
         </DialogContent>
       </Dialog>
 
-      {/* Trial Verification Dialog (Attestation, Payment, etc.) */}
+      {/* ============== TRIAL VERIFICATION (ATT. LETTER / PAYMENT) DIALOG ============== */}
       <Dialog open={isTrialDialogOpen} onOpenChange={setIsTrialDialogOpen}>
         <DialogContent className="h-[100vh] md:h-auto max-w-4xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex flex-col items-center text-center">
               <h2 className="font-bold tracking-tight text-2xl text-gray-800">
-                {currentStep === "selection" && "Choose a Verification Method"}
+                {currentStep === "selection" &&
+                  "Choose one of the two options below."}
                 {currentStep === "payment" &&
                   "Get Verified with Payment Method"}
                 {currentStep === "attestation" &&
                   "Upload a Signed Attestation Letter & Government-Issued ID"}
               </h2>
               {currentStep === "selection" && (
-                <p className=" text-gray-700">
+                <p className="text-gray-700">
                   To protect caregivers and ensure a safe platform, choose one
                   of these verification options:
                 </p>
@@ -669,7 +672,7 @@ function ProtectedCandidatesDetails({
                   </p>
                   <p className="text-sm">
                     Fast, secure, and no charges applied. Fill out the form
-                    below to verify instantly.
+                    below to verify instantly. You only very once
                   </p>
                 </div>
               </div>
@@ -699,16 +702,15 @@ function ProtectedCandidatesDetails({
                   <p>Loading...</p>
                 )}
               </div>
-               <h3 className="font-bold text-gray-800">
-                   2. Upload a Signed Attestation Letter & Government-Issued ID
-                  </h3>
+              <h3 className="font-bold text-gray-800">
+                2. Upload a Signed Attestation Letter & Government-Issued ID
+              </h3>
               <div
-                className="flex items-center p-4 border shadow-lg rounded-lg cursor-pointer hover:shadow-lg transition"
+                className="flex items-center p-4 border shadow-lg rounded-lg cursor-pointer hover:shadow-xl transition"
                 onClick={() => setCurrentStep("attestation")}
               >
                 <FileText className="w-10 h-10 text-blue-500 mr-4" />
                 <div>
-                 
                   <p className="text-sm text-gray-600">
                     Download and print a signable attestation letter, then
                     upload it along with a government-issued ID that includes
@@ -786,7 +788,7 @@ function ProtectedCandidatesDetails({
                 )}
               </div>
               <div className="mt-4">
-                <p className="font-semibold tracking-tight antialiased ">
+                <p className="font-semibold tracking-tight antialiased">
                   Government issued ID
                 </p>
                 {governmentID ? (
@@ -855,8 +857,62 @@ function ProtectedCandidatesDetails({
           )}
         </DialogContent>
       </Dialog>
+
+      {/* ============== ATTESTATION CONFIRMATION MODAL ============== */}
+      <Dialog
+        open={showAttestationConfirmation}
+        onOpenChange={setShowAttestationConfirmation}
+      >
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold">
+              Thank you for submitting your documents!
+            </DialogTitle>
+            <DialogDescription className="py-4">
+              If you’d like to start connecting with caregivers immediately, you
+              can verify instantly by adding a payment method. This option is
+              secure, hassle-free, and ensures you can begin reaching out to
+              caregivers without delay.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4">
+            {/* PaymentForm for immediate verification */}
+            {clientSecret && userData ? (
+              <Elements
+                stripe={stripePromise}
+                options={{ clientSecret, appearance }}
+              >
+                <PaymentForm
+                  close={() => setShowAttestationConfirmation(false)}
+                  setIsTrialExpired={setIsTrialExpired}
+                  clientSecret={clientSecret}
+                  userID={userData.userID}
+                  customerId={customData?.customer_id}
+                  priceId="price_1QP2OuAoahxG9SLGNoc37Lxo"
+                  intentType="setup"
+                  onSuccess={() => {
+                    handleOnSuccess();
+                    setShowAttestationConfirmation(false);
+                  }}
+                  onError={(error) => {
+                    console.error("Error saving card:", error);
+                  }}
+                />
+              </Elements>
+            ) : (
+              <p>Loading Payment Form...</p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
 
 export default ProtectedCandidatesDetails;
+
+
+// Thank you for submitting your attestation letter and
+// government-issued ID. The verification process may take up to 2
+// days, and we’ll contact you if anything needs clarification.
+// <br />

@@ -1,7 +1,7 @@
 import MongoContext from "@/app/MongoContext";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
-import { fetchUserData } from "@/lib/utils";
+import { fetchUserData, trackEvents } from "@/lib/utils";
 import {
   PaymentElement,
   useElements,
@@ -40,7 +40,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const { user, setUserData }: any = useContext(MongoContext);
+  const { user, setUserData, userData }: any = useContext(MongoContext);
   const router = useRouter();
 
   // Function to update PaymentMethod ID in the database
@@ -75,6 +75,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           headers: { "Content-Type": "application/json" },
         }
       );
+      
       await user.refreshCustomData();
       router.refresh();
       // Handle success or error response
@@ -132,6 +133,16 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
       // Update the database with the PaymentMethod ID
       await updatePaymentMethod(paymentMethodID);
+      const payloadAddPayment  = {
+        settings: userData?.settings,
+        lname: userData?.lname,
+        fname: userData?.fname,
+        tel: userData?.auth?.tel,
+        zipcode: userData?.zipcode,
+        city: userData?.city,
+        email: userData?.auth?.email,
+      }
+      trackEvents(user?.customData?.hash, "Add Payment Method", payloadAddPayment);
 
       // Create the subscription with the backend API
       // const subscription = await createSubscription();

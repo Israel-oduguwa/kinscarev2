@@ -194,6 +194,11 @@ const JobPostModal = ({ caregiver }: any) => {
         jobPayload
       );
 
+      trackEvents(
+        user?.customData?.hash,
+        "Post Job",
+        jobPayload
+      );
       // Update the profile
       const profilePayload = {
         ...data,

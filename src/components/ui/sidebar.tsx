@@ -136,6 +136,7 @@ const SidebarProvider = React.forwardRef<
           <div
             style={
               {
+              
                 "--sidebar-width": SIDEBAR_WIDTH,
                 "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
                 ...style,
@@ -185,6 +186,7 @@ const Sidebar = React.forwardRef<
             "flex h-full w-[--sidebar-width] flex-col bg-sidebar text-sidebar-foreground",
             className
           )}
+          style={{zIndex:99999}}
           ref={ref}
           {...props}
         >
