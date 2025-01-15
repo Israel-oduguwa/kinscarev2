@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import * as Yup from "yup";
 // import MuiTailwindCheckbox from "@/components/muiTailwindcssCheckbox";
 
-const CROWDPOST_URL =  "https://api.kinscare.org/api/v1/providers/post-job" //This should be move to an env file later.
+const CROWDPOST_URL =  "https://api.kinscare.org/api/v1/providers/crowd-post" //This should be move to an env file later.
 
 const schema = Yup.object().shape({
   title: Yup.string().required("Please enter title of your job"),
