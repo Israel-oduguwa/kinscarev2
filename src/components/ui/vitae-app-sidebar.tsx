@@ -216,6 +216,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
   const appliedJobsActive = checkIsActive("vitae/applied-jobs");
   const careerPlanActive = checkIsActive("/vitae/career-plan");
   const updateResumeActive = checkIsActive("/vitae/update");
+  const crowdPostActive = checkIsActive("vitae/crowd-post/update/new");
 
   return (
     <SidebarProvider>
@@ -278,6 +279,40 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  className={`
+                    font-semibold antialiased py-5
+                    [&>svg]:w-6 [&>svg]:h-4
+                    ${
+                      crowdPostActive
+                        ? "bg-blue-100 text-blue-600"
+                        : " text-gray-700"
+                    } 
+                    ${
+                      crowdPostActive
+                        ? "hover:bg-blue-200 hover:text-blue-700"
+                        : " hover:text-gray-800"
+                    }
+                    ${
+                      crowdPostActive
+                        ? "hover:bg-blue-200 hover:text-blue-700"
+                        : " hover:text-gray-800"
+                    }
+                    transition-all duration-200
+                  `}
+                  tooltip="Dashboard"
+                >
+                  <BookOpen />
+                  <Link href="/vitae/crowd-post/update/new">
+                    <span className="text-md">Crowd Posting</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+
+
               <SidebarMenuItem>
                 <SidebarMenuButton
                   className={`
@@ -308,6 +343,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
               <SidebarMenuItem>
                 <SidebarMenuButton
                   className={`
@@ -369,6 +405,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
               <SidebarMenuItem>
                 <SidebarMenuButton
                   className={`
@@ -456,6 +493,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
+          
           <div className="flex items-center ml-auto">
             <CaregiverNavbarRight />
           </div>

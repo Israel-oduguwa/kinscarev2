@@ -3,10 +3,10 @@ import { useRouter, useParams, usePathname } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import MongoContext from "@/app/MongoContext";
-import CreateJobUI from "./CreateJobUI";
-import JobPostFormSkeleton from "./JobPostFormSkeleton";
+import CrowdPostUI from "./CrowdPostUI";
+import CrowdPostFormSkeleton from "./CrowdPostFormSkeleton";
 
-const JobUpdatePage = ({type}:any) => {
+const CrowdPostPage = ({type}:any) => {
   const router = useRouter();
   const { id }: any = useParams();
   // const path = usePathname()
@@ -91,7 +91,7 @@ const JobUpdatePage = ({type}:any) => {
 
   // Unified loading check - only render UI when loading is done and we have a valid job ID
   if (loading || !currentJobID) {
-    return <JobPostFormSkeleton/>;
+    return <CrowdPostFormSkeleton/>;
   }
 
   // If no job is available after loading, show a message or fallback UI
@@ -102,7 +102,7 @@ const JobUpdatePage = ({type}:any) => {
   // Render the job update page with all data
   return (
     <div>
-      <CreateJobUI
+      <CrowdPostUI
         user={user}
         type={type}
         userData={userData}
@@ -114,4 +114,4 @@ const JobUpdatePage = ({type}:any) => {
   );
 };
 
-export default JobUpdatePage;
+export default CrowdPostPage;

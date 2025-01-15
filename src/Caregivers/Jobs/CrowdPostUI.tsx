@@ -16,6 +16,8 @@ import { useRouter } from "next/navigation";
 import * as Yup from "yup";
 // import MuiTailwindCheckbox from "@/components/muiTailwindcssCheckbox";
 
+const CROWDPOST_URL =  "https://api.kinscare.org/api/v1/providers/post-job" //This should be move to an env file later.
+
 const schema = Yup.object().shape({
   title: Yup.string().required("Please enter title of your job"),
   minHours: Yup.number()
@@ -68,7 +70,7 @@ const groupLicenses = [
   { label: "Companion", value: "None" },
 ];
 
-function CreateJobUI({ jobID, user, userData, job, type }: any) {
+function CrowdPostUI({ jobID, user, userData, job, type }: any) {
   const router = useRouter();
   const defaultData = {
     certifications: "",
@@ -133,11 +135,11 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
         };
         console.log(payload);
         const response = await axios.post(
-          "https://api.kinscare.org/api/v1/providers/post-job",
+          `${CROWDPOST_URL}`,
           payload
         );
         toast({ title: "Profile updated successfully", variant: "default" });
-        router.push(`/provider/job/${response.data.jobData._id}`);
+        router.push(`/provider/crowd-post/${response.data.jobData._id}`);
       } else {
         const payload = {
           ...data,
@@ -148,12 +150,12 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
         };
         console.log(payload);
         await axios.post(
-          "https://api.kinscare.org/api/v1/providers/post-job",
+          `${CROWDPOST_URL}`,
           payload
         );
         toast({ title: "Profile updated successfully", variant: "default" });
         router.refresh()
-        router.push(`/provider/job/${jobID}`);
+        router.push(`/vitae/crowd-post/${jobID}`);
       }
     } catch (error: any) {
       toast({
@@ -228,11 +230,10 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
           <div>
             <div className="mb-5">
               <h2 className="font-bold text-xl text-gray-900">
-              Post your job opening
+              Post a Job
               </h2>
               <p className="text-sm antialiased">
-                Post a job opening for potential caregivers to view the job
-                opening, and apply
+                Post a job opening for any company you are aware of whether he works there or not, and get rewarded.
               </p>
             </div>
             <div className="flex flex-col space-y-6">
@@ -332,8 +333,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
               </div>
               <div className="flex flex-col space-y-3">
                 <h3 className="font-semibold text-sm text-gray-900 antialiased mb-2">
-                  To match your opening with caregivers close to you, enter the
-                  following details
+                  Fill in the Company's details below
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="mb-0">
@@ -543,4 +543,4 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
   );
 }
 
-export default CreateJobUI;
+export default CrowdPostUI;
