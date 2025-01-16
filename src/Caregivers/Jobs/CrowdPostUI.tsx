@@ -48,9 +48,6 @@ const schema = Yup.object().shape({
   mobility: Yup.string().required(
     "Please select if your require caregiver to drive"
   ),
-  compensation: Yup.string().required(
-    "Enter compensation per day/hour or 'DoE' or 'Negotiable'"
-  ),
   //   certifications: Yup.string(), //.required("Enter required "),
   description: Yup.string().required("Please enter job description"),
 });
@@ -341,7 +338,7 @@ function CrowdPostUI({ jobID, user, userData, job, type }: any) {
                       htmlFor="city"
                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                     >
-                      City
+                      Company Name
                     </label>
                     <input
                       type="text"
@@ -364,7 +361,7 @@ function CrowdPostUI({ jobID, user, userData, job, type }: any) {
                       htmlFor="zipcode"
                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                     >
-                      Zipcode
+                     Company Zipcode
                     </label>
                     <input
                       type="text"
@@ -388,7 +385,7 @@ function CrowdPostUI({ jobID, user, userData, job, type }: any) {
                     htmlFor="job-title"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Street address
+                Company  Address
                   </label>
                   <input
                     type="text"
@@ -413,7 +410,7 @@ function CrowdPostUI({ jobID, user, userData, job, type }: any) {
                         htmlFor="city"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Email
+                       Company Email
                       </label>
                       <input
                         type="email"
@@ -437,7 +434,7 @@ function CrowdPostUI({ jobID, user, userData, job, type }: any) {
                         htmlFor="tel"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Phone Number
+                        Company Phone Number
                       </label>
                       <input
                         type="number"
@@ -459,7 +456,7 @@ function CrowdPostUI({ jobID, user, userData, job, type }: any) {
                 </div>
                 <div>
                   <h3 className="font-semibold text-sm mb-2">
-                    Does the job require caregiver to drive?
+                  Do you work at this employer?
                   </h3>
                   <Controller
                     name="mobility"
@@ -502,7 +499,7 @@ function CrowdPostUI({ jobID, user, userData, job, type }: any) {
                     htmlFor="job-title"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Compensation
+                    Comments or Special Instructions (Optional)
                   </label>
                   <input
                     type="text"

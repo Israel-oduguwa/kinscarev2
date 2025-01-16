@@ -1,4 +1,4 @@
-import PostedJobs from '@/Providers/Jobs/PostedJobs';
+import CrowdPostAll from '@/Caregivers/Jobs/CrowdPostAll';
 import React from 'react';
 import { Metadata } from 'next';
 
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 function Page() {
   return (
     <div>
-      <PostedJobs />
+      <CrowdPostAll />
     </div>
   );
 }
