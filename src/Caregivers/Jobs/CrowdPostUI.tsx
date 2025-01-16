@@ -138,7 +138,7 @@ function CrowdPostUI({ jobID, user, userData, job, type }: any) {
           `${CROWDPOST_URL}`,
           payload
         );
-        toast({ title: "Profile updated successfully", variant: "default" });
+        toast({ title: "Crowd Post Job updated  successfully", variant: "default" });
         router.push(`/provider/crowd-post/${response.data.jobData._id}`);
       } else {
         const payload = {
@@ -153,7 +153,7 @@ function CrowdPostUI({ jobID, user, userData, job, type }: any) {
           `${CROWDPOST_URL}`,
           payload
         );
-        toast({ title: "Profile updated successfully", variant: "default" });
+        toast({ title: "Crowd Post Job updated successfully", variant: "default" });
         router.refresh()
         router.push(`/vitae/crowd-post/${jobID}`);
       }
@@ -199,7 +199,7 @@ function CrowdPostUI({ jobID, user, userData, job, type }: any) {
     if (type !== "repost") {
       try {
         const save = await axios.post(
-          "https://api.kinscare.org/api/v1/providers/post-job",
+          CROWDPOST_URL,
           formData
         );
         console.log(save);
@@ -230,7 +230,7 @@ function CrowdPostUI({ jobID, user, userData, job, type }: any) {
           <div>
             <div className="mb-5">
               <h2 className="font-bold text-xl text-gray-900">
-              Post a Job
+              Crowd Post a Job
               </h2>
               <p className="text-sm antialiased">
                 Post a job opening for any company you are aware of whether he works there or not, and get rewarded.

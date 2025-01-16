@@ -124,23 +124,19 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
 
     navMain: [
       {
-        title: "Jobs",
-        url: "/vitae/jobs",
+        title: "Crowd Posting",
+        url: "",
         icon: BriefcaseBusiness,
-        isActive: true,
+        isActive: false,
         items: [
           {
-            title: "Find jobs",
-            url: "/vitae/jobs/all",
+            title: "New",
+            url: "/vitae/crowd-post/update/new",
           },
           {
-            title: "Saved Jobs",
-            url: "/vitae/favorites",
-          },
-          {
-            title: "Your Applications",
-            url: "/vitae/applied-jobs",
-          },
+            title: "My Posts",
+            url: "",
+          }
         ],
       },
       // {
@@ -280,36 +276,81 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  className={`
-                    font-semibold antialiased py-5
-                    [&>svg]:w-6 [&>svg]:h-4
-                    ${
-                      crowdPostActive
-                        ? "bg-blue-100 text-blue-600"
-                        : " text-gray-700"
-                    } 
-                    ${
-                      crowdPostActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    ${
-                      crowdPostActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    transition-all duration-200
-                  `}
-                  tooltip="Dashboard"
-                >
-                  <BookOpen />
-                  <Link href="/vitae/crowd-post/update/new">
-                    <span className="text-md">Crowd Posting</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+
+              {data.navMain.map((item, idx) => {
+                const isActive =
+                  pathname === item.url || pathname?.startsWith(`${item.url}/`);
+                // console.log(isActive);
+                // console.log(item.url, isActive);
+                return (
+                  <>
+                    {item.items ? (
+                      <Collapsible
+                        key={idx}
+                        asChild
+                        defaultOpen={item.isActive}
+                        className="group/collapsible"
+                      >
+                        <SidebarMenuItem>
+                          <CollapsibleTrigger asChild>
+                            <SidebarMenuButton
+                              className={`
+                                font-semibold antialiased py-6 my-0.5 
+                                [&>svg]:w-6 [&>svg]:h-4
+                                ${
+                                  crowdPostActive
+                                    ? "bg-blue-100 text-blue-600"
+                                    : " text-gray-700"
+                                } 
+                                ${
+                                  crowdPostActive
+                                    ? "hover:bg-blue-200 hover:text-blue-700"
+                                    : " hover:text-gray-800"
+                                }
+                                transition-all duration-200
+                              `}
+                              tooltip={item.title}
+                            >
+                              {item.icon && <item.icon />}
+                              <span>{item.title}</span>
+                              <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                            </SidebarMenuButton>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <SidebarMenuSub>
+                              {item.items?.map((subItem, idx) => (
+                                <SidebarMenuSubItem key={idx}>
+                                  <SidebarMenuSubButton
+                                    className="py-4"
+                                    asChild
+                                  >
+                                    <Link href={subItem.url}>
+                                      <span>{subItem.title}</span>
+                                    </Link>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              ))}
+                            </SidebarMenuSub>
+                          </CollapsibleContent>
+                        </SidebarMenuItem>
+                      </Collapsible>
+                    ) : (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton
+                          isActive={crowdPostActive}
+                          className="py-6 my-0.5 [&>svg]:size-5"
+                          tooltip={item.title}
+                        >
+                          {item.icon && <item.icon />}
+                          <Link href={item.url}>
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    )}
+                  </>
+                );
+              })}
 
 
 

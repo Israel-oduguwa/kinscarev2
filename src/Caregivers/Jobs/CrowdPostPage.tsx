@@ -24,13 +24,13 @@ const CrowdPostPage = ({type}:any) => {
     try {
       const payload = { userID: user.customData.userID, draft: true };
       const response = await axios.post(
-        "https://api.kinscare.org/api/v1/providers/post-job",
+        "https://api.kinscare.org/api/v1/providers/crowd-post",
         payload
       );
       const jobID = response.data.id;
       setCurrentJobID(jobID); // Set new job ID
       const currentUrl = window.location.href; // Full URL
-
+      
       // Check if the URL contains "crowd-post"
       if (currentUrl.includes('crowd-post')) {
         // Append to the URL for "crowd-post"
@@ -51,7 +51,7 @@ const CrowdPostPage = ({type}:any) => {
   const getJobData = async (jobID: string) => {
     try {
       const response = await axios.get(
-        `https://api.kinscare.org/api/v1/caregivers/job/${jobID}`
+        `https://api.kinscare.org/api/v1/providers/crowd-post/${jobID}`
       );
       setJob(response.data.job); // Set job data
     } catch (err: any) {
@@ -70,12 +70,13 @@ const CrowdPostPage = ({type}:any) => {
   useEffect(() => {
     const initializeJob = async () => {
       setLoading(true); // Start loading
-
       if (id === "new") {
         // Create a new draft job if the ID is "new"
         const newJobID = await createDraftJob();
         setCurrentJobID(newJobID); // Set currentJobID after draft creation
-      } else {
+      } 
+      else {
+        console.log(`/vitae/crowd-post/update/${id}`)
         // Otherwise, fetch the existing job data
         setCurrentJobID(id as string); // Set current job ID
         await getJobData(id); // Fetch the job data for this ID

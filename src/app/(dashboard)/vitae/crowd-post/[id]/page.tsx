@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import ProviderJob from "@/Providers/Jobs/ProviderJob";
+import CrowdPostJob from "@/Caregivers/Jobs/CrowdPostJob";
 import { Metadata } from "next";
 import ProviderJobSkeleton from "@/Providers/Jobs/ProviderJobSkelenton";
 
@@ -34,7 +34,7 @@ async function page(props: { params: Promise<{ id: string }> }) {
   return (
     <Suspense fallback={<ProviderJobSkeleton/>}>
       <div className="min-h-full bg-gray-100">
-        <ProviderJob jobID={id} />
+        <CrowdPostJob jobID={id} />
       </div>
     </Suspense>
   );
