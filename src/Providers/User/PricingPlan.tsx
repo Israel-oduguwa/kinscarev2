@@ -82,7 +82,7 @@ interface UserContext {
 /*                        Environment Variable (Safe)                         */
 /* -------------------------------------------------------------------------- */
 
-const STRIPE_PUBLIC_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY ?? "";
+const STRIPE_PUBLIC_KEY = process.env.STRIPE_PUBLIC_TEST_KEY ?? "";
 const stripePromise = loadStripe(STRIPE_PUBLIC_KEY);
 
 /* -------------------------------------------------------------------------- */
@@ -90,7 +90,9 @@ const stripePromise = loadStripe(STRIPE_PUBLIC_KEY);
 /* -------------------------------------------------------------------------- */
 
 function PricingPlan({ closePricingDialog }: PricingPlanProps) {
-  const { user, customData, setCustomData } = useContext(MongoContext) as UserContext;
+  const { user, customData, setCustomData } = useContext(
+    MongoContext
+  ) as UserContext;
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [savedCards, setSavedCards] = useState<CardItem[]>([]);
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
@@ -99,7 +101,9 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
   const [loading, setLoading] = useState(false);
   const [isFetchingSecret, setIsFetchingSecret] = useState(false);
   const [openPaymentForm, setOpenPaymentForm] = useState(false);
-  const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
+  const [subscription, setSubscription] = useState<SubscriptionData | null>(
+    null
+  );
   const [subscriptionID, setSubscriptionID] = useState<string>("");
 
   const router = useRouter();
@@ -110,15 +114,21 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
       title: "Daily Plan",
       price: "$23.99",
       stripePriceId: "price_1QXcozAoahxG9SLGGelfYlKJ",
-      description: "Perfect for short-term projects or temporary needs. Get access for 24 hours.",
-      features: ["24-hour access", "Full feature set", "Priority support during active period"],
+      description:
+        "Perfect for short-term projects or temporary needs. Get access for 24 hours.",
+      features: [
+        "24-hour access",
+        "Full feature set",
+        "Priority support during active period",
+      ],
     },
     {
       id: "weekly",
       title: "Weekly Plan",
       price: "$63.99",
       stripePriceId: "price_1QSCneAoahxG9SLGCHhFdN4C",
-      description: "Ideal for weekly usage. Enjoy full access for 7 days at a discounted rate.",
+      description:
+        "Ideal for weekly usage. Enjoy full access for 7 days at a discounted rate.",
       features: ["7-day access", "Full feature set", "Priority email support"],
     },
     {
@@ -126,7 +136,8 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
       title: "Monthly Plan",
       price: "$93.99",
       stripePriceId: "price_1QXcpZAoahxG9SLGjWJp4KfP",
-      description: "Best value! Get 30 days of unlimited access to all features.",
+      description:
+        "Best value! Get 30 days of unlimited access to all features.",
       features: ["30-day access", "Full feature set", "24/7 premium support"],
     },
   ];
@@ -146,6 +157,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
           "https://api.kinscare.org/api/v1/providers/create-subscription",
           {
             customerId: user.customData.customer_id,
+            customerEmail: user.customData.email,
             priceId: stripePriceId,
           }
         );
@@ -211,6 +223,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
           customerId,
           priceId: currentPlan.stripePriceId,
           paymentMethodId: selectedCard,
+          customerEmail: user.customData.email,
         },
         { headers: { "Content-Type": "application/json" } }
       );
@@ -257,7 +270,8 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
           Choose Your Subscription Plan
         </h2>
         <p className="text-gray-600">
-          Select the plan that suits your needs and get started with full access today.
+          Select the plan that suits your needs and get started with full access
+          today.
         </p>
       </div>
 
@@ -335,7 +349,10 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                     key={plan.id}
                     variant={selectedPlan === plan.id ? "default" : "outline"}
                     onClick={() =>
-                      void createSubscriptionClientSecret(plan.id, plan.stripePriceId)
+                      void createSubscriptionClientSecret(
+                        plan.id,
+                        plan.stripePriceId
+                      )
                     }
                     className={`text-sm px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition ${
                       selectedPlan === plan.id
@@ -374,7 +391,8 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                                 Use {card.brand} card ending in {card.last4}
                               </p>
                               <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                                Exp {String(card.exp_month).padStart(2, "0")}/{card.exp_year}
+                                Exp {String(card.exp_month).padStart(2, "0")}/
+                                {card.exp_year}
                               </p>
                             </div>
                           </div>

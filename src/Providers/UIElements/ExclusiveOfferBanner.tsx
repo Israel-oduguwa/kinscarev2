@@ -6,6 +6,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import PricingPlan from "../User/PricingPlan";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import SubscriptionUpgradeDialog from "../User/UpgradeSubscription";
 
 const ExclusiveOfferBanner = () => {
   const { customData }: any = useContext(MongoContext);
@@ -46,7 +47,7 @@ const ExclusiveOfferBanner = () => {
           ></div>
         </div>
         <div
-          className={`flex flex-wrap items-center justify-between w-full lg:ml-[16rem]`}
+          className={`flex flex-wrap items-center justify-between max-w-screen-xl lg:ml-[16rem]`}
         >
           {/* Offer Text */}
           <p className="text-xs text-center sm:text-left font-medium text-gray-900">
@@ -66,31 +67,13 @@ const ExclusiveOfferBanner = () => {
           </Button>
 
           {/* Dismiss Button */}
-          <div className="mt-2 sm:mt-0 flex flex-1 justify-end">
-            <button
-              type="button"
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300"
-            >
-              <span className="sr-only">Dismiss</span>
-              <svg
-                className="h-5 w-5"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
         </div>
       </div>
+      {/* <SubscriptionUpgradeDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        currentPlanId={customData?.planId || "daily"}
+      /> */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-6xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
           <PricingPlan closePricingDialog={closePricingDialog} />

@@ -493,7 +493,8 @@ function ProtectedCandidatesDetails({
 
         // Refresh user data, and set trial as active (no longer expired)
         await user.refreshCustomData();
-        setIsTrialExpired(false);
+        // setIsTrialExpired(false);
+        setCurrentStep('selection')
       } catch (error) {
         console.log("Error saving attestation/ID docs:", error);
       } finally {
@@ -576,10 +577,9 @@ function ProtectedCandidatesDetails({
             <DialogTitle>Verify Your Identity</DialogTitle>
             <DialogDescription className="py-4">
               Great! Now you’ve seen how easy it is to access caregivers’ phone
-              numbers and emails to connect with them directly. To continue
-              viewing contact details, please verify your identity as an
-              employer—it’s quick, secure, and ensures a safe experience for
-              everyone.
+              numbers and emails to connect with them directly. To keep viewing
+              contact details, verify your identity as an employer—just once.
+              It’s fast, secure, and helps ensure a safe environment for all!
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end space-x-4 mt-4">
@@ -607,9 +607,9 @@ function ProtectedCandidatesDetails({
           <DialogHeader>
             <DialogTitle>Verify Your Identity</DialogTitle>
             <DialogDescription className="py-4">
-              Protecting our caregivers is a top priority. In the past, scammers
-              have attempted to misuse our registry, which is why we now ask
-              employers like you to verify their identity. This step shows
+              Protecting our caregivers is our top priority. In the past,
+              scammers have misused our registry, so we now require employers to
+              complete a one-time identity verification. This step assures
               caregivers that your interest in hiring them is genuine and
               trustworthy.
             </DialogDescription>
@@ -671,8 +671,8 @@ function ProtectedCandidatesDetails({
                     </span>
                   </p>
                   <p className="text-sm">
-                    Fast, secure, and no charges applied. Fill out the form
-                    below to verify instantly. You only very once
+                    Fast, secure, and FREE. Fill the form below for an instant,{" "}
+                    <span className="font-bold">one-time verification</span>
                   </p>
                 </div>
               </div>
@@ -737,7 +737,7 @@ function ProtectedCandidatesDetails({
                   <div className="relative">
                     <iframe
                       src={attestationPreview}
-                      className="w-full h-[300px]"
+                      className="w-full h-[200px]"
                     />
                     <Button
                       onClick={() => deleteFile(attestationPreview)}
@@ -793,7 +793,7 @@ function ProtectedCandidatesDetails({
                 </p>
                 {governmentID ? (
                   <div className="relative">
-                    <iframe src={governmentID} className="w-full h-[300px]" />
+                    <iframe src={governmentID} className="w-full h-[200px]" />
                     <Button
                       onClick={() => deleteFile("government")}
                       className="absolute -top-4 right-0 bg-gray-800 text-white rounded-full"
@@ -874,6 +874,10 @@ function ProtectedCandidatesDetails({
               secure, hassle-free, and ensures you can begin reaching out to
               caregivers without delay.
             </DialogDescription>
+            <p className="text-sm">
+              Fast, secure, and FREE. Fill the form below for an instant,{" "}
+              <span className="font-bold">one-time verification</span>
+            </p>
           </DialogHeader>
           <div className="mt-4">
             {/* PaymentForm for immediate verification */}
@@ -910,7 +914,6 @@ function ProtectedCandidatesDetails({
 }
 
 export default ProtectedCandidatesDetails;
-
 
 // Thank you for submitting your attestation letter and
 // government-issued ID. The verification process may take up to 2
