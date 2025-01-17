@@ -16,82 +16,41 @@ import { useRouter } from "next/navigation";
 import * as Yup from "yup";
 // import MuiTailwindCheckbox from "@/components/muiTailwindcssCheckbox";
 
+const CROWDPOST_URL =  "https://api.kinscare.org/api/v1/providers/crowd-post" //This should be move to an env file later.
+
 const schema = Yup.object().shape({
   title: Yup.string().required("Please enter title of your job"),
-  minHours: Yup.number()
-    .max(50, "working hours must not be greater than 50 hrs."),
-  contacts: Yup.object().shape({
-    address: Yup.string().required(
-      "Please enter the address of where your job is located."
-    ),
-    city: Yup.string().required("Please enter the city your job is located."),
-    email: Yup.string()
-      .email()
-      .required(
-        "Please enter the email address caregivers will use to contact you."
-      ),
-    tel: Yup.string().required(
-      "Please enter the telephone number caregivers will use to contact you."
-    ),
-    zipcode: Yup.string().required(
-      "Please enter the zipcode of your job is located."
-    ),
-  }),
-  licenses: Yup.array()
-    .min(1, "Select at least 1 license.  If you don't have one, select 'None'.")
+  employer_name: Yup.string()
+    .max(50, "Please enter employer name for your job"),
+  shift_type: Yup.array()
+    .min(1, "Select at least 1 Shift type.  If you don't have one, select 'None'.")
     .required(), //.min(1, "at least 1")
-  schedule: Yup.array()
-    .min(1, "Select at least 1 schedule you are available to work.")
-    .required(),
   mobility: Yup.string().required(
     "Please select if your require caregiver to drive"
   ),
-  compensation: Yup.string().required(
-    "Enter compensation per day/hour or 'DoE' or 'Negotiable'"
-  ),
-  //   certifications: Yup.string(), //.required("Enter required "),
   description: Yup.string().required("Please enter job description"),
 });
 
-const groupSchedule = [
-  { label: "Full time", value: "Full time" },
-  { label: "Part time", value: "Part time" },
-  { label: "Weekend", value: "Weekends" },
-  { label: "On Call", value: "on Call" },
-  { label: "Live In", value: "Live In" },
-];
-const config1 = { label: "label", value: "value" };
-const groupLicenses = [
-  { label: "CNA", value: "CNA or NAC" },
-  { label: "HCA", value: "HCA" },
-  { label: "NAR", value: "NAR" },
-  { label: "Companion", value: "None" },
+const shiftTypes = [
+  { label: "Day", value: "Day" },
+  { label: "Evening", value: "Evening" },
+  { label: "Overnight", value: "Overnight" }
 ];
 
-function CreateJobUI({ jobID, user, userData, job, type }: any) {
+function CrowdPostUI({ jobID, user, userData, job, type }: any) {
   const router = useRouter();
   const defaultData = {
-    certifications: "",
     compensation: "",
-    // contacts: {
-    //   address: userData?.address,
-    //   city: userData?.city,
-    //   email: userData?.settings?.hr_email
-    //     ? userData?.settings?.hr_email
-    //     : userData?.auth?.email,
-    //   tel: userData?.settings?.cell
-    //     ? userData?.settings?.cell
-    //     : userData?.auth?.tel
-    //       ? userData?.auth?.tel
-    //       : "",
-    //   zipcode: userData?.zipcode,
-    // },
     description: "",
     // minHours: "",
-    licenses: [],
+    shift_type: [],
+    location:"",
     mobility: "",
-    schedule: [],
     title: "",
+    employer_name: "",
+    contact_name: "",
+    email:"",
+    phone_number: "",
   };
   const {
     register,
@@ -107,10 +66,12 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
     defaultValues: {
       description: job.description,
       compensation: job.compensation,
-      contacts: job.contacts,
-      licenses: job.licenses ? job.licenses : [],
-      schedule: job.schedule ? job.schedule : [],
-      minHours: job.minHours,
+      shift_type: job.shift_type ? job.shift_type : [],
+      location: job.location,
+      employer_name: job.employer_name,
+      phone_number: job.phone_number,
+      email: job.email,
+      contact_name: job.contact_name,
       title: job.title,
       mobility: "car_needed",
     },
@@ -123,6 +84,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
   // console.log(userData?.profileImage, "snkjs")
   const onSubmit = async (data: any) => {
     setLoading(true);
+    console.log(`onSubmit==== ${JSON.stringify(data)}`)
     try {
       if (type === "repost") {
         const payload = {
@@ -133,11 +95,11 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
         };
         console.log(payload);
         const response = await axios.post(
-          "https://api.kinscare.org/api/v1/providers/post-job",
+          `${CROWDPOST_URL}`,
           payload
         );
-        toast({ title: "Profile updated successfully", variant: "default" });
-        router.push(`/provider/job/${response.data.jobData._id}`);
+        toast({ title: "Crowd Post Job updated  successfully", variant: "default" });
+        router.push(`/provider/crowd-post/${response.data.jobData._id}`);
       } else {
         const payload = {
           ...data,
@@ -148,12 +110,12 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
         };
         console.log(payload);
         await axios.post(
-          "https://api.kinscare.org/api/v1/providers/post-job",
+          `${CROWDPOST_URL}`,
           payload
         );
-        toast({ title: "Profile updated successfully", variant: "default" });
+        toast({ title: "Crowd Post Job updated successfully", variant: "default" });
         router.refresh()
-        router.push(`/provider/job/${jobID}`);
+        router.push(`/vitae/crowd-post/${jobID}`);
       }
     } catch (error: any) {
       toast({
@@ -170,10 +132,12 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
       reset({
         description: job.description,
         compensation: job.compensation,
-        contacts: job.contacts,
-        licenses: job.licenses ? job.licenses : [],
-        schedule: job.schedule ? job.schedule : [],
-        minHours: job.minHours,
+        shift_type: job.shift_type ? job.shift_type : [],
+        location: job.location,
+        employer_name: job.employer_name,
+        phone_number: job.phone_number,
+        email: job.email,
+        contact_name: job.contact_name,
         title: job.title,
         mobility: "car_needed",
       });
@@ -197,7 +161,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
     if (type !== "repost") {
       try {
         const save = await axios.post(
-          "https://api.kinscare.org/api/v1/providers/post-job",
+          CROWDPOST_URL,
           formData
         );
         console.log(save);
@@ -228,12 +192,14 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
           <div>
             <div className="mb-5">
               <h2 className="font-bold text-xl text-gray-900">
-              Post your job opening
+              REFER & MAKE $: Share Job Opportunities
               </h2>
-              <p className="text-sm antialiased">
-                Post a job opening for potential caregivers to view the job
-                opening, and apply
-              </p>
+              <p className="text-sm antialiased mt-5">
+              Help connect caregivers with the best opportunities while earning up to $55 for your referrals             
+               </p>
+               <p className="text-sm antialiased">
+               Know of a job opening at your workplace or in your community? Post the details here to help others grow their careers. You’ll earn up to $ 55.00 and gift the employer 7 days of free access to Kinscare, where they can connect directly with top applicants!
+               </p>
             </div>
             <div className="flex flex-col space-y-6">
               <div className="flex flex-col space-y-3">
@@ -242,7 +208,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
                     htmlFor="job-title"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Job title
+                    Position title
                   </label>
                   <input
                     type="text"
@@ -258,30 +224,54 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
                     <p className="text-red-500">{errors.title.message}</p>
                   )}
                 </div>
+
+                <div className="mb-0">
+                  <label
+                    htmlFor="employer-name"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Employer Name
+                  </label>
+                  <input
+                    type="text"
+                    id="first-name"
+                    className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    required
+                    {...register("employer_name")}
+                    onBlur={(e) => {
+                      handleFieldUpdate(e.target.name, e.target.value);
+                    }} // To connect with react-hook-form
+                  />
+                  {errors.employer_name && (
+                    <p className="text-red-500">{errors.employer_name.message}</p>
+                  )}
+                </div>
+
                 <div>
                   <h3 className="font-semibold text-sm text-gray-900 antialiased mb-2">
-                    What licenses are required?
+                    Select the Shift type
                   </h3>
                   <MultiSelectField
-                    name="licenses"
+                    name="shift_type"
                     control={control}
                     isAnimation={true}
-                    options={groupLicenses}
-                    placeholder="Select licenses"
+                    options={shiftTypes}
+                    placeholder="Select Shift type"
                     maxCount={4} // You can limit the number of selections
                     rules={{ required: true }} // Additional rules can be passed here
                   />
 
-                  {errors.licenses && (
+                  {errors.shift_type && (
                     <p className="text-red-500 text-xs">
-                      {errors.licenses.message}
+                      {errors.shift_type.message}
                     </p>
                   )}
                 </div>
+
+
                 <div className="w-full prose-lg prose-h3:my-2 prose-blockquote:my-2  discussion-content max-w-[100%]">
                   <p className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    Please enter job description and required certifications
-                    such as CPR/First Aid, Food Handler's etc.
+                    Please enter job description
                   </p>
                   <Editor
                     onChange={onEditorStateChange}
@@ -289,123 +279,62 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
                     usage="poss"
                   />
                 </div>
-                <div className="w-full">
-                  <h3 className="font-semibold text-sm text-gray-900 antialiased mb-2">
-                    Your Schedule
-                  </h3>
-                  <MultiSelectField
-                    name="schedule"
-                    control={control}
-                    isAnimation={true}
-                    options={groupSchedule}
-                    placeholder="Select your schedule you want for the job"
-                    maxCount={4} // You can limit the number of selections
-                    rules={{ required: true }} // Additional rules can be passed here
-                  />
-                  {errors.schedule && (
-                    <p className="text-red-500 text-xs">
-                      {errors.schedule.message}
-                    </p>
-                  )}
-                </div>
+
                 <div className="mb-0">
                   <label
-                    htmlFor="job-title"
+                    htmlFor="employer-name"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Minimum hours per week
-                  </label>
-                  <input
-                    type="number"
-                    id="work-hrs"
-                    className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    required
-                    {...register("minHours")} // To connect with react-hook-form
-                    onBlur={(e) => {
-                      handleFieldUpdate(e.target.name, e.target.value);
-                    }} // To connect with react-hook-form
-                  />
-                  {errors?.minHours && (
-                    <p className="text-red-500">{errors.minHours?.message}</p>
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-col space-y-3">
-                <h3 className="font-semibold text-sm text-gray-900 antialiased mb-2">
-                  To match your opening with caregivers close to you, enter the
-                  following details
-                </h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="mb-0">
-                    <label
-                      htmlFor="city"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      City
-                    </label>
-                    <input
-                      type="text"
-                      id="city"
-                      className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      required
-                      {...register("contacts.city")} // To connect with react-hook-form
-                      onBlur={(e) => {
-                        handleFieldUpdate(e.target.name, e.target.value);
-                      }} // To connect with react-hook-form
-                    />
-                    {errors.contacts?.city && (
-                      <p className="text-red-500">
-                        {errors.contacts?.city.message}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="zipcode"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Zipcode
-                    </label>
-                    <input
-                      type="text"
-                      id="last-name"
-                      className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      required
-                      {...register("contacts.zipcode")} // To connect with react-hook-form
-                      onBlur={(e) => {
-                        handleFieldUpdate(e.target.name, e.target.value);
-                      }} // To connect with react-hook-form
-                    />
-                    {errors.contacts?.zipcode && (
-                      <p className="text-red-500 text-xs">
-                        {errors.contacts?.zipcode.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="mb-0">
-                  <label
-                    htmlFor="job-title"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Street address
+                    Location (City/State)
                   </label>
                   <input
                     type="text"
-                    id="city"
+                    id="location"
                     className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     required
-                    {...register("contacts.address")} // To connect with react-hook-form
+                    {...register("location")}
                     onBlur={(e) => {
                       handleFieldUpdate(e.target.name, e.target.value);
                     }} // To connect with react-hook-form
                   />
-                  {errors.contacts?.address && (
-                    <p className="text-red-500">
-                      {errors.contacts?.address.message}
-                    </p>
+                  {errors.location && (
+                    <p className="text-red-500">{errors.location.message}</p>
                   )}
                 </div>
+
+
+
+      
+              </div>
+              <div className="flex flex-col space-y-3">
+            
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="mb-0">
+                    <label
+                      htmlFor="contact_name"
+                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      Contact Name (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      id="contact_name"
+                      className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      required
+                      {...register("contact_name")} // To connect with react-hook-form
+                      onBlur={(e) => {
+                        handleFieldUpdate(e.target.name, e.target.value);
+                      }} // To connect with react-hook-form
+                    />
+                    {errors.contact_name && (
+                      <p className="text-red-500">
+                        {errors.contact_name.message}
+                      </p>
+                    )}
+                  </div>
+               
+                </div>
+         
                 <div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -413,21 +342,21 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
                         htmlFor="city"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Email
+                      Email
                       </label>
                       <input
                         type="email"
                         id="Email"
                         className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         required
-                        {...register("contacts.email")} // To connect with react-hook-form
+                        {...register("email")} // To connect with react-hook-form
                         onBlur={(e) => {
                           handleFieldUpdate(e.target.name, e.target.value);
                         }} // To connect with react-hook-form
                       />
-                      {errors.contacts?.email && (
+                      {errors?.email && (
                         <p className="text-red-500 text-xs">
-                          {errors.contacts.email.message}
+                          {errors.email.message}
                         </p>
                       )}
                     </div>
@@ -437,29 +366,29 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
                         htmlFor="tel"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Phone Number
+                      Phone Number
                       </label>
                       <input
                         type="number"
-                        id="last-name"
+                        id="phone_number"
                         className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         required
-                        {...register("contacts.tel")} // To connect with react-hook-form
+                        {...register("phone_number")} // To connect with react-hook-form
                         onBlur={(e) => {
                           handleFieldUpdate(e.target.name, e.target.value);
                         }} // To connect with react-hook-form
                       />
-                      {errors.contacts?.tel && (
+                      {errors.phone_number && (
                         <p className="text-red-500 text-xs">
-                          {errors.contacts.tel.message}
+                          {errors.phone_number.message}
                         </p>
                       )}
                     </div>
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm mb-2">
-                    Does the job require caregiver to drive?
+                  <h3 className="font-semibold text-sm mb-2 pt-5">
+                  Do you work at this employer?
                   </h3>
                   <Controller
                     name="mobility"
@@ -502,7 +431,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
                     htmlFor="job-title"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Compensation
+                    Comments or Special Instructions (Optional)
                   </label>
                   <input
                     type="text"
@@ -543,4 +472,4 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
   );
 }
 
-export default CreateJobUI;
+export default CrowdPostUI;

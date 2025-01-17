@@ -3,10 +3,10 @@ import { useRouter, useParams, usePathname } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import MongoContext from "@/app/MongoContext";
-import CreateJobUI from "./CreateJobUI";
-import JobPostFormSkeleton from "./JobPostFormSkeleton";
+import CrowdPostUI from "./CrowdPostUI";
+import CrowdPostFormSkeleton from "./CrowdPostFormSkeleton";
 
-const JobUpdatePage = ({type}:any) => {
+const CrowdPostPage = ({type}:any) => {
   const router = useRouter();
   const { id }: any = useParams();
   // const path = usePathname()
@@ -24,13 +24,13 @@ const JobUpdatePage = ({type}:any) => {
     try {
       const payload = { userID: user.customData.userID, draft: true };
       const response = await axios.post(
-        "https://api.kinscare.org/api/v1/providers/post-job",
+        "https://api.kinscare.org/api/v1/providers/crowd-post",
         payload
       );
       const jobID = response.data.id;
       setCurrentJobID(jobID); // Set new job ID
       const currentUrl = window.location.href; // Full URL
-
+      
       // Check if the URL contains "crowd-post"
       if (currentUrl.includes('crowd-post')) {
         // Append to the URL for "crowd-post"
@@ -51,7 +51,7 @@ const JobUpdatePage = ({type}:any) => {
   const getJobData = async (jobID: string) => {
     try {
       const response = await axios.get(
-        `https://api.kinscare.org/api/v1/caregivers/job/${jobID}`
+        `https://api.kinscare.org/api/v1/providers/crowd-post/${jobID}`
       );
       setJob(response.data.job); // Set job data
     } catch (err: any) {
@@ -70,12 +70,13 @@ const JobUpdatePage = ({type}:any) => {
   useEffect(() => {
     const initializeJob = async () => {
       setLoading(true); // Start loading
-
       if (id === "new") {
         // Create a new draft job if the ID is "new"
         const newJobID = await createDraftJob();
         setCurrentJobID(newJobID); // Set currentJobID after draft creation
-      } else {
+      } 
+      else {
+        console.log(`/vitae/crowd-post/update/${id}`)
         // Otherwise, fetch the existing job data
         setCurrentJobID(id as string); // Set current job ID
         await getJobData(id); // Fetch the job data for this ID
@@ -91,7 +92,7 @@ const JobUpdatePage = ({type}:any) => {
 
   // Unified loading check - only render UI when loading is done and we have a valid job ID
   if (loading || !currentJobID) {
-    return <JobPostFormSkeleton/>;
+    return <CrowdPostFormSkeleton/>;
   }
 
   // If no job is available after loading, show a message or fallback UI
@@ -102,7 +103,7 @@ const JobUpdatePage = ({type}:any) => {
   // Render the job update page with all data
   return (
     <div>
-      <CreateJobUI
+      <CrowdPostUI
         user={user}
         type={type}
         userData={userData}
@@ -114,4 +115,4 @@ const JobUpdatePage = ({type}:any) => {
   );
 };
 
-export default JobUpdatePage;
+export default CrowdPostPage;
