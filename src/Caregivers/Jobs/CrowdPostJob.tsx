@@ -2,7 +2,7 @@ import { Interweave } from "interweave";
 import { polyfill } from "interweave-ssr";
 import { MapPin, MapPinCheckIcon } from "lucide-react";
 import React from "react";
-import JobPostActions from "../../Providers/Jobs/JobPostActions";
+import CrowdPostActions from "./CrowdPostActions";
 import MatchingCaregiver from "../../Providers/Jobs/MatchingCaregiver";
 import ProfileImage from "../../Providers/User/ProfileImage"
 polyfill();
@@ -16,7 +16,6 @@ async function CrowdPostJob({ jobID }: JobProps) {
     { cache: "no-cache" }
   );
   const response = await data.json();
-  // console.log(response.job);
   const { job, similarJobs } = response;
   // console.log(job);
   return (
@@ -29,7 +28,7 @@ async function CrowdPostJob({ jobID }: JobProps) {
                 {job.title}
               </h2>
               <div>
-                <JobPostActions jobID={jobID} />
+                <CrowdPostActions jobID={jobID} />
               </div>
             </div>
           </div>
@@ -38,11 +37,10 @@ async function CrowdPostJob({ jobID }: JobProps) {
               <ProfileImage className="w-20 h-20" />
               <div>
                 <div className="flex gap-2 mb-3">
-                  <p className="text-sm font-medium ">{job.provider}</p>
+                  {/* <p className="text-sm font-medium ">{job.provider}</p> */}
                   <p className="flex gap-0.5 text-sm  items-center">
                     <MapPin size={14} />
-                    {job.contacts.address && job.contacts.address}{" "}
-                    {job.contacts.city}, {job.contacts.zipcode}
+                    {job.location}
                   </p>
                 </div>
                 {job.mobility && (
@@ -52,37 +50,7 @@ async function CrowdPostJob({ jobID }: JobProps) {
                       : "Car not needed"}
                   </p>
                 )}
-                <div className="w-full flex-wrap gap-4 flex">
-                  {/* Display only the first 2 licenses */}
-                  {job.licenses
-                    .slice(0, 3)
-                    .map(
-                      (license: any, index: React.Key | null | undefined) => (
-                        <div
-                          key={index}
-                          className="relative text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
-                        >
-                          <span className="text-xs antialiased text-gray-600">
-                            {license}
-                          </span>
-                        </div>
-                      )
-                    )}
-
-                  {/* Display only the first 2 schedules */}
-                  {job.schedule
-                    .slice(0, 3)
-                    .map((sch: any, index: React.Key | null | undefined) => (
-                      <div
-                        key={index}
-                        className="relative text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
-                      >
-                        <span className="text-xs antialiased text-gray-600">
-                          {sch}
-                        </span>
-                      </div>
-                    ))}
-                </div>
+             
               </div>
             </div>
           </div>
@@ -94,18 +62,20 @@ async function CrowdPostJob({ jobID }: JobProps) {
             {/* <p className="text-sm font-bold mb-2 antialiased">Certification</p> */}
             {/* <div className="text-sm prose-lg  prose-p:text-sm text-gray-600 mb-4">
               <Interweave content={job.certifications} />
-            </div> */}
+            </div> 
+          
+            */}
 
             <div className="mb-4">
-              <p className="font-semibold mb-1 ">Minimum Hours Required</p>
+              <p className="font-semibold mb-1 ">Employer Name</p>
               <p className="text-sm font-normal antialiased">
-                {job.minHours} hrs
+                {job.employer_name} 
               </p>
             </div>
             <div className="mb-4">
-              <p className="w-full  font-semibold  mb-1">Compensation</p>
+              <p className="w-full  font-semibold  mb-1">Phone Number</p>
               <p className="text-sm font-normal antialiased">
-                {job.compensation}
+                {job.phone_number}
               </p>
             </div>
           </div>

@@ -62,5 +62,4 @@ async function page(props: { params: Promise<{ id: string }> }) {
     </Suspense>
   );
 }
-
 export default page;
