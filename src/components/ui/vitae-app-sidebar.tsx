@@ -124,7 +124,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
 
     navMain: [
       {
-        title: "Crowd Posting",
+        title: "Refer + Make $.",
         url: "",
         icon: BriefcaseBusiness,
         isActive: false,

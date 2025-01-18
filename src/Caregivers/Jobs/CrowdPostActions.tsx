@@ -56,11 +56,11 @@ const CrowdPostActions: React.FC<CrowdPostActionsProps> = ({ jobID }) => {
   return (
     <div className="flex space-x-2">
       {/* /provider/job/update/${jobID} */}
-      <Link href={``}>
+      {/* <Link href={``}>
         <Button className="flex gap-1" disabled>
           <Pencil size={14} /> Claim Ownership
         </Button>
-      </Link>
+      </Link> */}
   
       {/* Delete Button */}
       <Button variant="outline" size="icon" onClick={() => setShowDialog(true)}>
