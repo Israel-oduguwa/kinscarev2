@@ -39,7 +39,7 @@ const shiftTypes = [
 
 function CrowdPostUI({ jobID, user, userData, job, type }: any) {
   const router = useRouter();
-  const defaultData = {
+  const defaultData = { 
     compensation: "",
     description: "",
     // minHours: "",
