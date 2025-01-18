@@ -13,7 +13,7 @@ const CrowdPostPage = ({type}:any) => {
   // console.log(path)
   const [currentJobID, setCurrentJobID] = useState<string | null>(null); // Track current job ID
   const [job, setJob] = useState<any>(null); // Store the job data
-  const [loading, setLoading] = useState<boolean>(true); // Unified loading state
+  const [loading, setLoading] = useState<boolean>(false); // Unified loading state
   const mongo: any = useContext(MongoContext);
   const { user, userData } = mongo;
 
@@ -27,18 +27,9 @@ const CrowdPostPage = ({type}:any) => {
         "https://api.kinscare.org/api/v1/providers/crowd-post",
         payload
       );
+      console.log(`response== ${JSON.stringify(response)}`)
       const jobID = response.data.id;
       setCurrentJobID(jobID); // Set new job ID
-      const currentUrl = window.location.href; // Full URL
-      
-      // Check if the URL contains "crowd-post"
-      if (currentUrl.includes('crowd-post')) {
-        // Append to the URL for "crowd-post"
-        router.replace(`/vitae/crowd-post/update/${jobID}`);
-      } else {
-        // Handle other cases (e.g., "provider/job/update")
-        router.replace(`/provider/job/update/${jobID}`); // Replace URL with new job ID
-      }
 
       return jobID;
     } catch (error) {
@@ -57,48 +48,42 @@ const CrowdPostPage = ({type}:any) => {
     } catch (err: any) {
       console.error("Error fetching job data:", err);
       // If job data is not found, create a new draft job
-      if (err?.response?.data?.success === false && user) {
-        const newJobID = await createDraftJob();
-        if (newJobID) {
-          setJob(null); // Clear invalid job data
-        }
-      }
+      // if (err?.response?.data?.success === false && user) {
+      //   const newJobID = await createDraftJob();
+      //   if (newJobID) {
+      //     setJob(null); // Clear invalid job data
+      //   }
+      // }
     }
   };
 
   // Effect to handle job initialization
-  useEffect(() => {
-    const initializeJob = async () => {
-      setLoading(true); // Start loading
-      if (id === "new") {
-        // Create a new draft job if the ID is "new"
-        const newJobID = await createDraftJob();
-        setCurrentJobID(newJobID); // Set currentJobID after draft creation
-      } 
-      else {
-        console.log(`/vitae/crowd-post/update/${id}`)
-        // Otherwise, fetch the existing job data
-        setCurrentJobID(id as string); // Set current job ID
-        await getJobData(id); // Fetch the job data for this ID
-      }
+  // useEffect(() => {
+  //   const initializeJob = async () => {
+  //     setLoading(true); // Start loading
+  //       const newJobID = await createDraftJob();
+  //       setCurrentJobID(newJobID); // Set currentJobID after draft creation
+  //   };
 
-      setLoading(false); // Stop loading when everything is ready
-    };
+  //     initializeJob();
+  // }, [1]);
 
-    if (user) {
-      initializeJob();
-    }
-  }, [id, user]);
+  // useEffect(()=>{
+
+  //   // setCurrentJobID(id as string); // Set current job ID
+  //     getJobData(currentJobID); // Fetch the job data for this ID
+  //     setLoading(false); // Stop loading when everything is ready
+  // },[currentJobID])
 
   // Unified loading check - only render UI when loading is done and we have a valid job ID
-  if (loading || !currentJobID) {
-    return <CrowdPostFormSkeleton/>;
-  }
+  // if (loading) {
+  //   return <CrowdPostFormSkeleton/>;
+  // }
 
-  // If no job is available after loading, show a message or fallback UI
-  if (!job && !loading) {
-    return <p>No job data available. Create a new job draft.</p>;
-  }
+  // // If no job is available after loading, show a message or fallback UI
+  // if (!job && !loading) {
+  //   return <p>No job data available. Create a new job draft.</p>;
+  // }
 
   // Render the job update page with all data
   return (

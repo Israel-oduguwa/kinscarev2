@@ -39,7 +39,7 @@ const shiftTypes = [
 
 function CrowdPostUI({ jobID, user, userData, job, type }: any) {
   const router = useRouter();
-  const defaultData = {
+  const defaultData = { 
     compensation: "",
     description: "",
     // minHours: "",
@@ -64,21 +64,21 @@ function CrowdPostUI({ jobID, user, userData, job, type }: any) {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      description: job.description,
-      compensation: job.compensation,
-      shift_type: job.shift_type ? job.shift_type : [],
-      location: job.location,
-      employer_name: job.employer_name,
-      phone_number: job.phone_number,
-      email: job.email,
-      contact_name: job.contact_name,
-      title: job.title,
+      description:  "",
+      compensation: "",
+      shift_type:  [],
+      location: "",
+      employer_name: "",
+      phone_number: "",
+      email: "",
+      contact_name: "",
+      title: "",
       mobility: "car_needed",
     },
   });
   const [description, setDescription] = useState<string>("");
   const [loading, setLoading] = useState(false); // General loading state
-  const initialContent = job.description;
+  const initialContent = "";
   // console.log(errors);
   // console.log(job);
   // console.log(userData?.profileImage, "snkjs")
@@ -109,13 +109,14 @@ function CrowdPostUI({ jobID, user, userData, job, type }: any) {
           profileImage:userData?.profileImage,
         };
         console.log(payload);
-        await axios.post(
+        const response = await axios.post(
           `${CROWDPOST_URL}`,
           payload
         );
+        console.log(`response=== ${JSON.stringify(response)}`)
         toast({ title: "Crowd Post Job updated successfully", variant: "default" });
         router.refresh()
-        router.push(`/vitae/crowd-post/${jobID}`);
+        router.push(`/vitae/crowd-post/${response.data.jobData._id}`);
       }
     } catch (error: any) {
       toast({
@@ -127,22 +128,7 @@ function CrowdPostUI({ jobID, user, userData, job, type }: any) {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    if (userData && user) {
-      reset({
-        description: job.description,
-        compensation: job.compensation,
-        shift_type: job.shift_type ? job.shift_type : [],
-        location: job.location,
-        employer_name: job.employer_name,
-        phone_number: job.phone_number,
-        email: job.email,
-        contact_name: job.contact_name,
-        title: job.title,
-        mobility: "car_needed",
-      });
-    }
-  }, [userData, reset, user]);
+
   const onEditorStateChange = (editorState: any) => {
     setValue(`description`, editorState);
     const formData = getValues(); // Get the entire form data
@@ -154,7 +140,7 @@ function CrowdPostUI({ jobID, user, userData, job, type }: any) {
       address: userData?.address,
 
     });
-    savetoDB(formData);
+    // savetoDB(formData);
   };
 
   const savetoDB = debounce(async (formData: any) => {
@@ -183,7 +169,7 @@ function CrowdPostUI({ jobID, user, userData, job, type }: any) {
       hash: user?.customData?.hash,
       address: userData?.address,
     });
-    savetoDB(formData);
+    // savetoDB(formData);
   };
   return (
     <div className="py-6">
