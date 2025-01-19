@@ -8,9 +8,10 @@ import ProfileImage from "../../Providers/User/ProfileImage"
 polyfill();
 interface JobProps {
   jobID: string;
+  isProvider: boolean
 }
 
-async function CrowdPostJob({ jobID }: JobProps) {
+async function CrowdPostJob({ jobID, isProvider }: JobProps) {
   let data = await fetch(
     `https://api.kinscare.org/api/v1/providers/crowd-post/${jobID}`,
     { cache: "no-cache" }
@@ -28,7 +29,7 @@ async function CrowdPostJob({ jobID }: JobProps) {
                 {job.title}
               </h2>
               <div>
-                <CrowdPostActions jobID={jobID} />
+                <CrowdPostActions jobID={jobID} isProvider={isProvider} employerEmail={job.email} />
               </div>
             </div>
           </div>

@@ -158,7 +158,7 @@ function RecommendedJobs() {
                 {/* Tags: Licenses and Schedule */}
                 <div className="flex justify-between items-baseline">
                 <div className="flex flex-wrap gap-3  text-ellipsis mb-4">
-                  {job.licenses.slice(0, 2).map(
+                  {job?.licenses?.slice(0, 2).map(
                     (
                       license:
                         | string

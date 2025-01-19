@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useState } from "react";
+import React, { use, useContext, useEffect, useState } from "react";
 import MongoContext from "@/app/MongoContext";
 import { Button } from "@/components/ui/button";
 import { Copy, Pencil, Trash2Icon } from "lucide-react";
@@ -18,25 +18,30 @@ import { useRouter } from "next/navigation";
 
 interface CrowdPostActionsProps {
   jobID: string;
+  isProvider: boolean;
+  employerEmail: string;
 }
 
-const CrowdPostActions: React.FC<CrowdPostActionsProps> = ({ jobID }) => {
+const CrowdPostActions: React.FC<CrowdPostActionsProps> = ({ jobID,isProvider,employerEmail }) => {
   const mongo: any = useContext(MongoContext);
   const { user, userData } = mongo;
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [currentUserEmail, setCurrentUserEmail] = useState<string>("");
+
   const { toast } = useToast();
   const router = useRouter()
-  const handleDelete = async () => {
+  const handleClaimTransfer = async () => {
     setLoading(true);
     try {
-      const response = await axios.delete(
-        `https://api.kinscare.org/api/v1/providers/job/delete/${jobID}`
+      const response = await axios.post(
+        `https://api.kinscare.org/api/v1/providers/crowd-post/transfer/${jobID}`
       );
-      if (response.status === 200) {
+      
+      if (response.data.success) {
         toast({
           title: "Success",
-          description: "Job post has been successfully deleted.",
+          description: "Ownership transferred has been successfully.",
         });
         // Optionally: Add logic to remove the deleted job from UI or navigate away
         router.push("/provider/job/all")
@@ -44,7 +49,7 @@ const CrowdPostActions: React.FC<CrowdPostActionsProps> = ({ jobID }) => {
     } catch (err) {
       toast({
         title: "Error",
-        description: "Failed to delete the job post. Please try again.",
+        description: `Failed to transfer the ownership. Please try again. ${err}`,
         variant: "destructive",
       });
     } finally {
@@ -53,40 +58,44 @@ const CrowdPostActions: React.FC<CrowdPostActionsProps> = ({ jobID }) => {
     }
   };
 
+  useEffect(()=>{
+    setCurrentUserEmail(user?.customData?.email)
+    console.log(`user=== ${(user?.customData?.email)}`)
+  },[1])
+
   return (
     <div className="flex space-x-2">
       {/* /provider/job/update/${jobID} */}
-      {/* <Link href={``}>
-        <Button className="flex gap-1" disabled>
+      {employerEmail == currentUserEmail && ( <Link href={``}>
+        <Button className="flex gap-1" onClick={() => setShowDialog(true)}>
           <Pencil size={14} /> Claim Ownership
         </Button>
-      </Link> */}
+      </Link> )}
   
       {/* Delete Button */}
-      <Button variant="outline" size="icon" onClick={() => setShowDialog(true)}>
+      {/* <Button variant="outline" size="icon" onClick={() => setShowDialog(true)}>
         <Trash2Icon size={20} />
-      </Button>
+      </Button> */}
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogTitle>Finalize Job Opening</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this job post? This action cannot
-              be undone.
+            Update and finalize this post to access the list of applicants and keep referrers like engaged in sharing future openings.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDialog(false)}>
+            <Button variant="outline"  onClick={() => setShowDialog(false)}>
               Cancel
             </Button>
             <Button
-              variant="destructive"
-              onClick={handleDelete}
+              variant="default"
+              onClick={handleClaimTransfer}
               disabled={loading}
             >
-              {loading ? "Deleting..." : "Delete"}
+              {loading ? "Submitting..." : "Submit"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -145,7 +145,7 @@ async function CaregiverJob({ jobID }: JobProps) {
                 )}
                 <div className="w-full flex-wrap gap-4 flex">
                   {/* Display only the first 2 licenses */}
-                  {job.licenses
+                  {job?.licenses?
                     .slice(0, 3)
                     .map(
                       (license: any, index: React.Key | null | undefined) => (
@@ -161,7 +161,7 @@ async function CaregiverJob({ jobID }: JobProps) {
                     )}
 
                   {/* Display only the first 2 schedules */}
-                  {job.schedule
+                  {job?.schedule?
                     .slice(0, 3)
                     .map((sch: any, index: React.Key | null | undefined) => (
                       <div
