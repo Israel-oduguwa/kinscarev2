@@ -43,7 +43,7 @@ const JobPostCard: React.FC<{ job: Job }> = ({ job }) => (
         </p>
       </div>
       <div className="w-full flex-wrap gap-4 flex mb-3">
-        {job.licenses.map((license, index) => (
+        {job?.licenses?.map((license, index) => (
           <div
             key={index}
             className="relative text-sm bg-gray-100 text-gray-800 rounded-lg py-1.5 px-3"
@@ -51,7 +51,7 @@ const JobPostCard: React.FC<{ job: Job }> = ({ job }) => (
             <span className="text-sm text-gray-600">{license}</span>
           </div>
         ))}
-        {job.schedule.map((sch, index) => (
+        {job?.schedule?.map((sch, index) => (
           <div
             key={index}
             className="relative text-sm bg-gray-100 text-gray-800 rounded-lg py-1.5 px-3"

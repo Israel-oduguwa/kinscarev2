@@ -34,7 +34,7 @@ async function page(props: { params: Promise<{ id: string }> }) {
   return (
     <Suspense fallback={<ProviderJobSkeleton/>}>
       <div className="min-h-full bg-gray-100">
-        <CrowdPostJob jobID={id} isProvider={false}  />
+        <CrowdPostJob jobID={id} isProvider={true} />
       </div>
     </Suspense>
   );
