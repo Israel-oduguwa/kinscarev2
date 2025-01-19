@@ -41,7 +41,7 @@ const CrowdPostActions: React.FC<CrowdPostActionsProps> = ({ jobID,isProvider,em
       if (response.data.success) {
         toast({
           title: "Success",
-          description: "Ownership transferred has been successfully.",
+          description: "Ownership transfer has been successfully.",
         });
         // Optionally: Add logic to remove the deleted job from UI or navigate away
         router.push("/provider/job/all")
