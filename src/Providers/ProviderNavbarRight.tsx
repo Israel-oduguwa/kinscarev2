@@ -39,6 +39,7 @@ import ProviderLogout from "./User/ProviderLogout";
 import ProfileAvatar from "@/components/ProfileAvatar";
 import * as Realm from "realm-web";
 import { useRouter } from "next/navigation";
+import FeedbackDialog from "@/CustomerFeeback/FeedbackDialog";
 
 function SheetDemo() {
   return (
@@ -252,6 +253,7 @@ function ProviderNavbarRight() {
     <div className="flex items-center">
       {user && userData ? (
         <>
+          <div><FeedbackDialog/></div>
           <ProviderNotification />{" "}
           {user && <UserAvatar LogOutUser={LogOutUser} user={user} userData={userData} />}
         </>

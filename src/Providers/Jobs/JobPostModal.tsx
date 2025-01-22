@@ -40,7 +40,7 @@ const JobPostModal = ({ caregiver }: any) => {
   const [openDialog, setOpenDialog] = useState(!userData?.complete);
   const [validating, setValidating] = useState(false);
   const [isPhoneValid, setIsPhoneValid] = useState<null | boolean>(null);
-  console.log(userData?.complete);
+  // console.log(userData?.complete);
   const {
     register,
     handleSubmit,
@@ -275,7 +275,7 @@ const JobPostModal = ({ caregiver }: any) => {
   const handleNextStep = () => setStep((prev) => prev + 1);
   const handlePrevStep = () => setStep((prev) => prev - 1);
   const previewData = watch();
-  console.log(errors);
+  // console.log(errors);
   return (
     <Dialog open={openDialog}>
       <DialogContent className="max-w-4xl m-0 rounded-lg p-0 overflow-hidden">

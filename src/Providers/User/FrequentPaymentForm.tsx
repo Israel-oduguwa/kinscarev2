@@ -93,21 +93,23 @@ const FrequentPaymentForm: React.FC<FrequentPaymentFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     if (!stripe || !elements) {
       setMessage("Stripe is not loaded. Please try again.");
       return;
     }
-
+  
     setIsLoading(true);
-
+  
     try {
+      // Confirm the payment
       const result = await stripe.confirmPayment({
         elements,
         confirmParams: {},
         redirect: "if_required",
       });
-
+  
+      // Handle errors in payment confirmation
       if (result.error) {
         toast({
           title: "Error",
@@ -118,12 +120,15 @@ const FrequentPaymentForm: React.FC<FrequentPaymentFormProps> = ({
         setIsLoading(false);
         return;
       }
-
+  
+      // Get the Payment Method ID
       const paymentMethodID = result.paymentIntent?.payment_method;
       if (!paymentMethodID) throw new Error("Payment method ID is missing.");
-
+  
+      // Update the payment method
       await updatePaymentMethod();
-
+  
+      // Event payload for tracking
       const eventPayload = {
         subscription_id: subscriptionID,
         settings: userData?.settings,
@@ -141,20 +146,30 @@ const FrequentPaymentForm: React.FC<FrequentPaymentFormProps> = ({
         payment_verified: true,
         email: userData?.auth?.email,
       };
-
+  
+      // Track purchase event
       trackEvents(user?.customData?.hash, "Purchase Plan", eventPayload);
-
+  
+      // Call onSuccess callback with payment method ID
       onSuccess({ paymentMethodID });
-
+  
+      // Fetch updated data after payment
       const updatedData = await fetchContactsData(
         user.customData.userID,
         user.customData.email
       );
       if (updatedData) {
         await setCustomData(updatedData.result);
-        close();
+  
+        // Wait for webhook processing (e.g., 2 seconds)
+        setTimeout(() => {
+          window.location.reload(); // Reload after the delay
+          close();
+          setIsLoading(false); // Ensure loading state is turned off
+        }, 3000); // 3-second delay
       }
     } catch (error: any) {
+      // Handle errors and show a toast notification
       toast({
         title: "Payment Failed",
         description: error.message || "An error occurred.",
@@ -162,10 +177,10 @@ const FrequentPaymentForm: React.FC<FrequentPaymentFormProps> = ({
       });
       if (onError) onError(error);
     } finally {
-      setIsLoading(false);
+      
     }
   };
-
+  
   return (
     <form id="payment-form" onSubmit={handleSubmit} className="space-y-6">
       <PaymentElement id="payment-element" options={{ layout: "tabs" }} />

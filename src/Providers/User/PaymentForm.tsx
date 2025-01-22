@@ -162,6 +162,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         setIsTrialExpired(false);
         // router.refresh();
         setIsLoading(false);
+        window.location.reload(); 
         close();
       }
     } catch (error: any) {

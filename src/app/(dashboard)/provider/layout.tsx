@@ -2,6 +2,10 @@ import { EmployerAppSidebar } from "@/components/ui/employer-sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import ProviderAuth from "@/Providers/User/ProviderAuth";
 import ExclusiveOfferBanner from "@/Providers/UIElements/ExclusiveOfferBanner";
+import { Agent, setGlobalDispatcher } from "undici";
+import WelcomeDialog from "@/Providers/UIElements/WelcomeDialog";
+
+setGlobalDispatcher(new Agent({ connect: { timeout: 60_000 } }));
 // import ProviderNavbar from "@/Providers/ProviderNavbar";
 export default function DashboardLayout({
   children,
@@ -12,13 +16,17 @@ export default function DashboardLayout({
   return (
     <ProviderAuth>
       <ExclusiveOfferBanner />
+
       <section>
         <Toaster />
         {/* caregiver navbar  */}
         <EmployerAppSidebar>
-          
           {/* <ProviderNavbar /> */}
-          <main>{children}</main>
+          <main>
+            {" "}
+            <WelcomeDialog />
+            {children}
+          </main>
         </EmployerAppSidebar>
       </section>
     </ProviderAuth>

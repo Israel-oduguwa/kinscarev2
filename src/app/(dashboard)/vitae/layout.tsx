@@ -5,6 +5,12 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/ui/vitae-app-sidebar";
 import VoiceFlowProvider from "@/Caregivers/UiProviders/VoiceFlowProvider";
 import CaregiverAuth from "@/Caregivers/UiProviders/CaregiverAuthProvider";
+
+
+import {Agent, setGlobalDispatcher} from "undici"
+
+setGlobalDispatcher(new Agent({connect:{timeout:60_000}}))
+
 export default function DashboardLayout({
   children,
 }: {

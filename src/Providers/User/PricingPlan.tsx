@@ -105,6 +105,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
     null
   );
   const [subscriptionID, setSubscriptionID] = useState<string>("");
+  const [renewingPlan, setRenewingPlan] = useState<boolean>(false);
 
   const router = useRouter();
 
@@ -116,11 +117,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
       stripePriceId: "price_1QXcozAoahxG9SLGGelfYlKJ",
       description:
         "Perfect for short-term projects or temporary needs. Get access for 24 hours.",
-      features: [
-        "24-hour access",
-        "Full feature set",
-        "Priority support during active period",
-      ],
+      features: ["24-hour access", "Full feature set", "24/7 premium support"],
     },
     {
       id: "weekly",
@@ -129,7 +126,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
       stripePriceId: "price_1QSCneAoahxG9SLGCHhFdN4C",
       description:
         "Ideal for weekly usage. Enjoy full access for 7 days at a discounted rate.",
-      features: ["7-day access", "Full feature set", "Priority email support"],
+      features: ["7-day access", "Full feature set", "24/7 premium support"],
     },
     {
       id: "monthly",
@@ -154,12 +151,30 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
 
       try {
         const response = await axios.post<CreateSubscriptionResponse>(
-          "https://api.kinscare.org/api/v1/providers/create-subscription",
+          "http://localhost:8081/api/v1/providers/create-subscription",
           {
             customerId: user.customData.customer_id,
             customerEmail: user.customData.email,
             priceId: stripePriceId,
           }
+        );
+
+        const userID = customData.userID;
+        const payload = {
+          collectionName: "contacts",
+          operation: "updateOne",
+          filter: { userID, role: "provider" },
+          update: {
+            $set: {
+              plan: planId,
+            },
+          },
+        };
+
+        const database_response = await axios.post(
+          "http://localhost:8081/api/v1/auth/crud-operation",
+          payload,
+          { headers: { "Content-Type": "application/json" } }
         );
 
         const { clientSecret, subscriptionId, subscription } = response.data;
@@ -179,13 +194,107 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
     [user.customData.customer_id]
   );
 
+  const createSubscriptionClientSecretRenew = useCallback(
+    async (
+      planId: string,
+      stripePriceId: string,
+      discountPercentage: string
+    ) => {
+      setIsFetchingSecret(true);
+      setSelectedPlan(planId);
+
+      try {
+        const response = await axios.post<CreateSubscriptionResponse>(
+          "http://localhost:8081/api/v1/providers/create-subscription",
+          {
+            customerId: user.customData.customer_id,
+            coupon: discountPercentage,
+            customerEmail: user.customData.email,
+            priceId: stripePriceId,
+          }
+        );
+
+        const userID = customData.userID;
+        const payload = {
+          collectionName: "contacts",
+          operation: "updateOne",
+          filter: { userID, role: "provider" },
+          update: {
+            $set: {
+              plan: planId,
+            },
+          },
+        };
+
+        const database_response = await axios.post(
+          "http://localhost:8081/api/v1/auth/crud-operation",
+          payload,
+          { headers: { "Content-Type": "application/json" } }
+        );
+
+        const { clientSecret, subscriptionId, subscription } = response.data;
+        setSubscriptionID(subscriptionId);
+        setSubscription(subscription);
+        setClientSecret(clientSecret);
+        localStorage.setItem("client_secret", clientSecret);
+        void fetchSavedCards();
+      } catch (error) {
+        console.error("Error creating subscription client secret:", error);
+      } finally {
+        setIsFetchingSecret(false);
+      }
+    },
+    [user.customData.customer_id]
+  );
+
+  useEffect(() => {
+    const handleExpiredMonthlyPlan = async () => {
+      if (
+        customData.plan &&
+        customData.subscription_status === "expired" &&
+        customData?.successful_payment_count == 1
+      ) {
+        setSelectedPlan("monthly"); // Automatically select monthly plan
+        setRenewingPlan(true);
+
+        const selectedPlan = pricingPlans.find((plan) => plan.id === "monthly");
+        try {
+          const response = await axios.post<CreateSubscriptionResponse>(
+            "http://localhost:8081/api/v1/providers/create-subscription",
+            {
+              customerId: user.customData.customer_id,
+              customerEmail: user.customData.email,
+              priceId: selectedPlan?.stripePriceId, // Monthly price ID
+            }
+          );
+
+          const { clientSecret, subscriptionId, subscription } = response.data;
+          setSubscriptionID(subscriptionId);
+          setSubscription(subscription);
+          setClientSecret(clientSecret);
+          localStorage.setItem("client_secret", clientSecret);
+
+          // Open the payment dialog immediately
+          // setIsCardDialogOpen(true);
+          void fetchSavedCards();
+        } catch (error) {
+          console.error("Error handling expired monthly plan:", error);
+        } finally {
+          setRenewingPlan(false);
+        }
+      }
+    };
+
+    handleExpiredMonthlyPlan();
+  }, [customData.plan, customData.subscription_status]);
+
   /**
    * Fetch saved cards from the backend API.
    */
   const fetchSavedCards = useCallback(async () => {
     try {
       const response = await axios.post<PaymentMethodsResponse>(
-        "https://api.kinscare.org/api/v1/providers/payment-methods",
+        "http://localhost:8081/api/v1/providers/payment-methods",
         {
           customerId: user.customData.customer_id,
         }
@@ -218,7 +327,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
     setLoading(true);
     try {
       await axios.post(
-        "https://api.kinscare.org/api/v1/providers/subscription",
+        "http://localhost:8081/api/v1/providers/subscription",
         {
           customerId,
           priceId: currentPlan.stripePriceId,
@@ -238,13 +347,17 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
       );
       if (fetchedData) {
         setCustomData(fetchedData.result);
+        setTimeout(() => {
+          window.location.reload(); // Reload after the delay
+          handleCloseDialog();
+          setIsCardDialogOpen(false);
+          setLoading(false);
+        }, 4000); // 3-second delay
       }
     } catch (error) {
       console.error("Error creating subscription:", error);
-    } finally {
-      handleCloseDialog();
-      setIsCardDialogOpen(false);
       setLoading(false);
+    } finally {
     }
   }, [selectedCard, currentPlan, router, setCustomData, user]);
 
@@ -263,72 +376,278 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
   };
 
   return (
-    <div className="mx-auto py-10 space-y-10">
+    <div className="pt-4">
       {/* Heading */}
-      <div className="text-center space-y-1">
-        <h2 className="text-3xl tracking-tight font-extrabold text-gray-700">
-          Choose Your Subscription Plan
-        </h2>
-        <p className="text-gray-600">
-          Select the plan that suits your needs and get started with full access
-          today.
-        </p>
-      </div>
+      {customData.plan && customData.subscription_status === "expired" ? (
+        <div className="mx-auto max-w-4xl py-2 space-y-10">
+          {renewingPlan || isFetchingSecret ? ( // Show skeletons when loading
+            <div className="space-y-6">
+              {/* Skeleton for Title */}
+              <Skeleton className="h-8 w-3/4 mx-auto rounded-lg" />
 
-      {/* Plan Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 sm:px-6 lg:px-8">
-        {pricingPlans.map((plan) => (
-          <div
-            key={plan.id}
-            onClick={() =>
-              void createSubscriptionClientSecret(plan.id, plan.stripePriceId)
-            }
-            className="relative bg-[hsl(var(--card))] shadow-lg rounded-[var(--radius)] overflow-hidden hover:shadow-xl transition-transform transform hover:-translate-y-2 cursor-pointer"
-          >
-            {/* Accent Bar */}
-            <div className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] h-2" />
+              {/* Skeleton for Plan Selection */}
+              <div className="space-y-4">
+                <Skeleton className="h-5 w-32 rounded-lg" />
+                <div className="flex flex-wrap gap-2">
+                  {pricingPlans.map((_, index) => (
+                    <Skeleton key={index} className="h-8 w-28 rounded-lg" />
+                  ))}
+                </div>
+              </div>
 
-            {/* Plan Details */}
-            <div className="p-8">
-              <h3 className="text-2xl font-bold text-[hsl(var(--card-foreground))]">
-                {plan.title}
-              </h3>
-              <p className="text-4xl font-extrabold text-[hsl(var(--foreground))] mt-4">
-                {plan.price}
-              </p>
-              <p className="text-[hsl(var(--muted-foreground))] mt-4">
-                {plan.description}
-              </p>
-              <ul className="mt-6 space-y-4">
-                {plan.features.map((feature, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center text-[hsl(var(--card-foreground))] space-x-2"
-                  >
-                    {/* Check icon */}
-                    <svg
-                      className="w-5 h-5 text-[hsl(var(--chart-2))]"
-                      fill="currentColor"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M10 17.414l-5.707-5.707 1.414-1.414L10 14.586l8.293-8.293 1.414 1.414z" />
-                    </svg>
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              {/* Choose Plan Button */}
-              <Button className="mt-6 w-full" disabled={isFetchingSecret}>
-                {isFetchingSecret && selectedPlan === plan.id && (
-                  <Loader2 className="animate-spin mr-2 inline-block" />
-                )}
-                Choose plan
-              </Button>
+              {/* Skeleton for Saved Cards Section */}
+              <div className="space-y-4">
+                <Skeleton className="h-5 w-48 rounded-lg" />
+                <div className="space-y-3">
+                  {[...Array(2)].map((_, index) => (
+                    <Skeleton key={index} className="h-16 w-full rounded-lg" />
+                  ))}
+                </div>
+              </div>
+
+              {/* Skeleton for Buttons */}
+              <div className="space-y-4">
+                <Skeleton className="h-10 w-full rounded-lg" />
+              </div>
             </div>
+          ) : (
+            <div className="space-y-6">
+              <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-[hsl(var(--foreground))]">
+                Choose a Payment Method
+              </h3>
+
+              {customData.subscription_status === "expired" && (
+                <div>
+                  {customData.plan === "daily" &&
+                   customData?.successful_payment_count == 1 ? (
+                    <div className="bg-yellow-100 text-yellow-800 text-sm p-4 rounded-lg">
+                      {" "}
+                      <p>
+                        Renew now to get <b>20% off</b> on the Monthly Plan and{" "}
+                        <b>15% off</b> on the Weekly Plan!. Click the plan
+                        button below
+                      </p>
+                    </div>
+                  ) : customData.plan === "weekly" ? (
+                    <div className="bg-yellow-100 text-yellow-800 text-sm p-4 rounded-lg">
+                      <p>
+                        Renew now to get <b>20% off</b> on the Monthly Plan!
+                      </p>
+                    </div>
+                  ) : null}
+                </div>
+              )}
+
+              {/* Plan Selection */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-[hsl(var(--muted-foreground))]">
+                  Switch Plan
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {pricingPlans.map((plan) => {
+                    // Determine if this plan has a discount
+                    const discountPercentage: any =
+                      customData.plan === "daily" && plan.id === "weekly"
+                        ? 15
+                        : customData.plan === "daily" && plan.id === "monthly"
+                        ? 20
+                        : customData.plan === "weekly" && plan.id === "monthly"
+                        ? 20
+                        : null;
+
+                    return (
+                      <div className="relative">
+                        <Button
+                          key={plan.id}
+                          variant={
+                            selectedPlan === plan.id ? "default" : "outline"
+                          }
+                          onClick={() =>
+                            void createSubscriptionClientSecretRenew(
+                              plan.id,
+                              plan.stripePriceId,
+                              discountPercentage // Pass discountPercentage for use in the API
+                            )
+                          }
+                          className={`text-sm px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition ${
+                            selectedPlan === plan.id
+                              ? "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]"
+                              : "bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))]"
+                          }`}
+                        >
+                          {plan.title}
+                        </Button>
+                        {discountPercentage && (
+                          <div className="absolute -top-5 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded-bl-lg">
+                            {discountPercentage}% OFF
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Saved Cards Section */}
+              <div className="space-y-6">
+                {isFetchingSecret ? (
+                  <Skeleton className="h-8 w-full rounded-lg" />
+                ) : (
+                  <>
+                    {savedCards.length > 0 ? (
+                      <div className="space-y-4">
+                        {savedCards.map((card) => (
+                          <div
+                            key={card.id}
+                            onClick={() => setSelectedCard(card.id)}
+                            className={`flex items-center justify-between p-4 rounded-lg cursor-pointer border transition hover:shadow-lg ${
+                              selectedCard === card.id
+                                ? "border-[hsl(var(--primary))] bg-[hsl(var(--secondary))]"
+                                : "border-[hsl(var(--border))]"
+                            }`}
+                          >
+                            <div className="flex items-center gap-4">
+                              <CardImage cardBrand={card.brand} />
+                              <div>
+                                <p className="text-sm font-medium text-[hsl(var(--foreground))]">
+                                  Use {card.brand} card ending in {card.last4}
+                                </p>
+                                <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                                  Exp {String(card.exp_month).padStart(2, "0")}/
+                                  {card.exp_year}
+                                </p>
+                              </div>
+                            </div>
+                            {selectedCard === card.id && (
+                              <span className="text-sm text-[hsl(var(--primary))] font-medium">
+                                Selected
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                        <Button
+                          onClick={() => void createSubscription()}
+                          disabled={loading}
+                          className="w-full sm:w-auto mt-4 px-6 py-3 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded-lg shadow hover:shadow-lg transition"
+                        >
+                          {loading && <Loader2 className="animate-spin mr-2" />}
+                          Pay using saved card
+                        </Button>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                        No saved cards available. Use a new card to proceed.
+                      </p>
+                    )}
+                    <Button
+                      onClick={handleOpenPaymentForm}
+                      variant={savedCards.length === 0 ? "default" : "outline"}
+                      className="w-full mt-4 px-6 py-3 text-sm bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] rounded-lg shadow hover:shadow-lg transition"
+                    >
+                      Use another card
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="mx-auto py-10 space-y-10">
+          <div className="text-center space-y-1">
+            <h2 className="text-3xl tracking-tight font-extrabold text-gray-700">
+              Choose Your Subscription Plan
+            </h2>
+            <p className="text-gray-600">
+              Please purchase a plan to continue using Kinscare to recruit
+              caregivers
+            </p>
           </div>
-        ))}
-      </div>
+
+          {/* Plan Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 sm:px-6 lg:px-8">
+            {pricingPlans.map((plan) => (
+              <div
+                key={plan.id}
+                onClick={() =>
+                  void createSubscriptionClientSecret(
+                    plan.id,
+                    plan.stripePriceId
+                  )
+                }
+                className={`relative shadow-lg rounded-[var(--radius)] overflow-hidden hover:shadow-xl transition-transform transform hover:-translate-y-2 cursor-pointer ${
+                  plan.id === "monthly"
+                    ? "bg-[hsl(var(--accent))] scale-105 border-2 border-[hsl(var(--primary))] shadow-2xl" // Highlight Monthly Plan
+                    : "bg-[hsl(var(--card))]"
+                }`}
+              >
+                {/* Accent Bar */}
+                <div
+                  className={`h-2 ${
+                    plan.id === "monthly"
+                      ? "bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary))]"
+                      : "bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))]"
+                  }`}
+                />
+
+                {/* Plan Details */}
+                <div className="p-8">
+                  {/* Recommended Badge */}
+                  {plan.id === "monthly" && (
+                    <div className="absolute top-4 right-4 bg-[hsl(var(--primary))] text-[hsl(var(--card))] px-3 py-1 rounded-full text-sm font-bold shadow-md">
+                      Recommended
+                    </div>
+                  )}
+
+                  <h3
+                    className={`text-2xl font-bold "text-[hsl(var(--card-foreground))]`}
+                  >
+                    {plan.title}
+                  </h3>
+                  <p
+                    className={`text-4xl font-extrabold mt-4 ${
+                      plan.id === "monthly"
+                        ? "text-[hsl(var(--foreground))]"
+                        : "text-[hsl(var(--foreground))]"
+                    }`}
+                  >
+                    {plan.price}
+                  </p>
+                  <p className="text-[hsl(var(--muted-foreground))] mt-4">
+                    {plan.description}
+                  </p>
+                  <ul className="mt-6 space-y-4">
+                    {plan.features.map((feature, index) => (
+                      <li
+                        key={index}
+                        className="flex items-center text-[hsl(var(--card-foreground))] space-x-2"
+                      >
+                        {/* Check icon */}
+                        <svg
+                          className="w-5 h-5 text-[hsl(var(--chart-2))]"
+                          fill="currentColor"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M10 17.414l-5.707-5.707 1.414-1.414L10 14.586l8.293-8.293 1.414 1.414z" />
+                        </svg>
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  {/* Choose Plan Button */}
+                  <Button className="mt-6 w-full" disabled={isFetchingSecret}>
+                    {isFetchingSecret && selectedPlan === plan.id && (
+                      <Loader2 className="animate-spin mr-2 inline-block" />
+                    )}
+                    Choose plan
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Saved Cards Dialog */}
       <Dialog open={isCardDialogOpen} onOpenChange={setIsCardDialogOpen}>

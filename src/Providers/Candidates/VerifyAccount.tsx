@@ -4,7 +4,6 @@ import MongoContext from "@/app/MongoContext";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -15,12 +14,11 @@ import { fetchContactsData, isTrialActive, trackEvents } from "@/lib/utils";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
-import { Cloudy, CreditCard, FileText, Loader, X } from "lucide-react";
+import { Cloudy, FileText, Loader, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
-import PaymentForm from "../User/PaymentForm";
-import PricingPlan from "../User/PricingPlan";
 import Dropzone from "react-dropzone";
+import PaymentForm from "../User/PaymentForm";
 
 /** Stripe setup */
 const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_TEST_KEY || "");
@@ -32,17 +30,10 @@ const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_TEST_KEY || "");
  *  - Displaying popups prompting identity verification on the 1st and 2nd reveal attempts.
  *  - Handling subscription/trial dialogs, uploading attestation letter & ID for verification, etc.
  */
-function ProtectedCandidatesDetails({
-  email,
-  name,
-  tel,
-}: {
-  email: string;
-  tel: string;
-  name: string;
-}) {
+function VerifyAccount({ openModal, setOpenModal }: { openModal: boolean, setOpenModal:any }) {
   const { user, userData, customData, setCustomData }: any =
     useContext(MongoContext);
+    console.log(openModal)
 
   /**
    * isTrialExpired determines if contact info is obfuscated.
@@ -57,35 +48,21 @@ function ProtectedCandidatesDetails({
 
   /** Payment setup-intent variables */
   const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<any>("monthly");
 
   /** For the "Verify Identity" trial dialog steps: selection/payment/attestation */
-  const [isTrialDialogOpen, setIsTrialDialogOpen] = useState(false);
+  const [isTrialDialogOpen, setIsTrialDialogOpen] = useState(openModal);
   const [currentStep, setCurrentStep] = useState<
     "selection" | "payment" | "attestation"
   >("selection");
   const [loading, setLoading] = useState(false);
 
-  /** Payment & subscription info */
-  const [savedCards, setSavedCards] = useState<
-    {
-      isDefault: any;
-      isExpired: any;
-      id: string;
-      brand: string;
-      last4: string;
-      exp_month: number;
-      exp_year: number;
-    }[]
-  >([]);
-  const [selectedCard, setSelectedCard] = useState<string | null>(null);
 
-  /** For the 4-second countdown approach (the user’s first or second reveal attempts) */
-  const [countdown, setCountdown] = useState(0);
-  const [showCountDownDialog, setShowCountDownDialog] = useState(false);
-  const [showFirstRevealDialog, setShowFirstRevealDialog] = useState(false);
-  const [showSecondRevealDialog, setShowSecondRevealDialog] = useState(false);
+  useEffect(() => {
+    setIsTrialDialogOpen(openModal)
+    getSecrete()
+  }, [openModal])
+  
+
 
   /** Attestation letter + ID upload states */
   const [documentLoading, setDocumentLoading] = useState(false);
@@ -220,110 +197,14 @@ function ProtectedCandidatesDetails({
       localStorage.setItem("client_secret", clientSecret);
       setClientSecret(clientSecret);
 
-      const isNotVerified = !(
-        customData?.trial === true || customData?.subscribe === true
-      );
-      if (isNotVerified) {
-        setIsTrialDialogOpen(true);
-      }
+     
     } catch (error) {
       console.log("Error fetching Setup Intent:", error);
     }
   };
 
-  /** ============== Reveal Contacts ============== */
-  const openRevealContacts = async () => {
-    // If the user has not done the first reveal
-    if (!firstRevealDone) {
-      setCountdown(4);
-      setIsTrialExpired(false);
 
-      const interval = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev > 1) return prev - 1;
-          clearInterval(interval);
-          // after countdown ends, re-hide them & show the first message
-          setIsTrialExpired(true);
-          setShowCountDownDialog(false);
-          // Show the first dialog
-          setShowFirstRevealDialog(true);
-          // Mark first reveal done in DB
-          updateRevealStatus("first_reveal_done");
-          return 0;
-        });
-      }, 1000);
-    }
-    // If the user has done first but not second reveal
-    else if (firstRevealDone && !secondRevealDone) {
-      setCountdown(4);
-      setIsTrialExpired(false);
-
-      const interval = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev > 1) return prev - 1;
-          clearInterval(interval);
-          setIsTrialExpired(true);
-          setShowCountDownDialog(false);
-          setShowSecondRevealDialog(true);
-          updateRevealStatus("second_reveal_done");
-          return 0;
-        });
-      }, 1000);
-    }
-    // If the user has done 2 reveals, fallback to existing logic
-    else {
-      const trialStart = customData?.trial_start_date;
-      const trialEnd = customData?.trial_end_date;
-      const isSubscribed = customData?.subscribed;
-      if ((trialStart && trialEnd) || customData.trial === "expired") {
-        const trialActive = isTrialActive(trialStart, trialEnd);
-        if (!trialActive) {
-          // open the payment subscribe modal
-          setIsDialogOpen(true);
-        }
-      } else {
-        setIsTrialExpired(true);
-        openVerifyIdentity();
-        getSecrete();
-      }
-    }
-  };
-
-  /** ============== DB Update: first/second reveal done ============== */
-  const updateRevealStatus = async (
-    field: "first_reveal_done" | "second_reveal_done"
-  ) => {
-    if (!userData?.userID) return;
-    try {
-      const payload = {
-        collectionName: "contacts",
-        operation: "updateOne",
-        filter: { userID: userData.userID, role: "provider" },
-        update: {
-          $set: {
-            [field]: true,
-          },
-        },
-      };
-      const setReveal = await axios.post(
-        "https://api.kinscare.org/api/v1/auth/crud-operation",
-        payload,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      console.log(setReveal, "setReveal");
-      setCustomData((prev: any) => ({ ...prev, [field]: true }));
-    } catch (error) {
-      console.error("Error updating reveal status:", error);
-    }
-  };
-
-  /** If user clicks the "Verify Your Identity" button after first reveal */
-  const openVerifyIdentity = async () => {
-    await getSecrete();
-    setShowCountDownDialog(false);
-  };
+ 
 
   const closeRevealContacts = () => {
     setIsTrialDialogOpen(false);
@@ -334,9 +215,8 @@ function ProtectedCandidatesDetails({
     const trialStart = customData?.trial_start_date;
     const trialEnd = customData?.trial_end_date;
     const isSubscribed = customData?.subscribed;
-    console.log(isSubscribed, "ProtectedCandidatesDetails");
+
     if (isSubscribed) {
-      // console.log(isSubscribed)
       setIsTrialExpired(false);
       return;
     }
@@ -344,13 +224,11 @@ function ProtectedCandidatesDetails({
       const trialActive = isTrialActive(trialStart, trialEnd);
       setIsTrialExpired(!trialActive);
     } else {
-      const trialFlag =
-        customData?.trial === false || customData?.trial === "expired"
-          ? false
-          : true;
+      const trialFlag = customData?.trial || false;
       console.log(trialFlag);
       setIsTrialExpired(!trialFlag);
     }
+
     const fetchCustomDataAPI = async () => {
       if (!user?.customData?.userID || !user?.customData?.email) return;
       const fetchedData: any = await fetchContactsData(
@@ -364,75 +242,7 @@ function ProtectedCandidatesDetails({
     fetchCustomDataAPI();
   }, [user]);
 
-  /** ============== Payment Cards: If dialog opens, fetch saved cards ============== */
-  useEffect(() => {
-    if (isDialogOpen) {
-      fetchSavedCards();
-    }
-  }, [isDialogOpen]);
-
-  const fetchSavedCards = async () => {
-    try {
-      const customerId = user?.customData?.customer_id;
-      if (!customerId) return;
-      const response = await axios.post(
-        "https://api.kinscare.org/api/v1/providers/payment-methods",
-        { customerId }
-      );
-      if (response.data.success) {
-        const cards = response.data.data.map((card: any) => ({
-          id: card.id,
-          brand: card.card.brand,
-          last4: card.card.last4,
-          exp_month: card.card.exp_month,
-          exp_year: card.card.exp_year,
-        }));
-        setSavedCards(cards);
-        if (cards.length > 0) {
-          setSelectedCard(cards[0].id);
-        }
-      } else {
-        console.error("Failed to fetch saved cards:", response.data.message);
-      }
-    } catch (error: any) {
-      console.error("Error fetching saved cards:", error.message);
-    }
-  };
-
-  const closePricingDialog = () => {
-    setIsDialogOpen(false);
-  };
-
-  /** ============== Obfuscation Helpers ============== */
-  const obfuscateText = (text: string): string => {
-    if (text.includes("@")) {
-      const [localPart, domain] = text.split("@");
-      if (localPart.length <= 2) return text;
-      const obfuscatedLocalPart = `${localPart.slice(0, 3)}${"*".repeat(
-        Math.max(localPart.length - 6, 0)
-      )}${localPart.slice(-3)}`;
-      return `${obfuscatedLocalPart}@${domain}`;
-    }
-    const words = text.split(" ");
-    return words
-      .map((word) => {
-        if (word.length <= 2) return word;
-        const firstPart = word.slice(0, 3);
-        const lastPart = word.slice(-3);
-        const middlePart = "*".repeat(
-          word.length - firstPart.length - lastPart.length
-        );
-        return `${firstPart}${middlePart}${lastPart}`;
-      })
-      .join(" ");
-  };
-
-  function formatPhoneNumberToDigitsWithPlus(phone: string): string {
-    return phone.replace(/(?!^\+)\D/g, "");
-  }
-
-  const encryptedEmail = obfuscateText(email);
-  const encryptedTel = obfuscateText(formatPhoneNumberToDigitsWithPlus(tel));
+ 
 
   /** ============== Payment success handler ============== */
   const handleOnSuccess = () => {
@@ -515,133 +325,10 @@ function ProtectedCandidatesDetails({
 
   return (
     <>
-      <h2 className="text-sm font-semibold">Contacts Information</h2>
-      <div className="space-y-2 mt-1">
-        {isTrialExpired ? (
-          <div className="space-y-3">
-            <div className="space-y-2 max-w-sm">
-              <p className="text-sm px-4 py-2 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed border border-gray-200">
-                {encryptedEmail}
-              </p>
-              <p className="text-sm px-4 py-2 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed border border-gray-200">
-                {encryptedTel}
-              </p>
-            </div>
-            <p className="text-sm font-medium text-gray-600">
-              Click the **Reveal Contacts** button below to view {name}&apos;s
-              email and phone number.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-2 max-w-sm">
-            <p className="text-sm px-4 py-2 rounded-md bg-gray-50 text-gray-800 border border-gray-200">
-              {email}
-            </p>
-            <p className="text-sm px-4 py-2 rounded-md bg-gray-50 text-gray-800 border border-gray-200">
-              {tel}
-            </p>
-          </div>
-        )}
-        {isTrialExpired && (
-          <Button
-            size="sm"
-            onClick={openRevealContacts}
-            className="w-full md:w-auto px-6 py-2 text-sm font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-lg transition duration-200"
-          >
-            Reveal Contacts
-          </Button>
-        )}
-      </div>
-
-      {/* ============== FIRST REVEAL DIALOG ============== */}
-      <Dialog
-        open={showFirstRevealDialog}
-        onOpenChange={setShowFirstRevealDialog}
-      >
-        <DialogContent className="[&>button]:hidden">
-          {/* Custom DialogHeader */}
-          <DialogHeader className="flex flex-row items-start space-x-1">
-            {/* Custom Close Button */}
-            <DialogClose className="p-1 rounded-full hover:bg-muted focus:outline-none">
-              <X className="h-5 w-5" />
-              <span className="sr-only">Close</span>
-            </DialogClose>
-            {/* Title */}
-            <DialogTitle>Verify Your Identity</DialogTitle>
-          </DialogHeader>
-          <DialogDescription className="py-4">
-            Great! Now you’ve seen how easy it is to access caregivers’ phone
-            numbers and emails to connect with them directly. To keep viewing
-            contact details, verify your identity as an employer—just once. It’s
-            fast, secure, and helps ensure a safe environment for all!
-          </DialogDescription>
-          <div className="flex justify-end space-x-4 mt-4">
-            <Button
-              className="w-full"
-              onClick={() => {
-                openVerifyIdentity();
-                setShowFirstRevealDialog(false);
-              }}
-            >
-              Verify Your Identity
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* ============== SECOND REVEAL DIALOG ============== */}
-
-      {/* ============== SECOND REVEAL DIALOG ============== */}
-      <Dialog
-        open={showSecondRevealDialog}
-        onOpenChange={setShowSecondRevealDialog}
-      >
-        <DialogContent closePosition="left">
-          <DialogHeader className="pt-5">
-            <DialogTitle>Verify Your Identity</DialogTitle>
-            <DialogDescription className="py-4">
-              Protecting our caregivers is our top priority. In the past,
-              scammers have misused our registry, so we now require employers to
-              complete a one-time identity verification. This step assures
-              caregivers that your interest in hiring them is genuine and
-              trustworthy.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-end space-x-4 mt-4">
-            <Button
-              className="w-full"
-              onClick={async () => {
-                // Again, open identity verification if desired:
-                await openVerifyIdentity();
-                setShowSecondRevealDialog(false);
-              }}
-            >
-              Verify your Identity
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* ============== PAYMENT/PRICING PLAN DIALOG ============== */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent
-          className={`${
-            customData.plan && customData.subscription_status === "expired"
-              ? "max-w-3xl" // Set max-w to xl when plan is expired
-              : "max-w-6xl" // Default to 6xl for other scenarios
-          } overflow-y-auto max-h-full mx-auto bg-gradient-to-b from-blue-50 via-white to-gray-50 rounded-lg shadow-2xl`}
-        >
-          <PricingPlan closePricingDialog={closePricingDialog} />
-        </DialogContent>
-      </Dialog>
-
       {/* ============== TRIAL VERIFICATION (ATT. LETTER / PAYMENT) DIALOG ============== */}
-      <Dialog open={isTrialDialogOpen} onOpenChange={setIsTrialDialogOpen}>
-        <DialogContent
-          closePosition="left"
-          className="h-[100vh] md:h-auto max-w-4xl overflow-y-auto"
-        >
-          <DialogHeader className="pt-5">
+      <Dialog open={isTrialDialogOpen} onOpenChange={setOpenModal}>
+        <DialogContent className="h-[100vh] md:h-auto max-w-4xl overflow-y-auto">
+          <DialogHeader>
             <DialogTitle className="flex flex-col items-center text-center">
               <h2 className="font-bold tracking-tight text-2xl text-gray-800">
                 {currentStep === "selection" &&
@@ -859,14 +546,13 @@ function ProtectedCandidatesDetails({
           )}
         </DialogContent>
       </Dialog>
-
       {/* ============== ATTESTATION CONFIRMATION MODAL ============== */}
       <Dialog
         open={showAttestationConfirmation}
         onOpenChange={setShowAttestationConfirmation}
       >
-        <DialogContent closePosition="left" className="max-w-3xl">
-          <DialogHeader className="pt-5">
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
             <DialogTitle className="text-lg font-semibold">
               Thank you for submitting your documents!
             </DialogTitle>
@@ -915,9 +601,4 @@ function ProtectedCandidatesDetails({
   );
 }
 
-export default ProtectedCandidatesDetails;
-
-// Thank you for submitting your attestation letter and
-// government-issued ID. The verification process may take up to 2
-// days, and we’ll contact you if anything needs clarification.
-// <br />
+export default VerifyAccount;
