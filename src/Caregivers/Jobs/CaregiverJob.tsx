@@ -115,7 +115,7 @@ async function CaregiverJob({ jobID }: JobProps) {
                   {job.contacts.city}
                 </p>
                 <div className="flex flex-wrap gap-2 mt-3">
-                  {job.licenses.slice(0, 3).map((license: any, index: any) => (
+                  {job?.licenses?.slice(0, 3).map((license: any, index: any) => (
                     <span
                       key={index}
                       className="px-3 py-1 text-xs bg-gray-100 text-gray-800 rounded-lg"
@@ -123,7 +123,7 @@ async function CaregiverJob({ jobID }: JobProps) {
                       {license}
                     </span>
                   ))}
-                  {job.schedule.slice(0, 3).map((sch: any, index: any) => (
+                  {job?.schedule?.slice(0, 3).map((sch: any, index: any) => (
                     <span
                       key={index}
                       className="px-3 py-1 text-xs bg-gray-100 text-gray-800 rounded-lg"

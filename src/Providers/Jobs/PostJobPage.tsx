@@ -29,7 +29,17 @@ const JobUpdatePage = ({type}:any) => {
       );
       const jobID = response.data.id;
       setCurrentJobID(jobID); // Set new job ID
-      router.replace(`/provider/job/update/${jobID}`); // Replace URL with new job ID
+      const currentUrl = window.location.href; // Full URL
+
+      // Check if the URL contains "crowd-post"
+      if (currentUrl.includes('crowd-post')) {
+        // Append to the URL for "crowd-post"
+        router.replace(`/vitae/crowd-post/update/${jobID}`);
+      } else {
+        // Handle other cases (e.g., "provider/job/update")
+        router.replace(`/provider/job/update/${jobID}`); // Replace URL with new job ID
+      }
+
       return jobID;
     } catch (error) {
       console.error("Error creating draft job:", error);

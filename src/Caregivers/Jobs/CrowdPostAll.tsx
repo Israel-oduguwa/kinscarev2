@@ -6,8 +6,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Interweave } from "interweave";
 import Link from "next/link";
 import { toast } from "@/components/ui/use-toast";
-import ProfileImage from "../User/ProfileImage";
-import JobSkeleton from "./JobSkelenton";
+import ProfileImage from "../../Providers/User/ProfileImage"
+import JobSkeleton from "../../Providers/Jobs/JobSkelenton";
 
 interface Job {
   _id: string;
@@ -27,7 +27,10 @@ interface Job {
 
 const JobPostCard: React.FC<{ job: Job }> = ({ job }) => (
   <div className="bg-white shadow-md rounded-lg p-6 my-4 w-full mx-auto">
-    <Link href={`/provider/job/${job._id}`}>
+    {/* 
+    href={`/provider/job/${job._id}`}
+    */}
+    <div>
       <div className="flex space-x-2 items-center mb-3">
         <ProfileImage className="w-12 h-12 rounded-none" />
         <div>
@@ -43,7 +46,7 @@ const JobPostCard: React.FC<{ job: Job }> = ({ job }) => (
         </p>
       </div>
       <div className="w-full flex-wrap gap-4 flex mb-3">
-        {job?.licenses?.map((license, index) => (
+        {job.licenses.map((license, index) => (
           <div
             key={index}
             className="relative text-sm bg-gray-100 text-gray-800 rounded-lg py-1.5 px-3"
@@ -51,7 +54,7 @@ const JobPostCard: React.FC<{ job: Job }> = ({ job }) => (
             <span className="text-sm text-gray-600">{license}</span>
           </div>
         ))}
-        {job?.schedule?.map((sch, index) => (
+        {job.schedule.map((sch, index) => (
           <div
             key={index}
             className="relative text-sm bg-gray-100 text-gray-800 rounded-lg py-1.5 px-3"
@@ -69,11 +72,11 @@ const JobPostCard: React.FC<{ job: Job }> = ({ job }) => (
           💵 {job.compensation}
         </p>
       </div>
-    </Link>
+    </div>
   </div>
 );
 
-function PostedJobs() {
+function CrowdPostAll() {
   const mongo: any = useContext(MongoContext);
   const { user } = mongo;
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -85,7 +88,7 @@ function PostedJobs() {
       setLoading(true);
       try {
         const response = await axios.get(
-          `https://api.kinscare.org/api/v1/providers/posted-jobs/${user?.customData?.hash}`
+          `https://api.kinscare.org/api/v1/providers/crowd-posted-jobs/${user?.customData?.hash}`
         );
         setJobs(response.data.jobs);
         console.log(response.data.jobs);
@@ -104,8 +107,7 @@ function PostedJobs() {
     fetchJobs();
   }, [user]);
 
-  const postedJobs = jobs.filter((job) => !job.draft);
-  const draftJobs = jobs.filter((job) => job.draft);
+  const postedJobs = jobs.filter((job) => job.draft);
 
   return (
     <div className="py-6  px-4 bg-gray-100 min-h-[100vh]">
@@ -123,12 +125,11 @@ function PostedJobs() {
         <Tabs defaultValue="job-posts" className=" p-6 max-w-6xl mx-auto">
           <div className="mb-4">
             <TabsList>
-              <TabsTrigger value="job-posts">Job Posts</TabsTrigger>
-              <TabsTrigger value="draft-posts">Drafts</TabsTrigger>
+              <TabsTrigger value="job-posts">Crowd Posts</TabsTrigger>
             </TabsList>
           </div>
           <TabsContent value="job-posts">
-            <h2 className="font-semibold mb-4">Your job posts</h2>
+            <h2 className="font-semibold mb-4">Your crowd posts</h2>
             {postedJobs.length === 0 ? (
               <p className="text-center text-gray-500">
                 No job posts available.
@@ -138,18 +139,11 @@ function PostedJobs() {
             )}
           </TabsContent>
 
-          <TabsContent value="draft-posts">
-            <h2 className="font-semibold mb-4">Drafts</h2>
-            {draftJobs.length === 0 ? (
-              <p className="text-center text-gray-500">No drafts available.</p>
-            ) : (
-              draftJobs.map((job) => <JobPostCard key={job._id} job={job} />)
-            )}
-          </TabsContent>
+     
         </Tabs>
       )}
     </div>
   );
 }
 
-export default PostedJobs;
+export default CrowdPostAll;
