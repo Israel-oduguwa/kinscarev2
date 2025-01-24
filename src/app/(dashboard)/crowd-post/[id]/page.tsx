@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import CrowdPostJob from "@/Caregivers/Jobs/CrowdPostJob";
 import { Metadata } from "next";
 import ProviderJobSkeleton from "@/Providers/Jobs/ProviderJobSkelenton";
+import { EmployerAppSidebar } from "@/components/ui/employer-sidebar";
 
 export const metadata: Metadata = {
   title: "Job Details - Your Company Name",
@@ -36,7 +37,7 @@ async function page(props: { params: Promise<{ id: string }> }) {
       <div className="min-h-full bg-gray-100">
         <CrowdPostJob jobID={id} isProvider={true} />
       </div>
-    </Suspense>
+     </Suspense>
   );
 }
 

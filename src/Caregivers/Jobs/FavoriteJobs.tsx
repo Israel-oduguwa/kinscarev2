@@ -68,7 +68,7 @@ const JobPostCard: React.FC<{ job: Job }> = ({ job }) => {
 
             {/* Licenses and Schedule */}
             <div className="flex flex-wrap gap-2 mb-4">
-              {job.licenses.map((license, index) => (
+              {job?.licenses?.map((license, index) => (
                 <span
                   key={index}
                   className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg"
@@ -76,7 +76,7 @@ const JobPostCard: React.FC<{ job: Job }> = ({ job }) => {
                   {license}
                 </span>
               ))}
-              {job.schedule.map((sch, index) => (
+              {job?.schedule?.map((sch, index) => (
                 <span
                   key={index}
                   className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg"
