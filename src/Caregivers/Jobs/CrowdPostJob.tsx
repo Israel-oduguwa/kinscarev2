@@ -18,7 +18,7 @@ async function CrowdPostJob({ jobID, isProvider }: JobProps) {
   );
   const response = await data.json();
   const { job, similarJobs } = response;
-  // console.log(job);
+  // console.log(`CrowdPostJob=== ${job}`);
   return (
     <div>
       <div className="max-w-6xl py-6 px-6 min-h-[100vh] 2xl:px-0 mx-auto">
@@ -26,10 +26,10 @@ async function CrowdPostJob({ jobID, isProvider }: JobProps) {
           <div className="w-full mb-4">
             <div className="flex gap-4 flex-wrap items-center lg:flex-nowrap justify-between">
               <h2 className="text-3xl text-gray-800 tracking-tight font-semibold">
-                {job.title}
+                {job?.title}
               </h2>
               <div>
-                <CrowdPostActions jobID={jobID} isProvider={isProvider} employerEmail={job.email} />
+                <CrowdPostActions jobID={jobID} isProvider={isProvider} employerEmail={job?.email} />
               </div>
             </div>
           </div>
@@ -38,15 +38,15 @@ async function CrowdPostJob({ jobID, isProvider }: JobProps) {
               <ProfileImage className="w-20 h-20" />
               <div>
                 <div className="flex gap-2 mb-3">
-                  {/* <p className="text-sm font-medium ">{job.provider}</p> */}
+                  {/* <p className="text-sm font-medium ">{job?.provider}</p> */}
                   <p className="flex gap-0.5 text-sm  items-center">
                     <MapPin size={14} />
-                    {job.location}
+                    {job?.location}
                   </p>
                 </div>
-                {job.mobility && (
+                {job?.mobility && (
                   <p className="mb-3 w-28 font-bold text-xs bg-green-100 text-green-600 px-2 rounded-lg py-1 ">
-                    {job.mobility === "car_needed"
+                    {job?.mobility === "car_needed"
                       ? "Car Needed"
                       : "Car not needed"}
                   </p>
@@ -58,11 +58,11 @@ async function CrowdPostJob({ jobID, isProvider }: JobProps) {
           <div className="mb-4">
             <p className="font-semibold mb-1">About this role</p>
             <div className="w-full prose-lg prose-p:text-sm prose-p:mt-1 text-gray-700">
-              <Interweave content={job.description} />
+              <Interweave content={job?.description} />
             </div>
             {/* <p className="text-sm font-bold mb-2 antialiased">Certification</p> */}
             {/* <div className="text-sm prose-lg  prose-p:text-sm text-gray-600 mb-4">
-              <Interweave content={job.certifications} />
+              <Interweave content={job?.certifications} />
             </div> 
           
             */}
@@ -70,23 +70,23 @@ async function CrowdPostJob({ jobID, isProvider }: JobProps) {
             <div className="mb-4">
               <p className="font-semibold mb-1 ">Employer Name</p>
               <p className="text-sm font-normal antialiased">
-                {job.employer_name} 
+                {job?.employer_name} 
               </p>
             </div>
             <div className="mb-4">
               <p className="w-full  font-semibold  mb-1">Phone Number</p>
               <p className="text-sm font-normal antialiased">
-                {job.phone_number}
+                {job?.phone_number}
               </p>
             </div>
           </div>
-          {job.alert_preferences && (
+          {job?.alert_preferences && (
             <div className="mb-4">
               <p className="text-sm font-semibold mb-2 text-gray-900">
                 Alert Preferences
               </p>
               <div className="flex flex-wrap gap-2">
-                {job.alert_preferences.map((alert: string, idx: number) => (
+                {job?.alert_preferences.map((alert: string, idx: number) => (
                   <div
                     className="relative text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
                     key={idx}

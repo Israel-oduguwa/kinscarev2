@@ -161,7 +161,7 @@ const EmployerJoin: React.FC = () => {
     const queryParams = new URLSearchParams(window.location.search);
 
     // Extract the referral_code parameter
-    const referralCode = queryParams.get("referal_code");
+    const referralCode = queryParams.get("utm_content");
 
     let data = {
       referal_code_: referralCode
