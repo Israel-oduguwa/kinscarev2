@@ -6,8 +6,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Interweave } from "interweave";
 import Link from "next/link";
 import { toast } from "@/components/ui/use-toast";
-import ProfileImage from "../../Providers/User/ProfileImage"
-import JobSkeleton from "../../Providers/Jobs/JobSkelenton";
+import ProfileImage from "../User/ProfileImage";
+import JobSkeleton from "./JobSkelenton";
 
 interface Job {
   _id: string;
@@ -27,10 +27,7 @@ interface Job {
 
 const JobPostCard: React.FC<{ job: Job }> = ({ job }) => (
   <div className="bg-white shadow-md rounded-lg p-6 my-4 w-full mx-auto">
-    {/* 
-    href={`/provider/job/${job._id}`}
-    */}
-    <div>
+    <Link href={`/provider/job/${job._id}`}>
       <div className="flex space-x-2 items-center mb-3">
         <ProfileImage className="w-12 h-12 rounded-none" />
         <div>
@@ -72,11 +69,11 @@ const JobPostCard: React.FC<{ job: Job }> = ({ job }) => (
           💵 {job.compensation}
         </p>
       </div>
-    </div>
+    </Link>
   </div>
 );
 
-function CrowdPostAll() {
+function PostedJobs() {
   const mongo: any = useContext(MongoContext);
   const { user } = mongo;
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -88,7 +85,7 @@ function CrowdPostAll() {
       setLoading(true);
       try {
         const response = await axios.get(
-          `https://api.kinscare.org/api/v1/providers/crowd-posted-jobs/${user?.customData?.hash}`
+          `https://api.kinscare.org/api/v1/providers/posted-jobs/${user?.customData?.hash}`
         );
         setJobs(response.data.jobs);
         console.log(response.data.jobs);
@@ -107,7 +104,8 @@ function CrowdPostAll() {
     fetchJobs();
   }, [user]);
 
-  const postedJobs = jobs.filter((job) => job.draft);
+  const postedJobs = jobs.filter((job) => !job.draft);
+  const draftJobs = jobs.filter((job) => job.draft);
 
   return (
     <div className="py-6  px-4 bg-gray-100 min-h-[100vh]">
@@ -125,11 +123,12 @@ function CrowdPostAll() {
         <Tabs defaultValue="job-posts" className=" p-6 max-w-6xl mx-auto">
           <div className="mb-4">
             <TabsList>
-              <TabsTrigger value="job-posts">Crowd Posts</TabsTrigger>
+              <TabsTrigger value="job-posts">Job Posts</TabsTrigger>
+              <TabsTrigger value="draft-posts">Drafts</TabsTrigger>
             </TabsList>
           </div>
           <TabsContent value="job-posts">
-            <h2 className="font-semibold mb-4">Your crowd posts</h2>
+            <h2 className="font-semibold mb-4">Your job posts</h2>
             {postedJobs.length === 0 ? (
               <p className="text-center text-gray-500">
                 No job posts available.
@@ -139,11 +138,18 @@ function CrowdPostAll() {
             )}
           </TabsContent>
 
-     
+          <TabsContent value="draft-posts">
+            <h2 className="font-semibold mb-4">Drafts</h2>
+            {draftJobs.length === 0 ? (
+              <p className="text-center text-gray-500">No drafts available.</p>
+            ) : (
+              draftJobs.map((job) => <JobPostCard key={job._id} job={job} />)
+            )}
+          </TabsContent>
         </Tabs>
       )}
     </div>
   );
 }
 
-export default CrowdPostAll;
+export default PostedJobs;

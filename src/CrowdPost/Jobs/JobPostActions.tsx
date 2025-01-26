@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import MongoContext from "@/app/MongoContext";
 import { Button } from "@/components/ui/button";
 import { Copy, Pencil, Trash2Icon } from "lucide-react";
@@ -16,40 +16,35 @@ import {
 import { useToast } from "@/components/ui/use-toast"; // For notifications
 import { useRouter } from "next/navigation";
 
-interface CrowdPostActionsProps {
+interface JobPostActionsProps {
   jobID: string;
-  isProvider: boolean;
-  employerEmail: string;
 }
 
-const CrowdPostActions: React.FC<CrowdPostActionsProps> = ({ jobID,isProvider,employerEmail }) => {
+const JobPostActions: React.FC<JobPostActionsProps> = ({ jobID }) => {
   const mongo: any = useContext(MongoContext);
   const { user, userData } = mongo;
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [currentUserEmail, setCurrentUserEmail] = useState<string>("");
-
   const { toast } = useToast();
   const router = useRouter()
-  const handleClaimTransfer = async () => {
+  const handleDelete = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(
-        `https://api.kinscare.org/api/v1/providers/crowd-post/transfer/${jobID}`
+      const response = await axios.delete(
+        `https://api.kinscare.org/api/v1/providers/job/delete/${jobID}`
       );
-      
-      if (response.data.success) {
+      if (response.status === 200) {
         toast({
           title: "Success",
-          description: "Ownership transfer successful.",
+          description: "Job post has been successfully deleted.",
         });
         // Optionally: Add logic to remove the deleted job from UI or navigate away
-        router.push(`/crowd-post/job/update/${response.data.jobId}`) 
+        router.push("/provider/job/all")
       }
     } catch (err) {
       toast({
         title: "Error",
-        description: `Failed to transfer the ownership. Please try again. ${err}`,
+        description: "Failed to delete the job post. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -58,46 +53,43 @@ const CrowdPostActions: React.FC<CrowdPostActionsProps> = ({ jobID,isProvider,em
     }
   };
 
-  useEffect(()=>{
-    const queryParams = new URLSearchParams(window.location.search);
-    // Extract the referral_code parameter
-    const email = queryParams.get("email");
-    setCurrentUserEmail(email)
-  },[1])
-
   return (
     <div className="flex space-x-2">
-      {/* /provider/job/update/${jobID} */}
-      {employerEmail == currentUserEmail && ( <Link href={``}>
-        <Button className="flex gap-1" onClick={() => setShowDialog(true)}>
-          <Pencil size={14} /> Claim Ownership
+      <Link href={`/provider/job/update/${jobID}`}>
+        <Button className="flex gap-1">
+          <Pencil size={14} /> Edit Job Post
         </Button>
-      </Link> )}
-  
+      </Link>
+      <Link href={`/provider/job/repost/${jobID}`}>
+        <Button className="flex gap-1" variant="outline">
+          <Copy size={14} /> Repost Job
+        </Button>
+      </Link>
       {/* Delete Button */}
-      {/* <Button variant="outline" size="icon" onClick={() => setShowDialog(true)}>
+      <Button variant="outline" size="icon" onClick={() => setShowDialog(true)}>
         <Trash2Icon size={20} />
-      </Button> */}
+      </Button>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Finalize Job Opening</DialogTitle>
+            <DialogTitle>Confirm Deletion</DialogTitle>
             <DialogDescription>
-            Update and finalize this post to access the list of applicants and keep referrers like engaged in sharing future openings.
+              Are you sure you want to delete this job post? This action cannot
+              be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline"  onClick={() => setShowDialog(false)}>
+            <Button variant="outline" onClick={() => setShowDialog(false)}>
               Cancel
             </Button>
             <Button
-              variant="default"
-              onClick={handleClaimTransfer}
+              variant="destructive"
+              onClick={handleDelete}
               disabled={loading}
             >
-              {loading ? "Submitting..." : "Submit"}
+              {loading ? "Deleting..." : "Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -106,4 +98,4 @@ const CrowdPostActions: React.FC<CrowdPostActionsProps> = ({ jobID,isProvider,em
   );
 };
 
-export default CrowdPostActions;
+export default JobPostActions;

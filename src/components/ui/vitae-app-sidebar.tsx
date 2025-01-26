@@ -132,10 +132,6 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
           {
             title: "New",
             url: "/vitae/crowd-post/update/new",
-          },
-          {
-            title: "My Posts",
-            url: "/vitae/crowd-post/all",
           }
         ],
       },
