@@ -96,7 +96,7 @@ const UpgradeSubscription: React.FC<UpgradeSubscriptionProps> = ({
     try {
       setFetchingSavedCard(true);
       const response = await axios.post(
-        "http://localhost:8081/api/v1/providers/payment-methods",
+        "https://api.kinscare.org/api/v1/providers/payment-methods",
         {
           customerId: customData.customer_id,
         }
@@ -134,7 +134,7 @@ const UpgradeSubscription: React.FC<UpgradeSubscriptionProps> = ({
     setLoading(true);
     try {
       await axios.post(
-        "http://localhost:8081/api/v1/providers/subscription/upgrade",
+        "https://api.kinscare.org/api/v1/providers/subscription/upgrade",
         {
           subscriptionId: subscriptionData.id,
           priceId: selectedPlan.stripePriceId,
@@ -423,7 +423,7 @@ const PaymentWithCard = ({
 
         // Send the paymentMethodId to the backend to upgrade the subscription
         const send = await axios.post(
-          "http://localhost:8081/api/v1/providers/subscription/upgrade",
+          "https://api.kinscare.org/api/v1/providers/subscription/upgrade",
           {
             subscriptionId: subscriptionData.id,
             priceId: selectedPlan.stripePriceId,

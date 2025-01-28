@@ -89,7 +89,7 @@ const Page = () => {
 
   return (
     <>
-      <ForumDynamicNavbar />
+     
       <div className="mt-10 flex items-center h-full max-w-4xl mx-auto">
         <div className="relative py-10 bg-white w-full h-fit p-4 rounded-lg space-y-6">
           <div className="flex justify-between items-center ">

@@ -193,7 +193,7 @@ const Signup: React.FC = () => {
           "https://api.kinscare.org/api/v1/auth/create_user",
           payload
         );
-        console.log(createUser);
+        // console.log(createUser);
         // await user.callFunction("web_add_social_user_custom_data", payload);
 
         const tagManagerArgs =

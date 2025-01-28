@@ -1,33 +1,113 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 function ProfessionProfile({ userData }: any) {
-  // const options = {
-  //   method: 'GET',
-  //   url: 'https://job-salary-data.p.rapidapi.com/company-job-salary',
-  //   params: {
-  //     company: 'any where',
-  //     job_title: 'software developer',
-  //     location_type: 'ANY',
-  //     years_of_experience: 'ALL'
-  //   },
-  //   headers: {
-  //     'x-rapidapi-key': '0b00a4159amsh128020a39b71c43p17ab6bjsnaefb5ec40da9',
-  //     'x-rapidapi-host': 'job-salary-data.p.rapidapi.com'
-  //   }
-  // };
-  // useEffect(() => {
-  //   fetchData()
-  // }, []);
+  const [jobSummary, setJobSummary] = useState<any>(
+    userData?.jobSummary || null
+  );
+  const [loading, setLoading] = useState(!userData?.jobSummary);
 
-  // const fetchData = async () => {
-  //   try {
-  //     const response = await axios.request(options);
-  //     console.log(response.data);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+  useEffect(() => {
+    // Only fetch if userData exists and jobSummary is either missing or stale
+    if (
+      userData &&
+      (!jobSummary || isDataStale(userData?.lastSummaryUpdated))
+    ) {
+      fetchJobSummary();
+    }
+  }, [userData]);
+
+  // Function to fetch job summary from the database or OpenAI
+  const fetchJobSummary = async () => {
+    try {
+      setLoading(true);
+
+      // Check if job summary exists in the database
+      const dbResponse = await axios.post(
+        "https://api.kinscare.org/api/v1/auth/crud-operation",
+        {
+          collectionName: "users",
+          operation: "findOne",
+          filter: { userID: userData.userID },
+          projection: { jobSummary: 1, lastSummaryUpdated: 1 },
+        }
+      );
+
+      const { jobSummary, lastSummaryUpdated } = dbResponse.data || {};
+
+      if (jobSummary && !isDataStale(lastSummaryUpdated)) {
+        // Use the existing job summary if it's not stale
+        setJobSummary(jobSummary);
+      } else if (!jobSummary || isDataStale(lastSummaryUpdated)) {
+        // Fetch new job summary from OpenAI and save it to the database
+        const newJobSummary = await fetchFromOpenAI();
+        await saveToDatabase(newJobSummary);
+        setJobSummary(newJobSummary);
+      }
+    } catch (error) {
+      console.error("Error fetching job summary:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Check if data is stale (e.g., older than 1 day)
+  const isDataStale = (lastSummaryUpdated: string): boolean => {
+    if (!lastSummaryUpdated) return true; // No timestamp means stale
+    const oneDay = 24 * 60 * 60 * 1000;
+    const lastUpdatedTime = new Date(lastSummaryUpdated).getTime();
+    return Date.now() - lastUpdatedTime > oneDay;
+  };
+
+  // Fetch data from OpenAI (called only when jobSummary is missing or stale)
+  const fetchFromOpenAI = async () => {
+    try {
+      const payload = {
+        title: userData?.recommendation[0].title,
+        institution: userData?.recommendation[0].institution,
+      };
+      const response = await axios.post(
+        "https://api.kinscare.org/api/v1/ai/recommendation",
+        payload
+      );
+      const parsedData = JSON.parse(response.data);
+      return parsedData;
+    } catch (error) {
+      console.error("Error fetching data from OpenAI:", error);
+      throw error;
+    }
+  };
+
+  // Save new job summary to the database
+  const saveToDatabase = async (jobSummary: any) => {
+    try {
+      await axios.post("https://api.kinscare.org/api/v1/auth/crud-operation", {
+        collectionName: "users",
+        operation: "updateOne",
+        filter: { userID: userData.userID },
+        update: {
+          $set: {
+            jobSummary,
+            lastSummaryUpdated: new Date().toISOString(),
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Error saving job summary to the database:", error);
+    }
+  };
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!jobSummary) {
+    return <div>No job summary available.</div>;
+  }
   return (
     <div>
       {userData ? (
@@ -35,7 +115,7 @@ function ProfessionProfile({ userData }: any) {
           {/* Title */}
           <div className="mb-6">
             <p className="text-xl font-bold tracking-tight text-gray-900 antialiased">
-              RN Job Career Summary
+              {jobSummary.job_title} Career Summary
             </p>
             <p className="text-sm text-gray-500 mt-1">
               Stay informed and take actionable steps toward your professional
@@ -51,7 +131,9 @@ function ProfessionProfile({ userData }: any) {
                 <p className="text-gray-600 text-sm antialiased">
                   Average Salary
                 </p>
-                <p className="text-sm font-medium text-gray-900">$47/hour</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {jobSummary.average_salary}
+                </p>
               </div>
               <div className="w-6 h-6 flex items-center justify-center rounded-full bg-blue-100">
                 <svg
@@ -77,7 +159,9 @@ function ProfessionProfile({ userData }: any) {
                 <p className="text-gray-600 text-sm antialiased">
                   RN Job Openings
                 </p>
-                <p className="text-sm font-medium text-gray-900">257</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {jobSummary.job_openings}
+                </p>
               </div>
               <div className="w-6 h-6 flex items-center justify-center rounded-full bg-green-100">
                 <svg
@@ -103,7 +187,9 @@ function ProfessionProfile({ userData }: any) {
                 <p className="text-gray-600 text-sm antialiased">
                   Market Trends
                 </p>
-                <p className="text-sm font-medium text-gray-900">+8% Growth</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {jobSummary.market_trend}
+                </p>
               </div>
               <div className="w-6 h-6 flex items-center justify-center rounded-full bg-yellow-100">
                 <svg
@@ -129,7 +215,28 @@ function ProfessionProfile({ userData }: any) {
                 <p className="text-gray-600 text-sm antialiased">
                   Professional Tips
                 </p>
-                <p className="text-sm font-medium text-gray-900">+5 New Tips</p>
+                <HoverCard>
+                  <HoverCardTrigger>
+                    <p
+                      className=" font-semibold text-indigo-600 cursor-pointer"
+                      title="Hover to view tips"
+                    >
+                      +{jobSummary.professional_tips.length} New Tips
+                    </p>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="p-4 rounded-lg shadow-xl bg-white border border-gray-200 max-w-md">
+                    <p className="text-lg font-bold text-gray-900 mb-2">
+                      Professional Tips
+                    </p>
+                    <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                      {jobSummary.professional_tips.map(
+                        (tip: string, index: number) => (
+                          <li key={index}>{tip}</li>
+                        )
+                      )}
+                    </ul>
+                  </HoverCardContent>
+                </HoverCard>
               </div>
               <div className="w-6 h-6 flex items-center justify-center rounded-full bg-indigo-100">
                 <svg

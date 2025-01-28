@@ -252,7 +252,7 @@ function CaregiverNavbarRight() {
 
   return (
     <div className="flex items-center px-2">
-      {user && userData && customData.userID ? (
+      {user && userData && customData && customData.userID ? (
         <>
           <CaregiverNotification />{" "}
           <UserAvatar
