@@ -5,28 +5,31 @@ import MongoContext from "@/app/MongoContext";
 import { useRouter } from "next/navigation";
 import DashboardSkeleton from "@/Providers/DashboardSkelenton";
 
-
 interface CaregiverAuthProps {
   children: ReactNode;
 }
 
 function CaregiverAuth({ children }: CaregiverAuthProps) {
   const mongoClient: any = useContext(MongoContext);
-  const { authenticated, loadingAuth } = mongoClient;
+  const { authenticated, loadingAuth, fetchAndUpdateCustomData, customData } =
+    mongoClient;
   const router = useRouter();
 
-  useEffect(() => { 
+  useEffect(() => {
     // Redirect if not authenticated after loading auth state
-    if (!loadingAuth && !authenticated) {
-      router.replace("/signin"); // Adjust this path based on your app's routing
-    }
+    // refresh the customData
+    const handleRedirect = async () => {
+      await fetchAndUpdateCustomData();
+      if (!loadingAuth && !authenticated && customData.role !== "caregiver") {
+        router.replace("/signin"); // Adjust this path based on your app's routing
+      }
+    };
+    handleRedirect();
   }, [loadingAuth, authenticated, router]);
 
   // Show loading indicator while auth status is being determined
   if (loadingAuth) {
-    return (
-      <DashboardSkeleton/>
-    );
+    return <DashboardSkeleton />;
   }
 
   // Render the protected content if authenticated

@@ -367,8 +367,10 @@ const Signin: React.FC = () => {
         // };
         // TagManager.dataLayer(tagManagerArgs);
         if (user_data) {
+          // console.log(user_data)
           setUserData(user_data.result); // set the user data
           user.refreshCustomData();
+          setAuthenticated(true);
           // console.log(user_data.result.role);
           refresh();
           routeUser(user_data.result.role);

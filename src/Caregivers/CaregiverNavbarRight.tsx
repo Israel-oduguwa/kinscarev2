@@ -121,9 +121,9 @@ const UserAvatar = ({ userData, customData, user, LogOutUser }: any) => {
             <ProfileAvatar
               size="w-12 h-12 "
               name={`${
-                userData.lname
+                userData && userData.lname
                   ? `${userData.fname} ${userData.lname}`
-                  : userData.auth.email
+                  : userData?.auth?.email
               }`}
               profileImage={userData?.profileImage}
             />
@@ -131,12 +131,12 @@ const UserAvatar = ({ userData, customData, user, LogOutUser }: any) => {
           </div>
           <div className="flex flex-col text-center">
               <p className="text-sm font-semibold antialiased">
-                {userData.lname ? (
+                {userData && userData.lname ? (
                   <>
                     {userData.fname} {userData.lname}
                   </>
                 ) : (
-                  <>{userData.auth.email}</>
+                  <>{userData?.auth?.email}</>
                 )}
               </p>
               <p className="text-xs text-gray-500 antialiased">Caregiver</p>
@@ -249,7 +249,7 @@ function CaregiverNavbarRight() {
     }
   };
   // User Avatar and Dropdown
-
+  console.log(userData)
   return (
     <div className="flex items-center px-2">
       {user && userData && customData && customData.userID ? (

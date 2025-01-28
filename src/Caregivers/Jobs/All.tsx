@@ -11,7 +11,7 @@ import { JobCardSkeleton } from "./JobCardSkelenton";
 import ApplyNow from "./JobsUI/ApplyNow";
 
 const JobPostCard: React.FC<{ job: Job }> = ({ job }) => {
-  console.log(job);
+  // console.log(job);
   return (
     <div className="bg-white shadow-md border border-gray-100 rounded-lg p-6 my-4 w-full mx-auto">
       <div className="flex flex-col lg:flex-row items-center lg:items-start lg:justify-between gap-6">
@@ -172,11 +172,13 @@ function All() {
     licenses: [] as string[],
     minHours: 8,
   });
-  console.log(userData);
+  // console.log(userData);
   const loadJobs = async (applyFilters = false) => {
     setLoading(true);
+    //  console.log("loading, stems")
     try {
       const data = await fetchJobs(userID, page);
+      console.log(data, 's')
 
       setJobs((prevJobs) =>
         page === 1 ? data.jobs : [...prevJobs, ...data.jobs]
@@ -209,7 +211,7 @@ function All() {
       setLoading(false);
     }
   };
-  console.log(totalJobs);
+  // console.log(totalJobs);
   return (
     <div className="py-6 px-2 bg-gray-100 md:px-4 min-h-[100vh]">
       <div className="max-w-6xl mx-auto">
