@@ -11,21 +11,25 @@ interface ProviderAuthProps {
 
 function ProviderAuth({ children }: ProviderAuthProps) {
   const mongoClient: any = useContext(MongoContext);
-  const { authenticated, loadingAuth } = mongoClient;
+  const { authenticated, loadingAuth, fetchAndUpdateCustomData, customData } =
+    mongoClient;
   const router = useRouter();
 
   useEffect(() => {
     // Redirect if not authenticated after loading auth state
-    if (!loadingAuth && !authenticated) {
-      router.replace("/signin"); // Adjust this path based on your app's routing
-    }
+
+    const handleRedirect = async () => {
+      await fetchAndUpdateCustomData();
+      if (!loadingAuth && !authenticated && customData.role !== "provider") {
+        router.replace("/signin"); // Adjust this path based on your app's routing
+      }
+    };
+    handleRedirect
   }, [loadingAuth, authenticated, router]);
 
   // Show loading indicator while auth status is being determined
   if (loadingAuth) {
-    return (
-      <DashboardSkeleton/>
-    );
+    return <DashboardSkeleton />;
   }
 
   // Render the protected content if authenticated
