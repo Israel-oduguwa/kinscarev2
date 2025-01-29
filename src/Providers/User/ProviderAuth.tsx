@@ -4,6 +4,8 @@ import React, { useContext, ReactNode, useEffect } from "react";
 import MongoContext from "@/app/MongoContext";
 import { useRouter } from "next/navigation";
 import DashboardSkeleton from "../DashboardSkelenton";
+import mixpanel from "@/lib/mixpanel";
+import { identifyUser } from "@/lib/mixpanelUtils"; // Import your identify function
 
 interface ProviderAuthProps {
   children: ReactNode;
@@ -16,16 +18,32 @@ function ProviderAuth({ children }: ProviderAuthProps) {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect if not authenticated after loading auth state
-
     const handleRedirect = async () => {
       await fetchAndUpdateCustomData();
+
       if (!loadingAuth && !authenticated && customData.role !== "provider") {
-        router.replace("/signin"); // Adjust this path based on your app's routing
+        router.replace("/signin"); // Redirect if not authenticated
+      }
+
+      // ✅ Identify user in Mixpanel after authentication
+      if (authenticated && customData) {
+        identifyUser({
+          distinct_id: customData.hash, // Unique user ID
+          isLoggedIn: true,
+          userDetails: {
+            $first_name: customData.fname,
+            $last_name: customData.lname,
+            $email: customData.email,
+            role: customData.role,
+          },
+        });
+
+        // console.log("✅ Identified user in Mixpanel:", customData.hash);
       }
     };
-    handleRedirect
-  }, [loadingAuth, authenticated, router]);
+
+    handleRedirect();
+  }, [loadingAuth, authenticated,  router]);
 
   // Show loading indicator while auth status is being determined
   if (loadingAuth) {

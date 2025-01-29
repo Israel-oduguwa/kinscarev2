@@ -60,7 +60,7 @@ type TrackEvent = (
 ) => void;
 
 export const trackEvent: TrackEvent = (distinctId, eventName, payload) => {
-  console.log(distinctId, eventName, payload);
+  // console.log(distinctId, eventName, payload);
   if (!distinctId) {
     console.error("Distinct ID is required for Mixpanel tracking.");
     return;

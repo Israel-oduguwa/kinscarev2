@@ -76,7 +76,7 @@
     "lodash": "^4.17.21",
     "lucide-react": "^0.418.0",
     "mixpanel": "^0.18.0",
-    "mixpanel-browser": "^2.58.0",
+    "mixpanel-browser": "^2.59.0",
     "next": "^15.1.4",
     "next-share": "^0.27.0",
     "next-themes": "^0.3.0",

@@ -4,6 +4,7 @@ import React, { useContext, ReactNode, useEffect } from "react";
 import MongoContext from "@/app/MongoContext";
 import { useRouter } from "next/navigation";
 import DashboardSkeleton from "@/Providers/DashboardSkelenton";
+import { identifyUser } from "@/lib/mixpanelUtils"; // Import Mixpanel identification function
 
 interface CaregiverAuthProps {
   children: ReactNode;
@@ -16,16 +17,32 @@ function CaregiverAuth({ children }: CaregiverAuthProps) {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect if not authenticated after loading auth state
-    // refresh the customData
     const handleRedirect = async () => {
       await fetchAndUpdateCustomData();
+
       if (!loadingAuth && !authenticated && customData.role !== "caregiver") {
-        router.replace("/signin"); // Adjust this path based on your app's routing
+        router.replace("/signin"); // Redirect if not authenticated
+      }
+
+      // ✅ Identify user in Mixpanel after authentication
+      if (authenticated && customData) {
+        identifyUser({
+          distinct_id: customData.hash, // Unique user ID
+          isLoggedIn: true,
+          userDetails: {
+            $first_name: customData.fname,
+            $last_name: customData.lname,
+            $email: customData.email,
+            role: customData.role,
+          },
+        });
+
+        // console.log("✅ Identified Caregiver in Mixpanel:", customData.hash);
       }
     };
+
     handleRedirect();
-  }, [loadingAuth, authenticated, router]);
+  }, [loadingAuth, authenticated,  router]);
 
   // Show loading indicator while auth status is being determined
   if (loadingAuth) {
