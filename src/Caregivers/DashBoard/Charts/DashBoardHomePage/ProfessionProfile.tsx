@@ -75,6 +75,7 @@ function ProfessionProfile({ userData }: any) {
         "https://api.kinscare.org/api/v1/ai/recommendation",
         payload
       );
+      // console.log(response)
       const parsedData = JSON.parse(response.data);
       return parsedData;
     } catch (error) {
@@ -108,6 +109,7 @@ function ProfessionProfile({ userData }: any) {
   if (!jobSummary) {
     return <div>No job summary available.</div>;
   }
+  // console.log(jobSummary)
   return (
     <div>
       {userData ? (
@@ -115,7 +117,7 @@ function ProfessionProfile({ userData }: any) {
           {/* Title */}
           <div className="mb-6">
             <p className="text-xl font-bold tracking-tight text-gray-900 antialiased">
-              {jobSummary.job_title} Career Summary
+              {jobSummary.job_title} Career
             </p>
             <p className="text-sm text-gray-500 mt-1">
               Stay informed and take actionable steps toward your professional
@@ -157,7 +159,7 @@ function ProfessionProfile({ userData }: any) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm antialiased">
-                  RN Job Openings
+                {jobSummary.job_title} Job Openings
                 </p>
                 <p className="text-sm font-medium text-gray-900">
                   {jobSummary.job_openings}
@@ -221,7 +223,7 @@ function ProfessionProfile({ userData }: any) {
                       className=" font-semibold text-indigo-600 cursor-pointer"
                       title="Hover to view tips"
                     >
-                      +{jobSummary.professional_tips.length} New Tips
+                      +{jobSummary.professional_tips && jobSummary?.professional_tips.length} New Tips
                     </p>
                   </HoverCardTrigger>
                   <HoverCardContent className="p-4 rounded-lg shadow-xl bg-white border border-gray-200 max-w-md">
@@ -229,7 +231,7 @@ function ProfessionProfile({ userData }: any) {
                       Professional Tips
                     </p>
                     <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                      {jobSummary.professional_tips.map(
+                      {jobSummary.professional_tips && jobSummary.professional_tips.map(
                         (tip: string, index: number) => (
                           <li key={index}>{tip}</li>
                         )
