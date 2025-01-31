@@ -6,5 +6,5 @@ export default function DashboardLayout({
     children: React.ReactNode
   }) {
     // this is the dashboard ui and layout page 
-    return <section><Toaster/> <ForumDynamicNavbar/>{children}</section>
+    return <section><Toaster/> <ForumDynamicNavbar/><div>{children}</div></section>
   }

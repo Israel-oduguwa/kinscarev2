@@ -3,11 +3,9 @@ import LeftFilter from "@/Forum/UI/LeftFilter";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import { Suspense } from "react";
-
-
 import { Skeleton } from "@/components/ui/skeleton";
 
-const  DiscussionListSkeleton =() => {
+const DiscussionListSkeleton = () => {
   return (
     <div>
       {Array.from({ length: 5 }).map((_, index) => (
@@ -47,7 +45,7 @@ const  DiscussionListSkeleton =() => {
       </div>
     </div>
   );
-}
+};
 
 export const metadata = {
   title: "Kinscare Forum - Connect Providers & Caregivers",
@@ -70,36 +68,7 @@ export const metadata = {
   },
 };
 
-async function getThreads(queryParams: {
-  page?: string;
-  popular?: string;
-  tags?: string;
-  category?: string;
-  sortBy?: string;
-  sortOrder?: string;
-  sortReplies?: string;
-}) {
-  const {
-    page = "1",
-    popular,
-    category,
-    tags,
-    sortBy,
-    sortReplies,
-    sortOrder = "desc",
-  } = queryParams;
-  const url = `https://api.kinscare.org/api/v1/forum/threads?page=${page}&limit=10${
-    sortReplies ? `&sortReplies=${sortReplies}` : ""
-  }${popular ? "&popular=1" : ""}${category ? `&categories=${category}` : ""}${
-    tags ? `&tags=${tags}` : ""
-  }${sortBy ? `&sortBy=${sortBy}&sortOrder=${sortOrder}` : ""}`;
-  const response = await fetch(url, { cache: "no-cache" });
-  return response.json();
-}
-
 async function ForumPage({ searchParams }: { searchParams: any }) {
-  const response = await getThreads(searchParams);
-
   const faqData = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -151,7 +120,7 @@ async function ForumPage({ searchParams }: { searchParams: any }) {
   };
 
   return (
-    <main className="bg-gray-100 py-20 min-h-screen">
+    <main className="bg-gray-100 py-10 min-h-screen">
       {/* JSON-LD for rich results */}
       <script
         type="application/ld+json"
@@ -171,11 +140,8 @@ async function ForumPage({ searchParams }: { searchParams: any }) {
 
           {/* Main Content */}
           <section className="col-span-12 xl:col-span-7">
-            <Suspense fallback={<DiscussionListSkeleton/>}>
-              <DiscussionList
-                threads={response.threads}
-                pagination={response.pagination}
-              />
+            <Suspense fallback={<DiscussionListSkeleton />}>
+              <DiscussionList searchParams={searchParams} />
             </Suspense>
           </section>
 

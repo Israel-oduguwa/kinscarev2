@@ -1,5 +1,4 @@
 // DiscussionList.tsx
-"use client";
 import ProfileAvatar from "@/components/ProfileAvatar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { generateAvatarData } from "@/lib/ui_utils";
@@ -17,18 +16,44 @@ const ITEMS_PER_PAGE = 10;
 //   return response.json();
 // }
 
-export default function DiscussionList({
-  threads,
-  pagination,
-}: {
-  threads: any[];
-  pagination: any;
+async function getThreads(queryParams: {
+  page?: string;
+  popular?: string;
+  tags?: string;
+  category?: string;
+  sortBy?: string;
+  sortOrder?: string;
+  sortReplies?: string;
 }) {
-  const { page, pages } = pagination; // Extract the pagination details from the API
+  const {
+    page = "1",
+    popular,
+    category,
+    tags,
+    sortBy,
+    sortReplies,
+    sortOrder = "desc",
+  } = queryParams;
+  const url = `https://api.kinscare.org/api/v1/forum/threads?page=${page}&limit=10${
+    sortReplies ? `&sortReplies=${sortReplies}` : ""
+  }${popular ? "&popular=1" : ""}${category ? `&categories=${category}` : ""}${
+    tags ? `&tags=${tags}` : ""
+  }${sortBy ? `&sortBy=${sortBy}&sortOrder=${sortOrder}` : ""}`;
+  const response = await fetch(url, { cache: "no-cache" });
+  return response.json();
+}
+
+export default async function DiscussionList({
+  searchParams,
+}: {
+  searchParams: any;
+}) {
+  const response = await getThreads(searchParams);
+  const { page, pages } = response.pagination;
   // console.log(threads, "sjhs");
   return (
     <div>
-      {threads.map((thread: any) => {
+      {response.threads.map((thread: any) => {
         const avatarData = generateAvatarData(
           `${thread.creator?.fname} ${thread.creator?.lname}`
         );

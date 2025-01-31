@@ -40,7 +40,7 @@ const Page = () => {
         content: content,
         tags: [],
       };
-      console.log("jo");
+      // console.log("jo");
       const { data } = await axios.post(
         `https://api.kinscare.org/api/v1/forum/threads`,
         payload
@@ -91,7 +91,7 @@ const Page = () => {
     <>
      
       <div className="mt-10 flex items-center h-full max-w-4xl mx-auto">
-        <div className="relative py-10 bg-white w-full h-fit p-4 rounded-lg space-y-6">
+        <div className="relative py-0 bg-white w-full h-fit p-4 rounded-lg space-y-6">
           <div className="flex justify-between items-center ">
             <h1 className="text-xl font-bold text-gray-800">
               Start a New discussion

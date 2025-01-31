@@ -165,7 +165,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   const { id } = params;
 
   return (
-    <div className="bg-gray-100 py-20 min-h-screen">
+    <div className="bg-gray-100 py-10 min-h-screen">
     <div className="max-w-screen-2xl mx-auto px-2 2xl:px-0">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Sidebar */}
