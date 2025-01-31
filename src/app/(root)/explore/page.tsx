@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     url: "https://yourwebsite.com/explore",
     images: [
       {
-        url: "https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Explore.png?alt=media&token=306410a8-a11b-461b-a745-545cb74064d7",
+        url: "https://kinscare-storage.s3.us-east-1.amazonaws.com/Kinscare+Explorer.png",
         alt: "KinsCare Careers",
       },
     ],
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     description:
       "Discover fulfilling careers in nursing and allied healthcare. Join the KinsCare community, find local training institutions, and explore rewarding career opportunities.",
     images: [
-      "https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Explore.png?alt=media&token=306410a8-a11b-461b-a745-545cb74064d7",
+      "https://kinscare-storage.s3.us-east-1.amazonaws.com/Kinscare+Explorer.png",
     ],
   },
   alternates: {
@@ -101,7 +101,7 @@ function page() {
           {/* the hero Image of the dashboard  */}
           <img
             className=" max-w-[1024px] mx-auto py-10"
-            src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Explore.png?alt=media&token=306410a8-a11b-461b-a745-545cb74064d7"
+            src="https://kinscare-storage.s3.us-east-1.amazonaws.com/Kinscare+Explorer.png"
           />
         </div>
       </section>

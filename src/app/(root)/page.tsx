@@ -11,12 +11,15 @@ export const metadata = {
   description:
     "Kinscare helps providers find qualified caregivers and caregivers find best-fitting jobs. Our aim is to deliver value to our users with a growing registry.",
   keywords: [
-    "Caregivers",
-    "Providers",
+    "caregivers",
+    "providers",
     "Kinscare",
     "Jobs",
     "Registry",
+    "job",
+    "health",
     "Care Platform",
+    "kinscare",
   ],
   openGraph: {
     title: "Kinscare - Connecting Caregivers with Providers Seamlessly",
@@ -26,7 +29,7 @@ export const metadata = {
     siteName: "Kinscare",
     images: [
       {
-        url: "/path-to-social-media-image.jpg",
+        url: "https://kinscare-storage.s3.us-east-1.amazonaws.com/Kinscare+Logo.png",
         width: 1200,
         height: 630,
         alt: "Kinscare Hero Image",
@@ -39,7 +42,7 @@ export const metadata = {
     title: "Kinscare - Connecting Caregivers with Providers Seamlessly",
     description:
       "Kinscare helps providers find qualified caregivers and caregivers find best-fitting jobs. Our aim is to deliver value to our users with a growing registry.",
-    images: ["/path-to-social-media-image.jpg"],
+    images: ["https://kinscare-storage.s3.us-east-1.amazonaws.com/Kinscare+Logo.png"],
   },
 };
 
