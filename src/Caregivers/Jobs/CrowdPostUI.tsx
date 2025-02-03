@@ -14,6 +14,7 @@ import { useContext, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import * as Yup from "yup";
+import { trackEvent } from "@/lib/mixpanelUtils";
 // import MuiTailwindCheckbox from "@/components/muiTailwindcssCheckbox";
 
 const CROWDPOST_URL = "https://api.kinscare.org/api/v1/providers/crowd-post" //This should be move to an env file later.
@@ -94,7 +95,7 @@ function CrowdPostUI({ jobID, user, userData, job, type }: any) {
           profileImage:userData?.profileImage,
           hash: user.customData.hash,
         };
-        console.log(payload);
+        // console.log(payload);
         const response = await axios.post(
           `${CROWDPOST_URL}`,
           payload
@@ -116,6 +117,16 @@ function CrowdPostUI({ jobID, user, userData, job, type }: any) {
           payload
         );
         console.log(`response=== ${JSON.stringify(response)}`)
+        // send the tracking data to mixpanel
+        const mixpanelPayload = {
+          name:"Crowd Post",
+          user_id:userData.userID,
+          authenticated:true,
+          date:new Date(),
+          referee_employee:true,
+          step:'post job'
+        }
+        trackEvent(user?.customData?.hash, "Crowd Post", mixpanelPayload);
         toast({ title: "Crowd Post Job updated successfully", variant: "default" });
         router.refresh()
         router.push(`/vitae/crowd-post/${response.data.jobData._id}`);

@@ -5,6 +5,7 @@ import React from "react";
 import CrowdPostActions from "./CrowdPostActions";
 import MatchingCaregiver from "../../Providers/Jobs/MatchingCaregiver";
 import ProfileImage from "../../Providers/User/ProfileImage"
+import PreviewTrack from "./CrowdPosting/PreviewTrack";
 polyfill();
 interface JobProps {
   jobID: string;
@@ -19,8 +20,10 @@ async function CrowdPostJob({ jobID, isProvider }: JobProps) {
   const response = await data.json();
   const { job, similarJobs } = response;
   // console.log(`CrowdPostJob=== ${job}`);
+  
   return (
     <div>
+      <PreviewTrack/>
       <div className="max-w-6xl py-6 px-6 min-h-[100vh] 2xl:px-0 mx-auto">
         <div className="relative shadow-sm border bg-white border-gray-200 mb-4 rounded-lg p-6">
           <div className="w-full mb-4">

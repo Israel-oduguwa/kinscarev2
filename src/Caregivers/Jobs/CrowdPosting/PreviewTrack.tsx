@@ -1,0 +1,25 @@
+"use client"
+import MongoContext from "@/app/MongoContext";
+import { trackEvent } from "@/lib/mixpanelUtils";
+import React, { useContext, useEffect } from "react";
+
+function PreviewTrack({referrer_id}:any) {
+  const { user, userData }: any = useContext(MongoContext);
+  useEffect(() => {
+    const mixpanelPayload = {
+      name: "Crowd Post",
+      user_id: userData.userID,
+      referrer_id:userData.userID,
+      existing_user:false,
+      authenticated: true,
+      date: new Date(),
+      referee_employee: true,
+      step: "preview job",
+    };
+    trackEvent(user?.customData?.hash, "Preview", mixpanelPayload);
+  }, [userData]);
+
+  return <div>PreviewTrack</div>;
+}
+
+export default PreviewTrack;
