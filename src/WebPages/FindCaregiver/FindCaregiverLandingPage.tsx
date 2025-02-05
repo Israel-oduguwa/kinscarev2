@@ -42,8 +42,8 @@ const FindLandingPage = async () => {
             <SearchBar />
           <p className="text-gray-300 text-lg max-w-2xl mb-8">
             Over{" "}
-            <span className="text-white font-bold">100 new caregivers</span>{" "}
-            join Kinscare every week
+            <span className="text-white font-bold"> a 100 qualified caregivers</span>{" "}
+            joined Kinscare
           </p>
         </div>
       </div>

@@ -58,6 +58,7 @@ const SearchBar: React.FC = ({}) => {
                 setFilters((prev) => ({ ...prev, schedule: selected }))
               }
               defaultValue={filters.schedule}
+              label="Select availability"
               placeholder="Schedule"
               maxCount={5}
             />
@@ -72,6 +73,7 @@ const SearchBar: React.FC = ({}) => {
                 setFilters((prev) => ({ ...prev, licenses: selected }))
               }
               defaultValue={filters.licenses}
+              label="Select license"
               placeholder="Licenses"
               maxCount={4}
             />

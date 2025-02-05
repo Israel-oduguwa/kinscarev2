@@ -42,40 +42,52 @@ const SearchBar = ({ availability, licenses }: any) => {
   };
 
   return (
-    <div className="w-full max-w-6xl mb-6 p-6 bg-white rounded-lg ">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Multi-Select: Shift Types */}
-        <MultiSelect
-          options={shiftOptions}
-          onValueChange={setSelectedShifts}
-          defaultValue={selectedShifts}
-          placeholder="Select Shift Types"
-          isAnimation={false}
-          maxCount={5}
-        />
-
-        {/* Multi-Select: License Types */}
-        <MultiSelect
-          options={licenseOptions}
-          onValueChange={setSelectedLicenses}
-          defaultValue={selectedLicenses}
-          placeholder="Select Licenses"
-          isAnimation={false}
-          maxCount={4}
-        />
-
-        {/* Search Button */}
-        <div className="flex justify-center">
-          <Button
-            className="w-full bg-blue-600 text-white hover:bg-blue-700 transition"
-            onClick={handleSearch}
-          >
-            <Search /> Search
-          </Button>
-        </div>
+    <div className="w-full max-w-6xl mb-6 p-6 bg-white rounded-lg">
+    <div className="grid items-end grid-cols-1 md:grid-cols-[1fr,1fr,auto] gap-4">
+      {/* Multi-Select: Shift Types */}
+      <MultiSelect
+        options={shiftOptions}
+        onValueChange={setSelectedShifts}
+        defaultValue={selectedShifts}
+        placeholder="Select Shift Types"
+        label="Select shift"
+        isAnimation={false}
+        maxCount={5}
+      />
+  
+      {/* Multi-Select: License Types */}
+      <MultiSelect
+        options={licenseOptions}
+        onValueChange={setSelectedLicenses}
+        label="Select shift type"
+        defaultValue={selectedLicenses}
+        placeholder="Select Licenses"
+        isAnimation={false}
+        maxCount={4}
+      />
+  
+      {/* Search Button */}
+      <div className="flex justify-center items-center">
+        <Button
+          className="bg-blue-600 text-white hover:bg-blue-700 transition"
+          onClick={handleSearch}
+        >
+          <Search /> Search
+        </Button>
       </div>
     </div>
+  </div>
+  
+  
   );
 };
 
 export default SearchBar;
+
+
+// Use:
+// "Select shift" and "Select shift type" for providers and "Select availability" and "Select license" for caregivers.
+// Excel Health Careers Training
+// 8:38 PM
+// This caregiver URL, /start, really performed well in signing up caregivers.  You need to update it to mirror the new design.
+// I will send you review of the /find-caregivers page.
