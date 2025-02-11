@@ -56,7 +56,7 @@ export default async function Page() {
   const initialBlog = await fetchInitialBlogs();
   const { blogs, totalPages } = initialBlog;
   const featuredArticle = await fetchFeaturedArticle();
-  console.log(featuredArticle);
+  // console.log(featuredArticle);
   return (
     <div>
       {/* Featured Article */}
