@@ -32,26 +32,41 @@ const HeaderIDParser = ({ data }: { data: any }) => {
   );
 };
 
-// Image parser: Checks that data.url exists and applies a border if withBorder is true.
 const ImageBlockParser = ({ data }: { data: any }) => {
-  if (data && data.url) {
-    const imageBorder = data.withBorder ? "border border-gray-300" : "";
-    return (
-      <figure className="mb-5">
-        <img
-          src={data.url}
-          alt={data.caption || "Image"}
-          className={`w-full rounded ${imageBorder}`}
-        />
-        {data.caption && (
-          <figcaption className="text-center text-sm text-gray-500 mt-2">
-            {data.caption}
-          </figcaption>
-        )}
-      </figure>
-    );
-  }
-  return null;
+  // Check for the new image data structure
+  if (!data?.file?.url) return null;
+
+  // Extract values with defaults
+  const url = data.file.url;
+  const caption = data.caption || "";
+  const withBorder = data.withBorder || false;
+  const withBackground = data.withBackground || false;
+  const stretched = data.stretched || false;
+
+  // Determine styling classes
+  const borderClass = withBorder ? "border-2 border-gray-300" : "";
+  const backgroundClass = withBackground ? "bg-gray-100 p-4 rounded-lg" : "";
+  const stretchClass = stretched ? "max-w-none w-full" : "mx-auto";
+
+  return (
+    <figure className={`my-6 ${backgroundClass}`}>
+      <img
+        src={url}
+        alt={caption}
+        className={`rounded-lg ${borderClass} ${stretchClass}`}
+        style={{
+          maxWidth: stretched ? "100%" : "800px",
+          height: "auto",
+          display: "block"
+        }}
+      />
+      {caption && (
+        <figcaption className="text-center text-sm text-gray-600 mt-2">
+          {caption}
+        </figcaption>
+      )}
+    </figure>
+  );
 };
 
 // Custom layout parser – ensure the inner content is available before mapping.
@@ -123,14 +138,20 @@ export function convertEditorJsToHtml(editorData: any): ConvertedContent {
     // Render the Editor.js content to a static HTML string using the Blocks component.
     html = ReactDOMServer.renderToStaticMarkup(
       <Blocks
-        key={JSON.stringify(editorData)}
-        data={editorData}
-        renderers={{
-          header: HeaderIDParser,
-          layout: CustomLayoutParser,
-          image: ImageBlockParser,
-        }}
-      />
+      key={JSON.stringify(editorData)}
+      data={editorData}
+      renderers={{
+        header: HeaderIDParser,
+        layout: CustomLayoutParser,
+        image: ImageBlockParser,
+      }}
+      config={{
+        image: {
+          // Additional config for image class names
+          className: "editorjs-image"
+        }
+      }}
+    />
     );
   } catch (renderError) {
     console.error("Error rendering HTML from Editor.js content:", renderError);
