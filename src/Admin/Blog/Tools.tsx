@@ -1,106 +1,10 @@
-// import Embed from "@editorjs/embed";
-// import Table from "@editorjs/table";
-// import List from "@editorjs/list";
-// import Warning from "@editorjs/warning";
-// import Code from "@editorjs/code";
-// import LinkTool from "@editorjs/link";
-// // import Image from "@editorjs/simple-image";
-// import SimpleImage from "@editorjs/simple-image";
-// import Raw from "@editorjs/raw";
-// import Paragraph from "@editorjs/paragraph";
-// // import Header from "@editorjs/header";
-// import Header from "editorjs-header-with-anchor";
-// import Quote from "@editorjs/quote";
-// import Marker from "@editorjs/marker";
-// import CheckList from "@editorjs/checklist";
-// import Delimiter from "@editorjs/delimiter";
-// import InlineCode from "@editorjs/inline-code";
-// // import SimpleImage from "simple-image-editorjs";
-// import { LayoutBlockTool, LayoutBlockContainerData } from "editorjs-layout";
-// import { StyleInlineTool } from "editorjs-style";
-// import EditorJS from "@editorjs/editorjs";
-
-// const editorJSConfig = {
-//   autofocus: true,
-//   tools: {
-//     header: {
-//       class: Header,
-//       shortcut: "CMD+SHIFT+H",
-//     },
-//     list: List,
-//     marker: Marker,
-//     checklist: CheckList,
-//   },
-// };
-
-// export const EDITOR_JS_TOOLS = {
-//   header: {
-//     class: Header,
-//     shortcut: "CMD+SHIFT+H",
-//   },
-//   paragraph: {
-//     class: Paragraph,
-//     inlineToolbar: true,
-//   },
-//   layout: {
-//     class: LayoutBlockTool,
-//     config: {
-//       EditorJS,
-//       editorJSConfig,
-//       enableLayoutEditing: false,
-//       enableLayoutSaving: true,
-//       initialData: {
-//         itemContent: {
-//           1: {
-//             blocks: [],
-//           },
-//         },
-//         layout: {
-//           type: "container",
-//           id: "Example",
-//           className: "",
-//           style:
-//             "background-color: #f7f9fc; border-radius: 6px; width: 100%; margin: 40px 0;",
-//           children: [
-//             {
-//               type: "item",
-//               id: "",
-//               className: "",
-//               style: "", // No additional style applied to the item
-//               itemContentId: "1",
-//             },
-//           ],
-//         },
-//       },
-//     },
-//   },
-//   embed: Embed,
-//   // table: Table,
-//   marker: Marker,
-//   list: {
-//     class: List,
-//     inlineToolbar: true,
-//   },
-//   // warning: Warning,
-//   // code: Code,
-//   // linkTool: LinkTool,
-//   image: SimpleImage,
-//   // raw: Raw,
-//   // quote: Quote,
-//   checklist: CheckList,
-//   // delimiter: Delimiter,
-//   inlineCode: InlineCode,
-//   style: StyleInlineTool,
-// };
-
-// Tools.ts
 import Embed from "@editorjs/embed";
+import ImageTool from '@editorjs/image';
 import Table from "@editorjs/table";
 import List from "@editorjs/list";
 import Warning from "@editorjs/warning";
 import Code from "@editorjs/code";
 import LinkTool from "@editorjs/link";
-import SimpleImage from "@editorjs/simple-image";
 import Raw from "@editorjs/raw";
 import Paragraph from "@editorjs/paragraph";
 import Header from "editorjs-header-with-anchor";
@@ -112,20 +16,45 @@ import InlineCode from "@editorjs/inline-code";
 import { LayoutBlockTool } from "editorjs-layout";
 import { StyleInlineTool } from "editorjs-style";
 import EditorJS from "@editorjs/editorjs";
+import axios from 'axios';
 
-const editorJSConfig = {
-    autofocus: true,
-    tools: {
-      header: {
-        class: Header,
-        shortcut: "CMD+SHIFT+H",
-      },
-      list: List,
-      marker: Marker,
-      checklist: CheckList,
-    },
-  };
+// Your existing upload/delete functions
+const uploadFile = async (file: File) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
 
+    const { data } = await axios.post(
+      "https://api.kinscare.org/api/v1/upload-file",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    return data.url;
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    throw new Error('Image upload failed');
+  }
+};
+
+const deleteFile = async (fileUrl: string) => {
+  try {
+    await axios.post(
+      "https://api.kinscare.org/api/v1/delete-file",
+      { fileUrl }
+    );
+    return true;
+  } catch (error) {
+    console.error("Error deleting file:", error);
+    throw new Error('Image deletion failed');
+  }
+};
+
+// EditorJS Configuration
 export const EDITOR_JS_TOOLS = {
   header: {
     class: Header,
@@ -147,7 +76,6 @@ export const EDITOR_JS_TOOLS = {
       services: {
         youtube: true,
         coub: true,
-        // You can add other services if needed
       },
     },
   },
@@ -167,12 +95,53 @@ export const EDITOR_JS_TOOLS = {
   linkTool: {
     class: LinkTool,
     config: {
-      endpoint: "https://api.linkpreview.net", // Replace with your own endpoint if needed
+      endpoint: "https://api.linkpreview.net",
     },
   },
   image: {
-    class: SimpleImage,
-    inlineToolbar: true,
+    class: ImageTool,
+    config: {
+      uploader: {
+        uploadByFile: async (file: File) => {
+          const url = await uploadFile(file);
+          return {
+            success: 1,
+            file: {
+              url: url,
+            }
+          };
+        },
+        uploadByUrl: async (url: string) => {
+          // If you want to handle URL uploads
+          return {
+            success: 1,
+            file: { url }
+          };
+        }
+      },
+      onDelete: async (fileUrl: string) => {
+        await deleteFile(fileUrl);
+        return { success: 1 };
+      },
+      additionalRequestHeaders: {
+        'X-Custom-Header': 'Custom Value' // Add if needed
+      },
+      // Validation based on your requirements
+      validate: (file: File) => {
+        const baseUrl = "fileupload-kinscare.s3.amazonaws.com";
+        const allowedExtensions = /(jpeg|jpg|png|svg|pdf|octet-stream)$/i;
+        
+        if (!allowedExtensions.exec(file.name)) {
+          return 'Invalid file type';
+        }
+        
+        if (file.size > 5 * 1024 * 1024) { // 5MB limit
+          return 'File too large';
+        }
+        
+        return true;
+      }
+    }
   },
   raw: Raw,
   quote: {
@@ -193,7 +162,18 @@ export const EDITOR_JS_TOOLS = {
     class: LayoutBlockTool,
     config: {
       EditorJS,
-      editorJSConfig,
+      editorJSConfig: {
+        autofocus: true,
+        tools: {
+          header: {
+            class: Header,
+            shortcut: "CMD+SHIFT+H",
+          },
+          list: List,
+          marker: Marker,
+          checklist: CheckList,
+        },
+      },
       enableLayoutEditing: false,
       enableLayoutSaving: true,
       initialData: {
@@ -206,14 +186,13 @@ export const EDITOR_JS_TOOLS = {
           type: "container",
           id: "Example",
           className: "",
-          style:
-            "background-color: #f7f9fc; border-radius: 6px; width: 100%; margin: 40px 0;",
+          style: "background-color: #f7f9fc; border-radius: 6px; width: 100%; margin: 40px 0;",
           children: [
             {
               type: "item",
               id: "",
               className: "",
-              style: "", // No additional style applied to the item
+              style: "",
               itemContentId: "1",
             },
           ],

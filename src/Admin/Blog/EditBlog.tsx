@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/command";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { convertEditorJsToHtml } from "./editorJsToHtml";
+import ImageUploader from "./ImageUploader";
 
 interface Option {
   label: string;
@@ -215,7 +216,7 @@ export default function EditBlog() {
       convertToLabelAndSlug(cat)
     );
     const { html, toc } = convertEditorJsToHtml(content);
-    console.log(html, toc);
+    // console.log(html, toc);
     const draftData = {
       title,
       slug,
@@ -223,8 +224,8 @@ export default function EditBlog() {
       featuredImage,
       content,
       categories: categoriesWithLabelAndSlug,
-      toc:toc,
-      htmlContent:html,
+      toc: toc,
+      htmlContent: html,
       tags,
       isPublished,
       series,
@@ -302,7 +303,7 @@ export default function EditBlog() {
       }
       setTags(postData.tags || []);
       setIsPublished(postData.isPublished || false);
-      setHtmlContent(postData.htmlContent)
+      setHtmlContent(postData.htmlContent);
       setContent(postData.content || "");
       setSeries(postData.series || "");
       setMetaTitle(postData.metaTitle || "");
@@ -366,10 +367,10 @@ export default function EditBlog() {
       title,
       slug,
       excerpt,
-      toc:toc,
+      toc: toc,
       htmlContent: html,
       featuredImage,
-      isPublished,
+      isPublished:true,
       content,
       categories: categoriesWithLabelAndSlug,
       tags,
@@ -529,10 +530,10 @@ export default function EditBlog() {
             {/* Featured Image */}
             <div>
               <Label>Featured Image URL</Label>
-              <Input
+              <ImageUploader
                 value={featuredImage}
-                onChange={(e) => setFeaturedImage(e.target.value)}
-                placeholder="https://example.com/featured.jpg"
+                onChange={(url) => setFeaturedImage(url)}
+                onDelete={() => setFeaturedImage("")}
               />
             </div>
           </div>
