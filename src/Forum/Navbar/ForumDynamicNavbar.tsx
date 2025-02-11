@@ -33,7 +33,42 @@ function ForumDynamicNavbar() {
                 />
                 <p className="text-sm font-medium">Kinscare</p>
               </Link>
-
+              <div className="hidden lg:flex items-center space-x-6">
+                <NavigationMenu>
+                  <NavigationMenuList>
+                    <NavigationMenuItem>
+                      <Link
+                        href="/community"
+                        legacyBehavior
+                        passHref
+                      >
+                        <NavigationMenuLink
+                          className={navigationMenuTriggerStyle()}
+                        >
+                         Discussions
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
+                  </NavigationMenuList>
+                </NavigationMenu>
+                <NavigationMenu>
+                  <NavigationMenuList>
+                    <NavigationMenuItem>
+                      <Link
+                        href="/community/create"
+                        legacyBehavior
+                        passHref
+                      >
+                        <NavigationMenuLink
+                          className={navigationMenuTriggerStyle()}
+                        >
+                          Create Discussion
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
+                  </NavigationMenuList>
+                </NavigationMenu>
+              </div>
               {/* Right Section for Caregiver */}
               <div className="flex items-center space-x-3">
                 <CaregiverNavbarRight />

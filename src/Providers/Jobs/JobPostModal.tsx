@@ -119,6 +119,7 @@ const JobPostModal = ({ caregiver }: any) => {
     city: string
   ): string => {
     const { licenses, availability } = caregiver;
+    console.log("Generate")
 
     // Templates for job titles
     const templates = [

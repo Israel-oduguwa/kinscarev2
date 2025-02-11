@@ -13,9 +13,17 @@ const nextConfig = {
         // !! WARN !!
         ignoreBuildErrors: true,
     },
+    // images: {
+    //     domains: ['firebasestorage.googleapis.com'],
+    // },
     images: {
-        domains: ['firebasestorage.googleapis.com'],
-    },
+        remotePatterns: [
+          {
+            protocol: "https",
+            hostname: "**", // Allow any domain
+          },
+        ],
+      },
     env: {
         GOOGLE_ANALYTICS_ID: "G-Y94DN6XWN3",
         MIXPANEL_TOKEN:"cd4c57a1381072532607d8bad65b9c00",

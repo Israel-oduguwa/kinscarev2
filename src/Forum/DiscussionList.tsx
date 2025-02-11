@@ -53,64 +53,72 @@ export default async function DiscussionList({
   // console.log(threads, "sjhs");
   return (
     <div>
+      <h2 className="text-2xl tracking-tight font-bold text-gray-800 mb-6">
+        Community Discussions
+      </h2>
+
       {response.threads.map((thread: any) => {
         const avatarData = generateAvatarData(
           `${thread.creator?.fname} ${thread.creator?.lname}`
         );
         return (
           <Link key={thread._id} href={`/community/discussions/${thread._id}`}>
-            <div className="p-4 mb-4 flex gap-4 flex-col md:flex-row items-center bg-white dark:bg-gray-800 border border-gray-50 dark:border-gray-700 rounded-lg shadow-sm max-w-full md:max-w-5xl">
-              <div className="flex flex-col justify-between py-3 px-1 leading-normal w-full">
-                <div>
-                  <h1 className="text-xl mb-3 font-semibold tracking-tight text-gray-800 dark:text-white">
-                    {thread.title}
-                  </h1>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {thread.categories.map(
-                      (category: string, index: number) => (
-                        <div
-                          key={index}
-                          className="text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 rounded-lg py-1 px-3"
-                        >
-                          {category}
-                        </div>
-                      )
-                    )}
-                    {thread.tags.map((tag: string, index: number) => (
-                      <div
-                        key={index}
-                        className="text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 rounded-lg py-1.5 px-3"
-                      >
-                        {tag}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex justify-between items-center w-full">
-                    <div className="flex gap-3 mb-3 items-center">
-                      <ProfileAvatar
-                        size="w-12 h-12"
-                        name={`${thread.fname} ${thread.lname}`}
-                        profileImage={thread.creator.profileImage}
-                      />
-                      <div>
-                        <p className="text-sm mb-1 text-gray-900 font-semibold antialiased">
-                          {thread.creator.fname} {thread.creator.lname}
-                        </p>
-                        <p className="text-xs text-gray-600 antialiased">
-                          {formatDistanceToNow(new Date(thread.updatedAt), {
-                            addSuffix: true,
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <p className="text-sm antialiased text-gray-700 dark:text-gray-300">
-                        {thread.views} Views
+            <div className="p-6 mb-6 flex flex-col md:flex-row items-start bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-200">
+              {/* Left Side: Thread Content */}
+              <div className="flex-1">
+                <h1 className="text-xl font-semibold text-gray-800 dark:text-white mb-2 hover:text-blue-600 transition">
+                  {thread.title}
+                </h1>
+
+                {/* Tags & Categories */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {thread.categories.map((category: string, index: number) => (
+                    <span
+                      key={index}
+                      className="text-xs  bg-blue-50 dark:bg-gray-700 text-blue-700 dark:text-gray-300 rounded-full py-1 px-3"
+                    >
+                      {category}
+                    </span>
+                  ))}
+                  {thread.tags.map((tag: string, index: number) => (
+                    <span
+                      key={index}
+                      className="text-xs  bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 rounded-full py-1 px-3"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Author Info & Metadata */}
+                <div className="flex justify-between items-center mt-3">
+                  <div className="flex items-center gap-4">
+                    {/* Profile Avatar */}
+                    <ProfileAvatar
+                      size="w-12 h-12"
+                      name={`${thread.fname} ${thread.lname}`}
+                      profileImage={thread.creator.profileImage}
+                    />
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                        {thread.creator.fname} {thread.creator.lname}
                       </p>
-                      <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
-                        <MessageCircleReply size={20} className="mr-1" />
-                        {thread.replies}
-                      </div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                        {formatDistanceToNow(new Date(thread.updatedAt), {
+                          addSuffix: true,
+                        })}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Thread Stats (Views & Replies) */}
+                  <div className="flex items-center space-x-4">
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                      {thread.views} Views
+                    </p>
+                    <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                      <MessageCircleReply size={18} className="mr-1" />
+                      {thread.replies}
                     </div>
                   </div>
                 </div>
@@ -119,6 +127,7 @@ export default async function DiscussionList({
           </Link>
         );
       })}
+
       <div className="flex justify-center mt-4">
         {page > 1 && (
           <Link href={`/community?page=${page - 1}`}>

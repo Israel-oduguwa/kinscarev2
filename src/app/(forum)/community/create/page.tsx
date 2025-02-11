@@ -3,49 +3,52 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axios, { AxiosError } from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { CreateThreadPayload } from "@/lib/validators/discussionSchema";
-import { useContext } from "react";
 import MongoContext from "@/app/MongoContext";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { useCustomToast } from "@/app/hooks/use-custom-toast";
 import Editor from "@/components/Editor";
-import ImageUpload from "@/components/ImageUpload";
-import ForumNavbar from "@/Forum/Navbar/ForumNavbar";
 import CategoryChipInput from "@/components/ui/CategoryChipInput";
-import ForumDynamicNavbar from "@/Forum/Navbar/ForumDynamicNavbar";
-// title, content, userId, categories, tags
 
-const categories = ["Programs", "RN program", "LPN program", "Physician Assistant", "Nurse",  "Schools", "Jobs", "Questions"]; // Pre-existing categories
+const categories = [
+  "Programs",
+  "RN program",
+  "LPN program",
+  "Physician Assistant",
+  "Nurse",
+  "Resume",
+  "Technology",
+  "Schools",
+  "Jobs",
+  "Questions",
+];
 
 const Page = () => {
   const [input, setInput] = useState("");
   const [content, setContent] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const mongodb = useContext(MongoContext);
-  const { user, userData }: any = mongodb;
+  const { user }: any = mongodb;
   const router = useRouter();
   const { loginToast }: any = useCustomToast();
+
   const { mutate: createThread, isPending } = useMutation({
     mutationFn: async () => {
       const payload: CreateThreadPayload = {
         title: input,
         userID: user.customData.userID,
         categories: selectedCategories,
-        imageUrl,
         content: content,
         tags: [],
       };
-      // console.log("jo");
       const { data } = await axios.post(
         `https://api.kinscare.org/api/v1/forum/threads`,
         payload
       );
-      //   console.log(data)
       return data as string;
     },
     onError: (err) => {
@@ -62,127 +65,99 @@ const Page = () => {
       }
       toast({
         title: err.message,
-        description: "could not create discussion",
+        description: "Could not create discussion",
         variant: "destructive",
       });
     },
     onSuccess: (data: any) => {
-      // use the data.threadId
-      //   We can run any function to track the users on segment or GTM
       const newPathname = `/community/discussions/${data.threadId}`;
       toast({
-        title: "Discussion created successfully",
-        description: "...",
+        title: "Discussion Created Successfully 🎉",
+        description: "Your discussion is now live!",
         variant: "default",
       });
       router.push(newPathname);
     },
   });
 
-  const handleImageUpload = (url: string) => {
-    setImageUrl(url);
-  };
-
-  const handleImageRemove = (url: string) => {
-    setImageUrl("");
-  };
-
   return (
-    <>
-     
-      <div className="mt-10 flex items-center h-full max-w-4xl mx-auto">
-        <div className="relative py-0 bg-white w-full h-fit p-4 rounded-lg space-y-6">
-          <div className="flex justify-between items-center ">
-            <h1 className="text-xl font-bold text-gray-800">
-              Start a New discussion
-            </h1>
-          </div>
-          <hr className="bg-zinc-500 h-px" />
-          <div className="mb-4 flex xs:flex-wrap items-center gap-2">
-            <div className="p-3 rounded bg-gray-100">🗣️</div>
-            <div className="w-full">
-              <h2 className="text-md font-bold antialiased">Community</h2>
-              <p className="text-sm antialiased">
-                With Kinscare Community, providers and caregivers can create
-                and participate in conversations directly within the platform.
-                Discussions enable you to connect with the community to achieve
-                the following goals: Share advice, insights, and experiences to
-                foster growth and understanding. Ask and answer questions to
-                build trust and collaboration within the network. Collaborate
-                with others in a centralized, easy-to-access space designed for
-                meaningful interactions. Discussions empower both providers and
-                caregivers to build connections, share knowledge, and create a
-                stronger, more supportive community without the need for
-                third-party tools.
-              </p>
-            </div>
-          </div>
-          {/* form  */}
-          <div>
-            <div className="mb-3">
-              <p className="text-sm font-medium text-gray-700 mb-2">
-                Discussion title
-              </p>
-              <Input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                className="pl-6"
-              />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-700 mb-2">
-                Content body
-              </p>
-              <Editor
-                onChange={setContent}
-                initialContent={content}
-                usage={""}
-              />
-            </div>
-            <div className="py-3">
-              <h2 className="mb-1 text-sm font-medium">Select Categories</h2>
-              <p className="mb-3 text-sm antialiased">
-                Category helps you to group your post for users to see them easy
-              </p>
-              {/* Use the reusable ChipInput component */}
-              <CategoryChipInput
-                fields={categories}
-                selectedFields={selectedCategories}
-                setSelectedFields={setSelectedCategories}
-              />
+    <div className="bg-gray-100">
+      <div className="container  mx-auto px-6 py-12">
+        {/* Header */}
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-extrabold text-gray-900">
+            Start a New Discussion
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Connect with the community by sharing your insights, asking
+            questions, and engaging in meaningful discussions.
+          </p>
+        </div>
 
-              {/* Display selected categories */}
-              <div className="mt-4">
-                <h3 className="font-medium text-sm">Selected Categories</h3>
-                <ul className="list-disc list-inside">
-                  {selectedCategories.map((category) => (
-                    <li className="text-sm text-gray-600" key={category}>
-                      {category}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+        {/* Discussion Form */}
+        <div className="mt-8 max-w-4xl mx-auto bg-white dark:bg-gray-800 p-6 shadow-lg rounded-lg">
+          {/* Discussion Title */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700">
+              Discussion Title
+            </label>
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 "
+              placeholder="Enter a clear and engaging title"
+            />
           </div>
 
-          <div>
-            {/* <ImageUpload
-              onImageUpload={handleImageUpload}
-              onImageRemove={handleImageRemove}
-              imageUrl={imageUrl}
-            /> */}
-            {imageUrl && (
-              <div className="mt-4">
-                <p>Uploaded Image URL:</p>
-                <a href={imageUrl} target="_blank" rel="noopener noreferrer">
-                  {imageUrl}
-                </a>
-              </div>
-            )}
+          {/* Content Body */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700">
+              Content Body
+            </label>
+            <Editor onChange={setContent} initialContent={content} usage={""} />
           </div>
 
-          <div className="flex justify-end gap-4">
-            <Button variant="ghost" onClick={() => router.back()}>
+          {/* Category Selection */}
+          <div className="mb-6">
+            <h2 className="text-sm font-medium text-gray-700">
+              Select Categories
+            </h2>
+            <p className="text-xs text-gray-500 mb-3">
+              Categories help group your post for easier discovery.
+            </p>
+            <CategoryChipInput
+              fields={categories}
+              selectedFields={selectedCategories}
+              setSelectedFields={setSelectedCategories}
+            />
+          </div>
+
+          {/* Display Selected Categories */}
+          {selectedCategories.length > 0 && (
+            <div className="mt-4">
+              <h3 className="text-sm font-medium text-gray-700">
+                Selected Categories
+              </h3>
+              <ul className="flex flex-wrap gap-2 mt-2">
+                {selectedCategories.map((category) => (
+                  <li
+                    className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium"
+                    key={category}
+                  >
+                    {category}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Submit Buttons */}
+          <div className="mt-6 flex justify-end gap-4">
+            <Button
+              variant="ghost"
+              className="px-5 py-2 rounded-lg border border-gray-300 hover:bg-gray-100"
+              onClick={() => router.back()}
+            >
               Cancel
             </Button>
             <Button
@@ -194,6 +169,7 @@ const Page = () => {
                 isPending ||
                 !user.customData.userID
               }
+              className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition disabled:opacity-50"
             >
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create Discussion
@@ -201,7 +177,8 @@ const Page = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
+
 export default Page;

@@ -4,6 +4,7 @@
 * {
   padding: 0;
   margin: 0;
+  scroll-behavior:smooth;
 }
 
 @layer base {
@@ -528,3 +529,88 @@ p:empty::before {
   position: relative;
   width: 100%;
 }
+
+
+
+.editor {
+  box-shadow: 0px 0px 20px 0px rgba(76, 87, 125, 0.02);
+  background: #fff;
+  padding: 20px 30px;
+  width: 60%;
+  margin: 50px auto;
+}
+
+
+#editorjs-container {
+  background-color: #f9f9f9;
+  padding: 20px 30px;
+  margin-bottom: 20px;
+}
+
+.ce-toolbar__content,
+.ce-block__content {
+  max-width: unset;
+  width: 95% !important;
+}
+
+.editorjs-codeFlask_Wrapper .editorjs-codeFlask_LangDisplay {
+  max-width: unset;
+  height: unset !important;
+}
+
+.editor button {
+  border: none;
+  padding: 10px 20px;
+  background: #2cd3ff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+dialog {
+  /* width: 90%; */
+  max-width: 800px !important;
+  min-height: 400px;
+  background-color: #fff;
+  /* box-shadow: 0 -3px 29px -5px rgba(34, 39, 47, 0.14); */
+  /* box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px; */
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  border-radius: 20px;
+  /* Center the modal */
+  border: 0;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.codex-editor {
+  margin: 30px;
+}
+
+#editorjs-container {
+  background-color: #fff;
+  padding: 20px 30px;
+  margin-bottom: 20px;
+  box-shadow: 0 -3px 29px -5px rgba(34, 39, 47, 0.14);
+  border-radius: 20px;
+  min-height: 100vh;
+  /* overflow: auto; */
+}
+.editor {
+  box-shadow: 0 !important;
+  background: #fff;
+  padding: 0;
+  width: 100%;
+  margin: 0;
+}
+.editor button {
+    border: none;
+    padding: 10px 10px;
+    background:#fff;
+    color: #333333;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+

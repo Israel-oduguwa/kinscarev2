@@ -1,14 +1,15 @@
 // app/[id]/page.tsx
-import { buttonVariants } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import Discussion from '@/Forum/Discussion';
-import DiscussionPosts from '@/Forum/DiscussionPosts';
-import LeftFilter from '@/Forum/UI/LeftFilter';
-import { Metadata } from 'next';
-import Link from 'next/link';
-import { Suspense } from 'react';
+import { buttonVariants } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import Discussion from "@/Forum/Discussion";
+import DiscussionPosts from "@/Forum/DiscussionPosts";
+import RelatedBlogPost from "@/Forum/RelatedBlogPost";
+import LeftFilter from "@/Forum/UI/LeftFilter";
+import { Metadata } from "next";
+import Link from "next/link";
+import { Suspense } from "react";
 // import { stripHtml, truncateHtml } from '@/lib/utils';
-import truncate from 'truncate-html';
+import truncate from "truncate-html";
 function DiscussionSkeleton() {
   return (
     <div className="rounded-xl border-slate-200 bg-white dark:bg-slate-900 shadow-lg w-full">
@@ -43,7 +44,7 @@ function DiscussionSkeleton() {
   );
 }
 
- function DiscussionPostSkeleton() {
+function DiscussionPostSkeleton() {
   return (
     <>
       {Array.from({ length: 3 }).map((_, index) => (
@@ -75,52 +76,62 @@ function DiscussionSkeleton() {
   );
 }
 // Metadata function
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
   const { id } = params;
 
   try {
     // Fetch thread and posts data
-    const threadResponse = await fetch(`https://api.kinscare.org/api/v1/forum/threads/${id}`, { cache: 'no-cache' });
-    const postsResponse = await fetch(`https://api.kinscare.org/api/v1/forum/threads/${id}/posts`, { cache: 'no-cache' });
+    const threadResponse = await fetch(
+      `https://api.kinscare.org/api/v1/forum/threads/${id}`,
+      { cache: "no-cache" }
+    );
+    const postsResponse = await fetch(
+      `https://api.kinscare.org/api/v1/forum/threads/${id}/posts`,
+      { cache: "no-cache" }
+    );
 
     const threadData = await threadResponse.json();
-    const thread = threadData.thread
- 
+    const thread = threadData.thread;
+
     const { posts } = await postsResponse.json();
     // console.log("this is metadata thread", posts)
     if (!thread) {
       return {
-        title: 'Thread Not Found',
-        description: 'The thread you are looking for does not exist.',
+        title: "Thread Not Found",
+        description: "The thread you are looking for does not exist.",
       };
     }
 
     const sanitizedDescription = truncate(thread.content, {
-      length:150,
-      ellipsis:"..."
-    })
+      length: 150,
+      ellipsis: "...",
+    });
     // Generate JSON-LD structured data
     const jsonLd = {
-      '@context': 'https://schema.org',
-      '@type': 'DiscussionForumPosting',
+      "@context": "https://schema.org",
+      "@type": "DiscussionForumPosting",
       headline: thread.title,
       description: sanitizedDescription,
       author: {
-        '@type': 'Person',
+        "@type": "Person",
         name: thread.creator,
       },
       datePublished: thread.createdAt,
       dateModified: thread.updatedAt,
       interactionStatistic: {
-        '@type': 'InteractionCounter',
-        interactionType: 'https://schema.org/CommentAction',
+        "@type": "InteractionCounter",
+        interactionType: "https://schema.org/CommentAction",
         userInteractionCount: thread.replies,
       },
       mainEntity: posts.map((post: any) => ({
-        '@type': 'Comment',
+        "@type": "Comment",
         text: post.content,
         author: {
-          '@type': 'Person',
+          "@type": "Person",
           name: `${post.author.fname} ${post.author.lname}`,
         },
         datePublished: post.createdAt,
@@ -128,7 +139,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
         replyCount: post.replies,
       })),
     };
-    console.log(thread.title)
+    console.log(thread.title);
     return {
       title: thread.title,
       description: sanitizedDescription,
@@ -136,26 +147,28 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
         title: thread.title,
         description: sanitizedDescription,
         url: `https://yourforum.com/thread/${id}`,
-        images: thread.imageUrl ? [{ url: thread.imageUrl, alt: thread.title }] : undefined,
+        images: thread.imageUrl
+          ? [{ url: thread.imageUrl, alt: thread.title }]
+          : undefined,
       },
       twitter: {
-        card: 'summary_large_image',
+        card: "summary_large_image",
         title: thread.title,
         description: sanitizedDescription,
         images: thread.imageUrl,
       },
       script: [
         {
-          type: 'application/ld+json',
+          type: "application/ld+json",
           children: JSON.stringify(jsonLd),
         },
       ],
     };
   } catch (error) {
-    console.error('Failed to fetch data for metadata', error);
+    console.error("Failed to fetch data for metadata", error);
     return {
-      title: 'Error Loading Thread',
-      description: 'An error occurred while loading this thread.',
+      title: "Error Loading Thread",
+      description: "An error occurred while loading this thread.",
     };
   }
 }
@@ -166,49 +179,73 @@ export default async function Page({ params }: { params: { id: string } }) {
 
   return (
     <div className="bg-gray-100 py-10 min-h-screen">
-    <div className="max-w-screen-2xl mx-auto px-2 2xl:px-0">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Sidebar */}
-        <aside className="xl:col-span-2 col-span-12">
-            <LeftFilter  />
+      <div className="max-w-screen-2xl mx-auto px-2 2xl:px-0">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Sidebar */}
+          <aside className="xl:col-span-2 col-span-12">
+            <LeftFilter />
           </aside>
 
-        {/* Main Content */}
-        <section className="col-span-12 xl:col-span-7">
-          <div className="relative w-full h-fit mb-4  rounded-lg">
-            <Suspense fallback={<DiscussionSkeleton/>}>
-              <Discussion threadID={id} />
-            </Suspense>
-          </div>
+          {/* Main Content */}
+          <section className="col-span-12 xl:col-span-7">
+            <div className="relative w-full h-fit mb-4  rounded-lg">
+              <Suspense fallback={<DiscussionSkeleton />}>
+                <Discussion threadID={id} />
+              </Suspense>
+            </div>
 
-          <div className="relative w-full h-fit  rounded-lg">
-            <Suspense fallback={<DiscussionPostSkeleton/>}>
-              <DiscussionPosts threadID={id} />
-            </Suspense>
-          </div>
-        </section>
+            <div className="relative w-full h-fit  rounded-lg">
+              <Suspense fallback={<DiscussionPostSkeleton />}>
+                <DiscussionPosts threadID={id} />
+              </Suspense>
+            </div>
+          </section>
 
-        {/* Right Sidebar */}
-        <aside className="col-span-12 xl:col-span-3">
-          <div className="bg-white shadow-sm rounded-xl p-6 sticky top-10">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-              Create a Discussion
-            </h3>
-            <p className="text-sm text-gray-600 mb-6">
-              Share your thoughts, ask questions, or start a conversation.
-            </p>
-            <Link
-              className={buttonVariants({
-                className: "w-full mt-4 mb-6 text-sm",
-              })}
-              href="/community/create"
-            >
-              New Discussion
-            </Link>
-          </div>
-        </aside>
+          {/* Right Sidebar */}
+          <aside className="col-span-12 xl:col-span-3">
+            {/* Create a Discussion Section */}
+            <div className="sticky top-10">
+              <div className="bg-white shadow-sm rounded-xl p-6  mb-6">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                  Create a Discussion
+                </h3>
+                <p className="text-sm text-gray-600 mb-6">
+                  Share your thoughts, ask questions, or start a conversation.
+                </p>
+                <Link
+                  className={buttonVariants({
+                    className: "w-full mt-4 mb-6 text-sm",
+                  })}
+                  href="/community/create"
+                >
+                  New Discussion
+                </Link>
+              </div>
+
+              <RelatedBlogPost threadID={id} />
+
+              {/* Explore More Blogs Section */}
+              <div className="bg-white shadow-sm rounded-xl p-6 ">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                  Explore Articles
+                </h3>
+                <p className="text-sm text-gray-600 mb-6">
+                  Discover more insightful articles and expand your knowledge.
+                </p>
+                <Link
+                  className={buttonVariants({
+                    className: "w-full mt-4 mb-6 text-sm",
+                    variant: "outline",
+                  })}
+                  href="/blog"
+                >
+                  Visit Blog
+                </Link>
+              </div>
+            </div>
+          </aside>
+        </div>
       </div>
     </div>
-  </div>
   );
 }
