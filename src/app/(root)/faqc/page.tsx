@@ -50,13 +50,13 @@ const FAQPage: React.FC = () => {
                 What is Kinscare?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base">
                   Kinscare is a platform that connects caregivers with job
                   opportunities in adult family homes, home care agencies, staffing
                   agencies, skilled nursing facilities, assisted living homes, and
                   private residences.
                 </p>
-                <p className="mt-2">
+                <p className="mt-2 text-base">
                   Whether you’re a CNA, HCA, or companion/sitter, you can find
                   full-time, part-time, live-in, weekend, and on-call positions in
                   your area.
@@ -70,7 +70,7 @@ const FAQPage: React.FC = () => {
                 Who should use Kinscare?
               </AccordionTrigger>
               <AccordionContent>
-                <p>Kinscare is for anyone looking for a caregiving job, including:</p>
+                <p className="text-base"> Kinscare is for anyone looking for a caregiving job, including:</p>
                 <ul className="list-disc list-inside ml-4 mt-2">
                   <li>Certified Nursing Assistants (CNAs) / Nursing Assistants-Certified (NACs)</li>
                   <li>Home Care Aides (HCAs)</li>
@@ -116,7 +116,7 @@ const FAQPage: React.FC = () => {
                 Why choose Kinscare?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base"> 
                   Kinscare is designed specifically for caregivers, making it easy,
                   fast, and free to find nearby job opportunities. Unlike general job
                   boards, we focus only on caregiving roles, saving you time and
@@ -131,7 +131,7 @@ const FAQPage: React.FC = () => {
                 Do all caregiving jobs require a license?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base"> 
                   Many caregiving jobs require a state-issued license, such as:
                 </p>
                 <ul className="list-disc list-inside ml-4 mt-2">
@@ -152,7 +152,7 @@ const FAQPage: React.FC = () => {
                 Who hires caregivers on Kinscare?
               </AccordionTrigger>
               <AccordionContent>
-                <p>Caregivers using Kinscare get hired by:</p>
+                <p className="text-base"> Caregivers using Kinscare get hired by:</p>
                 <ul className="list-disc list-inside ml-4 mt-2">
                   <li>Adult Family Homes</li>
                   <li>Assisted Living Facilities</li>
@@ -171,7 +171,7 @@ const FAQPage: React.FC = () => {
                 What happens after I find a job through Kinscare?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base"> 
                   Once you accept a job, your employer takes over from there. Kinscare
                   does not handle payroll, scheduling, or employment-related matters.
                 </p>
@@ -184,7 +184,7 @@ const FAQPage: React.FC = () => {
                 Interested in becoming a caregiver?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base"> 
                   If you're considering a career in caregiving, go for it! Caregiving
                   is:
                 </p>
@@ -214,7 +214,7 @@ const FAQPage: React.FC = () => {
                 What types of healthcare programs can I pursue beyond caregiving?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base"> 
                   Many caregivers use their experience to advance into healthcare
                   careers such as:
                 </p>
@@ -237,7 +237,7 @@ const FAQPage: React.FC = () => {
                 Does caregiving experience help with nursing and healthcare programs?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base"> 
                   Yes! Many nursing and allied healthcare programs require direct
                   patient care experience. Being a CNA is one of the best ways to
                   gain this experience before applying to nursing school or other
@@ -252,7 +252,7 @@ const FAQPage: React.FC = () => {
                 What caregiving jobs count as clinical experience for advanced healthcare programs?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base"> 
                   Many healthcare programs require "hands-on" patient care experience
                   before admission. CNA jobs are widely accepted because they involve
                   direct care, assisting with daily activities, and working in
@@ -281,7 +281,7 @@ const FAQPage: React.FC = () => {
                 Where can I find training for a CNA, HCA, or other healthcare role?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base"> 
                   You can find local training programs for CNAs, HCAs, and other
                   healthcare careers at:
                 </p>
@@ -304,7 +304,7 @@ const FAQPage: React.FC = () => {
                 How much does it cost to use Kinscare?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base"> 
                   Kinscare is completely free for caregivers looking for jobs. There
                   are no fees to sign up, search, or apply for jobs.
                 </p>

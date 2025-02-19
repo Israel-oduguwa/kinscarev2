@@ -48,7 +48,7 @@ const ProviderFAQPage: React.FC = () => {
                 What is Kinscare?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+               <p className="text-base">
                   Kinscare is a platform that connects providers and individuals
                   seeking caregivers. Whether you need a Certified Nursing
                   Assistant (CNA), Home Care Assistant (HCA), or companion
@@ -65,7 +65,7 @@ const ProviderFAQPage: React.FC = () => {
                 Who should use Kinscare?
               </AccordionTrigger>
               <AccordionContent>
-                <p>Kinscare is designed for:</p>
+               <p className="text-base">Kinscare is designed for:</p>
                 <ul className="list-disc list-inside ml-4 mt-2">
                   <li>Adult Family Homes</li>
                   <li>Home Care &amp; Staffing Agencies</li>
@@ -86,7 +86,7 @@ const ProviderFAQPage: React.FC = () => {
                 Why use Kinscare?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+               <p className="text-base">
                   Whether you're a staffing coordinator, recruiter, or a family
                   member looking for a caregiver, Kinscare simplifies your
                   search.
@@ -117,7 +117,7 @@ const ProviderFAQPage: React.FC = () => {
                 How do I find a caregiver?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+               <p className="text-base">
                   The best approach is to post a job and actively search for
                   candidates.
                 </p>
@@ -146,7 +146,7 @@ const ProviderFAQPage: React.FC = () => {
                 How do I contact a caregiver?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+               <p className="text-base">
                   Click the “View Contact Details” button on a caregiver’s
                   profile to see their phone number and email.
                 </p>
@@ -164,7 +164,7 @@ const ProviderFAQPage: React.FC = () => {
                 How does Kinscare find caregivers?
               </AccordionTrigger>
               <AccordionContent>
-                <p>We actively recruit caregivers through:</p>
+               <p className="text-base">We actively recruit caregivers through:</p>
                 <ul className="list-disc list-inside ml-4 mt-2">
                   <li>Local vocational programs &amp; community colleges</li>
                   <li>Barbershops &amp; hair salons (common community hubs)</li>
@@ -181,7 +181,7 @@ const ProviderFAQPage: React.FC = () => {
                 Are all caregivers on Kinscare licensed?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+               <p className="text-base">
                   Most caregivers on Kinscare are licensed, having completed
                   state-administered training and exams.
                 </p>
@@ -199,7 +199,7 @@ const ProviderFAQPage: React.FC = () => {
                 What happens after I find a caregiver?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+               <p className="text-base">
                   Kinscare connects you with caregivers but does not handle:
                 </p>
                 <ul className="list-disc list-inside ml-4 mt-2">
@@ -219,7 +219,7 @@ const ProviderFAQPage: React.FC = () => {
                 How much does Kinscare cost?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+               <p className="text-base">
                   Kinscare operates on a pay-as-you-go model, similar to
                   Uber—not a subscription service like Netflix.
                 </p>
@@ -244,7 +244,7 @@ const ProviderFAQPage: React.FC = () => {
                 Does Kinscare have hidden fees?
               </AccordionTrigger>
               <AccordionContent>
-                <p>No. Kinscare has no:</p>
+               <p className="text-base">No. Kinscare has no:</p>
                 <ul className="list-disc list-inside ml-4 mt-2">
                   <li>✅ Initiation or setup fees</li>
                   <li>✅ Onboarding fees</li>
@@ -260,7 +260,7 @@ const ProviderFAQPage: React.FC = () => {
                 How long is the free trial?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+               <p className="text-base">
                   Kinscare offers a 7-day free trial to help you explore our
                   platform and find caregivers. If you see value in our service,
                   your payment helps fund caregiver recruitment efforts in your

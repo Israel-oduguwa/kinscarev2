@@ -71,7 +71,7 @@ async function Comments({ postID, threadID }: any) {
                       />
                     </div>
                   </div>
-                  <div className="prose prose-blockquote:text-gray-500  prose-blockquote:bg-gray-50 prose-blockquote:py-1 prose-sm prose-gray">
+                  <div className="prose-sm prose-p:m-0 prose-blockquote:text-gray-500  prose-blockquote:bg-gray-50 prose-blockquote:py-1  prose-gray">
                     <Interweave content={reply.content} />
                   </div>
                   <div>
@@ -95,7 +95,7 @@ async function Comments({ postID, threadID }: any) {
           );
         })
       ) : (
-        <p>No replies yet.</p>
+        <p className="text-sm">No replies yet.</p>
       )}
       <PostComments threadId={threadID} postID={postID} />
     </div>

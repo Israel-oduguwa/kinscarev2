@@ -21,7 +21,7 @@ const RichTextRendering: React.FC<RichTextProps> = ({
   };
 
   return (
-    <div className="prose prose-h1:mx-2 prose-h2:mx-2">
+    <div className="prose prose-h1:mx-2 prose-p:m-0 prose-h2:mx-2">
       {/* Render truncated or full HTML content based on the state */}
       <Interweave content={isExpanded ? fullContent : truncatedContent} />
 

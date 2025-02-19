@@ -42,14 +42,14 @@ const ExplorerFAQPage: React.FC = () => {
                 What are Kinscare’s goals?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base">
                   Kinscare aims to connect individuals interested in nursing and
                   allied healthcare with the resources they need to explore, enter,
                   and advance in these professions. Our goal is to provide clear,
                   up-to-date information about career pathways, training programs,
                   and job opportunities.
                 </p>
-                <p className="mt-2">
+                <p className="mt-2 text-base">
                   Beyond information, we hope to build a supportive community where
                   users can share insights, experiences, and encouragement. As this
                   community grows, employers may engage by posting job
@@ -66,7 +66,7 @@ const ExplorerFAQPage: React.FC = () => {
                 How can Kinscare help me explore healthcare careers?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base">
                   Kinscare provides personalized guidance to help you discover which
                   nursing or allied healthcare profession aligns with your interests,
                   skills, and goals. We offer:
@@ -98,7 +98,7 @@ const ExplorerFAQPage: React.FC = () => {
                 Why does Kinscare focus on nursing and allied healthcare professions?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base">
                   We focus on nursing and allied healthcare professions because these
                   careers offer:
                 </p>
@@ -148,7 +148,7 @@ const ExplorerFAQPage: React.FC = () => {
                 allied healthcare or nursing?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base">
                   Absolutely! You do not need prior healthcare experience to enter
                   the field. However, most nursing and allied healthcare training
                   programs require or strongly prefer applicants with direct patient
@@ -170,7 +170,7 @@ const ExplorerFAQPage: React.FC = () => {
                 How do I know which healthcare career is right for me?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base">
                   Choosing the right career depends on your interests, personality,
                   and long-term goals. Start by using Kinscare’s chat feature to
                   explore different career paths. Here are some factors to consider:
@@ -206,7 +206,7 @@ const ExplorerFAQPage: React.FC = () => {
                 healthcare?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base">
                   The minimum qualifications vary widely depending on the career
                   path:
                 </p>
@@ -243,7 +243,7 @@ const ExplorerFAQPage: React.FC = () => {
                 Can I cross-train or combine different healthcare roles?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base">
                   Yes! While not common, cross-training in multiple healthcare fields
                   can make you more versatile and increase your earning potential.
                 </p>
@@ -275,7 +275,7 @@ const ExplorerFAQPage: React.FC = () => {
                 Washington or Oregon?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base">
                   If you have a foreign healthcare license, you may apply for
                   license endorsement in Washington or Oregon. The process includes:
                 </p>
@@ -308,7 +308,7 @@ const ExplorerFAQPage: React.FC = () => {
                 Where can I find schools or training programs near me?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base">
                   Use Kinscare’s chat feature to discover nearby colleges and
                   universities offering nursing and allied healthcare programs. You
                   can explore program details, tuition costs, admission deadlines,
@@ -324,7 +324,7 @@ const ExplorerFAQPage: React.FC = () => {
                 professionals?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base">
                   The healthcare industry is one of the fastest-growing sectors in
                   the U.S. due to:
                 </p>
@@ -356,7 +356,7 @@ const ExplorerFAQPage: React.FC = () => {
                 How can I start applying for healthcare training programs?
               </AccordionTrigger>
               <AccordionContent>
-                <p>By joining Kinscare, you can:</p>
+                <p className="text-base">By joining Kinscare, you can:</p>
                 <ul className="list-disc list-inside ml-4 mt-2">
                   <li>
                     Stay updated on information sessions and application deadlines.
@@ -376,7 +376,7 @@ const ExplorerFAQPage: React.FC = () => {
                 What are the career advancement opportunities in healthcare?
               </AccordionTrigger>
               <AccordionContent>
-                <p>
+                <p className="text-base">
                   Healthcare offers multiple paths for career growth, including:
                 </p>
                 <ol className="list-decimal list-inside ml-4 mt-2 space-y-2">

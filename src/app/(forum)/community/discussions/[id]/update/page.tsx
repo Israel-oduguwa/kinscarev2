@@ -123,7 +123,6 @@ const Page = (props: { params: Promise<{ id: string }> }) => {
   console.log(content);
   return (
     <>
-      <ForumDynamicNavbar/>
       {!loading ? (
         <div className="mt-14 flex items-center h-full max-w-4xl mx-auto">
           <div className="relative bg-white w-full h-fit p-4 rounded-lg space-y-6">

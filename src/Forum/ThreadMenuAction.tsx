@@ -1,48 +1,65 @@
 "use client";
-import React, { useState } from "react";
-import QuoteButton from "./OuoteButton";
-import MongoContext from "@/app/MongoContext";
-import { useContext } from "react";
+import React, { useState, useContext } from "react";
+import Link from "next/link";
+import axios from "axios";
+import { Loader2, Ellipsis } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Menubar,
   MenubarContent,
   MenubarItem,
   MenubarMenu,
-  MenubarSeparator,
   MenubarTrigger,
 } from "@/components/ui/menubar";
-import UpdatePost from "./UpdateForum/UpdatePost";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Ellipsis } from "lucide-react";
-import DialogWrapper from "@/components/DialogWrapper";
-import DeletePost from "./UpdateForum/DeletePost";
-import Link from "next/link";
-import axios from "axios";
-function ThreadMenuAction({ threadID, authorID }: any) {
-  const mongodb = useContext(MongoContext);
-  const { user }: any = mongodb;
-  // State for controlling dialogs
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import MongoContext from "@/app/MongoContext";
+import { useRouter } from "next/navigation";
+
+function ThreadMenuAction({ threadID, authorID, usage }: any) {
+  const { user, userData }: any = useContext(MongoContext);
+  const router = useRouter()
+  // State for controlling dialogs and deletion status
   const [isEditOpen, setEditOpen] = useState(false);
   const [isDeleteOpen, setDeleteOpen] = useState(false);
   const [isReportOpen, setReportOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   // Open and close handlers for dialogs
   const openEditDialog = () => setEditOpen(true);
-  const closeEditDialog = () => setEditOpen(false);
-  const del = async () => {
-    const del = await axios.post(
-      `https://api.kinscare.org/api/v1/forum/threads/${threadID}`
-    );
-    // console.log(del)
-  };
   const openDeleteDialog = () => setDeleteOpen(true);
-  const closeDeleteDialog = () => setDeleteOpen(false);
+  const closeDeleteDialog = () => {
+    setDeleteOpen(false);
+    setDeleteError("");
+  };
 
-  const openReportDialog = () => setReportOpen(true);
-  const closeReportDialog = () => setReportOpen(false);
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    setDeleteError("");
+    try {
+      const payload = {
+        userID: userData.userID,
+      };
+      const response = await axios.post(
+        `http://localhost:8081/api/v1/forum/delete-thread/${threadID}`,
+        payload
+      );
+      // TODO: Update your UI accordingly after deletion
+      closeDeleteDialog();
+      router.push('/community')
+    } catch (error) {
+      console.error("Deletion error:", error);
+      setDeleteError("Failed to delete the thread. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
-  // console.log(user.customData.userID);
-  // when editing open a modal
   return (
     <>
       {user && user.customData.userID === authorID && (
@@ -52,51 +69,53 @@ function ThreadMenuAction({ threadID, authorID }: any) {
               <Ellipsis />
             </MenubarTrigger>
             <MenubarContent>
-              {/* <MenubarItem>
-              <p className="text-gray-800 antialiased">Share Link</p>
-            </MenubarItem> */}
-
               <div className="py-2">
-                <>
-                  {/* <MenubarSeparator className="border-gray-100 border" /> */}
-
-                  <Link href={`/community/discussions/${threadID}/update`}>
-                    <MenubarItem onClick={openEditDialog}>
-                      <p className="text-gray-800 antialiased">Edit</p>
-                    </MenubarItem>
-                  </Link>
-                </>
-
-                {/* <MenubarItem onClick={del}>
-                    <p className="text-red-700 antialiased">Delete</p>
-                  </MenubarItem> */}
+                <Link href={`/community/discussions/${threadID}/update`}>
+                  <MenubarItem onClick={openEditDialog}>
+                    <p className="text-gray-800 antialiased">Edit</p>
+                  </MenubarItem>
+                </Link>
+                <MenubarItem onClick={openDeleteDialog}>
+                  <p className="text-red-700 antialiased">Delete</p>
+                </MenubarItem>
               </div>
             </MenubarContent>
           </MenubarMenu>
         </Menubar>
       )}
 
-      {/* <DialogWrapper
-        width="sm:max-w-[400px]"
-        isOpen={isDeleteOpen}
-        onClose={closeDeleteDialog}
-      
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={isDeleteOpen}
+        onOpenChange={(open) => !open && closeDeleteDialog()}
       >
-        <DeletePost
-          close={closeDeleteDialog}
-          usage={usage}
-          // content={content}
-          postID={usage === "comments" ? replyID : postID}
-        />
-      </DialogWrapper> */}
-
-      {/* <DialogWrapper
-        isOpen={isReportOpen}
-        onClose={closeReportDialog}
-        dialogTitle="Report Post"
-      >
-        <ReportPost postID={postID} />
-      </DialogWrapper> */}
+        <DialogContent>
+          <DialogDescription>
+            Are you sure you want to delete this thread?
+          </DialogDescription>
+          {deleteError && (
+            <p className="text-red-500 text-sm mt-2">{deleteError}</p>
+          )}
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={closeDeleteDialog}
+              className="py-0 m-0"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="default"
+              onClick={handleDelete}
+              className="py-1 px-6"
+              disabled={isDeleting}
+            >
+              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Delete Thread
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

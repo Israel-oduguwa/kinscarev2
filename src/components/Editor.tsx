@@ -872,35 +872,36 @@ function TextEditor({
   // console.log(previousContent)
   return (
     <>
-      {usage && usage === "posts" ? (
+        {usage === "posts" ? (
         <>
           <BubbleMenu editor={editor} tippyOptions={{ placement: "top-end" }}>
             <PostsToolBar editor={editor} />
           </BubbleMenu>
-          <div className="discussion-content prose prose-blockquote:my-2">
-            <EditorContent  editor={editor} />
+          <div className="discussion-content prose prose-p:m-0 prose-sm max-w-none p-3">
+            <EditorContent editor={editor} />
           </div>
         </>
       ) : (
         <>
-          <div className="flex flex-col justify-stretch min-h-[300px] p-4 bg-gray-100 rounded-xl">
+          <div className="flex flex-col min-h-[300px] p-4 bg-gray-100 rounded-xl w-full">
             <div className="mb-2">
               {!isMobile ? (
-                <ToolBar editor={editor} />
-              ) : (
-                <FloatingMenu
-                  editor={editor}
-                  tippyOptions={{ placement: "top" }}
-                >
+                <div className="overflow-x-auto">
                   <ToolBar editor={editor} />
+                </div>
+              ) : (
+                <FloatingMenu editor={editor} tippyOptions={{ placement: "top" }}>
+                  <div className="overflow-x-auto">
+                    <ToolBar editor={editor} />
+                  </div>
                 </FloatingMenu>
               )}
             </div>
-            <div className="tiptap-resume  prose-lg ">
+            <div className="tiptap-resume prose-sm prose-p:m-0 max-w-none p-3">
               <EditorContent editor={editor} />
             </div>
           </div>
-          <div className="word-count">
+          <div className="mt-2">
             <WordCountAndRanking editor={editor} />
           </div>
         </>
