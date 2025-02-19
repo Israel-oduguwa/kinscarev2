@@ -48,30 +48,41 @@ const pricingPlans = [
     title: "Daily Plan",
     price: "$23.99",
     stripePriceId: "price_1QXcozAoahxG9SLGGelfYlKJ",
-    description:
-      "Perfect for short-term projects or temporary needs. Get access for 24 hours.",
+    best: "Exploring caregivers before committing",
+    description: `Best for exploring caregivers before committing or temporary needs. Get access for 24 hours.`,
     features: [
       "24-hour access",
       "Full feature set",
-      "Priority support during active period",
+      "Email support during active period",
     ],
   },
   {
     id: "weekly",
     title: "Weekly Plan",
+    best: "",
     price: "$63.99",
     stripePriceId: "price_1QSCneAoahxG9SLGCHhFdN4C",
     description:
       "Ideal for weekly usage. Enjoy full access for 7 days at a discounted rate.",
-    features: ["7-day access", "Full feature set", "Priority email support"],
+    features: [
+      "7-day access",
+      "Full feature set",
+      "Email support during active period",
+    ],
   },
   {
     id: "monthly",
     title: "Monthly Plan",
+    best: "",
     price: "$93.99",
     stripePriceId: "price_1QXcpZAoahxG9SLGjWJp4KfP",
-    description: "Best value! Get 30 days of unlimited access to all features.",
-    features: ["30-day access", "Full feature set", "24/7 premium support"],
+    description:
+      "Best value! Get 30 days of unlimited access to all features. for Ongoing hiring & workforce planning",
+    features: [
+      "30-day access",
+      "Full feature set",
+      "Email support during active period",
+    ],
   },
 ];
 
@@ -95,7 +106,6 @@ export default function Pricing() {
             or NAR licenses. Get started for free, no credit card required.
           </p>
         </div>
-
         {/* Pricing Plans Section */}
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
           {pricingPlans.map((plan) => (
@@ -114,9 +124,7 @@ export default function Pricing() {
                 <p className="text-4xl font-extrabold text-[hsl(var(--foreground))] mt-4">
                   {plan.price}
                 </p>
-                <p className="text-[hsl(var(--muted-foreground))] mt-4">
-                  {plan.description}
-                </p>
+                <p className="text-gray-600 mt-4">{plan.description}</p>
                 <ul className="mt-6 space-y-4">
                   {plan.features.map((feature, index) => (
                     <li
@@ -144,17 +152,180 @@ export default function Pricing() {
             </div>
           ))}
         </div>
-
         {/* Note Section */}
-        <div className="bg-[hsl(var(--secondary))] rounded-[var(--radius)] p-6 shadow-sm">
+        {/* <div className="bg-[hsl(var(--secondary))] rounded-[var(--radius)] p-6 shadow-sm">
           <p className="text-sm text-[hsl(var(--secondary-foreground))] text-center">
             Kinscare is like Uber (pay for use) and is NOT like Netflix
             (subscription). That is, Kinscare is NOT a subscription but is a
             pay-for-use service.
           </p>
+        </div> */}
+        <div className="max-w-screen-xl mx-auto space-y-6 px-6 lg:px-16 py-10">
+          {/* Every Plan Includes */}
+          <div className="space-y-8">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] bg-clip-text text-transparent">
+              Every Plan Includes
+            </h2>
+            <ul className="space-y-2 text-lg">
+              <li className="flex items-start gap-4 py-4 rounded-[var(--radius)]  transition-colors duration-200">
+                <div className="shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                  <svg
+                    className="w-4 h-4 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+                <span>Full caregiver registry access</span>
+              </li>
+              <li className="flex items-start gap-4 py-4 rounded-[var(--radius)]  transition-colors duration-200">
+                <div className="shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                  <svg
+                    className="w-4 h-4 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                    />
+                  </svg>
+                </div>
+                <span>
+                  Direct caregiver contact details – No third-party scheduling
+                </span>
+              </li>
+              <li className="flex items-start gap-4 py-4 rounded-[var(--radius)]  transition-colors duration-200">
+                <div className="shrink-0 w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
+                  <svg
+                    className="w-4 h-4 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                    />
+                  </svg>
+                </div>
+                <span>Instant job posting & applicant tracking</span>
+              </li>
+              <li className="flex items-start gap-4 py-4 rounded-[var(--radius)]  transition-colors duration-200">
+                <div className="shrink-0 w-6 h-6 bg-pink-100 rounded-full flex items-center justify-center">
+                  <svg
+                    className="w-4 h-4 text-pink-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </div>
+                <span>No hidden fees, no commitments – Cancel anytime</span>
+              </li>
+            </ul>
+           
+          </div>
+          {/* Why Direct Contact Matters */}
+          <div className="bg-[hsl(var(--secondary))] p-8 rounded-[var(--radius)]">
+            <h2 className="text-3xl font-bold mb-4">
+              Why Direct Contact Matters
+            </h2>
+            <p className="text-lg text-[hsl(var(--muted-foreground))] mb-6">
+              Tired of interview no-shows? When you can't communicate directly
+              with candidates, it's hard to confirm appointments, follow up, or
+              assess real interest.
+            </p>
+            <p className="text-lg text-[hsl(var(--muted-foreground))]">
+              With KinsCare, you contact caregivers directly—no middlemen, no
+              scheduling barriers. This means fewer no-shows and better hiring
+              outcomes.
+            </p>
+          </div>
+
+          {/* Cancel Anytime */}
+          <div className="bg-gradient-to-r from-[hsl(var(--primary))]/10 to-[hsl(var(--accent))]/10 p-8 rounded-[var(--radius)]">
+            <h2 className="text-3xl font-bold mb-4">
+              Cancel Anytime – No Auto-Renewals
+            </h2>
+            <p className="text-lg text-[hsl(var(--muted-foreground))] mb-6">
+              KinsCare is like Uber: you pay for access only when you need it.
+            </p>
+            <ul className="list-disc pl-6 space-y-3 text-[hsl(var(--muted-foreground))]">
+              <li>No long-term commitments</li>
+              <li>No automatic renewals</li>
+              <li>Start and stop whenever hiring needs arise</li>
+            </ul>
+          </div>
+
+          {/* FAQs */}
+          <div className="space-y-8">
+            <h2 className="text-3xl font-bold">
+              💡 Still have questions? Here's what providers want to know:
+            </h2>
+            <div className="space-y-6">
+              <div className="border-b pb-6">
+                <h3 className="text-xl font-semibold">
+                  Q: What happens when my plan expires?
+                </h3>
+                <p className="mt-2 text-[hsl(var(--muted-foreground))]">
+                  A: Your access ends, but you can renew anytime.
+                </p>
+              </div>
+              <div className="border-b pb-6">
+                <h3 className="text-xl font-semibold">
+                  Q: Does KinsCare handle hiring and vetting caregivers?
+                </h3>
+                <p className="mt-2 text-[hsl(var(--muted-foreground))]">
+                  A: No, KinsCare is not a staffing agency. You contact and
+                  recruit caregivers directly.
+                </p>
+              </div>
+              <div className="border-b pb-6">
+                <h3 className="text-xl font-semibold">
+                  Q: Can I hire caregivers for different job types?
+                </h3>
+                <p className="mt-2 text-[hsl(var(--muted-foreground))]">
+                  A: Yes! Find caregivers for full-time, part-time, live-in,
+                  on-call, or weekend shifts.
+                </p>
+              </div>
+              <div className="pb-6">
+                <h3 className="text-xl font-semibold">
+                  Q: Can I cancel my plan?
+                </h3>
+                <p className="mt-2 text-[hsl(var(--muted-foreground))]">
+                  A: Yes! There are no contracts, and you can cancel anytime.
+                </p>
+              </div>
+            </div>
+            {/* <div className="text-center">
+              <Button variant="outline" className="px-12 py-6 text-lg">
+                🔍 Need more details? Talk to Us
+              </Button>
+            </div> */}
+          </div>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 }

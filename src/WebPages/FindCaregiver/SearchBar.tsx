@@ -50,7 +50,7 @@ const SearchBar = ({ availability, licenses }: any) => {
         onValueChange={setSelectedShifts}
         defaultValue={selectedShifts}
         placeholder="Select Shift Types"
-        label="Select shift"
+        label="Select shift type"
         isAnimation={false}
         maxCount={5}
       />
@@ -59,7 +59,7 @@ const SearchBar = ({ availability, licenses }: any) => {
       <MultiSelect
         options={licenseOptions}
         onValueChange={setSelectedLicenses}
-        label="Select shift type"
+        label="Select license"
         defaultValue={selectedLicenses}
         placeholder="Select Licenses"
         isAnimation={false}

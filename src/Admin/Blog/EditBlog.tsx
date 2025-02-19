@@ -137,20 +137,25 @@ interface Blog {
 }
 
 const categoriesOptions = [
-  { label: "Technology", slug: "technology" },
-  { label: "Resume", slug: "resume" },
-  { label: "Job", slug: "job" },
-  { label: "Career", slug: "career" },
-  { label: "ATS", slug: "ats" },
+  { label: "Profession", slug: "profession" },
+  { label: "Program", slug: "program" },
+  { label: "State", slug: "state" },
+  { label: "Healthcare", slug: "healthcare" },
+  { label: "Medical", slug: "medical" },
+  { label: "Wellness", slug: "wellness" },
+  { label: "Patient Services", slug: "patient-services" },
+  { label: "Insurance", slug: "insurance" },
 ];
 
+// Tags for your blog posts
 const tagsOptions = [
-  { label: "AI", value: "AI" },
-  { label: "JavaScript", value: "JavaScript" },
-  { label: "Startup", value: "Startup" },
-  { label: "Heading", value: "Heading" },
-  { label: "Simple Resume", value: "Simple Resume" },
-  { label: "Professional Summary", value: "Professional Summary" },
+  { label: "Nursing", value: "nursing" },
+  { label: "Allied Health", value: "allied-health" },
+  { label: "Post-Bachelor", value: "post-bachelor" },
+  { label: "Bachelor's", value: "bachelors" },
+  { label: "Associates", value: "associates" },
+  { label: "Diploma", value: "diploma" },
+  { label: "Certificates", value: "certificates" },
 ];
 
 export default function EditBlog() {

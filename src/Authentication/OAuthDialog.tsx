@@ -356,32 +356,6 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
                   </div>
                 </>
               )}
-
-              {!loading && (
-                <p className="mt-4 text-center text-sm text-gray-500">
-                  Don’t have social accounts?{" "}
-                  <button
-                    onClick={() => {
-                      setIsDialogOpen(false);
-                      setIsEmailDialogOpen(true);
-                    }}
-                    className="text-blue-500 underline"
-                  >
-                    Signup with email
-                  </button>
-                </p>
-              )}
-            </DialogContent>
-          </Dialog>
-
-          {/* Email Signup Dialog */}
-          <Dialog open={isEmailDialogOpen} onOpenChange={setIsEmailDialogOpen}>
-            <DialogContent className="rounded-lg shadow-xl max-h-full md:h-auto overflow-y-auto p-6 bg-white max-w-lg">
-              <div className="">
-                <DialogTitle className="text-3xl justify-center font-bold tracking-tight mb-2 text-center">
-                  Signup with Email
-                </DialogTitle>
-              </div>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="flex gap-4">
                   <div className="w-1/2">
@@ -538,10 +512,21 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
                     "Signup"
                   )}
                 </Button>
-                <Button onClick={goBack} variant="outline">
+                {/* <Button onClick={goBack} variant="outline">
                   <ArrowBigLeft /> Back to social signup
-                </Button>
+                </Button> */}
               </form>
+            </DialogContent>
+          </Dialog>
+
+          {/* Email Signup Dialog */}
+          <Dialog open={isEmailDialogOpen} onOpenChange={setIsEmailDialogOpen}>
+            <DialogContent className="rounded-lg shadow-xl max-h-full md:h-auto overflow-y-auto p-6 bg-white max-w-lg">
+              <div className="">
+                <DialogTitle className="text-3xl justify-center font-bold tracking-tight mb-2 text-center">
+                  Signup with Email
+                </DialogTitle>
+              </div>
             </DialogContent>
           </Dialog>
         </GoogleOAuthProvider>

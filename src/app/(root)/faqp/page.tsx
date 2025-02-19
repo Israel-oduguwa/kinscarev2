@@ -1,12 +1,11 @@
-// app/faq/page.tsx
+// app/providers-faq/page.tsx
 import React from "react";
-import Link from "next/link";
 import type { Metadata } from "next";
+import Link from "next/link";
 
-// Import your custom components (adjust the paths as needed)
+// Replace these with your actual component paths
 import Navbar from "@/WebPages/Navbar";
-
-// Import shadcn/ui Accordion components (or your own implementations)
+import Footer from "@/WebPages/Footer";
 import {
   Accordion,
   AccordionItem,
@@ -14,278 +13,341 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import Footer from "@/WebPages/Footer";
-// SEO metadata (Next.js 13/15 metadata API)
+
+// Example SEO metadata
 export const metadata: Metadata = {
-  title: "Frequently Asked Questions Providers | Kinscare",
+  title: "Frequently Asked Questions for Providers | Kinscare",
   description:
-    "Find answers to your questions about Kinscare – the service that helps you search, find, and contact caregivers near you.",
+    "Answers to common questions about Kinscare for providers and employers. Learn how to find and contact caregivers, our costs, free trial, and more.",
 };
 
-const FAQPage: React.FC = () => {
+const ProviderFAQPage: React.FC = () => {
   return (
     <>
-      {/* Navbar at the top */}
       <Navbar />
 
-      {/* Main content wrapper with some top margin */}
       <div className="mt-10">
         <div className="max-w-6xl py-20 mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Page heading */}
+          {/* Page Header */}
           <div className="p-4 border border-gray-300 mb-6 text-center rounded-lg bg-gray-100">
             <h1 className="text-4xl font-bold text-gray-900">
-              Frequently Asked Questions
+              Frequently Asked Questions (FAQs) for Providers and Employers
             </h1>
             <p className="mt-4 text-lg text-gray-600">
-              The best way to find local nurse aides (CNAs), home care
-              assistants (HCAs), and caregivers/companions looking for
-              full‑time, part‑time, live‑in, on‑call, and weekend jobs.
+              The most efficient way to connect with local CNAs, Home Care
+              Assistants (HCAs), and caregivers/companions looking for full-time,
+              part-time, weekend, live-in, and on-call opportunities.
             </p>
           </div>
 
-          {/* FAQ Accordion Section */}
-          <div className="mt-10 space-y-4">
-            <Accordion type="single" collapsible>
-              {/* Question 1 */}
-              <AccordionItem value="item-1">
-                <AccordionTrigger className="text-lg font-semibold">
-                  What is Kinscare?
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p>
-                    Kinscare is a service for searching, finding, and contacting
-                    caregivers near you who are looking for work, as well as for
-                    posting caregiver job openings.
-                  </p>
-                  <p className="mt-2">
-                    The caregivers on Kinscare seek full‑time, part‑time,
-                    live‑in, on‑call, and weekend jobs in adult family homes,
-                    home care agencies, staffing agencies, skilled nursing
-                    facilities, assisted living homes, and private homes.
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
+          {/* Accordion FAQ */}
+          <Accordion type="single" collapsible>
+            {/* 1. What is Kinscare? */}
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="text-lg font-semibold">
+                What is Kinscare?
+              </AccordionTrigger>
+              <AccordionContent>
+                <p>
+                  Kinscare is a platform that connects providers and individuals
+                  seeking caregivers. Whether you need a Certified Nursing
+                  Assistant (CNA), Home Care Assistant (HCA), or companion
+                  caregiver, Kinscare helps you find qualified candidates near
+                  you. Providers can also post caregiver job openings for better
+                  visibility.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
 
-              {/* Question 2 */}
-              <AccordionItem value="item-2">
-                <AccordionTrigger className="text-lg font-semibold">
-                  Who should use Kinscare?
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p>
-                    Anyone in need of a caregiver – whether you’re a family
-                    member looking for a companion or sitter for a loved one, a
-                    staffing coordinator at a nursing home seeking a CNA, or a
-                    recruiter at a home care agency looking for a home care
-                    aide.
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
+            {/* 2. Who should use Kinscare? */}
+            <AccordionItem value="item-2">
+              <AccordionTrigger className="text-lg font-semibold">
+                Who should use Kinscare?
+              </AccordionTrigger>
+              <AccordionContent>
+                <p>Kinscare is designed for:</p>
+                <ul className="list-disc list-inside ml-4 mt-2">
+                  <li>Adult Family Homes</li>
+                  <li>Home Care &amp; Staffing Agencies</li>
+                  <li>Skilled Nursing Facilities</li>
+                  <li>Assisted Living Homes</li>
+                  <li>Private Families Looking for Caregivers</li>
+                </ul>
+                <p className="mt-2">
+                  Caregivers on Kinscare seek full-time, part-time, live-in,
+                  weekend, and on-call opportunities in these settings.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
 
-              {/* Question 3 */}
-              <AccordionItem value="item-3">
-                <AccordionTrigger className="text-lg font-semibold">
-                  Why use Kinscare?
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p>
-                    Kinscare’s focus on caregivers and ease of use saves you
-                    time and money. Our targeted recruitment of job‑seeking
-                    caregivers near you makes us the most efficient service for
-                    pairing caregivers with those who need them.
-                  </p>
-                  <p className="mt-2 font-bold">
-                    Remember, lack of a caregiver has its own costs!
-                  </p>
-                  <p className="mt-2">
-                    Injury to the primary caregiver, schedule disruption,
-                    stress, overtime pay, staff turnover, and burnout are just
-                    some of the risks associated with not having a caregiver.
-                    These costs can be mitigated by hiring a caregiver for a few
-                    hours a day or a few days a week.
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
+            {/* 3. Why use Kinscare? */}
+            <AccordionItem value="item-3">
+              <AccordionTrigger className="text-lg font-semibold">
+                Why use Kinscare?
+              </AccordionTrigger>
+              <AccordionContent>
+                <p>
+                  Whether you're a staffing coordinator, recruiter, or a family
+                  member looking for a caregiver, Kinscare simplifies your
+                  search.
+                </p>
+                <ul className="list-disc list-inside ml-4 mt-2">
+                  <li>
+                    <strong>Find caregivers faster</strong> – Our platform
+                    focuses exclusively on caregivers actively looking for jobs.
+                  </li>
+                  <li>
+                    <strong>Save time &amp; money</strong> – No lengthy
+                    recruitment processes. Post a job and get applications
+                    directly.
+                  </li>
+                  <li>
+                    <strong>Reduce risks &amp; costs</strong> – Caregiver
+                    shortages lead to stress, burnout, overtime pay, and
+                    schedule disruptions. Hiring even part-time caregivers can
+                    help mitigate these issues.
+                  </li>
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
 
-              {/* Question 4 */}
-              <AccordionItem value="item-4">
-                <AccordionTrigger className="text-lg font-semibold">
-                  What is the best way to find a caregiver?
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p>
-                    Posting your job opening and simultaneously searching for
-                    caregivers is the most effective way to find the right
-                    match.
-                  </p>
-                  <p className="mt-2">
-                    When you post your job, caregivers nearby receive email and
-                    text alerts with details on how to apply and whom to
-                    contact.
-                  </p>
-                  <p className="mt-2">
-                    You can also search by availability (e.g., “Full time” or
-                    “Part time”) and by license (e.g., “CNA/NAC”, “HCA”, or
-                    “Companion”). We ’ll match the best caregivers to your
-                    criteria and show you their resumes along with additional
-                    recommendations.
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
+            {/* 4. How do I find a caregiver? */}
+            <AccordionItem value="item-4">
+              <AccordionTrigger className="text-lg font-semibold">
+                How do I find a caregiver?
+              </AccordionTrigger>
+              <AccordionContent>
+                <p>
+                  The best approach is to post a job and actively search for
+                  candidates.
+                </p>
+                <ul className="list-disc list-inside ml-4 mt-2">
+                  <li>
+                    <strong>Posting a job</strong> – Caregivers near you
+                    receive email and text alerts about your post, application
+                    process, and contact details.
+                  </li>
+                  <li>
+                    <strong>Searching for caregivers</strong> – Filter
+                    caregivers based on availability (full-time, part-time,
+                    live-in) and credentials (CNA/NAC, HCA, Companion).
+                  </li>
+                </ul>
+                <p className="mt-2">
+                  Once you find a match, you’ll see their resume, contact
+                  information, and additional recommended candidates.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
 
-              {/* Question 5 */}
-              <AccordionItem value="item-5">
-                <AccordionTrigger className="text-lg font-semibold">
-                  How can you contact a caregiver?
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p>
-                    Click on the “View Contact Details” button on a caregiver’s
-                    resume to see their contact information. We recommend using
-                    the Kinscare platform to reach out, so the caregiver
-                    receives an email and text alert notifying them of your
-                    inquiry.
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
+            {/* 5. How do I contact a caregiver? */}
+            <AccordionItem value="item-5">
+              <AccordionTrigger className="text-lg font-semibold">
+                How do I contact a caregiver?
+              </AccordionTrigger>
+              <AccordionContent>
+                <p>
+                  Click the “View Contact Details” button on a caregiver’s
+                  profile to see their phone number and email.
+                </p>
+                <p className="mt-2">
+                  For better response rates, contact caregivers directly through
+                  Kinscare, as they will receive an email and text alert
+                  prompting them to respond.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
 
-              {/* Question 6 */}
-              <AccordionItem value="item-6">
-                <AccordionTrigger className="text-lg font-semibold">
-                  How does Kinscare find caregivers?
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p>
-                    We connect with local training and vocational programs,
-                    community colleges, barbershops, hair salons, immigrant
-                    non-profit agencies, workforce development centers, county
-                    job initiatives, referrals, and even paid media to recruit
-                    caregivers.
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
+            {/* 6. How does Kinscare find caregivers? */}
+            <AccordionItem value="item-6">
+              <AccordionTrigger className="text-lg font-semibold">
+                How does Kinscare find caregivers?
+              </AccordionTrigger>
+              <AccordionContent>
+                <p>We actively recruit caregivers through:</p>
+                <ul className="list-disc list-inside ml-4 mt-2">
+                  <li>Local vocational programs &amp; community colleges</li>
+                  <li>Barbershops &amp; hair salons (common community hubs)</li>
+                  <li>Immigrant non-profits &amp; workforce centers</li>
+                  <li>County job initiatives &amp; referrals</li>
+                  <li>Targeted online and offline media campaigns</li>
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
 
-              {/* Question 7 */}
-              <AccordionItem value="item-7">
-                <AccordionTrigger className="text-lg font-semibold">
-                  Are all caregivers on Kinscare licensed?
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p>
-                    Most caregivers on Kinscare are licensed, meaning they have
-                    been trained and passed a state‑administered exam. You can
-                    filter your search by “CNA/NAC” or “HCA” to view licensed
-                    caregivers.
-                  </p>
-                  <p className="mt-2">
-                    However, not every caregiver role requires licensing—for
-                    example, companionship does not.
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
+            {/* 7. Are all caregivers on Kinscare licensed? */}
+            <AccordionItem value="item-7">
+              <AccordionTrigger className="text-lg font-semibold">
+                Are all caregivers on Kinscare licensed?
+              </AccordionTrigger>
+              <AccordionContent>
+                <p>
+                  Most caregivers on Kinscare are licensed, having completed
+                  state-administered training and exams.
+                </p>
+                <p className="mt-2">
+                  You can filter searches for CNA/NAC or HCA to find licensed
+                  caregivers. However, some caregiver roles, such as
+                  companionship, do not require licensing.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
 
-              {/* Question 8 */}
-              <AccordionItem value="item-8">
-                <AccordionTrigger className="text-lg font-semibold">
-                  What role does Kinscare play after you find a potential
-                  caregiver?
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p>
-                    Our role is to match qualified caregivers with those in
-                    need. We do not conduct background checks, handle payroll,
-                    or perform any additional caregiver onboarding.
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
+            {/* 8. What happens after I find a caregiver? */}
+            <AccordionItem value="item-8">
+              <AccordionTrigger className="text-lg font-semibold">
+                What happens after I find a caregiver?
+              </AccordionTrigger>
+              <AccordionContent>
+                <p>
+                  Kinscare connects you with caregivers but does not handle:
+                </p>
+                <ul className="list-disc list-inside ml-4 mt-2">
+                  <li>Background checks</li>
+                  <li>Payroll</li>
+                  <li>Onboarding or training</li>
+                </ul>
+                <p className="mt-2">
+                  You coordinate hiring directly with the caregiver.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
 
-              {/* Question 9 */}
-              <AccordionItem value="item-9">
-                <AccordionTrigger className="text-lg font-semibold">
-                  How much does it cost to use Kinscare?
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p>
-                    Kinscare is a pay‑for‑use service, much like Uber, rather
-                    than a subscription service like Netflix.
-                  </p>
-                  <p className="mt-2">
-                    After a 7‑day trial, our pricing is as follows: $16.99 for
-                    1‑day usage, $58.99 for 1‑week usage, or $83.99 for 30‑day
-                    usage.{" "}
-                    <span className="font-bold">
-                      Payments are NOT on autopay
-                    </span>
-                    – you must manually pay for each new period.
-                  </p>
-                  <p className="mt-2">
-                    Our revenues help fund the recruitment of caregivers and
-                    support workers in adjacent service industries.
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
+            {/* 9. How much does Kinscare cost? */}
+            <AccordionItem value="item-9">
+              <AccordionTrigger className="text-lg font-semibold">
+                How much does Kinscare cost?
+              </AccordionTrigger>
+              <AccordionContent>
+                <p>
+                  Kinscare operates on a pay-as-you-go model, similar to
+                  Uber—not a subscription service like Netflix.
+                </p>
+                <p className="mt-2">
+                  After a 7-day free trial, pricing is:
+                </p>
+                <ul className="list-disc list-inside ml-4 mt-2">
+                  <li>$16.99 for 1 day</li>
+                  <li>$58.99 for 1 week</li>
+                  <li>$83.99 for 30 days</li>
+                </ul>
+                <p className="mt-2">
+                  Payments are not auto-renewed, so you only pay when you need
+                  to recruit and can cancel anytime.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
 
-              {/* Question 10 */}
-              <AccordionItem value="item-10">
-                <AccordionTrigger className="text-lg font-semibold">
-                  Is Kinscare a subscription?
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p>
-                    No. Kinscare is a pay‑for‑use service operating similarly to
-                    Uber, not a subscription service.
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
+            {/* 10. Does Kinscare have hidden fees? */}
+            <AccordionItem value="item-10">
+              <AccordionTrigger className="text-lg font-semibold">
+                Does Kinscare have hidden fees?
+              </AccordionTrigger>
+              <AccordionContent>
+                <p>No. Kinscare has no:</p>
+                <ul className="list-disc list-inside ml-4 mt-2">
+                  <li>✅ Initiation or setup fees</li>
+                  <li>✅ Onboarding fees</li>
+                  <li>✅ Hourly rate agency fees (you negotiate directly with caregivers)</li>
+                  <li>✅ Cancellation fees – cancel anytime</li>
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
 
-              {/* Question 11 */}
-              <AccordionItem value="item-11">
-                <AccordionTrigger className="text-lg font-semibold">
-                  Does Kinscare have any other fees?
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p>
-                    Kinscare does not charge any additional fees. There are:
-                  </p>
-                  <ul className="list-disc ml-5 mt-2">
-                    <li>No initiation or setup fees</li>
-                    <li>No onboarding fees</li>
-                    <li>
-                      No hourly rate agency fees – you negotiate directly with
-                      the caregiver(s)
-                    </li>
-                    <li>No cancellation fees – you can cancel anytime</li>
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
+            {/* 11. How long is the free trial? */}
+            <AccordionItem value="item-11">
+              <AccordionTrigger className="text-lg font-semibold">
+                How long is the free trial?
+              </AccordionTrigger>
+              <AccordionContent>
+                <p>
+                  Kinscare offers a 7-day free trial to help you explore our
+                  platform and find caregivers. If you see value in our service,
+                  your payment helps fund caregiver recruitment efforts in your
+                  area.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
 
-              {/* Question 12 */}
-              <AccordionItem value="item-12">
-                <AccordionTrigger className="text-lg font-semibold">
-                  How long is Kinscare&apos;s trial period?
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p>
-                    Kinscare&apos;s trial period lasts for 7 days. We hope
-                    you’ll experience the value of our service during this time,
-                    which in turn supports our recruitment efforts.
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
+            {/* 12. How Can Providers Benefit from Engaging with Aspiring Healthcare Professionals? */}
+            <AccordionItem value="item-12">
+              <AccordionTrigger className="text-lg font-semibold">
+                How Can Providers Benefit from Engaging with Aspiring Healthcare Professionals?
+              </AccordionTrigger>
+              <AccordionContent>
+                <h3 className="text-md font-semibold mt-2">
+                  Why should providers engage with individuals exploring a career in healthcare?
+                </h3>
+                <p className="mt-2">
+                  Many people interested in becoming CNAs, HCAs, or nurses use
+                  Kinscare to learn about training programs and career
+                  opportunities. These individuals are eager to gain experience,
+                  and by engaging with them, providers can:
+                </p>
+                <ul className="list-disc list-inside ml-4 mt-2">
+                  <li>
+                    <strong>Build a Reliable Talent Pipeline</strong> – Today’s
+                    aspiring healthcare worker could be your next CNA or HCA.
+                    Connecting early helps you secure future hires.
+                  </li>
+                  <li>
+                    <strong>Offer Training &amp; Career Growth</strong> – Some
+                    providers offer in-house training or tuition assistance to
+                    attract and retain dedicated workers.
+                  </li>
+                  <li>
+                    <strong>Fill Entry-Level Roles Quickly</strong> – Many
+                    individuals seeking healthcare careers are open to working
+                    as caregivers, companions, or assistants while completing
+                    their certifications.
+                  </li>
+                  <li>
+                    <strong>Reduce Turnover with Career Advancement</strong> –
+                    Employees who see a clear career path within your
+                    organization are more likely to stay long-term.
+                  </li>
+                </ul>
 
-          {/* Button to Find Caregivers */}
+                <h3 className="text-md font-semibold mt-4">
+                  How can providers connect with people starting their healthcare careers?
+                </h3>
+                <ul className="list-disc list-inside ml-4 mt-2">
+                  <li>
+                    Post job opportunities for entry-level caregivers. Many
+                    individuals are willing to start as companions or assistants
+                    to gain hands-on experience.
+                  </li>
+                  <li>
+                    Highlight training and career growth options in job
+                    descriptions. If you offer tuition reimbursement or
+                    certification programs, make it known.
+                  </li>
+                  <li>
+                    Proactively reach out to job seekers who may be a great fit
+                    for your team.
+                  </li>
+                </ul>
+                <p className="mt-2">
+                  Engaging with people at the start of their healthcare journey
+                  isn’t just about filling current vacancies—it’s an investment
+                  in a strong, motivated workforce for the future.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+
+          {/* Example CTA Button or Additional Links */}
           <div className="mt-8">
-            <Link href="/find-caregivers">
-              <Button className="w-full">Find Caregivers</Button>
+            <Link href="/post-a-job">
+              <Button className="w-full">Post a Job</Button>
             </Link>
           </div>
         </div>
       </div>
-      <Footer/>
+
+      <Footer />
     </>
   );
 };
 
-export default FAQPage;
+export default ProviderFAQPage;

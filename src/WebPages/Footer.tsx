@@ -110,6 +110,14 @@ const Footer = () => {
                   FAQ Caregivers
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/faqe"
+                  className="text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--primary))] transition"
+                >
+                FAQ  Explorer 
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

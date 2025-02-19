@@ -7,7 +7,7 @@ import Link from "next/link";
 import Footer from "../../WebPages/Footer";
 
 export const metadata = {
-  title: "Kinscare - Connecting Caregivers with Providers Seamlessly",
+  title: "Kinscare -Seamlessly Matching Caregivers with Providers",
   description:
     "Kinscare helps providers find qualified caregivers and caregivers find best-fitting jobs. Our aim is to deliver value to our users with a growing registry.",
   keywords: [
@@ -22,7 +22,7 @@ export const metadata = {
     "kinscare",
   ],
   openGraph: {
-    title: "Kinscare - Connecting Caregivers with Providers Seamlessly",
+    title: "Kinscare -Seamlessly Matching Caregivers with Providers",
     description:
       "Kinscare helps providers find qualified caregivers and caregivers find best-fitting jobs. Our aim is to deliver value to our users with a growing registry.",
     url: "https://www.kinscare.com",
@@ -39,10 +39,12 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kinscare - Connecting Caregivers with Providers Seamlessly",
+    title: "Kinscare -Seamlessly Matching Caregivers with Providers",
     description:
       "Kinscare helps providers find qualified caregivers and caregivers find best-fitting jobs. Our aim is to deliver value to our users with a growing registry.",
-    images: ["https://kinscare-storage.s3.us-east-1.amazonaws.com/Kinscare+Logo.png"],
+    images: [
+      "https://kinscare-storage.s3.us-east-1.amazonaws.com/Kinscare+Logo.png",
+    ],
   },
 };
 
@@ -72,19 +74,17 @@ export default function Home() {
       <section className="bg-orange-50 relative overflow-hidden ">
         <div className="grid max-w-screen-xl px-4 py-2 lg:py-10 xl:px-0 mt-[73px] mx-auto lg:gap-8 xl:gap-0 lg:grid-cols-12">
           <div className="mr-auto place-self-center lg:py-16 lg:px-6 py-2 lg:col-span-6">
-            <h1 className="font-title max-w-2xl mb-6 text-4xl text-gray-950  antialiased font-extrabold leading-none md:text-5xl xl:text-7xl dark:text-white">
-              Connecting Caregivers with Providers Seamlessly
+            <h1 className=" max-w-2xl mb-6 text-3xl tracking-tight text-gray-800  antialiased font-extrabold  md:text-5xl xl:text-7xl dark:text-white">
+              Seamlessly Matching Caregivers with Providers
             </h1>
-            <p className="text-md text-gray-600 mb-4  antialiased lg:mb-8 md:text-md lg:text-md dark:text-gray-400">
-              Kinscare is an online registry that aims to help providers find
-              qualified caregivers and caregivers to find best fitting jobs. Our
-              aim is to grow our registry everyday and deliver value to our
-              users
+            <p className="text-xl text-gray-800 mb-4 antialiased lg:mb-8 md:text-md lg:text-md dark:text-gray-400">
+              Whether you're hiring, seeking caregiving opportunities, or
+              exploring a future in healthcare—Kinscare is built for you.
             </p>
             <div className="mb-5">
-              <Button className="p-6 w-full lg:w-[inherit]">
+              <button className="bg-indigo-600 text-white px-8 py-4 text-lg font-bold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300">
                 <Link href="/signup">Find Your Match</Link>
-              </Button>
+              </button>
             </div>
           </div>
           <div className="flex order-1 lg:mt-0 lg:col-span-6 lg:order-1">
@@ -99,7 +99,7 @@ export default function Home() {
       <section className="bg-white relative py-20 md:py-30 overflow-hidden dark:bg-gray-900">
         <div className="max-w-7xl mx-auto antialiased ">
           <div className="px-8">
-            <h2 className="text-3xl  max-w-3xl mx-auto font-title font-bold text-gray-800 text-center dark:text-white md:text-4xl xl:text-5xl">
+            <h2 className="text-3xl  max-w-3xl mx-auto tracking-tight font-bold text-gray-800 text-center dark:text-white md:text-4xl xl:text-5xl">
               Empowering <span>care</span>, simplifying connections
             </h2>
             <p className="mx-auto mt-6 antialiased text-slate-600 dark:text-gray-300 max-w-md text-center">
@@ -107,121 +107,454 @@ export default function Home() {
             </p>
           </div>
           <div className="relative">
-            <div className="relative z-10 pt-10 py-1 gap-y-10 px-5 grid mx-auto lg:gap-8 xl:gap-0 lg:grid-cols-12">
+            <div className="relative z-10 pt-10 py-8 gap-y-10 px-5 grid mx-auto lg:gap-8 xl:gap-0 lg:grid-cols-12">
               <div className="mr-auto place-self-center lg:py-16 lg:px-6 py-2 lg:col-span-6">
-                <div className="m">
-                  <div className="p-1">
-                    <h3 className="mb-4 relative max-w-6xl mx-auto text-center !leading-snug text-2xl md:text-3xl text-gray-700 font-bold lg:text-left">
-                      High-Quality caregivers near you
-                    </h3>
-                    <p className="text-md text-gray-700 antialiased">
-                      At Kinscare, each caregiver provides their detailed
-                      information and certifications, ensuring that you connect
-                      with only the most qualified professionals. Our platform
-                      is designed to boost caregivers who meet high standards,
-                      giving you confidence in your hiring decisions.
+                <div className="max-w-2xl">
+                  <div className="space-y-4">
+                    <div>
+                      {" "}
+                      <p className="font-bold text-lg text-blue-600 "></p>
+                      <h3 className="mb-4 relative text-3xl md:text-4xl !leading-tight text-gray-900 font-bold">
+                        Hire the Right Caregiver with Confidence
+                      </h3>
+                    </div>
+                    <p className="text-gray-600 text-lg leading-relaxed">
+                      Finding reliable caregivers shouldn't be difficult.
+                      Kinscare connects you with{" "}
+                      <span className="font-bold text-gray-800 ">
+                        qualified local caregivers and CNAs
+                      </span>{" "}
+                      ready to work in adult family homes,{" "}
+                      <span className="font-bold text-gray-800">
+                        assisted living and nursing home, home care, and beyond
+                      </span>
+                      .
                     </p>
                   </div>
-                  <ul className="py-3 flex flex-col gap-4">
-                    <li>
-                      <p>
-                        With our comprehensive profiles, you can easily review
-                        qualifications, experience, and certifications, allowing
-                        you to make informed choices quickly. Say goodbye to
-                        endless searches and hello to finding the perfect match
-                        for your needs.
-                      </p>
-                    </li>
-                    <li>
-                      <p>
-                        We understand that your time is valuable. That's why we
-                        use advanced algorithms to match you with caregivers who
-                        meet your specific criteria, saving you time and effort
-                        in the hiring process.
-                      </p>
-                    </li>
-                    <li>
-                      <p>
-                        Kinscare's focus on quality means you get access to
-                        top-tier caregivers, enhancing the care experience for
-                        those you support.
-                      </p>
-                    </li>
-                  </ul>
-                  <div className="py-4">
-                    <Button className="py-6 px-8 w-full lg:w-auto">
+
+                  <div className="mt-4 space-y-0">
+                    {/* Benefit 1 */}
+                    <div className="group relative  py-3 rounded-xl transition-all hover:bg-gray-50/50">
+                      <div className="flex items-center gap-4">
+                        <div className="flex-shrink-0">
+                          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg
+                              className="w-5 h-5 text-blue-600"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                        <div className="flex-grow">
+                          <p className="  text-gray-900 mb-2">
+                            View Caregiver Profiles & Contact Details
+                          </p>
+                          {/* <p className="text-gray-600 text-sm leading-relaxed">
+                            Browse our verified registry of caregivers, CNAs,
+                            and home care aides with detailed skills,
+                            experience, and availability. Filter by location,
+                            certifications, and preferences.
+                          </p> */}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Benefit 2 */}
+                    <div className="group relative py-3 rounded-xl transition-all hover:bg-gray-50/50">
+                      <div className="flex items-center gap-4">
+                        <div className="flex-shrink-0">
+                          <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg
+                              className="w-5 h-5 text-green-600"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                        <div className="flex-grow">
+                          <h4 className="  text-gray-900 mb-2">
+                            Reduce Turnover with Better-Matched Hires
+                          </h4>
+                          {/* <p className="text-gray-600 text-sm leading-relaxed">
+                            Our smart matching system connects you with
+                            caregivers who align with your organization's
+                            culture and care philosophy, helping reduce
+                            recruitment costs and staffing gaps.
+                          </p> */}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Benefit 3 */}
+                    <div className="group relative py-3 rounded-xl transition-all hover:bg-gray-50/50">
+                      <div className="flex   items-center gap-4">
+                        <div className="flex-shrink-0">
+                          <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <svg
+                              className="w-5 h-5 text-purple-600"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                        <div className="flex-grow items-center">
+                          <h4 className="  text-gray-900 mb-2">
+                            Join Discussions & Connect Directly
+                          </h4>
+                          {/* <p className="text-gray-600  text-sm leading-relaxed">
+                            Engage with healthcare professionals to discuss
+                            hiring trends, training programs, and best
+                            practices. Post jobs and interact with active
+                            caregivers seeking positions.
+                          </p> */}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <button className="bg-indigo-600 text-white px-8 py-4 text-lg font-bold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300">
                       <Link href="/find-caregivers">
-                        Find Quality Caregivers
+                        Start Matching With Caregivers →
                       </Link>
-                    </Button>
+                    </button>
                   </div>
                 </div>
               </div>
+
               <div className="mr-auto place-self-center py-2 lg:col-span-6">
-                <div className="m">
+                <div className="relative">
                   <img
-                    className="w-full"
+                    className="w-full rounded-2xl"
                     src="https://firebasestorage.googleapis.com/v0/b/climare-pushbots.appspot.com/o/caregiver%20final%20(1).png?alt=media&token=30bc0150-58b7-4f59-8b51-57968abe482c"
-                    alt="feature1"
+                    alt="Caregiver connecting with senior"
                   />
+                  {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-900/20 rounded-2xl" /> */}
                 </div>
               </div>
             </div>
-            <div className="relative z-10 py-1 gap-y-10 px-5  grid mx-auto lg:gap-8 xl:gap-0 lg:grid-cols-12">
+            <div className="relative z-10 py-8 gap-y-10 px-5  grid mx-auto lg:gap-8 xl:gap-0 lg:grid-cols-12">
               <div className="mr-auto place-self-center py-2 lg:col-span-6">
                 <div className="m">
                   <img
-                    className="w-full"
+                    className="w-full rounded-xl"
                     src="https://firebasestorage.googleapis.com/v0/b/climare-pushbots.appspot.com/o/Provider%20Group%20(1).png?alt=media&token=aee75ff2-5344-49d4-986a-dd4f7125fc30"
                     alt="feature1"
                   />
                 </div>
               </div>
-              <div className="mr-auto place-self-center lg:py-16 lg:px-6 py-2 lg:col-span-6">
-                <div className="m">
-                  <div className="p-1">
-                    <h3 className="mb-4 relative max-w-6xl mx-auto text-center !leading-snug text-2xl md:text-3xl text-gray-700 font-bold lg:text-left">
-                      Get matched with providers
+              <div className="mr-auto place-self-center lg:py-12 lg:px-6 py-2 lg:col-span-6">
+                <div className="space-y-4">
+                  <div>
+                    {" "}
+                    <p className="font-bold text-lg text-blue-600 "></p>
+                    <h3 className="mb-4 relative text-3xl md:text-4xl !leading-tight text-gray-900 font-bold">
+                      Find Jobs That Match Your Skills & Availability
                     </h3>
-                    <p className="text-md text-gray-700 antialiased">
-                      <span></span> At Kinscare, we believe in empowering
-                      caregivers by providing access to a variety of job
-                      opportunities that align with your skills and preferences.
-                      Whether you’re looking for looking for live-in, on call,
-                      weekends, full/part time jobs or specialized roles, our
-                      platform connects you with providers who value your
-                      expertise and dedication.
-                    </p>
                   </div>
-                  <ul className="py-3 flex flex-col gap-4">
-                    <li>
-                      <p>
-                        <span></span> Stand out to potential employers by
-                        creating a comprehensive profile that highlights your
-                        qualifications and certifications. By showcasing your
-                        skills and experience, you increase your chances of
-                        being selected for the best positions available
-                      </p>
-                    </li>
-                    <li>
-                      <p>
-                        We’ve designed our platform to be intuitive and
-                        user-friendly, making it easy for you to find and apply
-                        for jobs. Our straightforward application process
-                        ensures that you can quickly connect with providers
-                        without unnecessary hassle.
-                      </p>
-                    </li>
-                  </ul>
-                  <div className="py-4">
-                    <Button className="py-6 px-8  w-full lg:w-auto">
-                      <Link href="/find-jobs">Find Quality Job</Link>
-                    </Button>
+                  <p className="text-gray-600 text-lg leading-relaxed">
+                    Looking for a{" "}
+                    <span className="font-bold text-gray-900">
+                      full-time, part-time, live-in, or on-call
+                    </span>
+                    caregiving job? KinsCare helps you{" "}
+                    <span className="font-bold text-gray-900">
+                      connect directly with employers
+                    </span>{" "}
+                    so you can choose the best opportunity for you.
+                  </p>
+                </div>
+                <div className="mt-4 space-y-0">
+                  {/* Benefit 1 */}
+                  <div className="group relative  py-3 rounded-xl transition-all hover:bg-gray-50/50">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0">
+                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <svg
+                            className="w-5 h-5 text-blue-600"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div className="flex-grow">
+                        <p className="  text-gray-900 mb-2">
+                          Apply for jobs in minutes
+                        </p>
+                        {/* <p className="text-gray-600 text-sm leading-relaxed">
+                            Browse our verified registry of caregivers, CNAs,
+                            and home care aides with detailed skills,
+                            experience, and availability. Filter by location,
+                            certifications, and preferences.
+                          </p> */}
+                      </div>
+                    </div>
                   </div>
+
+                  {/* Benefit 2 */}
+                  <div className="group relative py-3 rounded-xl transition-all hover:bg-gray-50/50">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0">
+                        <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                          <svg
+                            className="w-5 h-5 text-green-600"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div className="flex-grow">
+                        <h4 className="  text-gray-900 mb-2">
+                          Get discovered by local employers
+                        </h4>
+                        {/* <p className="text-gray-600 text-sm leading-relaxed">
+                            Our smart matching system connects you with
+                            caregivers who align with your organization's
+                            culture and care philosophy, helping reduce
+                            recruitment costs and staffing gaps.
+                          </p> */}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Benefit 3 */}
+                  <div className="group relative py-3 rounded-xl transition-all hover:bg-gray-50/50">
+                    <div className="flex   items-center gap-4">
+                      <div className="flex-shrink-0">
+                        <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                          <svg
+                            className="w-5 h-5 text-purple-600"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div className="flex-grow items-center">
+                        <h4 className="  text-gray-900 mb-2">
+                          Advance your career with healthcare training
+                          opportunities
+                        </h4>
+                        {/* <p className="text-gray-600  text-sm leading-relaxed">
+                            Engage with healthcare professionals to discuss
+                            hiring trends, training programs, and best
+                            practices. Post jobs and interact with active
+                            caregivers seeking positions.
+                          </p> */}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <button className="bg-indigo-600 text-white px-8 py-4 text-lg font-bold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300">
+                    <Link href="/find-caregivers">
+                      Find Jobs That Match Your Skill Now
+                    </Link>
+                  </button>
                 </div>
               </div>
             </div>
-            
+
+            <div className="relative z-10 pt-10 py-8 gap-y-10 px-5 grid mx-auto lg:gap-8 xl:gap-0 lg:grid-cols-12">
+              <div className="mr-auto place-self-center lg:py-16 lg:px-6 py-2 lg:col-span-6">
+                <div className="max-w-2xl">
+                  <div className="space-y-4">
+                    <div>
+                      {" "}
+                      <p className="font-bold text-lg text-blue-600 "></p>
+                      <h3 className="mb-4 relative text-3xl md:text-4xl !leading-tight text-gray-900 font-bold">
+                        Your First Step Toward a Career in Nursing or Allied
+                        Healthcare
+                      </h3>
+                    </div>
+                    <p className="text-gray-600 text-lg leading-relaxed">
+                      Thinking about becoming an{" "}
+                      <span className=" text-gray-900 font-bold">
+                        LPN, RN, or allied healthcare professional
+                      </span>
+                      ? Many programs require direct patient care experience—and
+                      caregiving can be your{" "}
+                      <span className=" text-gray-900 font-bold">
+                        stepping stone into the field
+                      </span>
+                      .
+                    </p>
+                  </div>
+
+                  <div className="mt-4 space-y-0">
+                    {/* Benefit 1 */}
+                    <div className="group relative  py-3 rounded-xl transition-all hover:bg-gray-50/50">
+                      <div className="flex items-center gap-4">
+                        <div className="flex-shrink-0">
+                          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg
+                              className="w-5 h-5 text-blue-600"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                        <div className="flex-grow">
+                          <p className="  text-gray-900 mb-2">
+                            Learn about nursing & allied healthcare programs
+                          </p>
+                          {/* <p className="text-gray-600 text-sm leading-relaxed">
+                            Browse our verified registry of caregivers, CNAs,
+                            and home care aides with detailed skills,
+                            experience, and availability. Filter by location,
+                            certifications, and preferences.
+                          </p> */}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Benefit 2 */}
+                    <div className="group relative py-3 rounded-xl transition-all hover:bg-gray-50/50">
+                      <div className="flex items-center gap-4">
+                        <div className="flex-shrink-0">
+                          <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg
+                              className="w-5 h-5 text-green-600"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                        <div className="flex-grow">
+                          <h4 className="  text-gray-900 mb-2">
+                            Find local employers who offer training & tuition
+                            support
+                          </h4>
+                          {/* <p className="text-gray-600 text-sm leading-relaxed">
+                            Our smart matching system connects you with
+                            caregivers who align with your organization's
+                            culture and care philosophy, helping reduce
+                            recruitment costs and staffing gaps.
+                          </p> */}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Benefit 3 */}
+                    <div className="group relative py-3 rounded-xl transition-all hover:bg-gray-50/50">
+                      <div className="flex   items-center gap-4">
+                        <div className="flex-shrink-0">
+                          <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <svg
+                              className="w-5 h-5 text-purple-600"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                        <div className="flex-grow items-center">
+                          <h4 className="  text-gray-900 mb-2">
+                            Connect with professionals & get career guidance
+                          </h4>
+                          {/* <p className="text-gray-600  text-sm leading-relaxed">
+                            Engage with healthcare professionals to discuss
+                            hiring trends, training programs, and best
+                            practices. Post jobs and interact with active
+                            caregivers seeking positions.
+                          </p> */}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <button className="bg-indigo-600 text-white px-8 py-4 text-lg font-bold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300">
+                      <Link href="/find-caregivers">
+                        Start exploring your future in healthcare →
+                      </Link>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mr-auto place-self-center py-2 lg:col-span-6">
+                <div className="relative">
+                  <img
+                    className="w-full rounded-lg"
+                    src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1792043615-min%20(1).jpg?alt=media&token=88e040f7-a86a-44ee-8108-bd3ffb5b3f06"
+                    alt="Caregiver connecting with senior"
+                  />
+                  {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-900/20 rounded-2xl" /> */}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -241,15 +574,14 @@ export default function Home() {
               <div className="rounded-xl lg:m-4 transition duration-300 hover:scale-105  bg-gray-700  shadow-2xl shadow-gray-600/10 dark:-gray-700 dark:bg-gray-800 dark:shadow-none">
                 <div className="p-6">
                   <h4 className="text-2xl font-title font-bold py-4 text-gray-200 antialiased">
-                    Intuitive Navigation
+                    Easy to Use
                   </h4>
                   <p className="text-gray-200 text-sm ">
-                    Effortlessly navigate kinscare with ease our design, making
-                    it easy to find caregivers or manage your profile with just
-                    a few clicks. Clear, step-by-step instructions ensure a
-                    seamless experience for you. Our responsive design
-                    guarantees a smooth, consistent experience across all
-                    devices, from desktops to smartphones.
+                    Kinscare makes it simple to find caregivers, apply for a
+                    caregiving job, or explore local nursing and allied
+                    healthcare programs. Clear, step-by-step guidance helps you
+                    navigate the platform effortlessly, whether you're using a
+                    computer or a phone.
                   </p>
                   <Button variant="ghost"></Button>
                 </div>
@@ -257,33 +589,35 @@ export default function Home() {
               <div className="rounded-xl lg:m-4 transition duration-300 hover:scale-105  bg-gray-700  shadow-2xl shadow-gray-600/10 dark:-gray-700 dark:bg-gray-800 dark:shadow-none">
                 <div className="p-6">
                   <h4 className="text-2xl font-title font-bold py-4 text-gray-200 antialiased">
-                    All-in-One Dashboard
+                    Everything in One Place
                   </h4>
                   <p className="text-gray-200 text-sm py-2 ">
-                    Manage all your activities from a single, comprehensive
-                    dashboard. From job postings and applications to
-                    communication and profile updates, everything is centralized
-                    for your convenience.
+                    For providers, easily post jobs, review applications, and
+                    connect with caregivers—all from one dashboard. For
+                    caregivers, quickly apply for jobs and explore nursing and
+                    allied healthcare programs near you.
                   </p>
-                  <p className="text-gray-200 text-sm  py-2">
+                  {/* <p className="text-gray-200 text-sm  py-2">
                     Stay updated with real-time notifications and updates on job
                     applications, messages, and more. Our platform keeps you
                     informed, so you never miss a beat.
-                  </p>
+                  </p> */}
                   <Button variant="ghost"></Button>
                 </div>
               </div>
               <div className="rounded-xl lg:m-4 transition duration-300 hover:scale-105  bg-gray-700  shadow-2xl shadow-gray-600/10 dark:-gray-700 dark:bg-gray-800 dark:shadow-none">
                 <div className="p-6">
                   <h4 className="text-2xl font-title font-bold py-4 text-gray-200 antialiased">
-                    Discover Fulfilling Careers in Nursing & Allied Healthcare
+                    Explore Healthcare Careers
                   </h4>
                   <p className="text-gray-200 text-sm py-2 ">
-                    Kinscare connects you to local colleges, universities, and
-                    vocational programs that provide the education and training
-                    needed to enter nursing and allied healthcare professions.
+                    Thinking about a career in nursing or allied healthcare?
+                    Kinscare provides information on training programs to help
+                    you get started. Plus, our community forums let you connect
+                    with others, ask questions, and learn from those on a
+                    similar path.
                   </p>
-                 
+
                   <Button variant="ghost"></Button>
                 </div>
               </div>

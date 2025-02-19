@@ -37,7 +37,7 @@ function NavbarLink() {
                   pathname !== "/find-caregiver" && "bg-transparent"
                 }`}
               >
-                Find caregivers
+                Find Caregivers
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>

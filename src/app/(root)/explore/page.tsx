@@ -78,7 +78,7 @@ function page() {
 
       <NavBar />
       {/* Hero Section */}
-      <section className="bg-gradient-to-br h-[100vh]  overflow-y-hidden from-blue-50 via-white to-purple-400 text-gray-800  items-center py-20">
+      <section className="bg-gradient-to-br h-[90vh]  overflow-y-hidden from-blue-50 via-white to-purple-400 text-gray-800  items-center py-20">
         <div className="px-6 lg:px-12 py-10 text-center">
           {/* Header Section */}
           <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">
@@ -111,10 +111,10 @@ function page() {
         <div className="max-w-7xl mx-auto">
           <div className="w-full">
             <h2 className="text-4xl mb-4 max-w-xl mx-auto font-bold text-gray-900  tracking-tight text-center">
-              Explore the world of nursing and allied healthcare—industries
+              Explore the world of nursing and allied healthcare 
             </h2>
             <p className="max-w-4xl mx-auto text-gray-600 mb-6 text-center">
-              filled with rewarding opportunities. From registered nurses to
+              Find industries filled with rewarding opportunities. From registered nurses to
               physical therapists, medical technicians, and beyond, these fields
               offer diverse career paths with high demand now and an even
               brighter future ahead.
@@ -130,7 +130,7 @@ function page() {
           {/* Image */}
           <div className="flex justify-center">
             <img
-              src="https://cdn.prod.website-files.com/60780a9b4720a47267a88257/6401d6d383a342c48165dcad_visual-homepage-sourcing-EN.svg" // Replace with your image path
+              src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-915206502-min%20(1).jpg?alt=media&token=fb876b23-e97e-4cd3-bb33-99979ce54e8a" // Replace with your image path
               alt="Training Institutions"
               className="rounded-lg shadow-lg w-full max-w-lg"
             />
@@ -202,7 +202,7 @@ function page() {
           {/* Image */}
           <div className="flex justify-center">
             <img
-              src="https://cdn.prod.website-files.com/60780a9b4720a47267a88257/6401d6d1b421f88f8b4521a9_visual-homepage-reporting-EN.svg" // Replace with your image path
+              src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1792043615-min%20(1).jpg?alt=media&token=88e040f7-a86a-44ee-8108-bd3ffb5b3f06" // Replace with your image path
               alt="Community"
               className="rounded-lg shadow-lg w-full max-w-lg"
             />

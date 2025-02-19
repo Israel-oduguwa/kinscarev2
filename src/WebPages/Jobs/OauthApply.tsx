@@ -28,7 +28,7 @@ import ApplyNow from "@/Caregivers/Jobs/JobsUI/ApplyNow";
 interface OauthApplyProps {
   jobID?: string; // Passed from SSR page if available
   children: React.ReactNode; // Any button or content to act as the trigger
-  job:any;
+  job: any;
 }
 
 // Validation schema for the email signup form
@@ -243,7 +243,7 @@ const OauthApply: React.FC<OauthApplyProps> = ({ jobID, job, children }) => {
     setIsEmailDialogOpen(false);
     setIsDialogOpen(true);
   };
-  console.log(job)
+  console.log(job);
   return (
     <>
       {/* check if the user is singed in  */}
@@ -284,37 +284,6 @@ const OauthApply: React.FC<OauthApplyProps> = ({ jobID, job, children }) => {
                   </>
                 )}
 
-                {!loading && (
-                  <p className="mt-4 text-center text-sm text-gray-500">
-                    Don’t have social accounts?{" "}
-                    <button
-                      onClick={() => {
-                        setIsDialogOpen(false);
-                        setIsEmailDialogOpen(true);
-                      }}
-                      className="text-blue-500 underline"
-                    >
-                      Signup with email
-                    </button>
-                  </p>
-                )}
-              </DialogContent>
-            </Dialog>
-
-            {/* Email Signup Dialog */}
-            <Dialog
-              open={isEmailDialogOpen}
-              onOpenChange={setIsEmailDialogOpen}
-            >
-              <DialogContent className="rounded-lg shadow-xl p-6 bg-white max-w-lg">
-                <div className="flex w-full space-x-10">
-                  <Button onClick={goBack} size="icon" variant="outline">
-                    <ArrowBigLeft />
-                  </Button>
-                  <DialogTitle className="text-3xl justify-center font-bold tracking-tight mb-2 text-center">
-                    Signup with Email
-                  </DialogTitle>
-                </div>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                   <div className="flex gap-4">
                     <div className="w-1/2">
@@ -475,6 +444,23 @@ const OauthApply: React.FC<OauthApplyProps> = ({ jobID, job, children }) => {
                 </form>
               </DialogContent>
             </Dialog>
+
+            {/* Email Signup Dialog */}
+            <Dialog
+              open={isEmailDialogOpen}
+              onOpenChange={setIsEmailDialogOpen}
+            >
+              <DialogContent className="rounded-lg shadow-xl p-6 bg-white max-w-lg">
+                <div className="flex w-full space-x-10">
+                  <Button onClick={goBack} size="icon" variant="outline">
+                    <ArrowBigLeft />
+                  </Button>
+                  <DialogTitle className="text-3xl justify-center font-bold tracking-tight mb-2 text-center">
+                    Signup with Email
+                  </DialogTitle>
+                </div>
+              </DialogContent>
+            </Dialog>
           </GoogleOAuthProvider>
         </>
       )}
@@ -483,3 +469,19 @@ const OauthApply: React.FC<OauthApplyProps> = ({ jobID, job, children }) => {
 };
 
 export default OauthApply;
+
+
+// {!loading && (
+//   <p className="mt-4 text-center text-gray-500">
+//     Don’t have social accounts?{" "}
+//     <button
+//       onClick={() => {
+//         setIsDialogOpen(false);
+//         setIsEmailDialogOpen(true);
+//       }}
+//       className="text-blue-500 underline"
+//     >
+//       Signup with email
+//     </button>
+//   </p>
+// )}
