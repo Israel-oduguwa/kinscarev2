@@ -1,6 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { CaregiverCardSkeleton } from "@/Providers/Candidates/CandidateSkelenton";
 import Caregivers from "@/WebPages/FindCaregiver/Caregivers";
+import Footer from "@/WebPages/Footer";
 import Navbar from "@/WebPages/Navbar";
 import { Metadata } from "next";
 import React, { Suspense } from "react";
@@ -70,6 +71,7 @@ async function page({
         }
       >
         <Caregivers page={page} availability={shifts} licenses={licenses} />
+        <Footer/>
       </Suspense>
     </div>
   );

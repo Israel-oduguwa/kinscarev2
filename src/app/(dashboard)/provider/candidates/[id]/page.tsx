@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import CandidateDetails from "@/Providers/Candidates/CandidateDetails";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Metadata } from "next";
+import Footer from "@/WebPages/Footer";
 
 // Skeleton Component
 const CandidateDetailsSkeleton = () => {
@@ -106,6 +107,7 @@ async function page({ params }: { params: { id: string } }) {
       <div className="bg-gray-100">
         <CandidateDetails candidateID={id} />
       </div>
+      
     </Suspense>
   );
 }

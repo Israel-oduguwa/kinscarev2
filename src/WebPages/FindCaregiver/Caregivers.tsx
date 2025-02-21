@@ -48,6 +48,33 @@ const obfuscateName = (name: string): string => {
     })
     .join(" ");
 };
+const obfuscateText = (text: any) => {
+  if (text) {
+    if (text.includes("@")) {
+      const [localPart, domain] = text.split("@");
+      if (localPart.length <= 2) return text;
+      const obfuscatedLocalPart = `${localPart.slice(0, 3)}${"*".repeat(
+        Math.max(localPart.length - 6, 0)
+      )}${localPart.slice(-3)}`;
+      return `${obfuscatedLocalPart}@${domain}`;
+    }
+    const words = text.split(" ");
+    return words.map((word: string | any[]) => {
+      if (word.length <= 2) return word;
+      const firstPart = word.slice(0, 3);
+      const lastPart = word.slice(-3);
+      const middlePart = "*".repeat(
+        word.length - firstPart.length - lastPart.length
+      );
+      return `${firstPart}${middlePart}${lastPart}`;
+    });
+  }
+};
+function formatPhoneNumberToDigitsWithPlus(phone: any) {
+  if (phone) {
+    return phone.replace(/(?!^\+)\D/g, "");
+  }
+}
 
 const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
   const availability = false;
@@ -56,6 +83,11 @@ const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
     : obfuscateName(candidate.name);
 
   const sanitizedContent = sanitizeContent(candidate.certifications);
+  const encryptedTel = obfuscateText(
+    formatPhoneNumberToDigitsWithPlus(candidate?.auth?.tel)
+  );
+
+  console.log(candidate.auth);
   return (
     <div className="w-full mb-6">
       <div className="bg-white flex flex-col lg:flex-row items-start lg:items-center justify-between shadow-md border border-gray-100 rounded-lg p-6">
@@ -89,28 +121,26 @@ const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
                 </p>
               </div>
             </div>
-
-           
           </div>
-           {/* Licenses and Availability */}
-           <div className="flex flex-wrap gap-2 mt-4 lg:mt-0">
-              {candidate.licenses.map((license: string, index: number) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg"
-                >
-                  {license}
-                </span>
-              ))}
-              {candidate.availability.map((sch: string, index: number) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg"
-                >
-                  {sch}
-                </span>
-              ))}
-            </div>
+          {/* Licenses and Availability */}
+          <div className="flex flex-wrap gap-2 mt-4 lg:mt-0">
+            {candidate.licenses.map((license: string, index: number) => (
+              <span
+                key={index}
+                className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg"
+              >
+                {license}
+              </span>
+            ))}
+            {candidate.availability.map((sch: string, index: number) => (
+              <span
+                key={index}
+                className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg"
+              >
+                {sch}
+              </span>
+            ))}
+          </div>
 
           {/* Certifications */}
           <div className="mt-4">
@@ -119,11 +149,21 @@ const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
               <Interweave content={sanitizedContent} />
             </div>
           </div>
+          <div>
+            <p>{encryptedTel}</p>
+            <p className="text-sm px-3 cursor-pointer max-w-[200px] font-medium mt-1 py-2 rounded-md bg-blue-50 text-blue-800">
+              Hidden - Sign Up to View
+            </p>
+          </div>
         </Link>
 
         {/* Message Button */}
         <div className="mt-6 w-full lg:w-auto lg:mt-0 lg:ml-4 flex-shrink-0">
-          <OAuthDialog caregiver={candidate} userID={candidate.userID} message="caregiver">
+          <OAuthDialog
+            caregiver={candidate}
+            userID={candidate.userID}
+            message="caregiver"
+          >
             <Button className="px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md w-full lg:w-auto">
               <span className="flex items-center gap-2">
                 <Send size={16} /> Message Caregiver
@@ -136,15 +176,13 @@ const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
   );
 };
 
-
-
 async function Caregivers({
   availability,
   page,
   licenses,
 }: {
   availability: string;
-  page:number;
+  page: number;
   licenses: string;
 }) {
   console.log(availability, licenses);
