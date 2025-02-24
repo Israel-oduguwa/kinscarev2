@@ -151,9 +151,10 @@ const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
           </div>
           <div>
             <p>{encryptedTel}</p>
-            <p className="text-sm px-3 cursor-pointer max-w-[200px] font-medium mt-1 py-2 rounded-md bg-blue-50 text-blue-800">
-              Hidden - Sign Up to View
+            <p className="text-sm px-3 cursor-pointer max-w-[250px] font-medium mt-1 py-2 rounded-md bg-blue-50 text-blue-800">
+              [Hidden - Sign Up to View]
             </p>
+            <p className="text-sm">Click {`"View Caregiver"`} to see the full detaiils</p>
           </div>
         </Link>
 

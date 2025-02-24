@@ -1,18 +1,20 @@
+/* eslint-disable @next/next/no-img-element */
 import React from "react";
 import SearchBar from "./SearchBar";
+import { Pin } from "lucide-react";
 const FindLandingPage = async () => {
   return (
     <div>
       <div
-        className="relative w-full h-[95vh] bg-cover bg-center"
+        className="relative w-full h-[70vh] mt-5 bg-cover bg-top"
         style={{
           backgroundImage:
-            "url('https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/pexels-cottonbro-7579831%20(1).jpg?alt=media&token=17ff67c6-208a-4eae-884d-6e3bb1b158c0')",
+            "url('https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1380983332-min.jpg?alt=media&token=5f9db9a8-fe08-40a3-bb3c-cda1feb17bed')",
         }}
       >
         {/* Enhanced Overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-60">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black" />
+        <div className="absolute inset-0 top-[30vh] bg-black bg-opacity-5">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900" />
         </div>
 
         {/* Content */}
@@ -25,52 +27,91 @@ const FindLandingPage = async () => {
             </span>{" "}
           </h1>
 
-          <p className="text-gray-300  max-w-2xl mb-8">
-            Find local caregivers ready to work for you—quickly and
-            effortlessly! Whether you’re looking for{" "}
-            <span className="text-white font-semibold">full-time</span>,{" "}
-            <span className="text-white font-semibold">part-time</span>, 
-            <span className="text-white font-semibold"> live-in</span>
-            <span className="text-white">, on-call</span>{" "}
-            <span className="text-white"> or Weekend caregivers</span>. Kinscare
-            makes it easy to find and match with qualified caregivers. Start
-            your search today and connect with the perfect caregiver in no time!
-          </p>
-
           {/* Search Bar */}
-         
-            <SearchBar />
-          <p className="text-gray-300 text-lg max-w-2xl mb-8">
+
+          <SearchBar />
+          <p className="text-gray-100 font-bold text-xl max-w-2xl mb-8">
             Over{" "}
-            <span className="text-white font-bold">  30 caregivers </span>{" "}
-            joined Kinscare
+            <span className="text-white font-extrabold"> 30 caregivers </span>{" "}
+            join Kinscare every day!
           </p>
         </div>
       </div>
-      <div className="bg-gray-100 py-10 px-6 md:px-12">
+
+      <div className="bg-gray-50 py-10 px-6 md:px-12">
+        <div className="max-w-6xl pt-10 pb-20 mx-auto">
+          <div className="p-6 bg-gradient-to-br from-indigo-800 to-blue-900 rounded-2xl relative overflow-hidden">
+            {/* Decorative gradient bubbles */}
+            <div className="absolute -top-4 -right-4 w-28 h-28 bg-purple-500/20 rounded-full blur-xl" />
+            <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-indigo-500/20 rounded-full blur-xl" />
+
+            <div className="flex flex-col md:flex-row items-start gap-8 relative">
+              {/* Icon Container */}
+              <div className="min-w-[50px] h-12 flex items-center justify-center p-2 bg-gradient-to-br from-sky-400/20 to-purple-400/20 rounded-xl border border-white/10">
+                {/* <svg
+                className="w-8 h-8 text-white"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M12 4v16m-8-8h16m-8 4a4 4 0 01-4-4 4 4 0 014-4 4 4 0 014 4 4 4 0 01-4 4z" />
+              </svg> */}
+                <Pin size={20} strokeWidth={2.25} className="text-white" />
+              </div>
+
+              <div className="flex-1">
+                <p className="text-gray-200 text-md ">
+                  Kinscare is designed to be easy and affordable to use. Every
+                  caregiver you find through Kinscare means{" "}
+                  <span className="font-bold">
+                    better support, less stress, and higher-quality
+                  </span>{" "}
+                  care for your residents
+                </p>
+
+                {/* CTA Button */}
+                {/* <button className="mt-6 px-6 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
+                <span className="bg-gradient-to-r from-sky-400 to-purple-400 bg-clip-text text-transparent font-semibold">
+                  Start Matching Now →
+                </span>
+              </button> */}
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="py-10">
           <h2 className="text-3xl md:text-4xl text-center font-bold tracking-tight text-gray-800 mb-3">
-            Why Choose <span className="text-blue-600">Kinscare?</span>
+            {/* Why use <span className="text-blue-600">Kinscare?</span> */}{" "}
+            Find Caregivers Faster & Easier
           </h2>
-          <p className="text-gray-500 text-center mb-8">
-            Kinscare focuses on connecting you with experienced caregivers,
-            saving you time and money.
+          <p className="text-gray-500 mx-auto max-w-6xl text-center mb-8">
+            {/* Kinscare focuses on connecting you with experienced caregivers,
+            saving you time and money. */}{" "}
+            Finding reliable caregivers is one of the biggest challenges for
+            providers. High turnover, last-minute staffing gaps, and increasing
+            demand make it harder than ever to secure dependable care. Kinscare
+            simplifies the process, connecting you directly with caregivers
+            ready to work. Whether you need full-time, part-time, or on-call
+            support, we make hiring quick and stress-free. Join the growing
+            network of providers who trust Kinscare to find caregivers
+            efficiently
           </p>
         </div>
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+        <div className="max-w-7xl pb-20 mx-auto grid md:grid-cols-2 gap-16 ">
           {/* Left Column */}
 
           {/* Right Column */}
           <div className="relative">
             <img
-              src="https://zone-ui.vercel.app/assets/illustrations/illustration-recruitment.svg"
+              src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1336058538-min.jpg?alt=media&token=35eabd18-0e89-470b-a4d5-b8269b91a38c"
               alt="Caregivers"
-              className="w-full h-auto rounded-lg"
+              className="w-full h-auto rounded-xl"
             />
           </div>
           <div>
             <h4 className="tracking-tight text-3xl font-bold text-gray-800 mb-6 ">
-              Our <span className="text-red-600">caregivers</span>
+              Why Use Kinscare
             </h4>
             <ul className="space-y-4">
               <li className="flex items-center">
@@ -91,8 +132,8 @@ const FindLandingPage = async () => {
                   </svg>
                 </div>
                 <p className="text-gray-700">
-                  Caregivers available for <strong>full-time, part-time</strong>
-                  , live-in, on-call, and weekend shifts.
+                  <span className="font-semibold ">Quick Matching: </span>Search
+                  caregivers who meet your needs.
                 </p>
               </li>
               <li className="flex items-center">
@@ -113,7 +154,8 @@ const FindLandingPage = async () => {
                   </svg>
                 </div>
                 <p className="text-gray-700">
-                  Will accommodate or work with your schedule
+                  <span className="font-semibold "> Direct Contact: </span>
+                  Connect instantly after signing up.
                 </p>
               </li>
               <li className="flex items-center">
@@ -134,9 +176,8 @@ const FindLandingPage = async () => {
                   </svg>
                 </div>
                 <p className="text-gray-700 ">
-                  Have cared for persons with mental health illness, dementia,
-                  developmental disabilities, traumatic brain injury and all
-                  types of conditions
+                  <span className="font-semibold ">No Middleman: </span> You
+                  recruit and hire directly—no agency fees.
                 </p>
               </li>
               <li className="flex items-center">
@@ -156,94 +197,210 @@ const FindLandingPage = async () => {
                     />
                   </svg>
                 </div>
-                <p className="text-gray-700 ">Live in or near your community</p>
+                <p className="text-gray-700 ">
+                  {" "}
+                  <span className="font-semibold ">Flexible Hiring:</span>{" "}
+                  Full-time, part-time, live-in, or on-call caregivers.
+                </p>
               </li>
             </ul>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+        <div className="max-w-7xl py-10 mx-auto grid md:grid-cols-1 gap-12 ">
+          {/* Left Column */}
+          <div className="bg-blue-100 p-6 rounded-xl">
+            <div>
+              <h4 className="tracking-tight text-3xl font-bold text-gray-800 mb-6 ">
+                Why Finding the Right Caregiver Matters
+              </h4>
+              <ul className="space-y-4">
+                <li className="flex items-start">
+                  <div className="w-10 h-10 bg-blue-100 shrink-0 text-blue-600 flex items-center justify-center rounded-full mr-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                  <p className="text-gray-700 ">
+                    <span className="font-semibold ">
+                      {" "}
+                      The Hiring Challenge:{" "}
+                    </span>{" "}
+                    Struggling to find reliable caregivers? High turnover rates
+                    make it even harder to maintain consistent care.
+                  </p>
+                </li>
+                <li className="flex items-start">
+                  <div className="w-10 h-10 bg-blue-100 shrink-0 text-blue-600 flex items-center justify-center rounded-full mr-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                  <p className="text-gray-700 ">
+                    <span className="font-semibold ">The Consequences: </span>{" "}
+                    When shifts go unfilled, resident care suffers, staff
+                    burnout increases, and compliance risks grow. In many cases,
+                    providers are forced to step in themselves—losing valuable
+                    time for rest, business operations, or high-value
+                    activities.
+                  </p>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-10 h-10 bg-blue-100 text-blue-600 flex items-center justify-center rounded-full mr-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                  <p className="text-gray-700 ">
+                    <span className="font-semibold ">
+                      Transition to the solution:{" "}
+                    </span>{" "}
+                    That’s where KinsCare makes a difference
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </div>
+          {/* Right Column */}
+          {/* <div className="relative">
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1140153601-min.jpg?alt=media&token=93fce255-b7d8-4e0d-a28a-5e089a94d6e7"
+              alt="Caregivers"
+              className="w-full h-auto rounded-lg"
+            />
+          </div> */}
+        </div>
+        <div className="max-w-7xl py-10 mx-auto grid md:grid-cols-2  gap-12 ">
           {/* Left Column */}
           <div>
-            <h4 className="tracking-tight text-3xl font-bold text-gray-800 mb-6 ">
-              <span className="text-red-500">Use Kinscare</span> because
-            </h4>
-            <ul className="space-y-4">
-              <li className="flex items-start">
-                <div className="w-10 h-10 bg-blue-100 text-blue-600 flex items-center justify-center rounded-full mr-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <p className="text-gray-700 ">
-                  It has No initiation fees or cancellation fees.
-                </p>
-              </li>
-              <li className="flex items-start">
-                <div className="w-10 h-10 bg-blue-100 shrink-0 text-blue-600 flex items-center justify-center rounded-full mr-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <p className="text-gray-700 ">
-                  It has No hourly rate agency fees - you negotiate with the
-                  caregiver(s) directly
-                </p>
-              </li>
-              <li className="flex items-start">
-                <div className="w-10 h-10 bg-blue-100 text-blue-600 flex items-center justify-center rounded-full mr-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <p className="text-gray-700 ">
-                  Kinscare’s focus on caregivers and ease of use saves you time
-                  and money
-                </p>
-              </li>
-            </ul>
+            <div>
+              <h4 className="tracking-tight text-3xl font-bold text-gray-800 mb-6 ">
+                Get More Caregivers by Posting Your Job
+              </h4>
+              <p>
+                Posting a job on Kinscare makes it even easier to find
+                caregivers. Once your job is live, caregivers can apply even
+                after you’ve logged off, share it with their colleagues, and
+                help spread the word. Plus, we email your job to caregivers in
+                our network, increasing your chances of finding the right
+                match—fast. <br /> <br /> Kinscare keeps hiring simple,
+                affordable, and effective so you can focus on providing the best
+                care for your residents
+              </p>
+            </div>
           </div>
-
           {/* Right Column */}
           <div className="relative">
             <img
-              src="https://zone-ui.vercel.app/assets/illustrations/illustration-recruitment.svg"
+              src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1140153601-min.jpg?alt=media&token=93fce255-b7d8-4e0d-a28a-5e089a94d6e7"
               alt="Caregivers"
               className="w-full h-auto rounded-lg"
             />
           </div>
+        </div>
+      </div>
+      <div className="max-w-6xl my-16 mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative bg-gradient-to-br from-indigo-900 to-blue-800 rounded-2xl p-8 md:p-12 overflow-hidden">
+          {/* Decorative elements */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl" />
+        <div className="mb-4">
+        <div className="inline-flex items-center gap-3 mb-1">
+            <svg
+              className="w-8 h-8 text-emerald-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <h3 className="text-2xl font-semibold text-white">
+              Trusted by Providers Like You
+            </h3>
+          </div>
+          <p className="text-lg text-indigo-100 leading-relaxed">
+            Join the growing community of healthcare professionals who trust
+            Kinscare
+          </p>
+        </div>
+          <div className="flex flex-row md:flex-row items-center gap-8 relative z-10">
+            {/* Left Section */}
+
+            {/* Right Section */}
+            <div className=" text-center md:text-left">
+              <div className="inline-flex items-center gap-3 mb-3">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-sky-500/20 blur-lg" />
+                  <span className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-sky-400 to-emerald-400 bg-clip-text text-transparent relative">
+                    200+
+                  </span>
+                </div>
+                <svg
+                  className="w-8 h-8 text-rose-400 animate-pulse"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                  />
+                </svg>
+              </div>
+              <p className="text-lg text-indigo-100 font-medium">
+               Over 200 Providers in the Northwest use Kinscare{" "}
+                 and the number keeps
+                <span className="text-emerald-300"> {""} growing daily!</span>
+              </p>
+            </div>
+          </div>
+
+          {/* Provider Logos (Optional) */}
+          {/* <div className="mt-8 flex flex-wrap justify-center gap-6 opacity-75">
+            <div className="w-20 h-8 bg-indigo-400/10 rounded-lg backdrop-blur-sm" />
+            <div className="w-20 h-8 bg-indigo-400/10 rounded-lg backdrop-blur-sm" />
+            <div className="w-20 h-8 bg-indigo-400/10 rounded-lg backdrop-blur-sm" />
+            <div className="w-20 h-8 bg-indigo-400/10 rounded-lg backdrop-blur-sm" />
+          </div> */}
         </div>
       </div>
       <div className="bg-gray-100 py-10 px-6 md:px-12">
