@@ -2,6 +2,7 @@
 import React from "react";
 import SearchBar from "./SearchBar";
 import { Pin } from "lucide-react";
+import { Button } from "@/components/ui/button";
 const FindLandingPage = async () => {
   return (
     <div>
@@ -18,7 +19,7 @@ const FindLandingPage = async () => {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6 pt-20 lg:pt-0">
+        <div id="search-top" className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6 pt-20 lg:pt-0">
           {/* Headline */}
           <h1 className="text-white text-4xl md:text-6xl font-extrabold leading-tight mb-4">
             Find the{" "}
@@ -215,7 +216,7 @@ const FindLandingPage = async () => {
               </h4>
               <ul className="space-y-4">
                 <li className="flex items-start">
-                  <div className="w-10 h-10 bg-blue-100 shrink-0 text-blue-600 flex items-center justify-center rounded-full mr-4">
+                  <div className="w-10 h-10 bg-blue-100 shrink-0 text-blue-600 flex items-center justify-center rounded-full mr-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-6 w-6"
@@ -241,7 +242,7 @@ const FindLandingPage = async () => {
                   </p>
                 </li>
                 <li className="flex items-start">
-                  <div className="w-10 h-10 bg-blue-100 shrink-0 text-blue-600 flex items-center justify-center rounded-full mr-4">
+                  <div className="w-10 h-10 bg-blue-100 shrink-0 text-blue-600 flex items-center justify-center rounded-full mr-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-6 w-6"
@@ -266,8 +267,8 @@ const FindLandingPage = async () => {
                     activities.
                   </p>
                 </li>
-                <li className="flex items-center">
-                  <div className="w-10 h-10 bg-blue-100 text-blue-600 flex items-center justify-center rounded-full mr-4">
+                <li className="flex items-start">
+                  <div className="w-10 h-10 bg-blue-100 shrink-0 text-blue-600 flex items-center justify-center rounded-full mr-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-6 w-6"
@@ -336,30 +337,30 @@ const FindLandingPage = async () => {
           {/* Decorative elements */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl" />
-        <div className="mb-4">
-        <div className="inline-flex items-center gap-3 mb-1">
-            <svg
-              className="w-8 h-8 text-emerald-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <h3 className="text-2xl font-semibold text-white">
-              Trusted by Providers Like You
-            </h3>
+          <div className="mb-4">
+            <div className="inline-flex items-center gap-3 mb-1">
+              <svg
+                className="w-8 h-8 text-emerald-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <h3 className="text-2xl font-semibold text-white">
+                Trusted by Providers Like You
+              </h3>
+            </div>
+            <p className="text-lg text-indigo-100 leading-relaxed">
+              Join the growing community of healthcare professionals who trust
+              Kinscare
+            </p>
           </div>
-          <p className="text-lg text-indigo-100 leading-relaxed">
-            Join the growing community of healthcare professionals who trust
-            Kinscare
-          </p>
-        </div>
           <div className="flex flex-row md:flex-row items-center gap-8 relative z-10">
             {/* Left Section */}
 
@@ -387,8 +388,8 @@ const FindLandingPage = async () => {
                 </svg>
               </div>
               <p className="text-lg text-indigo-100 font-medium">
-               Over 200 Providers in the Northwest use Kinscare{" "}
-                 and the number keeps
+                Over 200 Providers in the Northwest use Kinscare and the number
+                keeps
                 <span className="text-emerald-300"> {""} growing daily!</span>
               </p>
             </div>
@@ -504,6 +505,11 @@ const FindLandingPage = async () => {
             </p>
           </div>
         </div>
+      </div>
+      <div className="flex justify-center py-10">
+       <a href="#search-top">
+       <button className="bg-indigo-600 text-white px-8 py-4 text-lg font-bold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300">Search Caregivers</button>
+       </a>
       </div>
     </div>
   );

@@ -262,7 +262,7 @@ const OauthApply: React.FC<OauthApplyProps> = ({ jobID, job, children }) => {
                     Welcome to Kinscare
                   </DialogTitle>
                   <DialogDescription className="text-gray-600 text-sm text-center mb-6">
-                    To apply for this job you need to signin to kinscare
+                    To apply for this job you need to register with Kinscare
                   </DialogDescription>
                 </div>
 

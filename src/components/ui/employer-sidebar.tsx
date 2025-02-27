@@ -47,6 +47,7 @@ import {
 import ProviderNavbarRight from "@/Providers/ProviderNavbarRight";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import CaregiverSearch from "@/Providers/Candidates/CaregiverSearch";
 
 export function EmployerAppSidebar({
   children,
@@ -93,7 +94,7 @@ export function EmployerAppSidebar({
             url: "/provider/job/update/new",
           },
           {
-            title: "Your Job postings",
+            title: "Your Job Postings",
             url: "/provider/job/all",
           },
         ],
@@ -362,7 +363,6 @@ export function EmployerAppSidebar({
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  
                   className={`
                     font-semibold antialiased py-5
                     [&>svg]:w-6 [&>svg]:h-4
@@ -425,6 +425,7 @@ export function EmployerAppSidebar({
             </NavigationMenuList>
           </NavigationMenu>
           {/* Right Section */}
+          <CaregiverSearch />
           <div className="flex items-center ml-auto">
             <ProviderNavbarRight />
           </div>

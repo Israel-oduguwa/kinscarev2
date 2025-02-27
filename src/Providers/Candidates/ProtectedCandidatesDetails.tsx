@@ -21,6 +21,7 @@ import { useContext, useEffect, useState } from "react";
 import PaymentForm from "../User/PaymentForm";
 import PricingPlan from "../User/PricingPlan";
 import Dropzone from "react-dropzone";
+import { Separator } from "@radix-ui/react-dropdown-menu";
 
 /** Stripe setup */
 const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_TEST_KEY || "");
@@ -643,9 +644,8 @@ function ProtectedCandidatesDetails({
         >
           <DialogHeader className="pt-5">
             <DialogTitle className="flex flex-col items-center text-center">
-              <h2 className="font-bold tracking-tight text-2xl text-gray-800">
-                {currentStep === "selection" &&
-                  "Choose one of the two options below."}
+              <h2 className="font-bold tracking-tight mb-1 text-2xl text-gray-800">
+                {currentStep === "selection" && "Verify your Identity"}
                 {currentStep === "payment" &&
                   "Get Verified with Payment Method"}
                 {currentStep === "attestation" &&
@@ -653,8 +653,8 @@ function ProtectedCandidatesDetails({
               </h2>
               {currentStep === "selection" && (
                 <p className="text-gray-700">
-                  To protect caregivers and ensure a safe platform, choose one
-                  of these verification options:
+                  To protect our caregivers and ensure a safe platform, verify
+                  your identity with one of these options
                 </p>
               )}
             </DialogTitle>
@@ -704,8 +704,10 @@ function ProtectedCandidatesDetails({
                   <p>Loading...</p>
                 )}
               </div>
+              <OrSeparator />
               <h3 className="font-bold text-gray-800">
-                2. Upload a Signed Attestation Letter & Government-Issued ID
+                2. Verify Identity with Signed Attestation Letter &
+                Government-Issued ID
               </h3>
               <div
                 className="flex items-center p-4 border shadow-lg rounded-lg cursor-pointer hover:shadow-xl transition"
@@ -921,3 +923,13 @@ export default ProtectedCandidatesDetails;
 // government-issued ID. The verification process may take up to 2
 // days, and we’ll contact you if anything needs clarification.
 // <br />
+
+const OrSeparator: React.FC = () => {
+  return (
+    <div className="w-full flex items-center gap-2 my-4">
+      <div className="flex-grow border-t border-gray-300"></div>
+      <p className="text-gray-900 font-normal antialiased text-md">or</p>
+      <div className="flex-grow border-t border-gray-300"></div>
+    </div>
+  );
+};

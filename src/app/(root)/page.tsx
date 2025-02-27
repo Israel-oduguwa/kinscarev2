@@ -75,7 +75,7 @@ export default function Home() {
         <div className="grid max-w-screen-xl px-4 py-2 lg:py-10 xl:px-0 mt-[73px] mx-auto lg:gap-8 xl:gap-0 lg:grid-cols-12">
           <div className="mr-auto place-self-center lg:py-16 lg:px-6 py-2 lg:col-span-6">
             <h1 className=" max-w-2xl mb-6 text-3xl tracking-tight text-gray-800  antialiased font-extrabold  md:text-5xl xl:text-7xl dark:text-white">
-              Seamlessly Matching Caregivers with Providers
+              Helping Providers Find the Right Caregivers with Ease
             </h1>
             <p className="text-xl text-gray-800 mb-4 antialiased lg:mb-8 md:text-md lg:text-md dark:text-gray-400">
               Whether you're hiring, seeking caregiving opportunities, or

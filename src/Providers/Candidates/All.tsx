@@ -74,7 +74,7 @@ const fetchFilteredCandidates = async (
     const availabilityParam = availability.join(",");
     const licensesParam = licenses.join(",");
     const response = await axios.get(
-      `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${availabilityParam}&licenses=${licensesParam}&page=${page}&limit=10`
+      `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${availabilityParam}&licenses=${licensesParam}&page=${page}&limit=40`
     );
     return response.data;
   } catch (error) {
@@ -126,7 +126,7 @@ const CandidatesCard = ({ candidate }: any) => {
     e.stopPropagation();
     e.nativeEvent.stopImmediatePropagation();
   };
-  const sanitizedContent = sanitizeContent(candidate.certifications)
+  const sanitizedContent = sanitizeContent(candidate.certifications);
   return (
     <div key={candidate.userID} className="w-full relative mb-4 ">
       <Link href={`/provider/candidates/${candidate.userID}`}>
@@ -206,7 +206,7 @@ const CandidatesCard = ({ candidate }: any) => {
               Certifications
             </h4>
             <p className="text-sm text-gray-600 line-clamp-2">
-            <Interweave content={sanitizedContent} />
+              <Interweave content={sanitizedContent} />
             </p>
           </div>
 
@@ -301,6 +301,7 @@ function All() {
       setLoading(true);
       try {
         const data: CandidatesApiResponse = await fetchCandidates(userID, page);
+        console.log(data)
         setCandidates(data.candidates);
         setTotalPages(data.totalPages);
       } catch (err) {
@@ -380,7 +381,7 @@ function All() {
     { label: "NAR", value: "NAR" },
     { label: "Companion", value: "None" },
   ];
-
+console.log(totalPages, "total pages")
   return (
     <div className="w-full">
       <div className="bg-slate-100 min-h-[100vh] p-3">
@@ -393,9 +394,7 @@ function All() {
                     {candidates.length} Caregivers Found
                   </h1>
                   <p className=" text-gray-200 text-sm">
-                    Browse through a list of professional caregivers available
-                    for your requirements. Use the filters below to refine your
-                    search further.
+                  Explore a list of experienced caregivers ready to meet your needs. Use the filters below to find the best match.
                   </p>
                 </div>
                 <div className="mb-1">
@@ -429,7 +428,13 @@ function All() {
               </>
             </div>
           </header>
-
+          <div className="pb-5">
+            <Link href="/provider/job/update/new">
+              <p className="text-red-500 text-center">
+                Post your job now and let caregivers looking for work apply!
+              </p>
+            </Link>
+          </div>
           {/* Filters */}
 
           {/* Loading, Error, or Candidates */}

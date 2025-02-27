@@ -278,7 +278,7 @@ const JobPostModal = ({ caregiver }: any) => {
   const previewData = watch();
   // console.log(errors);
   return (
-    <Dialog open={openDialog}>
+    <Dialog onOpenChange={setOpenDialog} open={openDialog}>
       <DialogContent className="max-w-4xl m-0 rounded-lg p-0 overflow-hidden">
         {/* Progress Bar */}
         <div className="relative w-full bg-gray-200 h-1">

@@ -3,7 +3,7 @@ import ProfileAvatar from "@/components/ProfileAvatar";
 import { Button } from "@/components/ui/button";
 import { Interweave } from "interweave";
 import { polyfill } from "interweave-ssr";
-import { MapPin, Send } from "lucide-react";
+import { MapPin, PersonStanding, Send, User } from "lucide-react";
 import Link from "next/link";
 import truncateHtml from "html-truncate"; // Ensure this is installed: `npm install html-truncate`
 import { Metadata } from "next";
@@ -87,16 +87,16 @@ const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
     formatPhoneNumberToDigitsWithPlus(candidate?.auth?.tel)
   );
 
-  console.log(candidate.auth);
+  const encryptedEmail = obfuscateText(candidate?.auth?.email);
   return (
     <div className="w-full mb-6">
-      <div className="bg-white flex flex-col lg:flex-row items-start lg:items-center justify-between shadow-md border border-gray-100 rounded-lg p-6">
+      <div className="bg-white flex flex-col lg:flex-row items-start lg:items-start justify-between shadow-md border border-gray-100 rounded-lg p-6">
         <Link href={`caregivers/${candidate.userID}`} className="flex-1">
           {/* Candidate Info */}
           <div className="flex mb-3 flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-4">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
               <ProfileAvatar
-                size="w-16 h-16"
+                size="w-14 h-14"
                 name={candidate.name}
                 profileImage={candidate?.profileImage}
               />
@@ -123,7 +123,11 @@ const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
             </div>
           </div>
           {/* Licenses and Availability */}
-          <div className="flex flex-wrap gap-2 mt-4 lg:mt-0">
+          {/* <div className="flex flex-wrap gap-2 mt-4 mb-2 lg:mt-0">
+          
+          </div> */}
+          <div className="py-1">
+            <h4 className="text-sm font-bold mb-1 text-gray-700">Licences</h4>
             {candidate.licenses.map((license: string, index: number) => (
               <span
                 key={index}
@@ -132,6 +136,11 @@ const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
                 {license}
               </span>
             ))}
+          </div>
+          <div className="py-1">
+            <h4 className="text-sm font-bold mb-1 text-gray-700">
+              Availablity
+            </h4>
             {candidate.availability.map((sch: string, index: number) => (
               <span
                 key={index}
@@ -141,20 +150,25 @@ const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
               </span>
             ))}
           </div>
-
           {/* Certifications */}
-          <div className="mt-4">
-            <h4 className="text-sm font-bold text-gray-800">Certifications</h4>
+          <div className="py-2">
+            <h4 className="text-sm font-bold text-gray-700">Certifications</h4>
             <div className="text-sm text-gray-600 line-clamp-2">
               <Interweave content={sanitizedContent} />
             </div>
           </div>
-          <div>
-            <p>{encryptedTel}</p>
-            <p className="text-sm px-3 cursor-pointer max-w-[250px] font-medium mt-1 py-2 rounded-md bg-blue-50 text-blue-800">
-              [Hidden - Sign Up to View]
+          <div className="py-2">
+            <h4 className="text-sm font-bold text-gray-700">Contact Details</h4>
+            <div>
+              <p className="text-sm">Phone: {encryptedTel}</p>
+              <p className="text-sm">Email: {encryptedEmail}</p>
+            </div>
+          </div>
+          <div className="pt-1">
+            <p className="text-sm px-3 cursor-pointer max-w-[400px] font-semibold mt-1 py-2 rounded-md bg-blue-50 text-blue-900">
+              Click {`"View Caregiver"`} to see contact details
             </p>
-            <p className="text-sm">Click {`"View Caregiver"`} to see the full detaiils</p>
+            {/* <p className="text-sm"></p> */}
           </div>
         </Link>
 
@@ -167,7 +181,7 @@ const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
           >
             <Button className="px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md w-full lg:w-auto">
               <span className="flex items-center gap-2">
-                <Send size={16} /> Message Caregiver
+                <User /> View Caregiver
               </span>
             </Button>
           </OAuthDialog>

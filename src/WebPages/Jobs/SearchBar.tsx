@@ -47,7 +47,7 @@ const SearchBar: React.FC = ({}) => {
 
         {/* Filters Section */}
         <div className="w-full max-w-6xl p-4 sm:p-6 bg-white rounded-lg">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 items-center md:grid-cols-3 gap-4">
             {/* Schedule Multi-Select */}
             <MultiSelect
               options={scheduleOptions.map((option) => ({
@@ -79,7 +79,24 @@ const SearchBar: React.FC = ({}) => {
             />
 
             {/* Min Hours Slider */}
-            <div className="space-y-1">
+            <div className="mt-4 flex justify-end">
+              <Button
+                className="w-full px-6 py-2 text-sm bg-blue-600 hover:bg-blue-700 transition"
+                onClick={handleSearchJobs}
+                disabled={loading}
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="animate-spin" /> Searching...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Search /> Search
+                  </span>
+                )}
+              </Button>
+            </div>
+            {/* <div className="space-y-1">
               <label className="block text-xs font-medium text-gray-800">
                 Min Hours
               </label>
@@ -100,11 +117,11 @@ const SearchBar: React.FC = ({}) => {
                 <span>{filters.minHours} hrs</span>
                 <span>50 hrs</span>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Search Button */}
-          <div className="mt-4 flex justify-end">
+          {/* <div className="mt-4 flex justify-end">
             <Button
               className="w-full px-6 py-2 text-sm bg-blue-600 hover:bg-blue-700 transition"
               onClick={handleSearchJobs}
@@ -120,7 +137,7 @@ const SearchBar: React.FC = ({}) => {
                 </span>
               )}
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
     </header>

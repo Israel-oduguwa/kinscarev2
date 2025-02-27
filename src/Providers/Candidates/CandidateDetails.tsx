@@ -380,7 +380,7 @@ async function CandidateDetails({ candidateID }: { candidateID: string }) {
           </div>
         </div>
       </div>
-      <JobPostModal caregiver={caregiver} />
+      {/* <JobPostModal caregiver={caregiver} /> */}
     </>
   );
 }

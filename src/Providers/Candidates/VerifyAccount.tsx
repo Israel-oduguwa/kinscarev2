@@ -323,11 +323,11 @@ function VerifyAccount({ openModal, setOpenModal }: { openModal: boolean, setOpe
     }
   };
 
-  return (
+  return ( 
     <>
       {/* ============== TRIAL VERIFICATION (ATT. LETTER / PAYMENT) DIALOG ============== */}
-      <Dialog open={isTrialDialogOpen} onOpenChange={setOpenModal}>
-        <DialogContent className="h-[100vh] md:h-auto max-w-4xl overflow-y-auto">
+      <Dialog  open={isTrialDialogOpen} onOpenChange={setOpenModal}>
+        <DialogContent closePosition="left" className="h-[100vh] md:h-auto max-w-4xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex flex-col items-center text-center">
               <h2 className="font-bold tracking-tight text-2xl text-gray-800">

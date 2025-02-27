@@ -123,8 +123,8 @@ async function All({
           <SearchBar />
           <h1 className="text-lg tracking-tight font-semibold text-gray-700 mt-6">
             There are <span className="text-blue-600">{totalJobs}</span>{" "}
-            caregivers near you with
-            <span className="text-blue-700"> {licenses} </span> requirements
+            jobs near you
+            
           </h1>
         </div>
 
