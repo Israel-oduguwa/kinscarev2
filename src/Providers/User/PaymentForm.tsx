@@ -11,6 +11,7 @@ import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useContext, useState } from "react";
+import TagManager from "react-gtm-module";
 
 interface PaymentFormProps {
   clientSecret: string; // The client secret for SetupIntent
@@ -75,7 +76,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           headers: { "Content-Type": "application/json" },
         }
       );
-      
+
       await user.refreshCustomData();
       router.refresh();
       // Handle success or error response
@@ -131,9 +132,23 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         throw new Error("PaymentMethod ID is missing.");
       }
 
+      const tagManagerArgs = {
+        dataLayer: {
+          event: `add_payment_method`,
+          step: "verify_identity",
+          settings: userData?.settings,
+          lname: userData?.lname,
+          fname: userData?.fname,
+          tel: userData?.auth?.tel,
+          zipcode: userData?.zipcode,
+          city: userData?.city,
+          email: userData?.auth?.email,
+        },
+      };
+      TagManager.dataLayer(tagManagerArgs);
       // Update the database with the PaymentMethod ID
       await updatePaymentMethod(paymentMethodID);
-      const payloadAddPayment  = {
+      const payloadAddPayment = {
         settings: userData?.settings,
         lname: userData?.lname,
         fname: userData?.fname,
@@ -141,8 +156,12 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         zipcode: userData?.zipcode,
         city: userData?.city,
         email: userData?.auth?.email,
-      }
-      trackEvents(user?.customData?.hash, "Add Payment Method", payloadAddPayment);
+      };
+      trackEvents(
+        user?.customData?.hash,
+        "Add Payment Method",
+        payloadAddPayment
+      );
 
       // Create the subscription with the backend API
       // const subscription = await createSubscription();
@@ -162,7 +181,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         setIsTrialExpired(false);
         // router.refresh();
         setIsLoading(false);
-        window.location.reload(); 
+        window.location.reload();
         close();
       }
     } catch (error: any) {

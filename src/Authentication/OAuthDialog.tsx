@@ -129,6 +129,7 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
                   event: `${payload.role}_sign_up`,
                   userIp: response?.data?.userIp,
                   added: new Date(),
+                  signup_route: "find_caregiver",
                   authEmail: payload.email,
                   authMode: payload.auth_mode,
                   authTel: payload.tel.trim(),
@@ -139,10 +140,11 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
               }
             : {
                 dataLayer: {
-                  event: `social_sign_up`,
+                  event: `${payload.role}_sign_up`,
                   added: new Date(),
                   userIp: response?.data?.userIp,
                   authEmail: payload.email,
+                  signup_route: "find_caregiver",
                   authMode: payload.auth_mode,
                   socialFname: payload.fname,
                   socialLname: payload.lname,

@@ -20,10 +20,12 @@ import { jwtDecode } from "jwt-decode";
 import { ArrowBigLeft, Loader2, Loader2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useContext, useState } from "react";
+import { trackEvent } from "@/lib/mixpanelUtils";
 // import FacebookLogin from "react-facebook-login";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import Link from "next/link";
+import TagManager from "react-gtm-module";
 
 // Validation schema for the email signup form
 const schema = yup.object().shape({
@@ -78,7 +80,7 @@ function GetStartedBtn({ children }: any) {
     setLoading(false);
   };
 
-  const createUserDuringRegistration = async (payload: object) => {
+  const createUserDuringRegistration = async (payload: any) => {
     try {
       const response = await axios.get("/api/ip");
       if (response.data) {
@@ -108,6 +110,39 @@ function GetStartedBtn({ children }: any) {
           payload
         );
         setAuthenticated(true);
+
+        const tagManagerArgs =
+          payload.auth_mode === "local-userpass"
+            ? {
+                dataLayer: {
+                  event: `explorer_sign_up`,
+                  userIp: response?.data?.userIp,
+                  added: new Date(),
+                  signup_route:"explorer",
+                  authEmail: payload.email,
+                  authMode: payload.auth_mode,
+                  authTel: payload.tel.trim(),
+                  role: `${payload.role}`,
+                  type: "Web",
+                  userId: `${payload.userID}`,
+                },
+              }
+            : {
+                dataLayer: {
+                  event: `explorer_sign_up`,
+                  added: new Date(),
+                  signup_route:"explorer",
+                  userIp: response?.data?.userIp,
+                  authEmail: payload.email,
+                  authMode: payload.auth_mode,
+                  socialFname: payload.fname,
+                  socialLname: payload.lname,
+                  type: "Web",
+                  userId: `${payload.userID}`,
+                },
+              };
+
+        TagManager.dataLayer(tagManagerArgs);
       }
     } catch (error) {
       handleError(error);
@@ -155,6 +190,8 @@ function GetStartedBtn({ children }: any) {
             userObj.id,
             userObj.profile.email
           );
+          //  trackEvent(app.currentUser.customData.hash, "Explorer Sign Up", payload);
+
           if (fetchedData.result) {
             console.log(fetchedData);
             setAuthenticated(true);
@@ -477,7 +514,6 @@ function GetStartedBtn({ children }: any) {
 }
 
 export default GetStartedBtn;
-
 
 // {!loading && (
 //   <p className="mt-4 text-center text-gray-500">

@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Bookmark, Loader, Loader2, Share2Icon } from "lucide-react";
 import axios, { AxiosError } from "axios";
 import { toast } from "@/components/ui/use-toast";
-import { fetchUserData } from "@/lib/utils";
+import { fetchUserData, trackEvents } from "@/lib/utils";
+import TagManager from "react-gtm-module";
 
 function ApplyNow({ jobID, job }: any) {
   const mongodb: any = useContext(MongoContext); // User Data Context
@@ -55,37 +56,62 @@ function ApplyNow({ jobID, job }: any) {
           variant: "default",
         });
         router.push("/vitae/update");
+      } else {
+        const payload = {
+          jobId: jobID,
+          caregiverId: userData.userID,
+          providerName,
+        };
+        const { data } = await axios.post(
+          "https://api.kinscare.org/api/v1/caregivers/job/apply",
+          payload
+        );
+        return data;
       }
-     else{
-      const payload = {
-        jobId: jobID,
-        caregiverId: userData.userID,
-        providerName,
-      };
-      const { data } = await axios.post(
-        "https://api.kinscare.org/api/v1/caregivers/job/apply",
-        payload
-      );
-      return data;
-     }
     },
     onSuccess: async () => {
-     if(userData.complete){
-       // Instead of refreshing, we manually update the state
-       setHasApplied(true); // Mark as applied
-       // lets update the userData
-       const fetchedData: any = await fetchUserData(
-         user.customData.userID,
-         user.customData.email
-       );
-       // console.log(fetchedData);
-       setUserData(fetchedData.result);
-       toast({
-         title: "Application Successful",
-         description: "You have successfully applied for this job.",
-         variant: "default",
-       });
-     }
+      if (userData.complete) {
+        // Instead of refreshing, we manually update the state
+        setHasApplied(true); // Mark as applied
+        // lets update the userData
+        const fetchedData: any = await fetchUserData(
+          user.customData.userID,
+          user.customData.email
+        );
+        // console.log(fetchedData);
+        setUserData(fetchedData.result);
+
+        //  Track the event in GTM
+        const eventPayload = {
+          // subscription_id: subscriptionID,
+          settings: userData?.settings,
+          lname: userData?.lname,
+          subscription_status: "complete",
+          fname: userData?.fname,
+          tel: userData?.auth?.tel,
+          jobTitle: job?.title,
+          jobID: jobID,
+          zipcode: userData?.zipcode,
+          city: userData?.city,
+          email: userData?.auth?.email,
+        };
+
+        const tagManagerArgs = {
+          dataLayer: {
+            ...eventPayload,
+            event: `apply_job`,
+          },
+        };
+        TagManager.dataLayer(tagManagerArgs);
+
+        // Track purchase event
+        trackEvents(user?.customData?.hash, "Apply Job", eventPayload);
+        toast({
+          title: "Application Successful",
+          description: "You have successfully applied for this job.",
+          variant: "default",
+        });
+      }
     },
     onError: (err) => {
       toast({
@@ -155,8 +181,8 @@ function ApplyNow({ jobID, job }: any) {
           {isApplying
             ? "Applying..."
             : hasApplied
-            ? "Already Applied"
-            : "Apply Now"}
+              ? "Already Applied"
+              : "Apply Now"}
         </Button>
 
         {/* Favorite Button */}

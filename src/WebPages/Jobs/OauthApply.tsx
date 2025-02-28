@@ -24,6 +24,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ApplyNow from "@/Caregivers/Jobs/JobsUI/ApplyNow";
+import TagManager from "react-gtm-module";
 
 interface OauthApplyProps {
   jobID?: string; // Passed from SSR page if available
@@ -83,7 +84,7 @@ const OauthApply: React.FC<OauthApplyProps> = ({ jobID, job, children }) => {
     setLoading(false);
   };
 
-  const createUserDuringRegistration = async (payload: object) => {
+  const createUserDuringRegistration = async (payload: any) => {
     try {
       const response = await axios.get("/api/ip");
       if (response.data) {
@@ -114,6 +115,38 @@ const OauthApply: React.FC<OauthApplyProps> = ({ jobID, job, children }) => {
           payload
         );
         setAuthenticated(true);
+        const tagManagerArgs =
+          payload.auth_mode === "local-userpass"
+            ? {
+                dataLayer: {
+                  event: `${payload.role}_sign_up`,
+                  userIp: response?.data?.userIp,
+                  added: new Date(),
+                  signup_route: "find_job",
+                  authEmail: payload.email,
+                  authMode: payload.auth_mode,
+                  authTel: payload.tel.trim(),
+                  role: `${payload.role}`,
+                  type: "Web",
+                  userId: `${payload.userID}`,
+                },
+              }
+            : {
+                dataLayer: {
+                  event: `${payload.role}_sign_up`,
+                  added: new Date(),
+                  userIp: response?.data?.userIp,
+                  authEmail: payload.email,
+                  signup_route: "find_job",
+                  authMode: payload.auth_mode,
+                  socialFname: payload.fname,
+                  socialLname: payload.lname,
+                  type: "Web",
+                  userId: `${payload.userID}`,
+                },
+              };
+
+        TagManager.dataLayer(tagManagerArgs);
       }
     } catch (error) {
       handleError(error);
@@ -469,7 +502,6 @@ const OauthApply: React.FC<OauthApplyProps> = ({ jobID, job, children }) => {
 };
 
 export default OauthApply;
-
 
 // {!loading && (
 //   <p className="mt-4 text-center text-gray-500">

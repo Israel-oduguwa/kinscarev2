@@ -11,6 +11,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
 import MongoContext from "@/app/MongoContext";
 import { fetchContactsData, trackEvents } from "@/lib/utils";
+import TagManager from "react-gtm-module";
 
 interface FrequentPaymentFormProps {
   clientSecret: string;
@@ -127,10 +128,10 @@ const FrequentPaymentForm: React.FC<FrequentPaymentFormProps> = ({
   
       // Update the payment method
       await updatePaymentMethod();
-  
+     
       // Event payload for tracking
       const eventPayload = {
-        subscription_id: subscriptionID,
+        // subscription_id: subscriptionID,
         settings: userData?.settings,
         lname: userData?.lname,
         subscription_status: "complete",
@@ -140,12 +141,21 @@ const FrequentPaymentForm: React.FC<FrequentPaymentFormProps> = ({
         ).toISOString(),
         fname: userData?.fname,
         tel: userData?.auth?.tel,
-        plan_id: subscription.plan.id,
+        // plan_id: subscription.plan.id,
         zipcode: userData?.zipcode,
         city: userData?.city,
-        payment_verified: true,
+        // payment_verified: true,
         email: userData?.auth?.email,
       };
+
+      const tagManagerArgs = {
+        dataLayer: {
+          ...eventPayload,
+          event: `purchase_plan`,
+         
+        },
+      };
+       TagManager.dataLayer(tagManagerArgs);
   
       // Track purchase event
       trackEvents(user?.customData?.hash, "Purchase Plan", eventPayload);
