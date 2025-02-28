@@ -13,6 +13,7 @@ import axios from "axios";
 import { Interweave } from "interweave";
 import {
   AlertTriangle,
+  Loader,
   Loader2,
   Mail,
   MapPin,
@@ -24,6 +25,8 @@ import React, { useContext, useEffect, useState } from "react";
 import ProviderDialog from "./ProviderDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { sanitizeContent } from "@/lib/ui_utils";
+import { CandidatesContext } from "./CandidatesContext";
+import { CaregiverCardSkeleton } from "./CandidateSkelenton";
 
 interface Candidates {
   _id: string;
@@ -63,52 +66,6 @@ const fetchCandidates = async (userID: string, page: number) => {
     console.error(error);
     throw error;
   }
-};
-
-const fetchFilteredCandidates = async (
-  availability: string[],
-  licenses: string[],
-  page: number
-) => {
-  try {
-    const availabilityParam = availability.join(",");
-    const licensesParam = licenses.join(",");
-    const response = await axios.get(
-      `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${availabilityParam}&licenses=${licensesParam}&page=${page}&limit=40`
-    );
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};
-
-const CaregiverCardSkeleton = () => {
-  return (
-    <div className="shadow-sm border bg-white border-gray-200 rounded-lg p-4 space-y-4">
-      {/* Avatar and Name */}
-      <div className="flex items-center space-x-4">
-        <Skeleton className="w-16 h-16 rounded-full" />
-        <div className="flex flex-col space-y-2">
-          <Skeleton className="w-32 h-6 rounded" />
-          <Skeleton className="w-24 h-4 rounded" />
-        </div>
-      </div>
-
-      {/* Licenses and Availability */}
-      <div className="flex flex-wrap gap-2 mt-4">
-        <Skeleton className="w-16 h-6 rounded" />
-        <Skeleton className="w-20 h-6 rounded" />
-        <Skeleton className="w-12 h-6 rounded" />
-      </div>
-
-      {/* About Section */}
-      <div className="space-y-2 mt-4">
-        <Skeleton className="w-full h-4 rounded" />
-        <Skeleton className="w-3/4 h-4 rounded" />
-      </div>
-    </div>
-  );
 };
 
 const CandidatesCard = ({ candidate }: any) => {
@@ -280,92 +237,21 @@ const CandidatesCard = ({ candidate }: any) => {
 };
 
 function All() {
-  const mongodb = useContext(MongoContext);
-  const { user, userData }: any = mongodb;
-  const userID = userData?.userID;
-  const [candidates, setCandidates] = useState<Candidates[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isFilteredSearch, setIsFilteredSearch] = useState(false);
-
-  // Filter state
-  const [selectedShifts, setSelectedShifts] = useState<string[]>([]);
-  const [selectedLicenses, setSelectedLicenses] = useState<string[]>([]);
-
-  // Fetch initial candidates on component load
-  useEffect(() => {
-    const loadCandidates = async () => {
-      if (!userID) return;
-      setLoading(true);
-      try {
-        const data: CandidatesApiResponse = await fetchCandidates(userID, page);
-        console.log(data)
-        setCandidates(data.candidates);
-        setTotalPages(data.totalPages);
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadCandidates();
-  }, [userID, page]);
-
-  // Fetch candidates based on filters
-  const handleSearch = async () => {
-    setPage(1);
-    setIsFilteredSearch(true);
-    setLoading(true);
-    setError(null);
-
-    try {
-      const data: CaregiverApiResponse = await fetchFilteredCandidates(
-        selectedShifts,
-        selectedLicenses,
-        1 // Always start at page 1 for filtered searches
-      );
-      // console.log(data, "search-data")
-      setCandidates(data.caregivers);
-      setTotalPages(data.pagination.totalPages);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Load more candidates
-  const loadMoreCandidates = async () => {
-    if (page >= totalPages) return;
-
-    try {
-      setLoading(true);
-      const nextPage = page + 1; // Calculate next page number
-      const data: CandidatesApiResponse = isFilteredSearch
-        ? await fetchFilteredCandidates(
-            selectedShifts,
-            selectedLicenses,
-            nextPage
-          )
-        : await fetchCandidates(userID, nextPage);
-
-      console.log(data);
-
-      // Prepend new candidates to the existing list
-      setCandidates((prev) => [...data.caregivers, ...prev]);
-
-      // Update the page after a successful API call
-      setPage(nextPage);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  const {
+    candidates,
+    loading,
+    error,
+    page,
+    totalPages,
+    setSelectedShifts,
+    setSelectedLicenses,
+    loadMoreCandidates,
+    handleSearch,
+    fetchFilteredCandidatesData,
+    selectedShifts,
+    selectedLicenses,
+  } = useContext(CandidatesContext)!;
+  console.log(candidates);
   // Shift and license options
   const shiftOptions = [
     { label: "Full time", value: "Full time" },
@@ -381,7 +267,7 @@ function All() {
     { label: "NAR", value: "NAR" },
     { label: "Companion", value: "None" },
   ];
-console.log(totalPages, "total pages")
+  console.log(totalPages, "total pages");
   return (
     <div className="w-full">
       <div className="bg-slate-100 min-h-[100vh] p-3">
@@ -394,7 +280,8 @@ console.log(totalPages, "total pages")
                     {candidates.length} Caregivers Found
                   </h1>
                   <p className=" text-gray-200 text-sm">
-                  Explore a list of experienced caregivers ready to meet your needs. Use the filters below to find the best match.
+                    Explore a list of experienced caregivers ready to meet your
+                    needs. Use the filters below to find the best match.
                   </p>
                 </div>
                 <div className="mb-1">
@@ -418,8 +305,9 @@ console.log(totalPages, "total pages")
                         <Button
                           className="w-full bg-blue-600 text-white hover:bg-blue-700 transition"
                           onClick={handleSearch}
+                          disabled={loading}
                         >
-                          <Search /> Search
+                          {loading ? <Loader2 className="animate-spin" /> : <Search />} Search
                         </Button>
                       </div>
                     </div>
