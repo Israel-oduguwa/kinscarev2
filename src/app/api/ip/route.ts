@@ -6,7 +6,7 @@ export async function GET(req: Request) {
   try {
     // Get the user's IP address from headers
     const forwarded = req.headers.get("x-forwarded-for");
-    const userIp =  "216.73.163.219" // forwarded || req.headers.get("x-real-ip") || "";
+    const userIp =   forwarded || req.headers.get("x-real-ip") || ""; //"216.73.163.219"
 
     // Check if IP exists
     if (!userIp) {
