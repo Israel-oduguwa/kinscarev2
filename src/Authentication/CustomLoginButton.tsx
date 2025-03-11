@@ -56,7 +56,7 @@ const CustomLoginButton: React.FC = () => {
           "Content-Type": "application/json",
         };
         const response = await axios.get(
-          "http://localhost:8081/api/v1/auth/get_user_info",
+          "https://api.kinscare.org/api/v1/auth/get_user_info",
           {
             withCredentials: true, // Important for sending cookies in cross-origin requests
             headers,
