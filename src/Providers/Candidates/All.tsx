@@ -251,7 +251,7 @@ function All() {
     selectedShifts,
     selectedLicenses,
   } = useContext(CandidatesContext)!;
-  console.log(candidates);
+  // console.log(candidates);
   // Shift and license options
   const shiftOptions = [
     { label: "Full time", value: "Full time" },
@@ -267,7 +267,7 @@ function All() {
     { label: "NAR", value: "NAR" },
     { label: "Companion", value: "None" },
   ];
-  console.log(totalPages, "total pages");
+  // console.log(totalPages, "total pages");
   return (
     <div className="w-full">
       <div className="bg-slate-100 min-h-[100vh] p-3">

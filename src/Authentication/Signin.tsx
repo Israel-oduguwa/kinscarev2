@@ -1,3 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 import MongoContext from "@/app/MongoContext";
 import { ModeToggle } from "@/components/ModeToggle";
@@ -20,6 +23,7 @@ import TagManager from "react-gtm-module";
 import SelectRole from "./SelectRole";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { trackEvent } from "@/lib/mixpanelUtils";
+import CustomLoginButton from "./CustomLoginButton";
 
 const OrSeparator: React.FC = () => {
   return (
@@ -140,7 +144,7 @@ const Signin: React.FC = () => {
           // console.log(fetchedData);
 
           // Tracking
-          console.log("hi");
+          // console.log("hi");
           const mixpanelPayload = {
             auth_mode: "oauth2-google",
             date_time: new Date().toISOString(),
@@ -435,7 +439,7 @@ const Signin: React.FC = () => {
                   Sign in to Kinscare
                 </h1>
                 {/* Centered Google Sign-In */}
-                <div className="flex w-full justify-center">
+                <div className="flex w-full gap-4 justify-center">
                   <GoogleLogin
                     size="large"
                     onSuccess={handleGoogleSuccess}
@@ -444,6 +448,7 @@ const Signin: React.FC = () => {
                     text="continue_with"
                     // useOneTap
                   />
+
                 </div>
                 <OrSeparator />
                 {/* <div>
@@ -526,6 +531,11 @@ const Signin: React.FC = () => {
                     </Link>
                   </p>
                 </form>
+
+                <div className="w-full">
+                  <p className="font-semibold mb-2">Coming from  excel cna signin using the button below</p>
+                  <CustomLoginButton/>
+                </div>
               </div>
             </div>
           </div>

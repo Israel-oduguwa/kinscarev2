@@ -255,7 +255,7 @@ function VerifyAccount({ openModal, setOpenModal }: { openModal: boolean, setOpe
 
   /** ============== Attestation Submission ============== */
   const submitDocument = async () => {
-    if (governmentID && attestationPreview) {
+    if (attestationPreview) {
       try {
         setSubmitting(true);
         const userID = userData?.userID;
@@ -270,7 +270,7 @@ function VerifyAccount({ openModal, setOpenModal }: { openModal: boolean, setOpe
             $set: {
               identity_verified: "pending",
               attestation_letter: attestationPreview,
-              government_Id: governmentID,
+              // government_Id: governmentID,
               trial: false,
               subscribed: false,
               // trial_start_date: new Date().toISOString(),
@@ -320,6 +320,25 @@ function VerifyAccount({ openModal, setOpenModal }: { openModal: boolean, setOpe
           "Please download/print an attestation letter, sign it, and upload it along with a government ID.",
         variant: "destructive",
       });
+    }
+  };
+
+  const downloadFile = async () => {
+    const fileUrl = "https://kinscare-storage.s3.us-east-1.amazonaws.com/Kinscare_assets/KinsCare_Provider_Verification_Form+(2).pdf";
+    try {
+      const response = await fetch(fileUrl);
+      if (!response.ok) throw new Error("Network response was not ok");
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = "kinscare_Attestation_Form.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Download failed:", error);
     }
   };
 
@@ -476,7 +495,7 @@ function VerifyAccount({ openModal, setOpenModal }: { openModal: boolean, setOpe
                   </Dropzone>
                 )}
               </div>
-              <div className="mt-4">
+              {/* <div className="mt-4">
                 <p className="font-semibold tracking-tight antialiased">
                   Government issued ID
                 </p>
@@ -530,6 +549,14 @@ function VerifyAccount({ openModal, setOpenModal }: { openModal: boolean, setOpe
                     )}
                   </Dropzone>
                 )}
+              </div> */}
+              <div className="mt-4">
+                <Button
+                  onClick={downloadFile}
+                  className="bg-blue-500 text-white"
+                >
+                  Download Attestation Letter
+                </Button>
               </div>
               <Button
                 disabled={submitting}

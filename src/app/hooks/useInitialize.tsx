@@ -118,9 +118,9 @@ export const useInitialize = (): UseInitializeReturn => {
     try {
       const updatedCustomData = await client
         .db("kinshealth")
-        .collection<UserCustomData>("users")
+        .collection<UserCustomData>("contacts")
         .findOne({ userID: user.id });
-      console.log("updating, the customerData", updatedCustomData)
+      // console.log("updating, the customerData", updatedCustomData)
       if (updatedCustomData) {
         setCustomData(updatedCustomData); // Update the customData state
       }

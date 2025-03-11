@@ -61,7 +61,7 @@ interface Props {
 
 export const CandidatesProvider: React.FC<Props> = ({children }) => {
     const {userData}:any = useContext(MongoContext);
-    const userID = userData.userID
+    const userID = userData?.userID
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);

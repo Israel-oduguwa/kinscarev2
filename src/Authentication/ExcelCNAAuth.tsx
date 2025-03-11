@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import MongoContext from "@/app/MongoContext";
 import { fetchContactsData, fetchUserData, trackEvents } from "@/lib/utils";
@@ -160,16 +161,16 @@ function ExcelCNAAuth() {
         } else {
           //if the user signing in does not have returning attribute, add it
           console.log("Passed");
-          if (!users[0]?.returning) {
-            await client
-              .db("kinshealth")
-              .collection("users")
-              .updateOne(
-                { userID: app.currentUser.id },
-                { $set: { returning: true } },
-                { upsert: true }
-              );
-          }
+          // if (!users[0]?.returning) {
+          //   await client
+          //     .db("kinshealth")
+          //     .collection("users")
+          //     .updateOne(
+          //       { userID: app.currentUser.id },
+          //       { $set: { returning: true } },
+          //       { upsert: true }
+          //     );
+          // }
           const mixpanelPayload = {
             auth_mode: "otp",
             date_time: new Date().toISOString(),

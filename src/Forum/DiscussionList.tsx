@@ -34,7 +34,7 @@ async function getThreads(queryParams: {
     sortReplies,
     sortOrder = "desc",
   } = queryParams;
-  const url = `https://api.kinscare.org/api/v1/forum/threads?page=${page}&limit=10${
+  const url = ` http://localhost:8081/api/v1/forum/threads?page=${page}&limit=10${
     sortReplies ? `&sortReplies=${sortReplies}` : ""
   }${popular ? "&popular=1" : ""}${category ? `&categories=${category}` : ""}${
     tags ? `&tags=${tags}` : ""
@@ -50,7 +50,7 @@ export default async function DiscussionList({
 }) {
   const response = await getThreads(searchParams);
   const { page, pages } = response.pagination;
-  // console.log(threads, "sjhs");
+  console.log(response.threads, "sjhs");
   return (
     <div>
       <h2 className="text-2xl tracking-tight font-bold text-gray-800 mb-6">
@@ -97,7 +97,7 @@ export default async function DiscussionList({
                     <ProfileAvatar
                       size="w-12 h-12"
                       name={`${thread.fname} ${thread.lname}`}
-                      profileImage={thread.creator.profileImage}
+                      profileImage={thread.creator ? thread.creator.profileImage : ""}
                     />
                     <div>
                       <p className="text-sm font-semibold text-gray-900 dark:text-white">

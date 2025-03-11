@@ -77,9 +77,23 @@ const JobSearchHeader: React.FC<JobSearchHeaderProps> = ({
               placeholder="Licenses"
               maxCount={4}
             />
-
+            <Button
+              className="w-full px-6 py-2 text-sm bg-blue-600 hover:bg-blue-700 transition"
+              onClick={handleSearch}
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="animate-spin" /> Searching...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <Search /> Search
+                </span>
+              )}
+            </Button>
             {/* Min Hours Slider */}
-            <div className="space-y-1">
+            {/* <div className="space-y-1">
               <label className="block text-xs font-medium text-gray-800">
                 Min Hours
               </label>
@@ -100,11 +114,11 @@ const JobSearchHeader: React.FC<JobSearchHeaderProps> = ({
                 <span>{filters.minHours} hrs</span>
                 <span>50 hrs</span>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Search Button */}
-          <div className="mt-4 flex justify-end">
+          {/* <div className="mt-4 flex justify-end">
             <Button
               className="w-full px-6 py-2 text-sm bg-blue-600 hover:bg-blue-700 transition"
               onClick={handleSearch}
@@ -120,7 +134,7 @@ const JobSearchHeader: React.FC<JobSearchHeaderProps> = ({
                 </span>
               )}
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
     </header>
