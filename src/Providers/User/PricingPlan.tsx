@@ -82,7 +82,7 @@ interface UserContext {
 /*                        Environment Variable (Safe)                         */
 /* -------------------------------------------------------------------------- */
 
-const STRIPE_PUBLIC_KEY = process.env.STRIPE_PUBLIC_TEST_KEY ?? "";
+const STRIPE_PUBLIC_KEY = process.env.STRIPE_PUBLIC_KEY ?? "";
 const stripePromise = loadStripe(STRIPE_PUBLIC_KEY);
 
 /* -------------------------------------------------------------------------- */

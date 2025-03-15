@@ -21,7 +21,7 @@ import Dropzone from "react-dropzone";
 import PaymentForm from "../User/PaymentForm";
 
 /** Stripe setup */
-const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_TEST_KEY || "");
+const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY || "");
 
 /**
  * This component handles:

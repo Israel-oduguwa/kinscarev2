@@ -29,7 +29,7 @@ import PaymentForm from "../User/PaymentForm";
 import { loadStripe } from "@stripe/stripe-js";
 import { useRouter } from "next/navigation";
 import { fetchUserData, isTrialActive } from "@/lib/utils";
-const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_TEST_KEY || "");
+const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY || "");
 
 function ProviderDialog({ candidate, similar, detailsPage }: any) {
   const mongodb: any = useContext(MongoContext);

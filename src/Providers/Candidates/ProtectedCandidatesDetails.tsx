@@ -25,7 +25,7 @@ import Dropzone from "react-dropzone";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 
 /** Stripe setup */
-const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_TEST_KEY || "");
+const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY || "");
 
 /**
  * This component handles:

@@ -15,7 +15,7 @@ import { Loader2 } from "lucide-react";
 import MongoContext from "@/app/MongoContext";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const STRIPE_PUBLIC_KEY = process.env.STRIPE_PUBLIC_TEST_KEY ?? "";
+const STRIPE_PUBLIC_KEY = process.env.STRIPE_PUBLIC_KEY ?? "";
 const stripePromise = loadStripe(STRIPE_PUBLIC_KEY);
 
 const pricingPlans = [

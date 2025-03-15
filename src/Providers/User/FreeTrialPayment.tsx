@@ -5,7 +5,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import React, { useContext, useEffect, useState } from "react";
 import PaymentForm from "./PaymentForm";
 
-const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_TEST_KEY || "");
+const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY || "");
 
 function FreeTrialPayment({onClose}:any) {
     const [clientSecret, setClientSecret] = useState<string | null>(null);
