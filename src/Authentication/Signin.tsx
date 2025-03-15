@@ -533,7 +533,7 @@ const Signin: React.FC = () => {
                 </form>
 
                 <div className="w-full">
-                  <p className="font-semibold mb-2">Coming from  excel cna signin using the button below</p>
+                 
                   <CustomLoginButton/>
                 </div>
               </div>

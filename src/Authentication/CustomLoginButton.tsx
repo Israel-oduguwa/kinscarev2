@@ -190,9 +190,47 @@ const CustomLoginButton: React.FC = () => {
           <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-400 border-t-transparent" />
         </div>
       ) : userInfo ? (
-       <></>
+        <>
+          <p className="font-semibold mb-2">
+            Coming from excel cna signin using the button below
+          </p>
+          <div
+            className="flex items-center justify-between p-1 xs:p-2 rounded-sm border border-gray-300 hover:bg-gray-50 transition-colors cursor-pointer"
+            onClick={handleLogin}
+          >
+            <div className="flex items-center gap-1 xs:gap-1 flex-1 min-w-0">
+              <ProfileAvatar
+                size="w-10 h-10 xs:w-6 xs:h-6"
+                name={userInfo.email}
+                profileImage={userInfo.profileImage}
+              />
+              <div className="min-w-0 overflow-hidden">
+                <p className="text-sm m-0 p-0 leading-tight xs:text-sm font-medium text-gray-600 truncate">
+                  {userInfo.email}
+                </p>
+                <p className="text-[11px] leading-tight xs:text-xs text-gray-500 capitalize truncate">
+                  {userInfo.role}
+                </p>
+              </div>
+            </div>
+            <img
+              className="h-10 w-10 xs:h-4 xs:w-4 flex-shrink-0"
+              src="https://firebasestorage.googleapis.com/v0/b/climare-pushbots.appspot.com/o/kins%20logo%201.png?alt=media&token=61b1ccc6-7bab-42e1-86e2-2bc217e8852c"
+              alt="Kinscare Logo"
+            />
+          </div>
+        </>
       ) : (
-        <Link href="/auth/signup" className="block w-full">
+        <></>
+      )}
+    </div>
+  );
+};
+
+export default CustomLoginButton;
+
+{
+  /* <Link href="/auth/signup" className="block w-full">
           <button className="w-full flex items-center justify-between gap-2 px-3 xs:px-4 py-2 bg-white hover:bg-gray-50 rounded-lg border border-gray-300 shadow-sm transition-colors text-sm xs:text-base font-medium text-gray-700">
             <span className="whitespace-nowrap truncate">
               Sign up with Kinscare
@@ -203,39 +241,5 @@ const CustomLoginButton: React.FC = () => {
               alt="Kinscare Logo"
             />
           </button>
-        </Link>
-      )}
-    </div>
-  );
-};
-
-export default CustomLoginButton;
-
-
-
-
-// <div
-// className="flex items-center justify-between p-1 xs:p-2 rounded-sm border border-gray-300 hover:bg-gray-50 transition-colors cursor-pointer"
-// onClick={handleLogin}
-// >
-// <div className="flex items-center gap-1 xs:gap-1 flex-1 min-w-0">
-//   <ProfileAvatar
-//     size="w-10 h-10 xs:w-6 xs:h-6"
-//     name={userInfo.email}
-//     profileImage={userInfo.profileImage}
-//   />
-//   <div className="min-w-0 overflow-hidden">
-//     <p className="text-sm m-0 p-0 leading-tight xs:text-sm font-medium text-gray-600 truncate">
-//       {userInfo.email}
-//     </p>
-//     <p className="text-[11px] leading-tight xs:text-xs text-gray-500 capitalize truncate">
-//       {userInfo.role}
-//     </p>
-//   </div>
-// </div>
-// <img
-//   className="h-10 w-10 xs:h-4 xs:w-4 flex-shrink-0"
-//   src="https://firebasestorage.googleapis.com/v0/b/climare-pushbots.appspot.com/o/kins%20logo%201.png?alt=media&token=61b1ccc6-7bab-42e1-86e2-2bc217e8852c"
-//   alt="Kinscare Logo"
-// />
-// </div>
+        </Link> */
+}
