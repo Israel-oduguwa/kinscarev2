@@ -239,7 +239,7 @@ function ProtectedCandidatesDetails({
   const openRevealContacts = async () => {
     // If the user has not done the first reveal
     if (!firstRevealDone) {
-      setCountdown(4);
+      setCountdown(1);
       setIsTrialExpired(false);
 
       const interval = setInterval(() => {
@@ -259,7 +259,7 @@ function ProtectedCandidatesDetails({
     }
     // If the user has done first but not second reveal
     else if (firstRevealDone && !secondRevealDone) {
-      setCountdown(4);
+      setCountdown(1);
       setIsTrialExpired(false);
 
       const interval = setInterval(() => {
