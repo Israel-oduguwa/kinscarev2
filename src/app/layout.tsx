@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-css-tags */
 import VoiceFlowProvider from "@/Caregivers/UiProviders/VoiceFlowProvider";
 import ContextProviders from "@/components/ContextProviders";
 import MongoProvider from "@/components/MongoProvider";
@@ -51,11 +52,11 @@ export default function RootLayout({
           rel="stylesheet"
           href="//cdn.jsdelivr.net/gh/dmhendricks/bootstrap-grid-css@4.1.3/dist/css/bootstrap-grid.min.css"
         />
-        <Script
+        {/* <Script
           strategy="afterInteractive" // Ensures script loads after the page is interactive
           src="https://www.googletagmanager.com/gtag/js?id=AW-11302908567"
-        />
-        <Script
+        /> */}
+        {/* <Script
           id="google-analytics"
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{
@@ -66,9 +67,26 @@ export default function RootLayout({
               gtag('config', 'AW-11302908567');
             `,
           }}
+        /> */}
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
+            var f=d.getElementsByTagName(s)[0],j=d.createElement(s);j.async=true;j.src="https://sst.kinscare.org/d846jafydtvd.js?"+i;
+            f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','2n0=aWQ9R1RNLVdKOVhLVFdM&page=3');`,
+          }}
         />
       </head>
       <body className={`${inter.className} ${headingFont.variable}`}>
+        <noscript>
+          <iframe
+            src="https://sst.kinscare.org/ns.html?id=GTM-WJ9XKTWL"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          ></iframe>
+        </noscript>
         <NextTopLoader
           color="#2299DD"
           initialPosition={0.08}
