@@ -1,25 +1,29 @@
 "use client";
 
 import React, { useState, useEffect, useContext } from "react";
-import { Bell, CheckCircle, Dot, Loader2 } from "lucide-react"; // Notification icons from Lucide
-import { Button } from "@/components/ui/button"; // Assuming you're using shadCN buttons
-import { Badge } from "@/components/ui/badge"; // Badge component for showing unread counts
+import { Bell, CheckCircle, Dot } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"; // shadCN Popover
-import { toast } from "@/components/ui/use-toast"; // shadCN Toast
+} from "@/components/ui/popover";
+import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
 import MongoContext from "@/app/MongoContext";
 import Link from "next/link";
 
 function ProviderNotification() {
   const [notifications, setNotifications] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true); // Loading state
-  const [unreadCount, setUnreadCount] = useState(0); // Unread notifications count
+  const [loading, setLoading] = useState(true);
+  const [unreadCount, setUnreadCount] = useState(0);
   const mongodb: any = useContext(MongoContext);
-  const { user } = mongodb;
+  const { user, userData } = mongodb;
+
+  // Calculate total notifications count:
+  // unread notifications + (1 if profile is incomplete)
+  const totalCount = unreadCount + (userData?.complete === false ? 1 : 0);
 
   // Fetch notifications from API
   const fetchNotifications = async () => {
@@ -29,7 +33,7 @@ function ProviderNotification() {
       const { data } = await axios.get(
         `https://api.kinscare.org/api/v1/notifications/fetch`,
         {
-          params: { userId: user.customData.userID }, // Pass the user ID in params
+          params: { userId: user.customData.userID },
         }
       );
       setNotifications(data.notifications);
@@ -50,7 +54,7 @@ function ProviderNotification() {
   // Mark a notification as read
   const markNotificationAsRead = async (notificationId: string) => {
     try {
-      console.log("jos");
+      console.log("marking as read");
       await axios.post(
         `https://api.kinscare.org/api/v1/notifications/mark-as-read`,
         { notificationId }
@@ -79,24 +83,24 @@ function ProviderNotification() {
       fetchNotifications();
     }, 300000); // Refresh every 5 minutes
 
-    return () => clearInterval(intervalId); // Clean up interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
     <div className="relative px-2">
-      {/* Notification Icon with Badge */}
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
             size="icon"
-            className="[&_svg]:size-5 relative p-2 rounded-full  "
+            className="[&_svg]:size-5 relative p-2 rounded-full"
           >
             <Bell className="h-6 w-6" />
-            {unreadCount > 0 && (
-              <span className="absolute text-xs p-2 text-white font-bold top-0 right-0 inline-flex items-center justify-center w-5 h-5 bg-red-500 rounded-full">
-                {/* Red dot for unread notifications */}
-                {unreadCount}
+            {totalCount > 0 && (
+              <span
+                className="absolute text-white text-xs p-2 top-0 right-0 inline-flex items-center justify-center w-5 h-5 bg-red-500 rounded-full font-bold"
+              >
+                {totalCount}
               </span>
             )}
           </Button>
@@ -104,7 +108,7 @@ function ProviderNotification() {
         <PopoverContent className="w-80 p-4">
           <div className="flex items-center justify-between">
             <h4 className="text-lg font-bold">Notifications</h4>
-            {unreadCount > 0 && <Badge>{unreadCount} unread</Badge>}
+            {totalCount > 0 && <Badge>{totalCount} unread</Badge>}
           </div>
 
           {/* Loading State */}
@@ -122,17 +126,29 @@ function ProviderNotification() {
             </div>
           )}
 
-          {/* Empty State */}
-          {!loading && notifications.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-32 space-y-2">
-              <Bell className="h-10 w-10 text-gray-400" />
-              <p className="text-gray-500">No notifications yet</p>
-            </div>
-          )}
-
-          {/* Notifications List */}
-          {!loading && notifications.length > 0 && (
+          {/* When not loading, show notifications if available or the complete-profile alert */}
+          {!loading && (notifications.length > 0 || userData?.complete === false) && (
             <div className="mt-4 space-y-3">
+              {/* Complete Profile Notification */}
+              {userData?.complete === false && (
+                <div className="flex items-center justify-between p-2 rounded-lg bg-yellow-100 cursor-pointer">
+                  <Link
+                    href="/provider/account/settings/profile"
+                    className="flex-1"
+                  >
+                    <div>
+                      <p className="text-sm font-semibold text-yellow-800">
+                        Complete Your Profile
+                      </p>
+                      <p className="text-xs text-yellow-600">
+                        Update your profile to get the best experience.
+                      </p>
+                    </div>
+                  </Link>
+                </div>
+              )}
+
+              {/* Other Notifications */}
               {notifications.slice(0, 4).map((notification) => (
                 <div
                   key={notification._id}
@@ -142,7 +158,7 @@ function ProviderNotification() {
                   onClick={() => markNotificationAsRead(notification._id)}
                 >
                   <Link
-                    className="mb-2"
+                    className="mb-2 flex-1"
                     href={
                       notification.type === "job_application"
                         ? `/provider/candidates/${notification.fromUserId}`
@@ -155,24 +171,33 @@ function ProviderNotification() {
                           notification.read ? "text-gray-800" : "font-semibold"
                         }`}
                       >
-                        {notification.type === "job_application"
-                          ? `${notification.message}`
-                          : notification.message}
+                        {notification.message}
                       </p>
                       <p className="text-xs text-gray-400">
                         {new Date(notification.createdAt).toLocaleTimeString()}
                       </p>
                     </div>
-                    {notification.read ? (
-                      <CheckCircle className="h-5 w-5 text-gray-400" />
-                    ) : (
-                      <Dot className="h-5 w-5 text-blue-500" />
-                    )}
                   </Link>
+                  {notification.read ? (
+                    <CheckCircle className="h-5 w-5 text-gray-400" />
+                  ) : (
+                    <Dot className="h-5 w-5 text-blue-500" />
+                  )}
                 </div>
               ))}
             </div>
           )}
+
+          {/* Empty State */}
+          {!loading &&
+            notifications.length === 0 &&
+            userData?.complete === true && (
+              <div className="flex flex-col items-center justify-center h-32 space-y-2">
+                <Bell className="h-10 w-10 text-gray-400" />
+                <p className="text-gray-500">No notifications yet</p>
+              </div>
+            )}
+
           {/* Footer */}
           {!loading && notifications.length > 4 && (
             <div className="mt-4 text-center">

@@ -46,7 +46,7 @@ const schema = yup.object().shape({
     .array()
     .min(1, "Please select provider type of care setting(s).")
     .required("Must at least select one type of setting."), //.min(1, "at least 1")
-  profileImage: yup.string().required("image url is required"),
+  // profileImage: yup.string().required("image url is required"),
 });
 
 // the fields
@@ -110,14 +110,15 @@ const UpdateProfile = () => {
   const [documentLoading, setDocumentLoading] = useState(false); // Document upload loading state
   console.log(errors);
   // Handle Profile Image Upload
-  console.log(userData, "update this is why did");
+  // console.log(userData, "update this is why did");
   useEffect(() => {
     if (userData && user) {
       reset({
-        fname: userData.complete ? userData.fname : "",
-        name: userData.name ? userData.name : "",
-        lname: userData.complete ? userData.lname : "",
-        address: userData.complete ? userData.address : "",
+        fname: userData.complete || userData.fname !== "" ? userData.fname : "",
+        name: userData.name || userData.name !== "" ? userData.name : "",
+        lname: userData.complete || userData.lname !== "" ? userData.lname : "",
+        address:
+          userData.complete || userData.address !== "" ? userData.address : "",
         settings: {
           alert_preferences: userData.complete
             ? userData?.settings?.alert_preferences
@@ -131,12 +132,18 @@ const UpdateProfile = () => {
         type_of_setting: userData.type_of_setting
           ? userData.type_of_setting
           : [],
-        city: userData.complete ? (userData.city ? userData?.city : "") : "",
-        zipcode: userData.complete
-          ? userData?.zipcode
+        city:
+          userData.complete || userData?.city !== ""
+            ? userData.city
+              ? userData?.city
+              : ""
+            : "",
+        zipcode:
+          userData.complete || userData?.zipcode
             ? userData?.zipcode
-            : ""
-          : "",
+              ? userData?.zipcode
+              : ""
+            : "",
         profileImage: userData.complete
           ? userData.profileImage
             ? userData.profileImage
@@ -221,7 +228,7 @@ const UpdateProfile = () => {
       );
 
       toast({ title: "Profile updated successfully", variant: "default" });
-      router.push('/provider/candidates/all')
+      router.push("/provider/candidates/all");
     } catch (error: any) {
       toast({
         title: "Error updating profile",

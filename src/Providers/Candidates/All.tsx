@@ -141,7 +141,7 @@ const CandidatesCard = ({ candidate }: any) => {
               {candidate.licenses.map((license: any, index: any) => (
                 <div
                   key={index}
-                  className="relative text-sm bg-gray-100 text-gray-800 rounded-lg py-1.5 px-3"
+                  className="relative  text-sm bg-gray-100 text-gray-800 rounded-lg py-1.5 px-3"
                 >
                   <span className="text-sm text-gray-600">{license}</span>
                 </div>
