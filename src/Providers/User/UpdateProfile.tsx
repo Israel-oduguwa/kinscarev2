@@ -18,6 +18,7 @@ import MultiSelectField from "@/components/MultiSelect";
 import { Camera, LoaderCircle, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
+import { fetchContactsData } from "@/lib/utils";
 // Form Validation Schema with Yup
 const schema = yup.object().shape({
   address: yup.string().required("Please enter provider's street address"), //.max(2, 'Full name can only be 6 characters long.'),
@@ -46,7 +47,7 @@ const schema = yup.object().shape({
     .array()
     .min(1, "Please select provider type of care setting(s).")
     .required("Must at least select one type of setting."), //.min(1, "at least 1")
-  // profileImage: yup.string().required("image url is required"),
+  profileImage: yup.string().required("image url is required"),
 });
 
 // the fields
@@ -76,7 +77,7 @@ interface IFormInput {
 
 const UpdateProfile = () => {
   const mongodb: any = useContext(MongoContext);
-  const { user, userData } = mongodb;
+  const { user, userData, setCustomData } = mongodb;
   const router = useRouter();
   const {
     register,
@@ -144,11 +145,12 @@ const UpdateProfile = () => {
               ? userData?.zipcode
               : ""
             : "",
-        profileImage: userData.complete
-          ? userData.profileImage
+        profileImage:
+          userData.complete || userData.profileImage !== ""
             ? userData.profileImage
-            : ""
-          : "",
+              ? userData.profileImage
+              : ""
+            : "",
       });
       setProfileImagePreview(userData.profileImage);
     }
@@ -228,7 +230,21 @@ const UpdateProfile = () => {
       );
 
       toast({ title: "Profile updated successfully", variant: "default" });
-      router.push("/provider/candidates/all");
+     
+      const updatedData = await fetchContactsData(
+        user.customData.userID,
+        user.customData.email
+      );
+      if (updatedData) {
+        await setCustomData(updatedData.result);
+        router.push("/provider/candidates/all");
+        // Wait for webhook processing (e.g., 2 seconds)
+        setTimeout(() => {
+          window.location.reload(); // Reload after the delay
+          close();
+          setLoading(false); // Ensure loading state is turned off
+        }, 3000); // 3-second delay
+      }
     } catch (error: any) {
       toast({
         title: "Error updating profile",
