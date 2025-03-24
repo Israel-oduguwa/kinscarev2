@@ -180,7 +180,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
     try {
       const sms_payload = {
         body: message,
-        to: "+2348108517789", // Replace with the caregiver's phone number
+        to: candidate.settings.tel, // Replace with the caregiver's phone number
       };
       const sendMessage = await axios.post(
         "https://api.kinscare.org/api/v1/twilio/sms/send",
