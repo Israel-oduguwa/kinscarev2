@@ -19,6 +19,7 @@ import {
 } from "@/lib/utils";
 import PricingPlan from "./PricingPlan";
 import SubscriptionDetails from "./SubscriptionDetails";
+import DeleteAccount from "./DeleteAccount";
 
 function AccountSettings() {
   const mongo: any = useContext(MongoContext);
@@ -42,8 +43,8 @@ function AccountSettings() {
       }
     };
     fetchCustomData();
-    if(customData){
-      fetchSubscriptionData()
+    if (customData) {
+      fetchSubscriptionData();
     }
   }, [user]);
 
@@ -99,67 +100,77 @@ function AccountSettings() {
     setIsDialogOpen(false);
   };
   return (
- <div className="bg-gray-50 min-h-screen">
-  <div className="py-8 lg:py-12">
-    <div className="max-w-7xl mx-auto py-10 px-6 sm:px-8 md:px-12">
-      <div className="flex flex-col space-y-8">
-        {/* Account Information */}
-        <div className="bg-white shadow-sm rounded-lg p-8">
-          <h2 className="font-bold tracking-tight text-lg text-gray-800 mb-4">Account Information</h2>
-          {userData ? (
-            <div className="flex text-sm flex-col space-y-2 text-gray-600">
-              {userData?.name && <p className="font-medium ">{userData.name}</p>}
-              <p>
-                {userData.address}, {userData.city}, {userData.zipcode}
-              </p>
+    <div className="bg-gray-50 min-h-screen">
+      <div className="py-8 lg:py-12">
+        <div className="max-w-7xl mx-auto py-10 px-6 sm:px-8 md:px-12">
+          <div className="flex flex-col space-y-8">
+            {/* Account Information */}
+            <div className="bg-white shadow-sm rounded-lg p-8">
+              <h2 className="font-bold tracking-tight text-lg text-gray-800 mb-4">
+                Account Information
+              </h2>
+              {userData ? (
+                <div className="flex text-sm flex-col space-y-2 text-gray-600">
+                  {userData?.name && (
+                    <p className="font-medium ">{userData.name}</p>
+                  )}
+                  <p>
+                    {userData.address}, {userData.city}, {userData.zipcode}
+                  </p>
+                </div>
+              ) : null}
+              <Link href="/provider/account/settings/profile">
+                <Button className="mt-4 bg-blue-600 text-white hover:bg-blue-700 transition px-4 py-2 rounded-md">
+                  Update Profile
+                </Button>
+              </Link>
             </div>
-          ) : null}
-          <Link href="/provider/account/settings/profile">
-            <Button className="mt-4 bg-blue-600 text-white hover:bg-blue-700 transition px-4 py-2 rounded-md">
-              Update Profile
-            </Button>
-          </Link>
-        </div>
 
-        {/* Your Plan */}
-        <div className="bg-white shadow-sm rounded-lg p-8">
-          <h2 className="font-bold text-lg tracking-tight text-gray-800 mb-4">Your Plan</h2>
-          {trialActive && !customData.subscribed ? (
-            <>
-              <p className="text-gray-600 text-sm mb-2">Free trial</p>
-              <p className="text-gray-500 text-sm">
-                Trial period ends on{" "}
-                <span className="font-semibold">
-                  {convertISODateToNormal(customData?.trial_end_date)}
-                </span>
-              </p>
-            </>
-          ) : !trialActive && customData.subscribed && subscriptionData ? (
-            <SubscriptionDetails subscription={subscriptionData} />
-          ) : (
-            <div>
-              <p className="text-gray-500 text-sm mb-4">Pay to access premium features</p>
-              <Button
-                className="bg-blue-600 text-white hover:bg-blue-700 transition px-6 py-3 rounded-md"
-                onClick={handleStartTrial}
-              >
-                Start Plan
-              </Button>
+            {/* Your Plan */}
+            <div className="bg-white shadow-sm rounded-lg p-8">
+              <h2 className="font-bold text-lg tracking-tight text-gray-800 mb-4">
+                Your Plan
+              </h2>
+              {trialActive && !customData.subscribed ? (
+                <>
+                  <p className="text-gray-600 text-sm mb-2">Free trial</p>
+                  <p className="text-gray-500 text-sm">
+                    Trial period ends on{" "}
+                    <span className="font-semibold">
+                      {convertISODateToNormal(customData?.trial_end_date)}
+                    </span>
+                  </p>
+                </>
+              ) : !trialActive && customData.subscribed && subscriptionData ? (
+                <SubscriptionDetails subscription={subscriptionData} />
+              ) : (
+                <div>
+                  <p className="text-gray-500 text-sm mb-4">
+                    Pay to access premium features
+                  </p>
+                  <Button
+                    className="bg-blue-600 text-white hover:bg-blue-700 transition px-6 py-3 rounded-md"
+                    onClick={handleStartTrial}
+                  >
+                    Start Plan
+                  </Button>
+                </div>
+              )}
             </div>
-          )}
+            <div className="bg-white shadow-sm rounded-lg p-8">
+              <DeleteAccount />
+            </div>
+          </div>
+
+          {/* Dialog/Modal */}
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogContent className="max-w-6xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+              <PricingPlan closePricingDialog={closePricingDialog} />
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
-
-      {/* Dialog/Modal */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-6xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
-          <PricingPlan closePricingDialog={closePricingDialog} />
-        </DialogContent>
-      </Dialog>
     </div>
-  </div>
-</div>
-
   );
 }
 

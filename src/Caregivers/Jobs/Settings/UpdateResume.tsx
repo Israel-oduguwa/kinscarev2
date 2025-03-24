@@ -26,6 +26,7 @@ import {
   X,
 } from "lucide-react";
 import { fetchUserData } from "@/lib/utils";
+import DeleteAccount from "@/Providers/User/DeleteAccount";
 // Form Validation Schema with Yup
 const schema = yup.object().shape({
   fname: yup.string().required("First name is required"),
@@ -144,7 +145,7 @@ const CaregiverProfileForm = () => {
             ? userData?.settings?.alert_preferences
             : [],
           role: "caregiver",
-          tel: userData.complete ? userData.settings.tel : userData?.auth.tel,
+          tel: userData.complete ? userData.settings.tel : userData?.auth?.tel,
           email: userData.complete
             ? userData.settings.email
             : userData.auth.email,
@@ -760,6 +761,9 @@ const CaregiverProfileForm = () => {
           </div>
         </div>
       </div>
+      <div className="bg-white shadow-sm my-10 rounded-lg p-8">
+              <DeleteAccount />
+            </div>
     </div>
   );
 };

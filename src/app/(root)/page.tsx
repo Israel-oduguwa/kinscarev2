@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import Image from "next/image";
 import NavBar from "@/WebPages/Navbar";
 import { Button } from "@/components/ui/button";
@@ -554,6 +555,94 @@ export default function Home() {
                   {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-900/20 rounded-2xl" /> */}
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="bg-gray-50 relative py-20 md:py-30 overflow-hidden dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto antialiased px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl tracking-tight font-bold text-gray-800 dark:text-white md:text-4xl xl:text-5xl">
+              Trusted by Care Providers & Caregivers
+            </h2>
+            <p className="mx-auto mt-4 text-gray-600 dark:text-gray-300 max-w-xl text-lg">
+              Join hundreds of healthcare professionals who've transformed their
+              hiring and job search
+            </p>
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-3 lg:gap-12">
+            {/* Testimonial 1 */}
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div className="mb-4 text-blue-500 text-3xl">“</div>
+              <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed">
+                Kinscare makes finding caregivers easier than WhatsApp! I can
+                post openings, get direct applications, and contact
+                caregivers—no more waiting on referrals.
+              </p>
+              <div className="flex items-center">
+                <div className="ml-4">
+                  <p className="font-semibold text-gray-800 dark:text-white">
+                    Maria Shevchenko
+                  </p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">
+                    Care Home Manager
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonial 2 */}
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div className="mb-4 text-blue-500 text-3xl">“</div>
+              <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed">
+                I found qualified local caregivers quickly with Kinscare. It’s
+                simple, effective, and saves me time compared to other hiring
+                methods!
+              </p>
+              <div className="flex items-center">
+                <div className="ml-4">
+                  <p className="font-semibold text-gray-800 dark:text-white">
+                    Solomon Gebremariam
+                  </p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">
+                    Healthcare Recruiter
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonial 3 */}
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div className="mb-4 text-blue-500 text-3xl">“</div>
+              <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed">
+                Kinscare is both affordable and flexible. I only pay when I need
+                caregivers, and get direct access to candidates without extra
+                hassle.
+              </p>
+              <div className="flex items-center">
+                <div className="ml-4">
+                  <p className="font-semibold text-gray-800 dark:text-white">
+                    Alice Kamau
+                  </p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">
+                    Adult Family Home Owner
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Optional Trust Badges */}
+          <div className="mt-16 text-center">
+            <p className="text-gray-500 dark:text-gray-400 text-sm uppercase tracking-wide mb-6">
+              Trusted by 200+ healthcare organizations
+            </p>
+            <div className="flex flex-wrap justify-center gap-8 opacity-75">
+              {/* Add your logo images here */}
+              <div className="w-32 h-12 bg-gray-200 rounded-lg dark:bg-gray-700" />
+              <div className="w-32 h-12 bg-gray-200 rounded-lg dark:bg-gray-700" />
+              <div className="w-32 h-12 bg-gray-200 rounded-lg dark:bg-gray-700" />
             </div>
           </div>
         </div>
