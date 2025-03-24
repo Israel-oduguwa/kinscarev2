@@ -19,6 +19,7 @@ import { Camera, LoaderCircle, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 import { fetchContactsData } from "@/lib/utils";
+import TagManager from "react-gtm-module";
 // Form Validation Schema with Yup
 const schema = yup.object().shape({
   address: yup.string().required("Please enter provider's street address"), //.max(2, 'Full name can only be 6 characters long.'),
@@ -230,7 +231,32 @@ const UpdateProfile = () => {
       );
 
       toast({ title: "Profile updated successfully", variant: "default" });
-     
+    //  This are the data that was passed as ...data 
+      // {
+      //   "address": "Please enter provider's street address",
+      //   "fname": "First name is required",
+      //   "name": "Your company name or provider name is required",
+      //   "lname": "Last name is required",
+      //   "city": "City is required",
+      //   "zipcode": "Zipcode is required",
+      //   "trainer": "Please select whether you offer training or not",
+      //   "settings": {
+      //     "alert_preferences": "Select at least one way to be contacted.",
+      //     "email": "Must be a valid email",
+      //     "tel": "Please enter your phone number"
+      //   },
+      //   "type_of_setting": "Please select provider type of care setting(s).",
+      //   "profileImage": "image url is required"
+      // }
+      
+      const tagManagerArgs = {
+        dataLayer: {
+          event: `update_profile`,
+          ...data
+        },
+      };
+      TagManager.dataLayer(tagManagerArgs);
+
       const updatedData = await fetchContactsData(
         user.customData.userID,
         user.customData.email
