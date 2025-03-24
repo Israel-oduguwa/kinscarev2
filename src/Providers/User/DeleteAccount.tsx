@@ -61,7 +61,7 @@ function DeleteAccount() {
         `http://localhost:8081/api/v1/auth/delete_account`,
         { userID: userData.userID, email: userData.auth.email }
       );
-     
+
       // Simulate deletion (or call your API endpoint here)
       console.log("Deleting account...", payload);
     } catch (error) {
@@ -83,9 +83,16 @@ function DeleteAccount() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="destructive">Delete Account</Button>
+        <div>
+          <p className="text-gray-800 text-lg font-semibold mb-2">
+            Delete Account
+          </p>
+          <Button className="bg-gray-100 text-gray-900 hover:text-gray-900 hover:bg-gray-200">
+            Delete Account
+          </Button>
+        </div>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[525px]">
+      <DialogContent className="sm:max-w-[725px]">
         <DialogHeader>
           <DialogTitle>Delete Account (Step {step} of 3)</DialogTitle>
           <DialogDescription>
@@ -99,9 +106,9 @@ function DeleteAccount() {
         </DialogHeader>
 
         {step === 1 && (
-          <input
-            type="text"
+          <textarea
             className="w-full border border-gray-300 rounded p-2 mt-4"
+            rows={4}
             placeholder="Enter your reason..."
             value={reason}
             onChange={(e) => setReason(e.target.value)}
@@ -111,6 +118,7 @@ function DeleteAccount() {
         {step === 2 && (
           <textarea
             className="w-full border border-gray-300 rounded p-2 mt-4"
+            rows={4}
             placeholder="Your suggestions or feedback (optional)..."
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}

@@ -75,7 +75,7 @@ export default function Home() {
       <section className="bg-orange-50 relative overflow-hidden ">
         <div className="grid max-w-screen-xl px-4 py-2 lg:py-10 xl:px-0 mt-[73px] mx-auto lg:gap-8 xl:gap-0 lg:grid-cols-12">
           <div className="mr-auto place-self-center lg:py-16 lg:px-6 py-2 lg:col-span-6">
-            <h1 className=" max-w-2xl mb-6 text-3xl tracking-tight text-gray-800  antialiased font-extrabold  md:text-5xl xl:text-7xl dark:text-white">
+            <h1 className=" max-w-2xl mb-6 text-3xl tracking-tight text-slate-800  antialiased font-extrabold  md:text-5xl xl:text-7xl dark:text-white">
               Helping Providers Find the Right Caregivers with Ease
             </h1>
             <p className="text-xl text-gray-800 mb-4 antialiased lg:mb-8 md:text-md lg:text-md dark:text-gray-400">
@@ -574,8 +574,8 @@ export default function Home() {
           <div className="grid gap-8 md:grid-cols-3 lg:gap-12">
             {/* Testimonial 1 */}
             <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="mb-4 text-blue-500 text-3xl">“</div>
-              <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed">
+              <div className=" text-blue-500 text-4xl/3 pt-3 mb-0">“</div>
+              <p className="text-gray-600 dark:text-gray-300 mb-6 min-h-[190px] text-lg leading-relaxed">
                 Kinscare makes finding caregivers easier than WhatsApp! I can
                 post openings, get direct applications, and contact
                 caregivers—no more waiting on referrals.
@@ -594,8 +594,8 @@ export default function Home() {
 
             {/* Testimonial 2 */}
             <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="mb-4 text-blue-500 text-3xl">“</div>
-              <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed">
+             <div className=" text-blue-500 text-4xl/3 pt-3 mb-0">“</div>
+              <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg min-h-[190px] leading-relaxed">
                 I found qualified local caregivers quickly with Kinscare. It’s
                 simple, effective, and saves me time compared to other hiring
                 methods!
@@ -614,8 +614,8 @@ export default function Home() {
 
             {/* Testimonial 3 */}
             <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="mb-4 text-blue-500 text-3xl">“</div>
-              <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed">
+             <div className=" text-blue-500 text-4xl/3 pt-3 mb-0">“</div>
+              <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg min-h-[190px] leading-relaxed">
                 Kinscare is both affordable and flexible. I only pay when I need
                 caregivers, and get direct access to candidates without extra
                 hassle.
@@ -638,12 +638,7 @@ export default function Home() {
             <p className="text-gray-500 dark:text-gray-400 text-sm uppercase tracking-wide mb-6">
               Trusted by 200+ healthcare organizations
             </p>
-            <div className="flex flex-wrap justify-center gap-8 opacity-75">
-              {/* Add your logo images here */}
-              <div className="w-32 h-12 bg-gray-200 rounded-lg dark:bg-gray-700" />
-              <div className="w-32 h-12 bg-gray-200 rounded-lg dark:bg-gray-700" />
-              <div className="w-32 h-12 bg-gray-200 rounded-lg dark:bg-gray-700" />
-            </div>
+        
           </div>
         </div>
       </section>
@@ -721,3 +716,10 @@ export default function Home() {
     </main>
   );
 }
+
+
+// <div className="flex flex-wrap justify-center gap-8 opacity-75">
+// <div className="w-32 h-12 bg-gray-200 rounded-lg dark:bg-gray-700" />
+// <div className="w-32 h-12 bg-gray-200 rounded-lg dark:bg-gray-700" />
+// <div className="w-32 h-12 bg-gray-200 rounded-lg dark:bg-gray-700" />
+// </div>
