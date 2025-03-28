@@ -3,6 +3,7 @@ import MongoContext from "@/app/MongoContext";
 import React, { useContext } from "react";
 import * as Realm from "realm-web";
 import { useRouter } from "next/navigation";
+import TagManager from "react-gtm-module";
 
 function ProviderLogout({ children }: { children: React.ReactNode }) {
   const {
@@ -18,6 +19,17 @@ function ProviderLogout({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     try {
       if (!user || !app?.currentUser) return;
+      const tagManagerArgs = {
+        dataLayer: {
+          event: `sign_out`,
+          date_time: new Date().toISOString(),
+          settings: userData?.settings,
+          lname: userData?.lname,
+          fname: userData?.fname,
+          email: userData?.auth?.email,
+        },
+      };
+      TagManager.dataLayer(tagManagerArgs);
       await app?.currentUser?.logOut();
       localStorage.clear();
       const anonymousUser = await app?.logIn(Realm.Credentials.anonymous());

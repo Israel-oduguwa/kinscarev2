@@ -9,6 +9,7 @@ import axios from "axios";
 import JobSearchHeader from "./JobSearchHeader";
 import { JobCardSkeleton } from "./JobCardSkelenton";
 import ApplyNow from "./JobsUI/ApplyNow";
+import TagManager from "react-gtm-module";
 
 const JobPostCard: React.FC<{ job: Job }> = ({ job }) => {
   // console.log(job);
@@ -50,22 +51,24 @@ const JobPostCard: React.FC<{ job: Job }> = ({ job }) => {
 
             {/* Licenses and Schedule */}
             <div className="flex flex-wrap gap-2 mb-4">
-              {job.licenses && job?.licenses.map((license, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg"
-                >
-                  {license}
-                </span>
-              ))}
-              {job.schedule && job?.schedule.map((sch, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg"
-                >
-                  {sch}
-                </span>
-              ))}
+              {job.licenses &&
+                job?.licenses.map((license, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg"
+                  >
+                    {license}
+                  </span>
+                ))}
+              {job.schedule &&
+                job?.schedule.map((sch, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg"
+                  >
+                    {sch}
+                  </span>
+                ))}
             </div>
 
             {/* Min Hours */}
@@ -178,7 +181,7 @@ function All() {
     //  console.log("loading, stems")
     try {
       const data = await fetchJobs(userID, page);
-      console.log(data, 's')
+      console.log(data, "s");
 
       setJobs((prevJobs) =>
         page === 1 ? data.jobs : [...prevJobs, ...data.jobs]
@@ -202,6 +205,20 @@ function All() {
       setLoading(true);
       const geoCode = userData.geocode_address;
       const job = await fetchFilteredJobs(userID, page, filters, geoCode);
+      const tagManagerArgs = {
+        dataLayer: {
+          event: `search_jobs`,
+          settings: userData?.settings,
+          filters,
+          lname: userData?.lname,
+          fname: userData?.fname,
+          tel: userData?.auth?.tel,
+          zipcode: userData?.zipcode,
+          city: userData?.city,
+          email: userData?.auth?.email,
+        },
+      };
+      TagManager.dataLayer(tagManagerArgs);
       setTotalPages(job.pagination.totalPages);
       setTotalJobs(job.pagination.totalJobs);
       setJobs(job.jobs);

@@ -1,8 +1,15 @@
 // CandidatesContext.tsx
-"use client"
-import React, { createContext, useState, useEffect, ReactNode, useContext } from "react";
+"use client";
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useContext,
+} from "react";
 import axios from "axios";
 import MongoContext from "@/app/MongoContext";
+import TagManager from "react-gtm-module";
 
 export interface Candidate {
   _id: string;
@@ -53,15 +60,17 @@ interface CandidatesContextType {
   setPage: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export const CandidatesContext = createContext<CandidatesContextType | undefined>(undefined);
+export const CandidatesContext = createContext<
+  CandidatesContextType | undefined
+>(undefined);
 
 interface Props {
   children: ReactNode;
 }
 
-export const CandidatesProvider: React.FC<Props> = ({children }) => {
-    const {userData}:any = useContext(MongoContext);
-    const userID = userData?.userID
+export const CandidatesProvider: React.FC<Props> = ({ children }) => {
+  const { userData }: any = useContext(MongoContext);
+  const userID = userData?.userID;
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -73,7 +82,7 @@ export const CandidatesProvider: React.FC<Props> = ({children }) => {
 
   // Unfiltered candidates fetch
   const fetchCandidatesData = async (userID: string, page: number) => {
-    console.log(userID, "thso=s")
+    console.log(userID, "thso=s");
     try {
       setLoading(true);
       const response = await axios.get(
@@ -117,7 +126,7 @@ export const CandidatesProvider: React.FC<Props> = ({children }) => {
     setIsFilteredSearch(true);
     setLoading(true);
     setError(null);
-
+    // console.log("ss")
     try {
       const availabilityParam = selectedShifts.join(",");
       const licensesParam = selectedLicenses.join(",");
@@ -125,8 +134,24 @@ export const CandidatesProvider: React.FC<Props> = ({children }) => {
         `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${availabilityParam}&licenses=${licensesParam}&page=1&limit=40`
       );
       const data: CaregiverApiResponse = response.data;
+      console.log(data)
       setCandidates(data.caregivers);
       setTotalPages(data.pagination.totalPages);
+      const tagManagerArgs = {
+        dataLayer: {
+          event: `search_caregiver`,
+          settings: userData?.settings,
+          lname: userData?.lname,
+          fname: userData?.fname,
+          tel: userData?.auth?.tel,
+          zipcode: userData?.zipcode,
+          city: userData?.city,
+          email: userData?.auth?.email,
+          licenses: licensesParam,
+          availability: availabilityParam,
+        },
+      };
+      TagManager.dataLayer(tagManagerArgs);
     } catch (err) {
       setError((err as Error).message);
     } finally {

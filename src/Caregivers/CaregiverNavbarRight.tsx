@@ -35,6 +35,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CaregiverNotification from "./CaregiverNotification";
 import { useRouter } from "next/navigation";
 import ProfileAvatar from "@/components/ProfileAvatar";
+import TagManager from "react-gtm-module";
 
 function SheetDemo() {
   return (
@@ -127,20 +128,19 @@ const UserAvatar = ({ userData, customData, user, LogOutUser }: any) => {
               }`}
               profileImage={userData?.profileImage}
             />
-            
           </div>
           <div className="flex flex-col text-center">
-              <p className="text-sm font-semibold antialiased">
-                {userData && userData.lname ? (
-                  <>
-                    {userData.fname} {userData.lname}
-                  </>
-                ) : (
-                  <>{userData?.auth?.email}</>
-                )}
-              </p>
-              <p className="text-xs text-gray-500 antialiased">Caregiver</p>
-            </div>
+            <p className="text-sm font-semibold antialiased">
+              {userData && userData.lname ? (
+                <>
+                  {userData.fname} {userData.lname}
+                </>
+              ) : (
+                <>{userData?.auth?.email}</>
+              )}
+            </p>
+            <p className="text-xs text-gray-500 antialiased">Caregiver</p>
+          </div>
           {/* <p>{userData && userData.auth.email}</p> */}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -214,16 +214,16 @@ function CaregiverNavbarRight() {
     try {
       if (!user || !app?.currentUser) return;
 
-      // const tagManagerArgs = {
-      //   dataLayer: {
-      //     event: "sign_out",
-      //     added: new Date(),
-      //     date_time: new Date().toISOString(),
-      //     distinct_id: customData.hash,
-      //     role: customData.role,
-      //     userId: `${user?.id}`,
-      //   },
-      // };
+      const tagManagerArgs = {
+        dataLayer: {
+          event: `sign_out`,
+          date_time: new Date().toISOString(),
+          settings: userData?.settings,
+          lname: userData?.lname,
+          fname: userData?.fname,
+          email: userData?.auth?.email,
+        },
+      };
       // const payload = {
       //   added: new Date(),
       //   date_time: new Date().toISOString(),
@@ -232,7 +232,7 @@ function CaregiverNavbarRight() {
       // };
 
       // trackEvents(user?.customData?.hash, "Sign Out", payload);
-      // TagManager.dataLayer(tagManagerArgs);
+      TagManager.dataLayer(tagManagerArgs);
 
       await app?.currentUser?.logOut();
       // localStorage.clear();
@@ -249,7 +249,7 @@ function CaregiverNavbarRight() {
     }
   };
   // User Avatar and Dropdown
-  console.log(userData)
+  console.log(userData);
   return (
     <div className="flex items-center px-2">
       {user && userData && customData && customData.userID ? (

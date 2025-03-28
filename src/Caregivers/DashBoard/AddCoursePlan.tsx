@@ -9,6 +9,7 @@ import axios from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { fetchUserData } from "@/lib/utils";
 import { useDialog } from "../CaregiverContext/DialogProvider";
+import TagManager from "react-gtm-module";
 
 // Helper functions
 const handleFetchLicenses = async (query: string) => {
@@ -95,6 +96,17 @@ export default function AddCoursePlan() {
     setLicenses(values);
     const updatedPoints = calculatePoints(values, prerequisites, requirements);
     setPoints(updatedPoints);
+    const tagManagerArgs = {
+      dataLayer: {
+        event: `create_course_plan`,
+        step:"add_licences",
+        settings: userData?.settings,
+        lname: userData?.lname,
+        fname: userData?.fname,
+        email: userData?.auth?.email,
+      },
+    };
+    TagManager.dataLayer(tagManagerArgs);
     updateDatabase({
       "careerProfile.coursePlan.licenses": values,
       "careerProfile.coursePlan.points": updatedPoints,
@@ -105,6 +117,17 @@ export default function AddCoursePlan() {
     setPrerequisites(values);
     const updatedPoints = calculatePoints(licenses, values, requirements);
     setPoints(updatedPoints);
+    const tagManagerArgs = {
+      dataLayer: {
+        event: `create_course_plan`,
+        step:"add_course_prerequisites",
+        settings: userData?.settings,
+        lname: userData?.lname,
+        fname: userData?.fname,
+        email: userData?.auth?.email,
+      },
+    };
+    TagManager.dataLayer(tagManagerArgs);
     updateDatabase({
       "careerProfile.coursePlan.prerequisite": values,
       "careerProfile.coursePlan.points": updatedPoints,
@@ -115,6 +138,17 @@ export default function AddCoursePlan() {
     setRequirements(values);
     const updatedPoints = calculatePoints(licenses, prerequisites, values);
     setPoints(updatedPoints);
+    const tagManagerArgs = {
+      dataLayer: {
+        event: `create_course_plan`,
+        step:"add_course_requirements",
+        settings: userData?.settings,
+        lname: userData?.lname,
+        fname: userData?.fname,
+        email: userData?.auth?.email,
+      },
+    };
+    TagManager.dataLayer(tagManagerArgs);
     updateDatabase({
       "careerProfile.coursePlan.requirement": values,
       "careerProfile.coursePlan.points": updatedPoints,

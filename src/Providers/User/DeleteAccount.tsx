@@ -48,33 +48,49 @@ function DeleteAccount() {
         hash: userData?.hash,
         fname: userData?.fname,
         role: userData?.role,
-        email: userData?.email,
+        email: userData?.auth.email,
         zipcode: userData?.zipcode,
         mobility: userData?.mobility,
       };
 
       // Fire a single tracking event at the end with the user's hash.
       trackEvents(userData?.hash, "Delete Account", payload);
-      //   we first delete the user data from the database
+      //   we first delete the user data from the database'
+      
+      const response = await axios.post(
+        "https://api.kinscare.org/api/v1/email/account_delete_email",
+        {
+          reason: payload.reason,
+          feedback: payload.feedback,
+          email: payload.email,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       await app.deleteUser(app.currentUser);
+
       const deleteDbData = await axios.post(
-        `http://localhost:8081/api/v1/auth/delete_account`,
+        `https://api.kinscare.org/api/v1/auth/delete_account`,
         { userID: userData.userID, email: userData.auth.email }
       );
 
       // Simulate deletion (or call your API endpoint here)
-      console.log("Deleting account...", payload);
+      // console.log("Deleting account...", payload);
     } catch (error) {
       console.log(error);
       setLoading(false);
     } finally {
       if (app) {
         localStorage.clear();
+        router.push("/");
         const anonymousUser = await app?.logIn(Realm.Credentials.anonymous());
         setUser(anonymousUser);
         setClient(app?.currentUser?.mongoClient("mongodb-atlas"));
         setUserData({});
-        router.push("/");
+        
         setLoading(false);
       }
     }

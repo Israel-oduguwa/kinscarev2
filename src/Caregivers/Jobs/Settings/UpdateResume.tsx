@@ -25,8 +25,10 @@ import {
   LoaderCircle,
   X,
 } from "lucide-react";
-import { fetchUserData } from "@/lib/utils";
+import { fetchContactsData, fetchUserData } from "@/lib/utils";
 import DeleteAccount from "@/Providers/User/DeleteAccount";
+import TagManager from "react-gtm-module";
+import { useRouter } from "next/navigation";
 // Form Validation Schema with Yup
 const schema = yup.object().shape({
   fname: yup.string().required("First name is required"),
@@ -94,7 +96,8 @@ interface IFormInput {
 
 const CaregiverProfileForm = () => {
   const mongodb: any = useContext(MongoContext);
-  const { user, userData, setUserData } = mongodb;
+  const { user, userData, setCustomData, setUserData } = mongodb;
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -133,7 +136,7 @@ const CaregiverProfileForm = () => {
   const [documentLoading, setDocumentLoading] = useState(false); // Document upload loading state
   // console.log(errors)
   // Handle Profile Image Upload
-  console.log(userData)
+  console.log(userData);
   console.log(userData);
   useEffect(() => {
     if (userData && user) {
@@ -160,11 +163,12 @@ const CaregiverProfileForm = () => {
               ? userData?.city
               : ""
             : "",
-        licenses: userData.complete || userData?.licenses
-          ? userData?.licenses
+        licenses:
+          userData.complete || userData?.licenses
             ? userData?.licenses
-            : []
-          : [],
+              ? userData?.licenses
+              : []
+            : [],
         mobility: userData.complete
           ? userData.mobility
             ? userData.mobility
@@ -296,12 +300,42 @@ const CaregiverProfileForm = () => {
         payload
       );
       toast({ title: "Profile updated successfully", variant: "default" });
+      if (userData?.complete) {
+        const tagManagerArgs = {
+          dataLayer: {
+            event: `add_settings`,
+            settings: userData?.settings,
+
+            lname: userData?.lname,
+            fname: userData?.fname,
+            tel: userData?.auth?.tel,
+            zipcode: userData?.zipcode,
+            city: userData?.city,
+            email: userData?.auth?.email,
+          },
+        };
+        TagManager.dataLayer(tagManagerArgs);
+      }
       const fetchedData: any = await fetchUserData(
         userData.userID,
         userData.email
       );
       // console.log(fetchedData);
       setUserData(fetchedData.result);
+      const updatedData = await fetchContactsData(
+        user.customData.userID,
+        user.customData.email
+      );
+      if (updatedData) {
+        await setCustomData(updatedData.result);
+        router.push("/vitae/jobs/all");
+        // Wait for webhook processing (e.g., 2 seconds)
+        setTimeout(() => {
+          window.location.reload(); // Reload after the delay
+          close();
+          setLoading(false); // Ensure loading state is turned off
+        }, 2000); // 3-second delay
+      }
     } catch (error: any) {
       toast({
         title: "Error updating profile",
@@ -762,8 +796,8 @@ const CaregiverProfileForm = () => {
         </div>
       </div>
       <div className="bg-white shadow-sm my-10 rounded-lg p-8">
-              <DeleteAccount />
-            </div>
+        <DeleteAccount />
+      </div>
     </div>
   );
 };

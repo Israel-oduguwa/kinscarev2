@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import React, { useState, useEffect, useContext } from "react";
@@ -81,6 +82,8 @@ function CaregiverNotification() {
     }
   }, []);
 
+  const totalCount = unreadCount + (userData?.complete === false ? 1 : 0);
+
   return (
     <div className="relative px-2">
       <Popover>
@@ -88,12 +91,12 @@ function CaregiverNotification() {
           <Button
             variant="ghost"
             size="icon"
-             className="[&_svg]:size-5 relative p-2 rounded-full  "
+            className="[&_svg]:size-5 relative p-2 rounded-full  "
           >
-            <Bell className="h-6 w-6"  />
-            {unreadCount > 0 && (
+            <Bell className="h-6 w-6" />
+            {totalCount > 0 && (
               <span className="absolute text-xs p-2 text-white font-bold top-0 right-0 inline-flex items-center justify-center w-5 h-5 bg-red-500 rounded-full">
-                {unreadCount}
+                {totalCount}
               </span>
             )}
           </Button>
@@ -102,9 +105,25 @@ function CaregiverNotification() {
         <PopoverContent className="w-80 p-4">
           <div className="flex items-center justify-between">
             <h4 className="text-lg font-bold">Notifications</h4>
-            {unreadCount > 0 && <Badge>{unreadCount} unread</Badge>}
+            {totalCount > 0 && <Badge>{totalCount} unread</Badge>}
           </div>
-
+          {userData?.complete === false && (
+            <div className="flex items-center justify-between p-2 rounded-lg bg-yellow-100 cursor-pointer">
+              <Link
+                href="/vitae/update"
+                className="flex-1"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-yellow-800">
+                    Complete Your Profile
+                  </p>
+                  <p className="text-xs text-yellow-600">
+                    Update your profile to get the best experience.
+                  </p>
+                </div>
+              </Link>
+            </div>
+          )}
           {/* Loading State */}
           {loading ? (
             <div className="space-y-3 mt-4">
@@ -125,8 +144,9 @@ function CaregiverNotification() {
             </div>
           ) : (
             <div className="mt-4 space-y-3">
-              {notifications.slice(0, 4).map((notification) => (
+              {notifications.slice(0, 4).map((notification, index) => (
                 <Link
+                  key={index}
                   href={
                     notification.type === "message_caregiver"
                       ? `/vitae/provider/${notification.fromUserId}`

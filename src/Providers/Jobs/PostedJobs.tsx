@@ -106,7 +106,7 @@ function PostedJobs() {
 
   const postedJobs = jobs.filter((job) => !job.draft);
   const draftJobs = jobs.filter((job) => job.draft);
-
+  console.log(jobs)
   return (
     <div className="py-6  px-4 bg-gray-100 min-h-[100vh]">
       {loading && (

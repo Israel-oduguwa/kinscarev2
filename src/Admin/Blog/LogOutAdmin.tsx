@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useContext } from "react";
+import TagManager from "react-gtm-module";
 import * as Realm from "realm-web";
 
 function LogOutAdmin() {
@@ -23,16 +24,16 @@ function LogOutAdmin() {
     try {
       if (!user || !app?.currentUser) return;
 
-      // const tagManagerArgs = {
-      //   dataLayer: {
-      //     event: "sign_out",
-      //     added: new Date(),
-      //     date_time: new Date().toISOString(),
-      //     distinct_id: customData.hash,
-      //     role: customData.role,
-      //     userId: `${user?.id}`,
-      //   },
-      // };
+      const tagManagerArgs = {
+        dataLayer: {
+          event: "sign_out",
+          added: new Date(),
+          date_time: new Date().toISOString(),
+          distinct_id: customData.hash,
+          role: customData.role,
+          userId: `${user?.id}`,
+        },
+      };
       // const payload = {
       //   added: new Date(),
       //   date_time: new Date().toISOString(),
@@ -41,7 +42,7 @@ function LogOutAdmin() {
       // };
 
       // trackEvents(user?.customData?.hash, "Sign Out", payload);
-      // TagManager.dataLayer(tagManagerArgs);
+      TagManager.dataLayer(tagManagerArgs);
 
       await app?.currentUser?.logOut();
       // localStorage.clear();

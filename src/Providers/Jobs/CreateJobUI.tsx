@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 import MongoContext from "@/app/MongoContext";
 import Editor from "@/components/Editor";
@@ -14,12 +16,15 @@ import { useContext, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import * as Yup from "yup";
+import TagManager from "react-gtm-module";
 // import MuiTailwindCheckbox from "@/components/muiTailwindcssCheckbox";
 
 const schema = Yup.object().shape({
   title: Yup.string().required("Please enter title of your job"),
-  minHours: Yup.number()
-    .max(50, "working hours must not be greater than 50 hrs."),
+  minHours: Yup.number().max(
+    50,
+    "working hours must not be greater than 50 hrs."
+  ),
   contacts: Yup.object().shape({
     address: Yup.string().required(
       "Please enter the address of where your job is located."
@@ -128,7 +133,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
         const payload = {
           ...data,
           draft: false,
-          profileImage:userData?.profileImage,
+          profileImage: userData?.profileImage,
           hash: user.customData.hash,
         };
         console.log(payload);
@@ -136,7 +141,15 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
           "https://api.kinscare.org/api/v1/providers/post-job",
           payload
         );
-        toast({ title: "Profile updated successfully", variant: "default" });
+        const tagManagerArgs = {
+          dataLayer: {
+            event: `post_job`,
+            type: "repost",
+            ...data
+          },
+        };
+         TagManager.dataLayer(tagManagerArgs);
+        toast({ title: "Job Posted Sucessfully", variant: "default" });
         router.push(`/provider/job/${response.data.jobData._id}`);
       } else {
         const payload = {
@@ -144,15 +157,23 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
           draft: false,
           _id: jobID,
           hash: user.customData.hash,
-          profileImage:userData?.profileImage,
+          profileImage: userData?.profileImage,
         };
         console.log(payload);
         await axios.post(
           "https://api.kinscare.org/api/v1/providers/post-job",
           payload
         );
-        toast({ title: "Profile updated successfully", variant: "default" });
-        router.refresh()
+        const tagManagerArgs = {
+          dataLayer: {
+            event: `post_job`,
+            type: "post",
+            ...data
+          },
+        };
+         TagManager.dataLayer(tagManagerArgs);
+        toast({ title: "Job Posted Successfully", variant: "default" });
+        router.refresh();
         router.push(`/provider/job/${jobID}`);
       }
     } catch (error: any) {
@@ -177,6 +198,21 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
         title: job.title,
         mobility: "car_needed",
       });
+      // send the tage manger to view job 
+      const tagManagerArgs = {
+              dataLayer: {
+                event: `view_job_form`,
+                settings: userData?.settings,
+                jobID:jobID,
+                lname: userData?.lname,
+                fname: userData?.fname,
+                tel: userData?.auth?.tel,
+                zipcode: userData?.zipcode,
+                city: userData?.city,
+                email: userData?.auth?.email
+              },
+            };
+            TagManager.dataLayer(tagManagerArgs);
     }
   }, [userData, reset, user]);
   const onEditorStateChange = (editorState: any) => {
@@ -188,7 +224,6 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
       draft: true,
       hash: user?.customData?.hash,
       address: userData?.address,
-
     });
     savetoDB(formData);
   };
@@ -213,7 +248,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
     const formData = getValues();
     Object.assign(formData, {
       userID: user?.customData.userID,
-      profileImage:userData?.profileImage,
+      profileImage: userData?.profileImage,
       _id: jobID,
       draft: true,
       hash: user?.customData?.hash,
@@ -228,7 +263,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
           <div>
             <div className="mb-5">
               <h2 className="font-bold text-xl text-gray-900">
-              Post your job opening
+                Post your job opening
               </h2>
               <p className="text-sm antialiased">
                 Post a job opening for potential caregivers to view the job
