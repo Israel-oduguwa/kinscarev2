@@ -596,7 +596,7 @@ function ProtectedCandidatesDetails({
               <span className="sr-only">Close</span>
             </DialogClose>
             {/* Title */}
-            <DialogTitle>Verify Your Identity</DialogTitle>
+            <DialogTitle>Get Verified & Connect To More Caregivers</DialogTitle>
           </DialogHeader>
           <DialogDescription className="py-4">
             Great! Now you’ve seen how easy it is to access caregivers’ phone
@@ -673,7 +673,7 @@ function ProtectedCandidatesDetails({
           <DialogHeader className="pt-5">
             <DialogTitle className="flex flex-col items-center text-center">
               <h2 className="font-bold tracking-tight mb-1 text-2xl text-gray-800">
-                {currentStep === "selection" && "Verify your Identity"}
+                {currentStep === "selection" && "Get Verified & Connect To More Caregivers"}
                 {currentStep === "payment" &&
                   "Get Verified with Payment Method"}
                 {currentStep === "attestation" &&

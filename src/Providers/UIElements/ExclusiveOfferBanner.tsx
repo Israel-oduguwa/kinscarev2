@@ -150,7 +150,7 @@ const ExclusiveOfferBanner = () => {
         onOpenChange={setIsVerificationDialogOpen}
       >
         <DialogContent  closePosition="left" className="mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
-          <DialogTitle className="pt-4">Verify Your Identity</DialogTitle>
+          <DialogTitle className="pt-4">Get Verified & Connect To More Caregivers</DialogTitle>
           <DialogDescription className="">
             You probably hate being solicited by scammers—and so do our
             caregivers. To prevent exploitation, we now require all employers to

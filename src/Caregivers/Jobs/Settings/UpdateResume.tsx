@@ -303,9 +303,8 @@ const CaregiverProfileForm = () => {
       if (userData?.complete) {
         const tagManagerArgs = {
           dataLayer: {
-            event: `add_settings`,
+            event: `add_cv`,
             settings: userData?.settings,
-
             lname: userData?.lname,
             fname: userData?.fname,
             tel: userData?.auth?.tel,

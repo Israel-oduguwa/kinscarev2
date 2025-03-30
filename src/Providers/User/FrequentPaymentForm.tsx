@@ -151,7 +151,7 @@ const FrequentPaymentForm: React.FC<FrequentPaymentFormProps> = ({
       const tagManagerArgs = {
         dataLayer: {
           ...eventPayload,
-          event: `purchase_plan`,
+          event: `subscribe_plan`,
          
         },
       };
