@@ -560,10 +560,10 @@ export default function Home() {
         </div>
       </section>
       <section className="bg-gray-50 relative py-20 md:py-30 overflow-hidden dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto antialiased px-8">
+        <div className="max-w-7xl mx-auto antialiased px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl tracking-tight font-bold text-gray-800 dark:text-white md:text-4xl xl:text-5xl">
-              Trusted by Care Providers & Caregivers
+            <h2 className="text-3xl tracking-tight font-bold text-gray-900 dark:text-white md:text-4xl xl:text-5xl">
+              Trusted by Care Professionals
             </h2>
             <p className="mx-auto mt-4 text-gray-600 dark:text-gray-300 max-w-xl text-lg">
               Join hundreds of healthcare professionals who've transformed their
@@ -573,16 +573,17 @@ export default function Home() {
 
           <div className="grid gap-8 md:grid-cols-3 lg:gap-12">
             {/* Testimonial 1 */}
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className=" text-blue-500 text-4xl/3 pt-3 mb-0">“</div>
-              <p className="text-gray-600 dark:text-gray-300 mb-6 min-h-[190px] text-lg leading-relaxed">
-                Kinscare makes finding caregivers easier than WhatsApp! I can
-                post openings, get direct applications, and contact
-                caregivers—no more waiting on referrals.
-              </p>
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out">
               <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                    <span className="text-blue-600 dark:text-blue-300 font-semibold text-lg">
+                      MS
+                    </span>
+                  </div>
+                </div>
                 <div className="ml-4">
-                  <p className="font-semibold text-gray-800 dark:text-white">
+                  <p className="font-semibold text-gray-900 dark:text-white">
                     Maria Shevchenko
                   </p>
                   <p className="text-gray-500 dark:text-gray-400 text-sm">
@@ -590,19 +591,38 @@ export default function Home() {
                   </p>
                 </div>
               </div>
+              <div className="text-blue-600 text-3xl mb-4"></div>
+              <div className="flex mb-4">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <svg
+                    key={star}
+                    className="w-5 h-5 text-yellow-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+              <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed">
+                Kinscare makes finding caregivers easier than WhatsApp! I can
+                post openings, get direct applications, and contact
+                caregivers—no more waiting on referrals.
+              </p>
             </div>
 
             {/* Testimonial 2 */}
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-             <div className=" text-blue-500 text-4xl/3 pt-3 mb-0">“</div>
-              <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg min-h-[190px] leading-relaxed">
-                I found qualified local caregivers quickly with Kinscare. It’s
-                simple, effective, and saves me time compared to other hiring
-                methods!
-              </p>
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out">
               <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                    <span className="text-green-600 dark:text-green-300 font-semibold text-lg">
+                      SG
+                    </span>
+                  </div>
+                </div>
                 <div className="ml-4">
-                  <p className="font-semibold text-gray-800 dark:text-white">
+                  <p className="font-semibold text-gray-900 dark:text-white">
                     Solomon Gebremariam
                   </p>
                   <p className="text-gray-500 dark:text-gray-400 text-sm">
@@ -610,19 +630,38 @@ export default function Home() {
                   </p>
                 </div>
               </div>
+              <div className="text-blue-600 text-3xl mb-4"></div>
+              <div className="flex mb-4">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <svg
+                    key={star}
+                    className="w-5 h-5 text-yellow-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+              <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed">
+                I found qualified local caregivers quickly with Kinscare. It’s
+                simple, effective, and saves me time compared to other hiring
+                methods!
+              </p>
             </div>
 
             {/* Testimonial 3 */}
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-             <div className=" text-blue-500 text-4xl/3 pt-3 mb-0">“</div>
-              <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg min-h-[190px] leading-relaxed">
-                Kinscare is both affordable and flexible. I only pay when I need
-                caregivers, and get direct access to candidates without extra
-                hassle.
-              </p>
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out">
               <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
+                    <span className="text-purple-600 dark:text-purple-300 font-semibold text-lg">
+                      AK
+                    </span>
+                  </div>
+                </div>
                 <div className="ml-4">
-                  <p className="font-semibold text-gray-800 dark:text-white">
+                  <p className="font-semibold text-gray-900 dark:text-white">
                     Alice Kamau
                   </p>
                   <p className="text-gray-500 dark:text-gray-400 text-sm">
@@ -630,15 +669,32 @@ export default function Home() {
                   </p>
                 </div>
               </div>
+              <div className="text-blue-600 text-3xl mb-4"></div>
+              <div className="flex mb-4">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <svg
+                    key={star}
+                    className="w-5 h-5 text-yellow-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+              <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed">
+                Kinscare is both affordable and flexible. I only pay when I need
+                caregivers, and get direct access to candidates without extra
+                hassle.
+              </p>
             </div>
           </div>
 
-          {/* Optional Trust Badges */}
-          <div className="mt-16 text-center">
-            <p className="text-gray-500 dark:text-gray-400 text-sm uppercase tracking-wide mb-6">
-              Trusted by 200+ healthcare organizations
+          {/* Trust Badges */}
+          <div className="mt-20 text-center">
+            <p className="text-gray-500 dark:text-gray-400 text-sm uppercase tracking-wide mb-6 font-medium">
+              Trusted by 200+ healthcare organizations worldwide
             </p>
-        
           </div>
         </div>
       </section>
@@ -716,7 +772,6 @@ export default function Home() {
     </main>
   );
 }
-
 
 // <div className="flex flex-wrap justify-center gap-8 opacity-75">
 // <div className="w-32 h-12 bg-gray-200 rounded-lg dark:bg-gray-700" />
