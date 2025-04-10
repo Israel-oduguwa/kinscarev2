@@ -119,6 +119,7 @@ function ExcelCNAAuth() {
                     dataLayer: {
                       event: `${data_payload.role}_sign_up`,
                       userIp: response?.data?.userIp,
+                      flow: "join_kinscare", 
                       added: new Date(),
                       authEmail: data_payload.email,
                       authMode: data_payload.auth_mode,
@@ -132,6 +133,7 @@ function ExcelCNAAuth() {
                     dataLayer: {
                       event: `otp_sign_up`,
                       added: new Date(),
+                      flow: "join_kinscare", // 
                       userIp: response?.data?.userIp,
                       authEmail: data_payload.email,
                       authMode: data_payload.auth_mode,
