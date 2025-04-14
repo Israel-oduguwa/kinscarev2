@@ -72,9 +72,7 @@ export default function RootLayout({
           id="google-analytics"
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{
-            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
-            var f=d.getElementsByTagName(s)[0],j=d.createElement(s);j.async=true;j.src="https://sst.kinscare.org/d846jafydtvd.js?"+i;
-            f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','2n0=aWQ9R1RNLVdKOVhLVFdM&page=3');`,
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s);j.async=true;j.src="https://sst.kinscare.org/d846jafydtvd.js?"+i;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','2n0=aWQ9R1RNLVdKOVhLVFdM&page=3');`,
           }}
         />
       </head>
