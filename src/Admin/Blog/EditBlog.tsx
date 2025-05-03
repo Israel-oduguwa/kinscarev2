@@ -137,6 +137,11 @@ interface Blog {
 }
 
 const categoriesOptions = [
+  { label: "Caregiver Hiring", slug: "caregiver-hiring" },
+  { label: "Provider Insights", slug: "provider-insights" },
+  { label: "Healthcare Career Growth", slug: "healthcare-career-growth" },
+  { label: "Workforce Trends", slug: "workforce-trends" },
+  { label: "KinsCare Platform Updates", slug: "kinscare-platform-updates" },
   { label: "Profession", slug: "profession" },
   { label: "Program", slug: "program" },
   { label: "State", slug: "state" },
@@ -156,6 +161,28 @@ const tagsOptions = [
   { label: "Associates", value: "associates" },
   { label: "Diploma", value: "diploma" },
   { label: "Certificates", value: "certificates" },
+  // Hiring & Workforce Tags
+  { label: "Caregiver Hiring", value: "caregiver-hiring" },
+  { label: "Direct Care Jobs", value: "direct-care-jobs" },
+  { label: "Healthcare Staffing", value: "healthcare-staffing" },
+  { label: "CNA Recruitment", value: "cna-recruitment" },
+  { label: "Home Care Hiring", value: "home-care-hiring" },
+  { label: "Long-Term Care Workforce", value: "long-term-care-workforce" },
+  { label: "Hiring Tools for Providers", value: "hiring-tools-for-providers" },
+
+  // Caregiving Tags
+  { label: "Caregiving Jobs", value: "caregiving-jobs" },
+  { label: "Caregiver Shift Types", value: "caregiver-shift-types" },
+  { label: "HCA vs CNA", value: "hca-vs-cna" },
+  { label: "Live-in Caregiver Roles", value: "live-in-caregiver-roles" },
+  { label: "Part-Time Caregiver Jobs", value: "part-time-caregiver-jobs" },
+
+  // Platform & KinsCare-Specific Tags
+  { label: "KinsCare Platform", value: "kinscare-platform" },
+  { label: "Caregiver Profiles", value: "caregiver-profiles" },
+  { label: "Smart Caregiver Matching", value: "smart-caregiver-matching" },
+  { label: "Provider Dashboard", value: "provider-dashboard" },
+  { label: "Care Home Solutions", value: "care-home-solutions" },
 ];
 
 export default function EditBlog() {
@@ -375,7 +402,7 @@ export default function EditBlog() {
       toc: toc,
       htmlContent: html,
       featuredImage,
-      isPublished:true,
+      isPublished: true,
       content,
       categories: categoriesWithLabelAndSlug,
       tags,
@@ -557,7 +584,7 @@ export default function EditBlog() {
             <Button
               variant="default"
               onClick={handleSubmit}
-              disabled={isReverting || isPreviewing || isPublished}
+              disabled={isReverting || isPreviewing }
             >
               {isPublishing ? (
                 <Loader className="animate-spin" />

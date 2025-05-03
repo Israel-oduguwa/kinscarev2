@@ -53,9 +53,14 @@ export default async function DiscussionList({
   console.log(response.threads, "sjhs");
   return (
     <div>
-      <h2 className="text-2xl tracking-tight font-bold text-gray-800 mb-6">
-        Community Discussions
-      </h2>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">
+          Community Discussions
+        </h1>
+        <p className="text-gray-500 mt-2">
+          Join the conversation and share your knowledge
+        </p>
+      </div>
 
       {response.threads.map((thread: any) => {
         const avatarData = generateAvatarData(
@@ -63,62 +68,46 @@ export default async function DiscussionList({
         );
         return (
           <Link key={thread._id} href={`/community/discussions/${thread._id}`}>
-            <div className="p-6 mb-6 flex flex-col md:flex-row items-start bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-200">
-              {/* Left Side: Thread Content */}
-              <div className="flex-1">
-                <h1 className="text-xl font-semibold text-gray-800 dark:text-white mb-2 hover:text-blue-600 transition">
-                  {thread.title}
-                </h1>
-
-                {/* Tags & Categories */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {thread.categories.map((category: string, index: number) => (
-                    <span
-                      key={index}
-                      className="text-xs  bg-blue-50 dark:bg-gray-700 text-blue-700 dark:text-gray-300 rounded-full py-1 px-3"
-                    >
-                      {category}
-                    </span>
-                  ))}
-                  {thread.tags.map((tag: string, index: number) => (
-                    <span
-                      key={index}
-                      className="text-xs  bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 rounded-full py-1 px-3"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+            <div className="p-5 mb-4 bg-white border border-gray-200 rounded-xl hover:border-blue-200 transition-colors">
+              <div className="flex gap-3">
+                {/* Author avatar */}
+                <div className="shrink-0">
+                  <ProfileAvatar
+                    size="w-9 h-9"
+                    name={`${thread.fname} ${thread.lname}`}
+                    profileImage={
+                      thread.creator ? thread.creator.profileImage : ""
+                    }
+                  />
                 </div>
 
-                {/* Author Info & Metadata */}
-                <div className="flex justify-between items-center mt-3">
-                  <div className="flex items-center gap-4">
-                    {/* Profile Avatar */}
-                    <ProfileAvatar
-                      size="w-12 h-12"
-                      name={`${thread.fname} ${thread.lname}`}
-                      profileImage={thread.creator ? thread.creator.profileImage : ""}
-                    />
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                        {thread.creator.fname} {thread.creator.lname}
-                      </p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">
-                        {formatDistanceToNow(new Date(thread.updatedAt), {
-                          addSuffix: true,
-                        })}
-                      </p>
-                    </div>
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg font-semibold truncate">
+                    {thread.title}
+                  </h3>
+                  <p className="text-xs  text-gray-500 dark:text-white">
+                    {thread.creator.fname} {thread.creator.lname}
+                  </p>
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {thread.categories.map((category: any) => (
+                      <span
+                        key={category}
+                        className="text-xs px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full"
+                      >
+                        {category}
+                      </span>
+                    ))}
                   </div>
 
-                  {/* Thread Stats (Views & Replies) */}
-                  <div className="flex items-center space-x-4">
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
-                      {thread.views} Views
-                    </p>
-                    <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
-                      <MessageCircleReply size={18} className="mr-1" />
-                      {thread.replies}
+                  {/* Metadata */}
+                  <div className="mt-3 flex items-center justify-between text-sm">
+                    <div className="text-gray-500">
+                      {thread.views} views • {thread.replies} replies
+                    </div>
+                    <div className="text-gray-500">
+                      {formatDistanceToNow(new Date(thread.updatedAt))}
                     </div>
                   </div>
                 </div>

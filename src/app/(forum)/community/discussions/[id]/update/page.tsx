@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, use } from "react";
+import { use, useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { CreateThreadPayload } from "@/lib/validators/discussionSchema";
@@ -17,7 +17,6 @@ import ImageUpload from "@/components/ImageUpload";
 import ForumNavbar from "@/Forum/Navbar/ForumNavbar";
 import CategoryChipInput from "@/components/ui/CategoryChipInput";
 import ForumDynamicNavbar from "@/Forum/Navbar/ForumDynamicNavbar";
-// title, content, userId, categories, tags
 
 const categories = [
   "Questions",
@@ -26,7 +25,7 @@ const categories = [
   "Updates",
   "News",
   "Provider Jobs",
-]; // Pre-existing categories
+];
 
 const Page = (props: { params: Promise<{ id: string }> }) => {
   const params = use(props.params);
@@ -36,11 +35,12 @@ const Page = (props: { params: Promise<{ id: string }> }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [discussionData, setDiscussionData] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const mongodb = useContext(MongoContext);
   const { user }: any = mongodb;
   const router = useRouter();
   const { loginToast }: any = useCustomToast();
+
   useEffect(() => {
     const fetchThread = async () => {
       try {
@@ -79,7 +79,6 @@ const Page = (props: { params: Promise<{ id: string }> }) => {
         `https://api.kinscare.org/api/v1/forum/threads/${id}`,
         payload
       );
-      //   console.log(data)
       return data as string;
     },
     onError: (err) => {
@@ -101,8 +100,6 @@ const Page = (props: { params: Promise<{ id: string }> }) => {
       });
     },
     onSuccess: (data: any) => {
-      // use the data.threadId
-      //   We can run any function to track the users on segment or GTM
       const newPathname = `/community/discussions/${id}`;
       toast({
         title: "Discussion updated successfully",
@@ -120,10 +117,74 @@ const Page = (props: { params: Promise<{ id: string }> }) => {
   const handleImageRemove = (url: string) => {
     setImageUrl("");
   };
-  console.log(content);
+
+  const SkeletonLoader = () => (
+    <div className="mt-14 flex items-center h-full max-w-4xl mx-auto">
+      <div className="relative bg-white w-full h-fit p-4 rounded-lg space-y-6">
+        {/* Header Skeleton */}
+        <div className="flex justify-between items-center">
+          <div className="h-6 w-1/3 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+        <hr className="bg-zinc-500 h-px" />
+
+        {/* Discussion Info Skeleton */}
+        <div className="mb-4 flex xs:flex-wrap items-center gap-2">
+          <div className="p-3 rounded bg-gray-100 w-12 h-12 animate-pulse"></div>
+          <div className="w-full space-y-2">
+            <div className="h-4 w-1/4 bg-gray-200 rounded animate-pulse"></div>
+            <div className="h-3 w-3/4 bg-gray-200 rounded animate-pulse"></div>
+            <div className="h-3 w-2/3 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+        </div>
+
+        {/* Form Skeleton */}
+        <div>
+          {/* Title Input Skeleton */}
+          <div className="mb-3">
+            <div className="h-4 w-1/4 bg-gray-200 rounded mb-2 animate-pulse"></div>
+            <div className="h-10 w-full bg-gray-200 rounded animate-pulse"></div>
+          </div>
+
+          {/* Content Editor Skeleton */}
+          <div>
+            <div className="h-4 w-1/4 bg-gray-200 rounded mb-2 animate-pulse"></div>
+            <div className="h-64 w-full bg-gray-200 rounded animate-pulse"></div>
+          </div>
+
+          {/* Categories Skeleton */}
+          <div className="py-3">
+            <div className="h-4 w-1/4 bg-gray-200 rounded mb-3 animate-pulse"></div>
+            <div className="h-10 w-full bg-gray-200 rounded animate-pulse"></div>
+            <div className="mt-4">
+              <div className="h-4 w-1/4 bg-gray-200 rounded mb-2 animate-pulse"></div>
+              <div className="space-y-2">
+                <div className="h-3 w-1/3 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-3 w-1/3 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Image Upload Skeleton */}
+        <div>
+          <div className="h-4 w-1/4 bg-gray-200 rounded mb-2 animate-pulse"></div>
+          <div className="h-32 w-full bg-gray-200 rounded animate-pulse"></div>
+        </div>
+
+        {/* Buttons Skeleton */}
+        <div className="flex justify-end gap-4">
+          <div className="h-10 w-20 bg-gray-200 rounded animate-pulse"></div>
+          <div className="h-10 w-32 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <>
-      {!loading ? (
+      {loading ? (
+        <SkeletonLoader />
+      ) : (
         <div className="mt-14 flex items-center h-full max-w-4xl mx-auto">
           <div className="relative bg-white w-full h-fit p-4 rounded-lg space-y-6">
             <div className="flex justify-between items-center ">
@@ -177,7 +238,6 @@ const Page = (props: { params: Promise<{ id: string }> }) => {
                   fields={categories}
                   selectedFields={selectedCategories}
                   setSelectedFields={setSelectedCategories}
-                  
                 />
 
                 {/* Display selected categories */}
@@ -225,8 +285,6 @@ const Page = (props: { params: Promise<{ id: string }> }) => {
             </div>
           </div>
         </div>
-      ) : (
-        <Loader2 />
       )}
     </>
   );

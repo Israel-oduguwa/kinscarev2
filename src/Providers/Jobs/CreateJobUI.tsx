@@ -17,6 +17,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import * as Yup from "yup";
 import TagManager from "react-gtm-module";
+import { updateMixpanelProfile } from "@/lib/utils";
 // import MuiTailwindCheckbox from "@/components/muiTailwindcssCheckbox";
 
 const schema = Yup.object().shape({
@@ -172,6 +173,10 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
           },
         };
          TagManager.dataLayer(tagManagerArgs);
+        //  we  need to update the mixpanel Data   
+        updateMixpanelProfile({
+          posted_job: true,
+        })
         toast({ title: "Job Posted Successfully", variant: "default" });
         router.refresh();
         router.push(`/provider/job/${jobID}`);

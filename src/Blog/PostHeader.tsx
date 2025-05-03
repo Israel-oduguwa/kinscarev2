@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import ShareSocial from "./ShareSocial";
 import { formatDistanceToNow } from "date-fns";
+import Image from "next/image";
 
 interface ArticleHeaderProps {
   title: string;
@@ -26,7 +27,7 @@ const ArticleHeader: React.FC<ArticleHeaderProps> = ({
   const currentURL = typeof window !== "undefined" ? window.location.href : "";
 
   return (
-    <header className="relative isolate overflow-hidden  bg-blue-50 py-10 dark:from-gray-900/95 dark:to-gray-900">
+    <header className="relative isolate overflow-hidden  bg-blue-50 py-10 md:py-20 dark:from-gray-900/95 dark:to-gray-900">
       {/* Subtle grid pattern */}
       <div
         className="absolute inset-0 -z-10 opacity-15 dark:opacity-10"
@@ -59,10 +60,10 @@ const ArticleHeader: React.FC<ArticleHeaderProps> = ({
         </Breadcrumb>
 
         {/* Content Grid */}
-        <div className="grid auto-rows-min grid-cols-1 gap-y-8 lg:grid-cols-2 lg:gap-x-16 lg:gap-y-0">
+        <div className="grid auto-rows-min items-center grid-cols-1 gap-y-8 lg:grid-cols-2 lg:gap-x-16 lg:gap-y-0">
           {/* Text Content */}
           <div className="max-w-3xl space-y-8">
-            <h1 className="text-4xl font-semibold tracking-tight leading-9 text-gray-700 dark:text-gray-100 sm:text-4xl lg:text-6xl">
+            <h1 className="text-3xl font-semibold tracking-tight leading-9 text-gray-700 dark:text-gray-100 sm:text-3xl lg:text-5xl">
               {title}
             </h1>
 
@@ -100,14 +101,15 @@ const ArticleHeader: React.FC<ArticleHeaderProps> = ({
 
           {/* Cover Image */}
           {coverImage && (
-            <div className="relative aspect-[5/3] w-full overflow-hidden rounded-3xl shadow-2xl lg:-translate-y-12 lg:scale-110">
-              <img
+            <div className="relative aspect-[5/3] w-full overflow-hidden rounded-3xl  lg:-translate-y-12 lg:scale-110">
+              <Image
                 src={coverImage}
                 alt={title}
-                className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                fill
+                className="h-full w-full object-cover object-top transition-transform duration-500 hover:scale-105"
               />
               {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-900/30 dark:to-gray-900/50" />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-100/30 dark:to-gray-100/50" />
             </div>
           )}
         </div>

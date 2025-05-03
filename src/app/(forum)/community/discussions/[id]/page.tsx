@@ -178,16 +178,19 @@ export default async function Page({ params }: { params: { id: string } }) {
   const { id } = params;
 
   return (
-    <div className="bg-gray-100 py-10 min-h-screen">
-      <div className="max-w-screen-2xl mx-auto px-2 2xl:px-0">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div className="bg-gray-50 min-h-screen">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Sidebar */}
-          <aside className="xl:col-span-2 col-span-12">
+          <aside className="lg:hidden">
             <LeftFilter />
           </aside>
-
+          {/* Left Sidebar - Desktop */}
+          <aside className="hidden lg:block w-64 shrink-0">
+            <LeftFilter />
+          </aside>
           {/* Main Content */}
-          <section className="col-span-12 xl:col-span-7">
+          <section className="flex-1 lg:max-w-3xl">
             <div className="relative w-full h-fit mb-4  rounded-lg">
               <Suspense fallback={<DiscussionSkeleton />}>
                 <Discussion threadID={id} />
@@ -202,7 +205,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           </section>
 
           {/* Right Sidebar */}
-          <aside className="col-span-12 xl:col-span-3">
+          <aside className="lg:w-80 shrink-0">
             {/* Create a Discussion Section */}
             <div className="sticky top-10">
               <div className="bg-white shadow-sm rounded-xl p-6  mb-6">

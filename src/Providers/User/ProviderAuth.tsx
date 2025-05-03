@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import React, { useContext, ReactNode, useEffect } from "react";
@@ -33,6 +34,8 @@ function ProviderAuth({ children }: ProviderAuthProps) {
           userDetails: {
             $first_name: customData.fname,
             $last_name: customData.lname,
+            complete:customData.complete,
+            verified:customData.payment_verified,
             $email: customData.email,
             role: customData.role,
           },

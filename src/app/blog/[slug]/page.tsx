@@ -46,7 +46,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
   }
 
   const { blog, similarBlogs } = response;
-  const canonicalUrl = `https://yourdomain.com/blog/${blog.slug}`;
+  const canonicalUrl = `https://kinscare.org/blog/${blog.slug}`;
 
   // Prepare structured data for rich results (JSON‑LD).
   const structuredData = {
@@ -64,7 +64,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
       name: "Your Blog Name",
       logo: {
         "@type": "ImageObject",
-        url: "https://yourdomain.com/logo.png",
+        url: "https://kinscare.org/logo.png",
       },
     },
     datePublished: blog.publishedAt,
@@ -126,7 +126,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const postResponse = await getPostBySlug(params.slug);
   if (!postResponse) return notFound();
   const blog = postResponse.blog;
-  const canonicalUrl = `https://yourdomain.com/blog/${blog.slug}`;
+  const canonicalUrl = `https://kinscare.org/blog/${blog.slug}`;
   return {
     title: blog.title,
     description: blog.excerpt,

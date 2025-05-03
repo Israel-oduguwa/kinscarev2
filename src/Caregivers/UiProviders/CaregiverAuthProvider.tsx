@@ -32,6 +32,7 @@ function CaregiverAuth({ children }: CaregiverAuthProps) {
           userDetails: {
             $first_name: customData.fname,
             $last_name: customData.lname,
+            complete:customData.complete,
             $email: customData.email,
             role: customData.role,
           },

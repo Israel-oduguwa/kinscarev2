@@ -39,7 +39,7 @@ async function fetchInitialBlogs() {
 async function fetchFeaturedArticle() {
   try {
     const res = await fetch(
-      `https://api.kinscare.org/api/v1/blogs/featured-article/678ffa867c610b33e22985de`,
+      `https://api.kinscare.org/api/v1/blogs/featured-article/681498355f27ab9fd5936f88`,
       { cache: "no-cache" }
     );
 
@@ -55,6 +55,7 @@ async function fetchFeaturedArticle() {
 export default async function Page() {
   const initialBlog = await fetchInitialBlogs();
   const { blogs, totalPages } = initialBlog;
+  // console.log(blogs)
   const featuredArticle = await fetchFeaturedArticle();
   // console.log(featuredArticle);
   return (

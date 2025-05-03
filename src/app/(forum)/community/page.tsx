@@ -120,48 +120,66 @@ async function ForumPage({ searchParams }: { searchParams: any }) {
   };
 
   return (
-    <main className="bg-gray-100 py-10 min-h-screen">
-      {/* JSON-LD for rich results */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqData) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
-      />
+    <main className="bg-gray-50 min-h-screen">
+      {/* JSON-LD scripts remain the same */}
 
-      <div className="max-w-screen-2xl mx-auto px-4 2xl:px-0">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Sidebar */}
-          <aside className="xl:col-span-2 col-span-12">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Mobile Filters Drawer (Moved to top on mobile) */}
+          <div className="lg:hidden">
+            <LeftFilter params={searchParams} />
+          </div>
+
+          {/* Left Sidebar - Desktop */}
+          <aside className="hidden lg:block w-64 shrink-0">
             <LeftFilter params={searchParams} />
           </aside>
 
           {/* Main Content */}
-          <section className="col-span-12 xl:col-span-7">
+          <section className="flex-1 lg:max-w-3xl">
+           
+
             <Suspense fallback={<DiscussionListSkeleton />}>
               <DiscussionList searchParams={searchParams} />
             </Suspense>
           </section>
 
           {/* Right Sidebar */}
-          <aside className="col-span-12 xl:col-span-3">
-            <div className="bg-white shadow-sm rounded-xl p-6 sticky top-10">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                Create a Discussion
-              </h3>
-              <p className="text-sm text-gray-600 mb-6">
-                Share your thoughts, ask questions, or start a conversation.
-              </p>
-              <Link
-                className={buttonVariants({
-                  className: "w-full mt-4 mb-6 text-sm",
-                })}
-                href="/community/create"
-              >
-                New Discussion
-              </Link>
+          <aside className="lg:w-80 shrink-0">
+            <div className="bg-white border border-gray-200 rounded-xl p-6 sticky top-20">
+              <div className="text-center">
+                <div className="inline-block bg-blue-100 rounded-full p-3 mb-4">
+                  <svg
+                    className="w-8 h-8 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Start a Discussion
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">
+                  Share your knowledge, ask questions, or start a new topic
+                </p>
+                <Link
+                  className={buttonVariants({
+                    className:
+                      "w-full shadow-sm hover:shadow-md transition-shadow",
+                    variant: "default",
+                  })}
+                  href="/community/create"
+                >
+                  Create Post
+                </Link>
+              </div>
             </div>
           </aside>
         </div>

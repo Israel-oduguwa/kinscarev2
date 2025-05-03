@@ -75,7 +75,7 @@ function PostBody({
     const nestedToc = [];
     let currentParent: any = null;
     for (const item of validItems) {
-      if (item.level === 2) {
+      if (item.level === 2 || item.level === 3) {
         // Start a new parent item.
         currentParent = { ...item, children: [] };
         nestedToc.push(currentParent);

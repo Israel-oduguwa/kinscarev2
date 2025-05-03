@@ -91,6 +91,17 @@ export const trackEvents = (
   });
 };
 
+export const updateMixpanelProfile = (
+  properties: Dict | undefined
+) => {
+  if (!properties) return;
+
+  mixpanel.people.set({
+    ...properties,
+  });
+
+  console.log("✅ Updated user profile in Mixpanel:", properties);
+};
 type DateInput = string | Date;
 
 export function isTrialActive(trialStartDate: DateInput, trialEndDate: DateInput): boolean {

@@ -32,12 +32,12 @@ async function Discussion({ threadID }: { threadID: string }) {
         <div className="flex items-center mb-6 gap-2">
           {/* <div className="vote border rounded-md border-gray-300">
           </div> */}
-          <h1 className="font-semibold antialiased text-gray-900 text-xl ">
+          <h1 className="font-bold antialiased text-gray-900 text-2xl ">
             {thread.title}
           </h1>
         </div>
         <div className="flex justify-between w-full">
-          <div className="flex gap-3 mb-3 items-center">
+          <div className="flex gap-2 mb-3 items-center">
             {/* <Avatar className="border-gray-50 shadow-sm">
               <AvatarImage src="https://lh3.googleusercontent.com/a/ACg8ocLhJ06zIepDHxUHhZ6_sW01qSutpYn8XzXPb9cbFkFOfmOdoOs=s192-c-mo" />
               <AvatarFallback
@@ -48,7 +48,7 @@ async function Discussion({ threadID }: { threadID: string }) {
               </AvatarFallback>
             </Avatar> */}
             <ProfileAvatar
-              size="w-12 h-12"
+              size="w-10 h-10"
               name={`${creator.fname} ${creator.lname}`}
               profileImage={creator.profileImage}
             />
@@ -66,7 +66,7 @@ async function Discussion({ threadID }: { threadID: string }) {
           <ThreadMenuAction threadID={thread._id} authorID={creator.userID} />
         </div>
         <div>
-          <div className="discussion-content">
+          <div className="discussion-content mb-8">
             <RichTextRendering
               truncatedContent={truncatedContent}
               fullContent={thread.content}
@@ -77,7 +77,7 @@ async function Discussion({ threadID }: { threadID: string }) {
             {thread.categories.map((category: string, index: number) => (
               <div
                 key={index}
-                className="text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 rounded-lg py-1.5 px-3"
+                className="text-sm bg-slate-200 dark:bg-gray-700 text-gray-800 dark:text-gray-300 rounded-lg py-1.5 px-3"
               >
                 {category}
               </div>

@@ -80,9 +80,9 @@ const BlogList: React.FC<BlogListProps> = ({ initialBlogs, totalPages }) => {
       setLoading(false);
     }
   };
-
+console.log("This is blog", blogs)
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+    <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
         <div className="space-y-2">
@@ -135,18 +135,18 @@ const BlogList: React.FC<BlogListProps> = ({ initialBlogs, totalPages }) => {
                   src={blog.featuredImage}
                   alt={blog.title}
                   fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-900/40" />
               </div>
 
               {/* Content Container - Fixed Height */}
               <div className="p-6 flex flex-col flex-grow h-full space-y-4">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-snug line-clamp-2">
+                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 leading-snug line-clamp-2">
                   {blog.title}
                 </h3>
 
-                <p className="text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed flex-grow">
+                <p className="text-gray-600 text-sm font-light dark:text-gray-400 line-clamp-3 leading-relaxed flex-grow">
                   {blog.excerpt}
                 </p>
 
