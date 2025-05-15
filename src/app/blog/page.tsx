@@ -55,7 +55,6 @@ async function fetchFeaturedArticle() {
 export default async function Page() {
   const initialBlog = await fetchInitialBlogs();
   const { blogs, totalPages } = initialBlog;
-  // console.log(blogs)
   const featuredArticle = await fetchFeaturedArticle();
   // console.log(featuredArticle);
   return (

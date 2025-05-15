@@ -35,7 +35,7 @@ export default function ImageUploader({
 
       return data.url;
     } catch (error) {
-      console.log("Error uploading file:", error);
+      console.error("Error uploading file:", error);
       throw new Error('Image upload failed');
     }
   };

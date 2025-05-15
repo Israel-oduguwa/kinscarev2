@@ -53,6 +53,7 @@ const nextConfig = {
     TWILIO_API_SECRET: process.env.TWILIO_API_SECRET,
     TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
     FACEBOOK_BUSSINESS_AUTH: process.env.FACEBOOK_BUSSINESS_AUTH,
+    INTERCOM_APP_ID:process.env.INTERCOM_APP_ID
   },
 };
 

@@ -3,15 +3,15 @@ import VoiceFlowProvider from "@/Caregivers/UiProviders/VoiceFlowProvider";
 import ContextProviders from "@/components/ContextProviders";
 import MongoProvider from "@/components/MongoProvider";
 import { Toaster } from "@/components/ui/toaster";
-import { initializeGTM } from "@/lib/gtm";
 import { ThemeProvider } from "@/lib/Theme";
+import IntercomProvider from "@/Providers/Utils/IntercomLoader";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Metadata } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
 import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
-import { Metadata } from "next";
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
@@ -105,9 +105,12 @@ export default function RootLayout({
           <MongoProvider>
             <SpeedInsights />
             <Toaster />
-            <VoiceFlowProvider>
-              <ContextProviders>{children}</ContextProviders>
-            </VoiceFlowProvider>
+
+            <ContextProviders>
+              {" "}
+              {/* <IntercomProvider /> */}
+              {children}
+            </ContextProviders>
           </MongoProvider>
         </ThemeProvider>
       </body>
