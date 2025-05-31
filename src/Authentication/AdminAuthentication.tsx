@@ -345,7 +345,7 @@ function AdminAuthentication() {
                   {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Login"}
                 </Button>
               </form>
-              <p className="text-center mt-4">
+              {/* <p className="text-center mt-4">
                 Don’t have an account?{" "}
                 <span
                   className="text-blue-500 cursor-pointer"
@@ -353,7 +353,7 @@ function AdminAuthentication() {
                 >
                   Sign up
                 </span>
-              </p>
+              </p> */}
             </>
           ) : (
             <>

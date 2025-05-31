@@ -141,7 +141,7 @@ const categoriesOptions = [
   { label: "Provider Insights", slug: "provider-insights" },
   { label: "Healthcare Career Growth", slug: "healthcare-career-growth" },
   { label: "Workforce Trends", slug: "workforce-trends" },
-  { label: "KinsCare Platform Updates", slug: "kinscare-platform-updates" },
+  { label: "Kinscare and Updates", slug: "kinscare-platform-updates" },
   { label: "Profession", slug: "profession" },
   { label: "Program", slug: "program" },
   { label: "State", slug: "state" },
