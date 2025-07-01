@@ -150,7 +150,7 @@ function CaregiverNotification() {
                   href={
                     notification.type === "message_caregiver"
                       ? `/vitae/provider/${notification.fromUserId}`
-                      : `vitae/referrals`
+                      : `/vitae/referrals`
                   }
                 >
                   <div
