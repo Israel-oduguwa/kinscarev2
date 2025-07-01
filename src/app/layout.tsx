@@ -2,7 +2,7 @@
 import VoiceFlowProvider from "@/Caregivers/UiProviders/VoiceFlowProvider";
 import ContextProviders from "@/components/ContextProviders";
 import MongoProvider from "@/components/MongoProvider";
-import { Toaster } from "@/components/ui/toaster";
+
 import { ThemeProvider } from "@/lib/Theme";
 import IntercomProvider from "@/Providers/Utils/IntercomLoader";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -12,6 +12,7 @@ import localFont from "next/font/local";
 import Script from "next/script";
 import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
+import { Toaster } from "sonner";
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
@@ -104,12 +105,14 @@ export default function RootLayout({
         >
           <MongoProvider>
             <SpeedInsights />
-            <Toaster />
+            <Toaster position="top-right" richColors />
 
             <ContextProviders>
               {" "}
+              <VoiceFlowProvider>
               {/* <IntercomProvider /> */}
               {children}
+              </VoiceFlowProvider>
             </ContextProviders>
           </MongoProvider>
         </ThemeProvider>

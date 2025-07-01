@@ -17,7 +17,7 @@ async function FindJobs({
   const { schedule, licenses, minHours, page }: any = await searchParams;
   return (
     <div>
-      <Navbar />
+      
       <Suspense
         fallback={
           <div className="max-w-6xl mx-auto">

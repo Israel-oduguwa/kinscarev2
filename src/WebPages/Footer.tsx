@@ -52,6 +52,14 @@ const Footer = () => {
                   Terms
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/blog"
+                  className="text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--primary))] transition"
+                >
+                  Blog
+                </Link>
+              </li>
             </ul>
           </div>
   
@@ -79,12 +87,13 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/find-jobs"
                   className="text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--primary))] transition"
                 >
                   Find jobs
                 </Link>
               </li>
+             
             </ul>
           </div>
   

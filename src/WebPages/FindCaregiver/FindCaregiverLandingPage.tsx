@@ -43,7 +43,7 @@ const FindLandingPage = async () => {
         </div>
       </div>
 
-      <div className="bg-gray-50 py-10 px-6 md:px-12">
+      <div className="bg-gray-50 py-1 px-6 md:px-12">
         <div className="max-w-6xl pt-10 pb-20 mx-auto">
           <div className="p-6 bg-gradient-to-br from-indigo-800 to-blue-900 rounded-2xl relative overflow-hidden">
             {/* Decorative gradient bubbles */}

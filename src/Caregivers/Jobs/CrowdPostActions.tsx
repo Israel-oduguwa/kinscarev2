@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import React, { use, useContext, useEffect, useState } from "react";
 import MongoContext from "@/app/MongoContext";
@@ -20,9 +21,10 @@ interface CrowdPostActionsProps {
   jobID: string;
   isProvider: boolean;
   employerEmail: string;
+  claimed:boolean;
 }
 
-const CrowdPostActions: React.FC<CrowdPostActionsProps> = ({ jobID,isProvider,employerEmail }) => {
+const CrowdPostActions: React.FC<CrowdPostActionsProps> = ({ jobID,isProvider,employerEmail, claimed }) => {
   const mongo: any = useContext(MongoContext);
   const { user, userData } = mongo;
   const [showDialog, setShowDialog] = useState<boolean>(false);
@@ -61,7 +63,7 @@ const CrowdPostActions: React.FC<CrowdPostActionsProps> = ({ jobID,isProvider,em
   useEffect(()=>{
     const queryParams = new URLSearchParams(window.location.search);
     // Extract the referral_code parameter
-    const email = queryParams.get("email");
+    const email:any = queryParams.get("email");
     setCurrentUserEmail(email)
   },[1])
 
@@ -69,8 +71,8 @@ const CrowdPostActions: React.FC<CrowdPostActionsProps> = ({ jobID,isProvider,em
     <div className="flex space-x-2">
       {/* /provider/job/update/${jobID} */}
       {employerEmail == currentUserEmail && ( <Link href={``}>
-        <Button className="flex gap-1" onClick={() => setShowDialog(true)}>
-          <Pencil size={14} /> Claim Ownership
+        <Button disabled={claimed} className="flex gap-1" onClick={() => setShowDialog(true)}>
+          <Pencil size={14} /> {claimed ? "Ownership Claimed":" Claim Ownership"}
         </Button>
       </Link> )}
   

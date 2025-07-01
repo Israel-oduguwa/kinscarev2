@@ -20,6 +20,7 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import * as Realm from "realm-web";
 import * as yup from "yup";
 import SelectRole from "./SelectRole";
+import Image from "next/image";
 
 const OrSeparator: React.FC = () => {
   return (
@@ -253,7 +254,9 @@ const EmployerJoin: React.FC = () => {
               href="/"
               className="flex items-center text-lg font-semibold text-gray-900 dark:text-white"
             >
-              <img
+              <Image
+                width={40}
+                height={40}
                 className="w-12 mr-2"
                 src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
                 alt="logo"

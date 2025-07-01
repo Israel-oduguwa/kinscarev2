@@ -1,7 +1,9 @@
+/* eslint-disable react/no-unescaped-entities */
 import PricingButton from "@/Authentication/PricingButton";
 import { Button } from "@/components/ui/button";
 import Footer from "@/WebPages/Footer";
 import NavBar from "@/WebPages/Navbar";
+import { CheckCircle, Star } from "lucide-react";
 import { features } from "node:process";
 
 export const metadata = {
@@ -21,7 +23,7 @@ export const metadata = {
     title: "Affordable Pricing Plans - Kinscare",
     description:
       "Explore our affordable pricing plans for caregivers and providers. Choose from daily, weekly, or monthly subscriptions to meet your needs.",
-    url: "https://www.kinscare.com/pricing",
+    url: "https://www.kinscare.org/pricing",
     siteName: "Kinscare",
     images: [
       {
@@ -48,6 +50,7 @@ const pricingPlans = [
     title: "Daily Plan",
     price: "$23.99",
     stripePriceId: "price_1QXcozAoahxG9SLGGelfYlKJ",
+    highlight: "Try risk-free",
     best: "Exploring caregivers before committing",
     description: `Best for exploring caregivers before committing or temporary needs. Get access for 24 hours.`,
     features: [
@@ -62,6 +65,7 @@ const pricingPlans = [
     best: "",
     price: "$63.99",
     stripePriceId: "price_1QSCneAoahxG9SLGCHhFdN4C",
+    highlight: "Most Popular",
     description:
       "Ideal for weekly usage. Enjoy full access for 7 days at a discounted rate.",
     features: [
@@ -74,6 +78,7 @@ const pricingPlans = [
     id: "monthly",
     title: "Monthly Plan",
     best: "",
+    highlight: "Best Value",
     price: "$93.99",
     stripePriceId: "price_1QXcpZAoahxG9SLGjWJp4KfP",
     description:
@@ -89,10 +94,14 @@ const pricingPlans = [
 export default function Pricing() {
   return (
     <div className="min-h-screen mt-10 bg-[hsl(var(--background))] flex flex-col">
-      <NavBar />
+     
       <div className="max-w-screen-xl mx-auto space-y-16 px-6 lg:px-16 py-12">
         {/* Header Section */}
+
         <div className="text-center lg:pt-14  mb-16">
+          <span className="inline-block mb-3 px-3 py-1 rounded-full text-sm font-semibold bg-gradient-to-r from-blue-100 to-blue-100 text-blue-600 shadow">
+            Transparent Pricing
+          </span>
           <h1 className="text-6xl font-extrabold text-gray-700">
             Find the{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-blue-500">
@@ -107,51 +116,56 @@ export default function Pricing() {
           </p>
         </div>
         {/* Pricing Plans Section */}
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
-          {pricingPlans.map((plan) => (
-            <div
-              key={plan.id}
-              className="relative bg-[hsl(var(--card))] shadow-lg rounded-[var(--radius)] overflow-hidden hover:shadow-xl transition-transform transform hover:-translate-y-2"
-            >
-              {/* Accent Bar */}
-              <div className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] h-2"></div>
-
-              {/* Plan Details */}
-              <div className="p-8">
-                <h3 className="text-2xl font-bold text-[hsl(var(--card-foreground))]">
-                  {plan.title}
-                </h3>
-                <p className="text-4xl font-extrabold text-[hsl(var(--foreground))] mt-4">
-                  {plan.price}
-                </p>
-                <p className="text-gray-600 mt-4">{plan.description}</p>
-                <ul className="mt-6 space-y-4">
-                  {plan.features.map((feature, index) => (
-                    <li
-                      key={index}
-                      className="flex items-center text-[hsl(var(--card-foreground))] space-x-2"
-                    >
-                      <svg
-                        className="w-5 h-5 text-[hsl(var(--chart-2))]"
-                        fill="currentColor"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M10 17.414l-5.707-5.707 1.414-1.414L10 14.586l8.293-8.293 1.414 1.414z" />
-                      </svg>
-                      <span>{feature}</span>
+        <div className="flex flex-col md:flex-row gap-8 md:gap-6 justify-center items-center max-w-7xl mx-auto mt-12">
+            {pricingPlans.map((plan, i) => (
+              <div
+                key={plan.id}
+                className={`
+                  group relative flex-1 min-w-[280px] max-w-xs bg-white/70 backdrop-blur-lg border border-gray-200
+                  rounded-3xl shadow-xl px-7 py-10 transition-all duration-300
+                  hover:scale-105 hover:shadow-2xl hover:border-blue-400
+                  ${plan.id === "monthly" ? "ring-2 ring-blue-400" : ""}
+                `}
+              >
+                {plan.highlight && (
+                  <div className={`
+                    absolute -top-5 left-1/2 -translate-x-1/2
+                    flex items-center gap-1 px-4 py-1 rounded-full font-medium text-xs
+                    ${plan.id === "monthly" ? "bg-gradient-to-r from-blue-500 to-pink-500 text-white shadow-md" : "bg-blue-100 text-blue-600"}
+                  `}>
+                    {plan.id === "monthly" && <Star size={16} className="mr-1" />}
+                    {plan.highlight}
+                  </div>
+                )}
+                <h3 className="text-2xl font-bold mb-2 text-gray-800">{plan.title}</h3>
+                <div className="flex items-baseline justify-center mb-5">
+                  <span className="text-4xl font-extrabold text-gray-900">{plan.price}</span>
+                  <span className="ml-2 text-sm text-gray-400 font-medium">/plan</span>
+                </div>
+                <p className="text-gray-600 text-base mb-5">{plan.description}</p>
+                <ul className="space-y-3 mb-7">
+                  {plan.features.map((f, idx) => (
+                    <li key={idx} className="flex items-center gap-2 text-gray-700">
+                      <CheckCircle className="text-blue-500 w-4 h-4" />
+                      <span>{f}</span>
                     </li>
                   ))}
                 </ul>
                 <PricingButton plan={plan.stripePriceId}>
-                  <Button className="mt-8 w-full py-3 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] font-medium rounded-[var(--radius)] hover:bg-[hsl(var(--primary))]">
-                    Get started
+                  <Button
+                    className={`
+                      w-full py-3 rounded-xl text-lg font-bold shadow
+                      ${plan.id === "monthly"
+                        ? "bg-gradient-to-r from-blue-600 to-pink-500 text-white hover:from-pink-500 hover:to-blue-600"
+                        : "bg-indigo-600 text-white hover:bg-indigo-700"}
+                    `}
+                  >
+                    Get Started
                   </Button>
                 </PricingButton>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
         {/* Note Section */}
         {/* <div className="bg-[hsl(var(--secondary))] rounded-[var(--radius)] p-6 shadow-sm">
           <p className="text-sm text-[hsl(var(--secondary-foreground))] text-center">
@@ -242,7 +256,6 @@ export default function Pricing() {
                 <span>No hidden fees, no commitments – Cancel anytime</span>
               </li>
             </ul>
-           
           </div>
           {/* Why Direct Contact Matters */}
           <div className="bg-[hsl(var(--secondary))] p-8 rounded-[var(--radius)]">
@@ -325,7 +338,7 @@ export default function Pricing() {
           </div>
         </div>
       </div>
-      <Footer />
+      
     </div>
   );
 }

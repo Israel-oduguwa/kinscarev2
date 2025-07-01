@@ -39,7 +39,7 @@ function ForumDynamicNavbar() {
                     <NavigationMenuItem>
                       <Link
                         href="/community"
-                        legacyBehavior
+                        
                         passHref
                       >
                         <NavigationMenuLink
@@ -56,7 +56,7 @@ function ForumDynamicNavbar() {
                     <NavigationMenuItem>
                       <Link
                         href="/community/create"
-                        legacyBehavior
+                        
                         passHref
                       >
                         <NavigationMenuLink
@@ -98,7 +98,7 @@ function ForumDynamicNavbar() {
                       <NavigationMenuItem>
                         <Link
                           href="/provider/candidates/all"
-                          legacyBehavior
+                          
                           passHref
                         >
                           <NavigationMenuLink
@@ -115,7 +115,7 @@ function ForumDynamicNavbar() {
                       <NavigationMenuItem>
                         <Link
                           href="/provider/job/update/new"
-                          legacyBehavior
+                          
                           passHref
                         >
                           <NavigationMenuLink

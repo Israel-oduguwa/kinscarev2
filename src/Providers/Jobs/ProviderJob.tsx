@@ -5,111 +5,19 @@ import React from "react";
 import JobPostActions from "./JobPostActions";
 import MatchingCaregiver from "./MatchingCaregiver";
 import ProfileImage from "../User/ProfileImage";
+import Link from "next/link";
 polyfill();
 interface JobProps {
   jobID: string;
 }
 
-// const SimilarJobs = ({ similarJobs }: any) => {
-//   // console.log(similarJobs);
-//   return (
-//     <div className="w-full">
-//       <p className="text-sm antialiased font-medium">Similar Jobs</p>
-//       {similarJobs.map((job: any) => (
-//         <Link href={`/vitae/jobs/${job._id}`}>
-//           <div className="mt-4">
-//             <div className="border rounded-md border-gray-200 p-4">
-//               <div className="flex gap-3 mb-3 items-center">
-//                 <img
-//                   className="h-10 w-10 rounded-lg"
-//                   src="https://cdn.dribbble.com/users/4949363/avatars/normal/606bb85ee728fd3d78bbddf7e70b3901.jpg?1676454777"
-//                   alt="screen"
-//                 />
-//                 <div>
-//                   <p className="text-sm font-medium mb-1">{job.title}</p>
-//                   <p className="text-xs font-normal">
-//                     {job.contacts.zipcode}, {job.contacts.city}
-//                   </p>
-//                 </div>
-//               </div>
-//               <div className="w-full flex-wrap gap-4 flex">
-//                 {job.licenses
-//                   .slice(0, 2)
-//                   .map(
-//                     (
-//                       license:
-//                         | string
-//                         | number
-//                         | bigint
-//                         | boolean
-//                         | React.ReactElement<
-//                             any,
-//                             string | React.JSXElementConstructor<any>
-//                           >
-//                         | Iterable<React.ReactNode>
-//                         | React.ReactPortal
-//                         | Promise<React.AwaitedReactNode>
-//                         | null
-//                         | undefined,
-//                       index: React.Key | null | undefined
-//                     ) => (
-//                       <div
-//                         key={index}
-//                         className="relative text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
-//                       >
-//                         <span className="text-xs antialiased text-gray-600">
-//                           {license}
-//                         </span>
-//                       </div>
-//                     )
-//                   )}
-//                 {job.schedule
-//                   .slice(0, 2)
-//                   .map(
-//                     (
-//                       sch:
-//                         | string
-//                         | number
-//                         | bigint
-//                         | boolean
-//                         | React.ReactElement<
-//                             any,
-//                             string | React.JSXElementConstructor<any>
-//                           >
-//                         | Iterable<React.ReactNode>
-//                         | React.ReactPortal
-//                         | Promise<React.AwaitedReactNode>
-//                         | null
-//                         | undefined,
-//                       index: React.Key | null | undefined
-//                     ) => (
-//                       <div
-//                         key={index}
-//                         className="relative text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
-//                       >
-//                         <span className="text-xs antialiased text-gray-600">
-//                           {sch}
-//                         </span>
-//                       </div>
-//                     )
-//                   )}
-//               </div>
-//             </div>
-//           </div>
-//         </Link>
-//       ))}
-//     </div>
-//   );
-// };
 async function CaregiverJob({ jobID }: JobProps) {
   let data = await fetch(
     `https://api.kinscare.org/api/v1/caregivers/job/${jobID}`,
     { cache: "no-cache" }
   );
   const response = await data.json();
-  // console.log(response.job);
   const { job, similarJobs } = response;
-  // console.log(job);
   return (
     <div>
       <div className="max-w-6xl py-6 px-6 min-h-[100vh] 2xl:px-0 mx-auto">
@@ -145,8 +53,8 @@ async function CaregiverJob({ jobID }: JobProps) {
                 )}
                 <div className="w-full flex-wrap gap-4 flex">
                   {/* Display only the first 2 licenses */}
-                  {job?.licenses?
-                    .slice(0, 3)
+                  {job?.licenses
+                    ?.slice(0, 3)
                     .map(
                       (license: any, index: React.Key | null | undefined) => (
                         <div
@@ -161,8 +69,8 @@ async function CaregiverJob({ jobID }: JobProps) {
                     )}
 
                   {/* Display only the first 2 schedules */}
-                  {job?.schedule?
-                    .slice(0, 3)
+                  {job?.schedule
+                    ?.slice(0, 3)
                     .map((sch: any, index: React.Key | null | undefined) => (
                       <div
                         key={index}
@@ -220,6 +128,56 @@ async function CaregiverJob({ jobID }: JobProps) {
             </div>
           )}
         </div>
+        {job?.applicants?.length > 0 && (
+          <div className="bg-white my-6 rounded-3xl shadow-lg p-6 overflow-hidden">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              Applications for this job
+            </h3>
+            <ul className="space-y-4">
+              {job.applicants.map((app: any) => (
+                <Link key={app.userID} href={`/provider/candidates/${app.userID}`}>
+                <li
+                  key={app.userID}
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gray-50 p-4 rounded-lg"
+                >
+                  <div>
+                    <p className="text-lg font-semibold text-gray-800">
+                      {app.name}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Applied on:{" "}
+                      {new Date(app.applied_on).toLocaleDateString(undefined, {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </p>
+                  </div>
+                  <div className="mt-3 sm:mt-0 flex flex-wrap gap-2">
+                    {/* Licenses */}
+                    {app.licenses?.map((lic: any) => (
+                      <span
+                        key={lic}
+                        className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full"
+                      >
+                        {lic}
+                      </span>
+                    ))}
+                    {/* Availability */}
+                    {app.availability?.map((slot: any) => (
+                      <span
+                        key={slot}
+                        className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full"
+                      >
+                        {slot}
+                      </span>
+                    ))}
+                  </div>
+                </li></Link>
+              ))}
+            </ul>
+          </div>
+        )}
         {MatchingCaregiver.length > 1 && (
           <div className="w-full mt-4">
             <p className="antialiased font-bold mb-2">

@@ -130,7 +130,7 @@ export async function generateMetadata({
       openGraph: {
         title: `${obfuscatedName} - Caregiver Profile`,
         description: truncatedCertifications,
-        url: `https://yourwebsite.com/caregivers/${candidateID}`,
+        url: `https://kinscare.org/caregivers/${candidateID}`,
         images: [
           {
             url: caregiver.profileImage || 'https://default-profile-image.com',

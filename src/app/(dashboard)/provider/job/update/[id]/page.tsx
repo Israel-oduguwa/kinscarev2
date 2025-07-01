@@ -11,11 +11,11 @@ export const metadata: Metadata = {
     title: "Saved Caregivers - Your Favorites List",
     description:
       "Access your saved caregivers list. Quickly find and connect with the caregivers you've marked as favorites.",
-    url: "http://yourwebsite.com/caregivers/favorites",
+    url: "https://kinscare.org/caregivers/favorites",
     type: "website",
     images: [
       {
-        url: "http://yourwebsite.com/images/saved-caregivers-og-image.jpg", // Replace with your image URL
+        url: "https://kinscare.org/images/saved-caregivers-og-image.jpg", // Replace with your image URL
         width: 1200,
         height: 630,
         alt: "Saved Caregivers - Favorites",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     description:
       "Quickly find and connect with the caregivers you've marked as favorites.",
     images: [
-      "http://yourwebsite.com/images/saved-caregivers-twitter-image.jpg",
+      "https://kinscare.org/images/saved-caregivers-twitter-image.jpg",
     ], // Replace with your image URL
   },
 };

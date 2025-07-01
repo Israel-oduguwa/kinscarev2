@@ -25,11 +25,7 @@ export default function DashboardLayout({
             <Toaster />
             {/* caregiver navbar  */}
             {/* <CaregiverNavbar /> */}
-            <VoiceFlowProvider>
-            <main>{children}</main>
-            </VoiceFlowProvider>
-          
-            
+            <main>{children}</main> 
           </CareerProvider>
         </AppSidebar>
       </SidebarProvider>

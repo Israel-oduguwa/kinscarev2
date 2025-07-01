@@ -438,6 +438,7 @@ const VoiceFlowProvider = ({ children }: { children: React.ReactNode }) => {
                   );
                   if (user_data) {
                     setUserData(user_data.result);
+                    setAuthenticated(true);
                     app.currentUser.refreshCustomData();
                     push("/vitae/career-plan");
                   }

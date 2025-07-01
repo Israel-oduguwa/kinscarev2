@@ -17,6 +17,7 @@ import MongoContext from "@/app/MongoContext";
 import { useContext } from "react";
 import CaregiverNavbarRight from "@/Caregivers/CaregiverNavbarRight";
 import ProviderNavbarRight from "@/Providers/ProviderNavbarRight";
+import Image from "next/image";
 
 function MobileMenu() {
   const pathname = usePathname();
@@ -87,10 +88,12 @@ function Navbar() {
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
           {/* Logo Section */}
           <Link className="flex items-center mr-2" href="/">
-            <img
+            <Image
               className="h-8 pr-1 sm:h-9"
               src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
               alt="Kinscare logo"
+              width={50}
+              height={50}
             />
             <p className="text-sm font-medium">Kinscare</p>
           </Link>

@@ -34,7 +34,7 @@ const JobUpdatePageNoAuth = ({type}:any) => {
       // Check if the URL contains "crowd-post"
       if (currentUrl.includes('crowd-post')) {
         // Append to the URL for "crowd-post"
-        router.replace(`/vitae/crowd-post/update/${jobID}`);
+        router.replace(`/provider/crowd-post/update/${jobID}`);
       } else {
         // Handle other cases (e.g., "provider/job/update")
         router.replace(`/provider/job/update/${jobID}`); // Replace URL with new job ID
@@ -84,6 +84,7 @@ const JobUpdatePageNoAuth = ({type}:any) => {
       setLoading(false); // Stop loading when everything is ready
     };
       initializeJob();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   // Unified loading check - only render UI when loading is done and we have a valid job ID

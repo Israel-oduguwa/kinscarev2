@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { trackEvent } from "@/lib/mixpanelUtils";
 import TagManager from "react-gtm-module";
 import ProviderDialog from "@/Providers/Candidates/ProviderDialog";
+import { CustomerSignupParams, sendCustomerSignupEmail } from "@/lib/Email";
 
 interface OAuthDialogProps {
   message: string; // Customizable message for the modal
@@ -155,6 +156,15 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
 
         TagManager.dataLayer(tagManagerArgs);
         setAuthenticated(true);
+        // there is no first name and last name yet
+        const fullName = `${payload.fname || ""} ${payload.lname || ""}`.trim();
+        const emailParams: CustomerSignupParams = {
+          email: payload.email,
+          name: fullName,
+          role: payload.role,
+        };
+        // Fire & forget:
+        await sendCustomerSignupEmail(emailParams);
       }
     } catch (error) {
       handleError(error);
@@ -538,11 +548,3 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
 };
 
 export default OAuthDialog;
-// aa
-// <FacebookLogin
-//                 appId="765188364849485"
-//                 fields="name,email,picture"
-//                 callback={handleFacebookCallback}
-//                 textButton="Facebook"
-//                 cssClass="bg-blue-600 text-white py-2 px-4 rounded-lg font-medium"
-//               />

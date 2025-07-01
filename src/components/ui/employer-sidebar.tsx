@@ -11,6 +11,7 @@ import {
   PieChart,
   Search,
   Settings,
+  Sparkles,
   Speech,
   UserPen,
 } from "lucide-react";
@@ -48,6 +49,7 @@ import ProviderNavbarRight from "@/Providers/ProviderNavbarRight";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import CaregiverSearch from "@/Providers/Candidates/CaregiverSearch";
+import Image from "next/image";
 
 export function EmployerAppSidebar({
   children,
@@ -59,30 +61,19 @@ export function EmployerAppSidebar({
   // console.log(pathname);
 
   const data = {
-    user: {
-      name: "shadcn",
-      email: "m@example.com",
-      avatar: "/avatars/shadcn.jpg",
-    },
-    teams: [
-      {
-        name: "Acme Inc",
-        logo: GalleryVerticalEnd,
-        plan: "Enterprise",
-      },
-      {
-        name: "Acme Corp.",
-        logo: AudioWaveform,
-        plan: "Startup",
-      },
-      {
-        name: "Evil Corp.",
-        logo: Command,
-        plan: "Free",
-      },
-    ],
-
     navMain: [
+      {
+        title: "Find Caregivers",
+        url: "/provider/candidates/all",
+        icon: Search,
+        isActive: false,
+      },
+      {
+        title: "Saved Caregivers",
+        url: "/provider/candidates/favorites",
+        icon: BookmarkCheck,
+        isActive: false,
+      },
       {
         title: "Jobs",
         url: "/provider/job",
@@ -99,31 +90,39 @@ export function EmployerAppSidebar({
           },
         ],
       },
-      // {
-      //   title: "Conversations",
-      //   url: "/vitae/conversations",
-      //   icon: MessageCircle,
-      // },
-    ],
-    projects: [
       {
-        name: "Design Engineering",
-        url: "#",
-        icon: Frame,
+        title: "Update Profile",
+        url: "/provider/account/settings/profile",
+        icon: UserPen,
+        isActive: false,
       },
       {
-        name: "Sales & Marketing",
-        url: "#",
-        icon: PieChart,
+        title: "Jump Start Tracking",
+        url: "/provider/jumpstart",
+        icon: Sparkles,
+        isActive: false,
       },
       {
-        name: "Travel",
-        url: "#",
-        icon: Map,
+        title: "Community",
+        url: "/community",
+        icon: Speech,
+        isActive: false,
+      },
+      {
+        title: "Account Settings",
+        url: "/provider/account/settings",
+        icon: Settings,
+        isActive: false,
       },
     ],
   };
   const checkIsActive = (url: string): boolean => {
+    return pathname === url;
+  };
+  const isActiveLink = (url: string, hasItems?: boolean): boolean => {
+    if (hasItems) {
+      return pathname.startsWith(url);
+    }
     return pathname === url;
   };
   const findCaregiverActive = checkIsActive("/provider/candidates/all");
@@ -138,7 +137,7 @@ export function EmployerAppSidebar({
   const communityActive = checkIsActive("/community");
   return (
     <SidebarProvider>
-      <Sidebar variant="sidebar" collapsible="icon">
+      <Sidebar variant="inset" collapsible="icon">
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -148,7 +147,9 @@ export function EmployerAppSidebar({
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <div className="flex  items-center justify-center ">
-                    <img
+                    <Image
+                      width={35}
+                      height={35}
                       className="h-6 pr-0 sm:h-8"
                       src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
                       alt="logo"
@@ -165,247 +166,81 @@ export function EmployerAppSidebar({
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>Your Dashboard</SidebarGroupLabel>
+            <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  className={`
-                    font-semibold antialiased py-5
-                    [&>svg]:w-6 [&>svg]:h-4
-                    ${
-                      findCaregiverActive
-                        ? "bg-blue-100 text-blue-600"
-                        : " text-gray-700"
-                    } 
-                    ${
-                      findCaregiverActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    ${
-                      findCaregiverActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    transition-all duration-200
-                  `}
-                  tooltip="Dashboard"
-                >
-                  <Search />
-                  <Link href="/provider/candidates/all">
-                    <span>Find Caregivers</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  className={`
-                    font-semibold antialiased py-5
-                    [&>svg]:w-6 [&>svg]:h-4
-                    ${
-                      savedCaregiverActive
-                        ? "bg-blue-100 text-blue-600"
-                        : " text-gray-700"
-                    } 
-                    ${
-                      savedCaregiverActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    ${
-                      savedCaregiverActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    transition-all duration-200
-                  `}
-                  tooltip="Dashboard"
-                >
-                  <BookmarkCheck />
-                  <Link href="/provider/candidates/favorites">
-                    <span>Saved Caregivers</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              {data.navMain.map((item, idx) => {
-                const isActive =
-                  pathname === item.url || pathname?.startsWith(`${item.url}/`);
-                // console.log(isActive);
-                // console.log(item.url, isActive);
-                return (
-                  <>
-                    {item.items ? (
-                      <Collapsible
-                        key={idx}
-                        asChild
-                        defaultOpen={item.isActive}
-                        className="group/collapsible"
-                      >
-                        <SidebarMenuItem>
-                          <CollapsibleTrigger asChild>
-                            <SidebarMenuButton
-                              className={`
-                                font-semibold antialiased py-6 my-0.5 
-                                [&>svg]:w-6 [&>svg]:h-4
-                                ${
-                                  isActive
-                                    ? "bg-blue-100 text-blue-600"
-                                    : " text-gray-700"
-                                } 
-                                ${
-                                  isActive
-                                    ? "hover:bg-blue-200 hover:text-blue-700"
-                                    : " hover:text-gray-800"
-                                }
-                                transition-all duration-200
-                              `}
-                              tooltip={item.title}
-                            >
-                              {item.icon && <item.icon />}
-                              <span>{item.title}</span>
-                              <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                            </SidebarMenuButton>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent>
-                            <SidebarMenuSub>
-                              {item.items?.map((subItem, idx) => (
-                                <SidebarMenuSubItem key={idx}>
-                                  <SidebarMenuSubButton
-                                    className="py-4"
-                                    asChild
-                                  >
-                                    <Link href={subItem.url}>
-                                      <span>{subItem.title}</span>
-                                    </Link>
-                                  </SidebarMenuSubButton>
-                                </SidebarMenuSubItem>
-                              ))}
-                            </SidebarMenuSub>
-                          </CollapsibleContent>
-                        </SidebarMenuItem>
-                      </Collapsible>
-                    ) : (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton
-                          isActive={isActive}
-                          className="py-6 my-0.5 [&>svg]:size-5"
+              {data.navMain.map((item) => {
+                const isActive = isActiveLink(item.url, !!item.items);
+
+                return item.items ? (
+                  <Collapsible
+                    key={item.title}
+                    asChild
+                    defaultOpen={isActive}
+                    className="group/collapsible"
+                  >
+                    <SidebarMenuItem>
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton className=" font-semibold antialiased py-6 my-0.5 
+                                [&>svg]:w-6 [&>svg]:h-4"
                           tooltip={item.title}
+                          isActive={isActive}
                         >
                           {item.icon && <item.icon />}
-                          <Link href={item.url}>
-                            <span>{item.title}</span>
-                          </Link>
+                          <span>{item.title}</span>
+                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                         </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    )}
-                  </>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <SidebarMenuSub>
+                          {item.items?.map((subItem) => (
+                            <SidebarMenuSubItem key={subItem.title}>
+                              <SidebarMenuSubButton
+                                asChild
+                                className="  font-semibold antialiased py-5
+                    [&>svg]:w-6 [&>svg]:h-4"
+                                isActive={pathname === subItem.url}
+                              >
+                                <Link href={subItem.url}>
+                                  <span>{subItem.title}</span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          ))}
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    </SidebarMenuItem>
+                  </Collapsible>
+                ) : (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      tooltip={item.title}
+                      isActive={isActive}
+                      asChild
+                      className="  font-semibold antialiased py-5
+                    [&>svg]:w-6 [&>svg]:h-4"
+                    >
+                      <Link href={item.url}>
+                        {item.icon && <item.icon />}
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
                 );
               })}
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  className={`
-                    font-semibold antialiased py-5
-                    [&>svg]:w-6 [&>svg]:h-4
-                    ${
-                      updateProfileActive
-                        ? "bg-blue-100 text-blue-600"
-                        : " text-gray-700"
-                    } 
-                    ${
-                      updateProfileActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    ${
-                      updateProfileActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    transition-all duration-200
-                  `}
-                  tooltip="Dashboard"
-                >
-                  <UserPen />
-                  <Link href="/provider/account/settings/profile">
-                    <span className="text-md">Update settings</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  className={`
-                    font-semibold antialiased py-5
-                    [&>svg]:w-6 [&>svg]:h-4
-                    ${
-                      communityActive
-                        ? "bg-blue-100 text-blue-600"
-                        : " text-gray-700"
-                    } 
-                    ${
-                      communityActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    ${
-                      communityActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    transition-all duration-200
-                  `}
-                  tooltip="Dashboard"
-                >
-                  <Speech />
-                  <Link href="/community">
-                    <span className="text-md">Community</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  className={`
-                    font-semibold antialiased py-5
-                    [&>svg]:w-6 [&>svg]:h-4
-                    ${
-                      accountSettingsActive
-                        ? "bg-blue-100 text-blue-600"
-                        : " text-gray-700"
-                    } 
-                    ${
-                      accountSettingsActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    ${
-                      accountSettingsActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    transition-all duration-200
-                  `}
-                  tooltip="Dashboard"
-                >
-                  <Settings />
-                  <Link href="/provider/account/settings">
-                    <span className="text-md">Account settings</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>
         <SidebarRail />
       </Sidebar>
       <SidebarInset>
-        <div className="flex items-center  h-16 shrink-0 my-1 px-2 gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 mx-auto w-full xl:max-w-screen-xl">
+        <div className="flex items-center m  h-16 xl:h-14 shrink-0 my-1 px-2 gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 ">
           {/* Sidebar Trigger */}
           <SidebarTrigger className="-ml-1" />
-
           {/* Navigation Links */}
           <NavigationMenu className="hidden z-0 md:block">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link href="/provider/candidates/all" legacyBehavior passHref>
+                <Link href="/provider/candidates/all"  passHref>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                     Find Caregivers
                   </NavigationMenuLink>
@@ -416,7 +251,7 @@ export function EmployerAppSidebar({
           <NavigationMenu className="hidden z-0 md:block">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link href="/provider/job/update/new" legacyBehavior passHref>
+                <Link href="/provider/job/update/new"  passHref>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                     Post Job
                   </NavigationMenuLink>

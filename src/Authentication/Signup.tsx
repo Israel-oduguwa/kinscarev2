@@ -1,4 +1,6 @@
 "use client";
+
+import { useState, useEffect, useContext } from "react";
 import MongoContext from "@/app/MongoContext";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -15,7 +17,6 @@ import { Loader2 } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import * as Realm from "realm-web";
 import * as yup from "yup";
@@ -23,15 +24,16 @@ import SelectRole from "./SelectRole";
 import { GoogleLogin } from "@react-oauth/google";
 import { trackEvent } from "@/lib/mixpanelUtils";
 import TagManager from "react-gtm-module";
-const OrSeparator: React.FC = () => {
-  return (
-    <div className="w-full flex items-center gap-2 my-4">
-      <div className="flex-grow border-t border-gray-300"></div>
-      <p className="text-gray-900 font-normal antialiased text-md">or</p>
-      <div className="flex-grow border-t border-gray-300"></div>
-    </div>
-  );
-};
+import Image from "next/image";
+import { CustomerSignupParams, sendCustomerSignupEmail } from "@/lib/Email";
+
+const OrSeparator: React.FC = () => (
+  <div className="w-full flex items-center gap-2 my-4">
+    <div className="flex-grow border-t border-gray-300" />
+    <p className="text-gray-900 font-normal antialiased text-md">or</p>
+    <div className="flex-grow border-t border-gray-300" />
+  </div>
+);
 
 // Validation schema
 const schema = yup
@@ -62,6 +64,7 @@ interface IFormInputs {
 }
 
 const Signup: React.FC = () => {
+  // Context
   const mongoContext: any = useContext(MongoContext);
   const {
     app,
@@ -74,103 +77,159 @@ const Signup: React.FC = () => {
     loadingAuth,
     authenticated,
   } = mongoContext;
+
+  // Theme & Toast
   const { setTheme } = useTheme();
   const { toast } = useToast();
+
+  // React Hook Form
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<IFormInputs>({
     mode: "onChange",
     shouldFocusError: true,
     resolver: yupResolver(schema),
   });
+
+  // Local state
   const [googleLoading, setGoogleLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [signupPageLoading, setSignupPageLoading] = useState(true);
   const [selectRoleModal, setSelectRoleModal] = useState(false);
+
+  // Router
   const { push, refresh } = useRouter();
-  // Error handler
-  const handleError = (error: any) => {
+
+  // Generic error handler
+  const handleError = (
+    error: any,
+    fallbackMessage = "An error occurred. Please try again."
+  ) => {
     console.error("An error occurred:", error);
     toast({
       variant: "destructive",
       className: cn(
         "top-0 right-0 flex fixed md:max-w-[640px] md:top-4 md:right-4"
       ),
-      description: error?.message || "An error occurred. Please try again.",
+      description: error?.message || fallbackMessage,
       action: <ToastAction altText="Try again">Try again</ToastAction>,
     });
     setLoading(false);
+    setGoogleLoading(false);
   };
 
+  // Handle Google Login success
   const handleGoogleSuccess = async (response: any) => {
-    const token = response.credential;
-    if (token) {
+    const token = response?.credential;
+    if (!token) {
+      handleError(
+        new Error("No credential received from Google."),
+        "Google authentication failed."
+      );
+      return;
+    }
+
+    setGoogleLoading(true);
+    try {
+      // Decode JWT for user info
+      let decodedToken: any;
       try {
-        setLoading(true);
-        const decodedToken: any = jwtDecode(token);
-        const credentials = Realm.Credentials.jwt(token);
-        const userObj = await app.logIn(credentials);
+        decodedToken = jwtDecode(token);
+      } catch (e) {
+        throw new Error("Invalid Google token format.");
+      }
 
-        const existingUser = await client
-          ?.db("kinshealth")
-          .collection("contacts")
-          .findOne({
-            userID: userObj.id,
-            email: userObj.profile.email,
-          });
+      // Log in to Realm with JWT
+      const credentials = Realm.Credentials.jwt(token);
+      const userObj = await app.logIn(credentials);
 
-        if (!existingUser) {
-          const payload = {
-            email: userObj.profile.email,
-            userID: userObj.id,
-            profileImage: decodedToken.picture,
-            fname: decodedToken.given_name,
-            lname: decodedToken.family_name,
-            verified: decodedToken.email_verified,
-            auth_mode: "oauth2-google",
-            googleId: userObj.identities[0].id,
-            route: "Regular",
-            created: new Date(),
-          };
-          createUserDuringRegistration(payload);
-          user.refreshCustomData();
+      // Ensure client is ready
+      if (!client) {
+        throw new Error(
+          "Database client not initialized. Please refresh and try again."
+        );
+      }
 
-          refresh();
-          setUser(userObj);
-          setSelectRoleModal(true);
-        } else {
-          setUser(userObj);
-          const fetchedData: any = await fetchUserData(
-            userObj.id,
-            userObj.profile.email
-          );
-          // console.log(fetchedData);
+      // Check if a user already exists in “contacts” collection
+      const existingUser = await client
+        .db("kinshealth")
+        .collection("contacts")
+        .findOne({
+          userID: userObj.id,
+          email: userObj.profile.email,
+        });
+
+      if (!existingUser) {
+        // Build payload
+        const payload: any = {
+          email: userObj.profile.email,
+          userID: userObj.id,
+          profileImage: decodedToken.picture,
+          fname: decodedToken.given_name,
+          lname: decodedToken.family_name,
+          verified: decodedToken.email_verified,
+          auth_mode: "oauth2-google",
+          googleId: userObj.identities[0].id,
+          route: "Regular",
+          created: new Date(),
+        };
+
+        // Create user in your backend
+        await createUserDuringRegistration(payload);
+
+        // Refresh customData in Realm user
+        await userObj.refreshCustomData();
+
+        // Update local context and prompt role selection
+        setUser(userObj);
+        setSelectRoleModal(true);
+
+        // Refresh Next.js data cache
+        refresh();
+      } else {
+        // Existing user: set context and redirect if role exists
+        setUser(userObj);
+
+        const fetchedData: any = await fetchUserData(
+          userObj.id,
+          userObj.profile.email
+        );
+        if (fetchedData?.result) {
           await setUserData(fetchedData.result);
-          setAuthenticated(true);
-          if (existingUser.role) {
-            if (existingUser.role == "provider") {
-              push("/provider/candidates/all");
-            }
+        }
+
+        setAuthenticated(true);
+
+        if (existingUser.role) {
+          // Redirect based on role immediately
+          if (existingUser.role === "provider") {
+            push("/provider/candidates/all");
+          } else if (existingUser.role === "caregiver") {
+            push("/vitae/jobs/all");
           } else {
+            // If role is present but unrecognized, allow role modal
             setSelectRoleModal(true);
           }
+        } else {
+          setSelectRoleModal(true);
         }
-      } catch (error) {
-        handleError(error);
-      } finally {
-        setLoading(false);
       }
+    } catch (error: any) {
+      handleError(error, "Google login failed. Please try again.");
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
-  // Register user during registration
+  // Create user during registration (local + Google)
   const createUserDuringRegistration = async (payload: any) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await axios.get("/api/ip");
-      if (response.data) {
+      // Fetch IP/geo info
+      const ipResponse = await axios.get("/api/ip");
+      if (ipResponse?.data) {
         const {
           ip,
           city,
@@ -179,9 +238,8 @@ const Signup: React.FC = () => {
           country_code,
           region_name,
           zip,
-        } = response.data;
+        } = ipResponse.data;
         Object.assign(payload, {
-          route: "Regular",
           userIp: ip,
           zipcode: zip,
           address: `${city}, ${region_name}, ${country_code}`,
@@ -189,100 +247,106 @@ const Signup: React.FC = () => {
           city,
           returning: false,
         });
-        const createUser = await axios.post(
-          "https://api.kinscare.org/api/v1/auth/create_user",
-          payload
-        );
-        // console.log(createUser);
-        // await user.callFunction("web_add_social_user_custom_data", payload);
-
-        const tagManagerArgs =
-          payload.auth_mode === "local-userpass"
-            ? {
-                dataLayer: {
-                  event: `${payload.role}_sign_up`,
-                  userIp: response?.data?.userIp,
-                  added: new Date(),
-                  authEmail: payload.email,
-                  authMode: payload.auth_mode,
-                  authTel: payload.tel.trim(),
-                  role: `${payload.role}`,
-                  type: "Web",
-                  userId: `${payload.userID}`,
-                },
-              }
-            : {
-                dataLayer: {
-                  event: `social_sign_up`,
-                  added: new Date(),
-                  userIp: response?.data?.userIp,
-                  authEmail: payload.email,
-                  authMode: payload.auth_mode,
-                  socialFname: payload.fname,
-                  socialLname: payload.lname,
-                  type: "Web",
-                  userId: `${payload.userID}`,
-                },
-              };
-
-        TagManager.dataLayer(tagManagerArgs);
-        setAuthenticated(true);
       }
-    } catch (error) {
-      handleError(error);
+
+      // Call your backend API to create user
+      await axios.post(
+        "https://api.kinscare.org/api/v1/auth/create_user",
+        payload
+      );
+
+      // Tag Manager tracking
+      const tagManagerArgs =
+        payload.auth_mode === "local-userpass"
+          ? {
+              dataLayer: {
+                event: `${payload.role}_sign_up`,
+                userIp: payload.userIp,
+                added: new Date(),
+                authEmail: payload.email,
+                authMode: payload.auth_mode,
+                authTel: payload.tel?.trim(),
+                role: `${payload.role}`,
+                type: "Web",
+                userId: `${payload.userID}`,
+              },
+            }
+          : {
+              dataLayer: {
+                event: `social_sign_up`,
+                added: new Date(),
+                userIp: payload.userIp,
+                authEmail: payload.email,
+                authMode: payload.auth_mode,
+                socialFname: payload.fname,
+                socialLname: payload.lname,
+                type: "Web",
+                userId: `${payload.userID}`,
+              },
+            };
+
+      try {
+        TagManager.dataLayer(tagManagerArgs);
+      } catch (gtmError) {
+        console.warn("Tag Manager error:", gtmError);
+      }
+
+      setAuthenticated(true);
+    } catch (error: any) {
+      handleError(
+        error,
+        "Could not complete user registration. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
-  const RedirectUser = async (
-    user: Realm.User<
-      globalThis.Realm.DefaultFunctionsFactory &
-        globalThis.Realm.BaseFunctionsFactory,
-      { [x: string]: unknown },
-      globalThis.Realm.DefaultUserProfileData
-    >
-  ) => {
-    // this redirects users to their intended page;
+  // Redirect user based on role / auth status
+  const RedirectUser = async (realmUser: Realm.User | null) => {
+    if (!realmUser) {
+      push("/signup");
+      return;
+    }
 
-    if (authenticated) {
-      await user?.refreshCustomData();
-      if (!isAnon(user) && Object.keys(user?.customData || {}).length > 0) {
-        switch (user.customData.role) {
+    try {
+      await realmUser.refreshCustomData();
+
+      const cd = realmUser.customData || {};
+      if (!isAnon(realmUser) && Object.keys(cd).length > 0) {
+        // If role is defined in customData, redirect immediately
+        switch (cd.role) {
           case "caregiver":
             push("/vitae/jobs/all");
             break;
           case "provider":
             push("/provider/candidates/all");
-            // console.log("user is a provider");
-            // push("/community");
             break;
           case undefined:
-            console.log("show a modal user can use to check the role");
-            // if (!user?.customData?.role) push("/select");
-            setSelectRoleModal(true);
-            break;
+          default:
+          // Role not set → show SelectRole modal
+          // setSelectRoleModal(true);
         }
-        setSignupPageLoading(false);
       } else {
-        setSignupPageLoading(false);
+        // No valid customData or still anonymous → stay on signup
         push("/signup");
       }
-    } else {
-      console.log(isAnon(user));
+    } catch (err: any) {
+      console.error("RedirectUser error:", err);
       push("/signup");
+    } finally {
+      setSignupPageLoading(false);
     }
   };
 
+  // Run redirect logic once user & auth flag are stable
   useEffect(() => {
-    // we check if the user Data is available if not we check is user id is available
-    if (!userData) {
-      // const users =  fetchUserData(user.customData.userID, user.customData.email)
-      //   setUserData(users)
+    if (!loadingAuth) {
+      RedirectUser(user);
     }
+  }, [user, loadingAuth, authenticated]);
 
-    // check google one tap login
-    RedirectUser(user);
-  }, [user, authenticated]);
-
+  // Route user after local-email signup
   const routeUser = (role: string) => {
     switch (role) {
       case "caregiver":
@@ -296,7 +360,6 @@ const Signup: React.FC = () => {
         break;
       default:
         push("/");
-        break;
     }
   };
 
@@ -304,75 +367,199 @@ const Signup: React.FC = () => {
     toast({
       variant: "destructive",
       description: "Google Login Failed. Please try again.",
+      action: <ToastAction altText="Okay">Okay</ToastAction>,
     });
   };
 
-  // Form submit handler
-
+  // Local email/password signup
   const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
+    setLoading(true);
     try {
-      setLoading(true);
       const email = data.email.toLowerCase();
       const password = data.password;
+
+      // Register with Realm
       await app.emailPasswordAuth.registerUser({ email, password });
+
+      // Log in immediately after registration
       const credentials = Realm.Credentials.emailPassword(email, password);
-      await app.logIn(credentials);
-      if (app.currentUser) {
-        setUser(app.currentUser);
-        // console.log("User logged in, refreshing custom data");
-        await app.currentUser.refreshCustomData(); // Try to refresh the data here
-        const payload = {
-          tel: data.tel,
-          role: data.role,
-          userID: app.currentUser.id,
-          email,
-          auth_mode: "local-userpass",
-        };
-        // add the user to the database
-        await createUserDuringRegistration(payload);
-        // then we should fetch the user data to the client side
-        const userID = app.currentUser.id;
-        const emails = app.currentUser.email;
-        const user_data: any = await fetchUserData(userID, emails);
+      const credentialUser = await app.logIn(credentials);
+      if (!credentialUser) {
+        throw new Error(
+          "Registration succeeded but login failed. Please try signing in."
+        );
+      }
 
-        // Tracking
+      // Refresh customData
+      await credentialUser.refreshCustomData();
+      setUser(credentialUser);
 
+      // Build payload for backend
+      const payload: any = {
+        tel: data.tel,
+        role: data.role,
+        userID: credentialUser.id,
+        email,
+        auth_mode: "local-userpass",
+      };
+
+      // Create user record in backend
+      await createUserDuringRegistration(payload);
+      // there is no first name and last name yet
+      const emailParams: CustomerSignupParams = {
+        email: payload.email,
+        name: "there",
+        role: payload.role,
+      };
+      // Fire & forget:
+      await sendCustomerSignupEmail(emailParams);
+      // Fetch userData from your “users” collection
+      const fetched: any = await fetchUserData(credentialUser.id, email);
+      if (fetched?.result) {
+        setUserData(fetched.result);
+        await credentialUser.refreshCustomData();
+        refresh();
+
+        // Mixpanel tracking
         const mixpanelPayload = {
           phone: data.tel,
           role: data.role,
-          userID: app.currentUser.id,
+          userID: credentialUser.id,
           email,
-          id: userID,
+          id: credentialUser.id,
           created: new Date(),
           auth_mode: "local-userpass",
         };
-        //track the event in mixpanel for singing up
-        trackEvent(app.currentUser.customData.hash, "Sign Up", mixpanelPayload);
-
-        if (user_data) {
-          setUserData(user_data.result); // set the user data
-          user.refreshCustomData();
-          app.currentUser.refreshCustomData();
-          refresh();
-          // route the user to the appropriate page based on role
-          routeUser(user_data.result.role);
+        try {
+          trackEvent(
+            credentialUser.customData.hash,
+            "Sign Up",
+            mixpanelPayload
+          );
+        } catch (mpError) {
+          console.warn("Mixpanel tracking error:", mpError);
         }
-      }
 
-      setLoading(false);
+        // Route based on role from fetched data
+        routeUser(fetched.result.role);
+      } else {
+        throw new Error("Unable to retrieve your user data. Please try again.");
+      }
     } catch (error: any) {
-      handleError(error);
+      handleError(
+        error,
+        "Sign-up failed. Please check your details and try again."
+      );
+    } finally {
       setLoading(false);
     }
   };
 
   const closeSelectModal = () => setSelectRoleModal(false);
-  //  for one tap login
-  // googleLogout();
 
-  if (loadingAuth === "authenticating") {
-    return <>loading....</>;
-  }
+  // If authentication is still in progress, show a loader
+  // if (loadingAuth || signupPageLoading) {
+  //   return (
+  //     <div className="animate-pulse bg-gray-100 dark:bg-inherit min-h-screen flex flex-col">
+  //       {/* Header Skeleton */}
+  //       <div className="py-6 px-6 sm:py-4 flex justify-between items-center">
+  //         <div className="flex items-center space-x-2">
+  //           <Link
+  //             href="/"
+  //             className="flex items-center text-lg font-semibold text-gray-900 dark:text-white"
+  //           >
+  //             <Image
+  //               width={12}
+  //               height={12}
+  //               className="w-12 mr-2"
+  //               src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
+  //               alt="logo"
+  //             />
+  //             <p className="font-bold text-sm text-slate-900 tracking-tight">
+  //               Kinscare
+  //             </p>
+  //           </Link>
+  //         </div>
+  //         <div className="flex items-center space-x-4">
+  //           <div className="w-24 h-6 bg-gray-300 rounded-md hidden md:block" />
+  //           <div className="w-20 h-8 bg-gray-300 rounded-lg" />
+  //         </div>
+  //       </div>
+
+  //       {/* Form Section Skeleton */}
+  //       <section className="py-6 max-w-xl mx-auto w-full space-y-6">
+  //         <div className="bg-white rounded-2xl shadow-xl dark:border dark:bg-gray-800 dark:border-gray-700 p-6 space-y-6">
+  //           {/* Title Skeleton */}
+  //           <div className="h-8 w-2/3 bg-gray-300 rounded-md mx-auto" />
+
+  //           {/* Google Button Skeleton */}
+  //           <div className="flex justify-center">
+  //             <div className="h-10 w-48 bg-gray-300 rounded-full" />
+  //           </div>
+
+  //           {/* Separator Skeleton */}
+  //           <div className="w-full flex items-center gap-2 my-4">
+  //             <div className="flex-grow h-0.5 bg-gray-300" />
+  //             <div className="h-4 w-8 bg-gray-300 rounded-md" />
+  //             <div className="flex-grow h-0.5 bg-gray-300" />
+  //           </div>
+
+  //           {/* Form Field Skeletons */}
+  //           <div className="space-y-4">
+  //             {/* Role Radio Group Skeleton */}
+  //             <div className="space-y-2">
+  //               <div className="h-4 w-32 bg-gray-300 rounded-md" />
+  //               <div className="flex items-center space-x-2">
+  //                 <div className="h-5 w-5 bg-gray-300 rounded-full" />
+  //                 <div className="h-4 w-48 bg-gray-300 rounded-md" />
+  //               </div>
+  //               <div className="flex items-center space-x-2">
+  //                 <div className="h-5 w-5 bg-gray-300 rounded-full" />
+  //                 <div className="h-4 w-56 bg-gray-300 rounded-md" />
+  //               </div>
+  //             </div>
+
+  //             {/* Phone Number Skeleton */}
+  //             <div className="space-y-2">
+  //               <div className="h-4 w-24 bg-gray-300 rounded-md" />
+  //               <div className="h-10 w-full bg-gray-300 rounded-md" />
+  //             </div>
+
+  //             {/* Email Skeleton */}
+  //             <div className="space-y-2">
+  //               <div className="h-4 w-16 bg-gray-300 rounded-md" />
+  //               <div className="h-10 w-full bg-gray-300 rounded-md" />
+  //             </div>
+
+  //             {/* Password & Confirm Skeleton */}
+  //             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  //               <div className="space-y-2">
+  //                 <div className="h-4 w-20 bg-gray-300 rounded-md" />
+  //                 <div className="h-10 w-full bg-gray-300 rounded-md" />
+  //               </div>
+  //               <div className="space-y-2">
+  //                 <div className="h-4 w-24 bg-gray-300 rounded-md" />
+  //                 <div className="h-10 w-full bg-gray-300 rounded-md" />
+  //               </div>
+  //             </div>
+
+  //             {/* Terms & Conditions Skeleton */}
+  //             <div className="flex items-center space-x-2">
+  //               <div className="h-5 w-5 bg-gray-300 rounded-md" />
+  //               <div className="h-4 w-80 bg-gray-300 rounded-md" />
+  //             </div>
+
+  //             {/* Submit Button Skeleton */}
+  //             <div className="h-10 w-full bg-gray-300 rounded-lg" />
+  //           </div>
+
+  //           {/* Login Link Skeleton */}
+  //           <div className="h-4 w-48 bg-gray-300 rounded-md mx-auto" />
+  //         </div>
+  //       </section>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="w-full min-h-[100vh] bg-gray-100 dark:bg-inherit">
@@ -388,7 +575,9 @@ const Signup: React.FC = () => {
               href="/"
               className="flex items-center text-lg font-semibold text-gray-900 dark:text-white"
             >
-              <img
+              <Image
+                width={12}
+                height={12}
                 className="w-12 mr-2"
                 src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
                 alt="logo"
@@ -410,14 +599,16 @@ const Signup: React.FC = () => {
           </div>
         </div>
       </header>
-      <section className="py-6 max-w-xl absolute right-0 left-0 z-10 m-auto">
+
+      <section className="py-6 max-w-xl absolute inset-x-0 z-10 mx-auto">
         <div className="mx-4">
           <div className="bg-white rounded-2xl shadow-xl dark:border md:mt-0 xl:p-0 dark:bg-gray-800 dark:border-gray-700">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
               <h1 className="text-xl text-center font-bold leading-tight tracking-tight antialiased text-gray-900 md:text-2xl dark:text-white">
                 Create Your Account to join Kinscare
               </h1>
-              {/* Centered Google Sign-In */}
+
+              {/* Google Sign-In */}
               <div className="flex justify-center">
                 <GoogleLogin
                   size="large"
@@ -425,10 +616,11 @@ const Signup: React.FC = () => {
                   onError={handleGoogleError}
                   theme="outline"
                   text="continue_with"
-                  // useOneTap
                 />
               </div>
+
               <OrSeparator />
+
               <form
                 className="space-y-4 md:space-y-4"
                 onSubmit={handleSubmit(onSubmit)}
@@ -473,6 +665,7 @@ const Signup: React.FC = () => {
                     </p>
                   )}
                 </div>
+
                 {/* Phone Number */}
                 <div>
                   <label
@@ -501,6 +694,7 @@ const Signup: React.FC = () => {
                     </p>
                   )}
                 </div>
+
                 {/* Email */}
                 <div>
                   <label
@@ -529,7 +723,8 @@ const Signup: React.FC = () => {
                     </p>
                   )}
                 </div>
-                {/* Password */}
+
+                {/* Password & Confirm Password */}
                 <div className="flex flex-col space-y-4 sm:space-y-0 sm:space-x-4 sm:flex-row">
                   <div className="flex-1">
                     <label
@@ -592,6 +787,7 @@ const Signup: React.FC = () => {
                     )}
                   </div>
                 </div>
+
                 {/* Terms & Conditions */}
                 <div className="flex items-start">
                   <Checkbox id="terms" required />
@@ -605,14 +801,18 @@ const Signup: React.FC = () => {
                     </a>
                   </p>
                 </div>
+
                 <Button
-                  disabled={loading}
+                  disabled={loading || !isValid}
                   type="submit"
                   className="w-full hover:bg-primary-600 text-white py-2 px-4 rounded-lg transition"
                 >
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {(loading || googleLoading) && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   Create an account
                 </Button>
+
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                   Already have an account?{" "}
                   <Link
@@ -627,6 +827,7 @@ const Signup: React.FC = () => {
           </div>
         </div>
       </section>
+
       <div className="absolute bottom-0 -z-0 left-0 w-full">
         <svg
           xmlns="http://www.w3.org/2000/svg"

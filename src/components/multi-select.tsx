@@ -66,7 +66,10 @@ interface MultiSelectProps
   className?: string;
 }
 
-export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
+export const MultiSelect = React.forwardRef<
+  HTMLButtonElement,
+  MultiSelectProps
+>(
   (
     {
       label,
@@ -85,9 +88,8 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
     },
     ref
   ) => {
-    const [selectedValues, setSelectedValues] = React.useState<string[]>(
-      defaultValue
-    );
+    const [selectedValues, setSelectedValues] =
+      React.useState<string[]>(defaultValue);
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
 
     // Effect to update selectedValues when defaultValue changes
@@ -145,9 +147,7 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
       <div className="flex flex-col items-start justify-start space-y-1">
         {/* Show a label if provided */}
         {label && (
-          <Label className="text-sm font-medium text-foreground">
-            {label}
-          </Label>
+          <Label className="text-sm font-medium text-foreground">{label}</Label>
         )}
 
         <Popover
@@ -239,7 +239,16 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
+          <PopoverContent
+            onWheel={(e) => {
+              e.stopPropagation();
+            }}
+            onTouchMove={(e) => {
+              e.stopPropagation();
+            }}
+            className="w-auto p-0"
+            align="start"
+          >
             <Command>
               <CommandInput
                 placeholder="Search..."

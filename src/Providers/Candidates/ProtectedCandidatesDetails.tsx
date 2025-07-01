@@ -223,6 +223,7 @@ function ProtectedCandidatesDetails({
       const { clientSecret } = response.data;
       localStorage.setItem("client_secret", clientSecret);
       setClientSecret(clientSecret);
+      console.log(clientSecret)
 
       const isNotVerified = !(
         customData?.trial === true || customData?.subscribe === true

@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 const ProviderFAQPage: React.FC = () => {
   return (
     <>
-      <Navbar />
+     
 
       <div className="mt-10">
         <div className="max-w-6xl py-20 mx-auto px-4 sm:px-6 lg:px-8">
@@ -345,7 +345,6 @@ const ProviderFAQPage: React.FC = () => {
         </div>
       </div>
 
-      <Footer />
     </>
   );
 };

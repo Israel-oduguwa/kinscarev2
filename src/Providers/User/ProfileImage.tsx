@@ -19,7 +19,9 @@ function ProfileImage({ className }: any) {
             />
             <AvatarFallback>{userData.name}</AvatarFallback>
           </Avatar> */}
-           <ProfileAvatar size="w-12 h-12"  name={userData?.name} profileImage={userData?.profileImage}/>
+         <div>
+            <ProfileAvatar size="w-12 h-12"  name={userData?.name} profileImage={userData?.profileImage}/>
+         </div>
         </>
       ) : (
         <>

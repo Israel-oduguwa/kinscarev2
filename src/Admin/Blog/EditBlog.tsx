@@ -74,7 +74,7 @@ export function MultiSelect({
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} modal={true} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -118,7 +118,7 @@ export function MultiSelect({
                   </CommandItem>
                 );
               })}
-            </CommandGroup>
+            </CommandGroup> 
           </CommandList>
         </Command>
       </PopoverContent>
@@ -498,7 +498,8 @@ export default function EditBlog() {
       </main>
 
       {/* Publish Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={dialogOpen} modal={false} onOpenChange={setDialogOpen}>
+      {dialogOpen && ( <div className="fixed inset-0 bg-black/50 z-20 animate-fade-in" /> )}
         <DialogContent className="max-w-3xl w-full p-6">
           <DialogHeader>
             <DialogTitle>Article Settings</DialogTitle>

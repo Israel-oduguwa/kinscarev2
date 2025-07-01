@@ -233,7 +233,6 @@ function CaregiverNavbarRight() {
 
       // trackEvents(user?.customData?.hash, "Sign Out", payload);
       TagManager.dataLayer(tagManagerArgs);
-
       await app?.currentUser?.logOut();
       // localStorage.clear();
       console.log("logout");

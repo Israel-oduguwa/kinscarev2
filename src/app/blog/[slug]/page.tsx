@@ -64,7 +64,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
       name: "Your Blog Name",
       logo: {
         "@type": "ImageObject",
-        url: "https://kinscare.org/logo.png",
+        url: "https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444",
       },
     },
     datePublished: blog.publishedAt,

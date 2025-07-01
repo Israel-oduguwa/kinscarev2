@@ -21,97 +21,134 @@ interface UseInitializeReturn {
   app: Realm.App;
   client: MongoClient | null;
   user: Realm.User | null;
-  fetchAndUpdateCustomData:any;
+  fetchAndUpdateCustomData: () => Promise<void>;
   userData: UserCustomData | null;
   setCustomerData: React.Dispatch<React.SetStateAction<any>>;
   searchedData: any;
   setSearchedData: React.Dispatch<React.SetStateAction<any>>;
-  setCustomData:any;
-  customData:any;
-  setLoadingAuth: React.Dispatch<React.SetStateAction<string>>;
+  setCustomData: (data: any) => void;
+  customData: any;
+  setLoadingAuth: React.Dispatch<React.SetStateAction<boolean>>;
   twilioToken: string;
   setTwilioToken: React.Dispatch<React.SetStateAction<string>>;
   setAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   authenticated: boolean;
   customerData: any;
-  loadingAuth: string;
-  // setApp: React.Dispatch<React.SetStateAction<Realm.App>>;
+  loadingAuth: boolean;
   setClient: React.Dispatch<React.SetStateAction<MongoClient | null>>;
   setUser: React.Dispatch<React.SetStateAction<Realm.User | null>>;
   setUserData: React.Dispatch<React.SetStateAction<UserCustomData | null>>;
 }
 
-// const loadingTypes = {
-//   1: "authenticating",
-//   2: "anonymous",
-//   3: "authenticated",
-//   4: "error",
-// };
-
 export const useInitialize = (): UseInitializeReturn => {
-  const realmId = process.env.REALM_ID!;
+  // 1) ENV VAR GUARD: Make sure REALM_ID is present at runtime
+  const realmId = process.env.REALM_ID;
+  if (!realmId) {
+    throw new Error(
+      "Missing environment variable REALM_ID. This must be defined for Realm initialization."
+    );
+  }
+
+  // 2) Instantiate Realm.App exactly once per hook instance
   const appConfig = { id: realmId };
   const realmApp = new Realm.App(appConfig);
 
-  const [app] = useState<any>(realmApp);
+  // 3) Keep the exact same state names you had before:
+  const [app] = useState<Realm.App>(realmApp);
   const [client, setClient] = useState<MongoClient | null>(null);
-  const [user,  setUser] = useState<Realm.User | null>(null);
+  const [user, setUser] = useState<Realm.User | null>(null);
   const [userData, setUserData] = useState<UserCustomData | null>(null);
-  const [customData, setCustomData] = useState<any>(null); // New state for custom data
-  const [loadingAuth, setLoadingAuth] = useState<any>(true);
+  const [customData, setCustomData] = useState<any>(null);
+  const [loadingAuth, setLoadingAuth] = useState<boolean>(true);
   const [customerData, setCustomerData] = useState<any>(null);
-  const [authenticated, setAuthenticated] = useState(false);
+  const [authenticated, setAuthenticated] = useState<boolean>(false);
   const [searchedData, setSearchedData] = useState<any>(null);
-  const [twilioToken, setTwilioToken] = useState("");
+  const [twilioToken, setTwilioToken] = useState<string>("");
 
+  // 4) useEffect with an isMounted guard to avoid updating state after unmount
   useEffect(() => {
+    let isMounted = true;
+
     const initializeAuth = async () => {
+      if (!isMounted) return;
       setLoadingAuth(true);
+
       try {
         let currentUser = app.currentUser;
 
-        // Log in anonymously if no user is logged in
+        // If a user already exists and is “loggedIn,” refresh its customData.
+        // ─────────────────────────────────────────────────────────────────────────────
+        // <--- THE ONLY CHANGE HERE: use `currentUser.isLoggedIn` instead of comparing .state to "loggedIn"  -->
+        if (currentUser && currentUser.isLoggedIn) {
+          try {
+            await currentUser.refreshCustomData();
+          } catch (e) {
+            console.warn("refreshCustomData failed:", e);
+          }
+        }
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        // If no user is currently logged in, log in anonymously
         if (!currentUser) {
           currentUser = await app.logIn(Realm.Credentials.anonymous());
         }
-        setUser(currentUser);
-        setCustomData(currentUser.customData); // Initialize customData state
 
-        const mongoClient = currentUser.mongoClient(
-          "mongodb-atlas"
-        ) as MongoClient;
+        if (!isMounted) return;
+        setUser(currentUser);
+        setCustomData(currentUser.customData); // set built-in customData
+
+        // Acquire the MongoDB client
+        const mongoClient = currentUser.mongoClient("mongodb-atlas") as MongoClient;
+        if (!isMounted) return;
         setClient(mongoClient);
 
+        // If user.customData.userID exists and is not anonymous, fetch “users” doc
         if (currentUser.customData?.userID && !isAnon(currentUser)) {
-          // Check if the user is authenticated
+          // Check if “non-anonymous” by verifying identities array
           const isAnonymous = !currentUser.identities.some(
             (identity: { providerType: string }) =>
               identity.providerType !== "anon-user"
           );
+
           if (!isAnonymous) {
-            const fetchedUserData = await mongoClient
-              .db("kinshealth")
-              .collection<UserCustomData>("users")
-              .findOne({ userID: currentUser.id });
-            if (fetchedUserData) {
-              setUserData(fetchedUserData);
-              setAuthenticated(true);
+            try {
+              const fetchedUserData = await mongoClient
+                .db("kinshealth")
+                .collection<UserCustomData>("users")
+                .findOne({ userID: currentUser.id });
+
+              if (isMounted && fetchedUserData) {
+                setUserData(fetchedUserData);
+                setAuthenticated(true);
+              }
+            } catch (e) {
+              console.warn("Failed to fetch userData:", e);
             }
           } else {
-            setAuthenticated(false); // User is anonymous
+            if (isMounted) {
+              setAuthenticated(false);
+            }
           }
         }
       } catch (error) {
         console.error("Error during initialization:", error);
-        setAuthenticated(false);
+        if (isMounted) {
+          setAuthenticated(false);
+        }
       } finally {
-        setLoadingAuth(false);
+        if (isMounted) {
+          setLoadingAuth(false);
+        }
       }
     };
+
     initializeAuth();
+    return () => {
+      isMounted = false;
+    };
   }, [app]);
 
-  // Function to manually fetch and update custom data
+  // 5) Function to manually fetch/update “contacts” → this function is unchanged
   const fetchAndUpdateCustomData = async () => {
     if (!user || !client) return;
 
@@ -120,21 +157,22 @@ export const useInitialize = (): UseInitializeReturn => {
         .db("kinshealth")
         .collection<UserCustomData>("contacts")
         .findOne({ userID: user.id });
-      // console.log("updating, the customerData", updatedCustomData)
+
       if (updatedCustomData) {
-        setCustomData(updatedCustomData); // Update the customData state
+        setCustomData(updatedCustomData);
       }
     } catch (error) {
       console.error("Failed to fetch and update custom data:", error);
     }
   };
 
+  // 6) Return exactly the same keys you had before—no renames or removals:
   return {
     app,
     client,
     user,
     userData,
-    customData, // Expose customData state
+    customData,
     setCustomerData,
     setCustomData,
     searchedData,
@@ -149,15 +187,6 @@ export const useInitialize = (): UseInitializeReturn => {
     setClient,
     setUser,
     setUserData,
-    fetchAndUpdateCustomData, // Expose function to manually update custom data
+    fetchAndUpdateCustomData,
   };
 };
-
-
-// const userId = userData.userID;
-// const anonymousUserId = localStorage.getItem("anonymous");
-// if (!anonymousUserId) {
-//   const anonymousUserId = generateUUID(); // Replace with the actual anonymous user ID from MongoDB
-//   localStorage.setItem("anonymous", anonymousUserId);
-//   identifyUser(anonymousUserId);
-// }

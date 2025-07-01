@@ -146,10 +146,10 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
           dataLayer: {
             event: `post_job`,
             type: "repost",
-            ...data
+            ...data,
           },
         };
-         TagManager.dataLayer(tagManagerArgs);
+        TagManager.dataLayer(tagManagerArgs);
         toast({ title: "Job Posted Sucessfully", variant: "default" });
         router.push(`/provider/job/${response.data.jobData._id}`);
       } else {
@@ -157,6 +157,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
           ...data,
           draft: false,
           _id: jobID,
+          userID: userData.userID,
           hash: user.customData.hash,
           profileImage: userData?.profileImage,
         };
@@ -169,19 +170,20 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
           dataLayer: {
             event: `post_job`,
             type: "post",
-            ...data
+            ...data,
           },
         };
-         TagManager.dataLayer(tagManagerArgs);
-        //  we  need to update the mixpanel Data   
+        TagManager.dataLayer(tagManagerArgs);
+        //  we  need to update the mixpanel Data
         updateMixpanelProfile({
           posted_job: true,
-        })
+        });
         toast({ title: "Job Posted Successfully", variant: "default" });
         router.refresh();
         router.push(`/provider/job/${jobID}`);
       }
     } catch (error: any) {
+      console.log(error);
       toast({
         title: "Error updating profile",
         description: error.message,
@@ -203,21 +205,21 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
         title: job.title,
         mobility: "car_needed",
       });
-      // send the tage manger to view job 
+      // send the tage manger to view job
       const tagManagerArgs = {
-              dataLayer: {
-                event: `view_job_form`,
-                settings: userData?.settings,
-                jobID:jobID,
-                lname: userData?.lname,
-                fname: userData?.fname,
-                tel: userData?.auth?.tel,
-                zipcode: userData?.zipcode,
-                city: userData?.city,
-                email: userData?.auth?.email
-              },
-            };
-            TagManager.dataLayer(tagManagerArgs);
+        dataLayer: {
+          event: `view_job_form`,
+          settings: userData?.settings,
+          jobID: jobID,
+          lname: userData?.lname,
+          fname: userData?.fname,
+          tel: userData?.auth?.tel,
+          zipcode: userData?.zipcode,
+          city: userData?.city,
+          email: userData?.auth?.email,
+        },
+      };
+      TagManager.dataLayer(tagManagerArgs);
     }
   }, [userData, reset, user]);
   const onEditorStateChange = (editorState: any) => {
@@ -570,8 +572,8 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
                     {loading || isSubmitting
                       ? "Posting...."
                       : type === "repost"
-                        ? "Repost Job"
-                        : "Post Job"}
+                      ? "Repost Job"
+                      : "Post Job"}
                   </Button>
                 </div>
               </div>

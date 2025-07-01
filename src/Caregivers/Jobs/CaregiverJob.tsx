@@ -1,9 +1,15 @@
 import React from "react";
 import ApplyNow from "./JobsUI/ApplyNow";
-import { LocateFixedIcon, LocateIcon, MapPin, MapPinCheckIcon } from "lucide-react";
+import {
+  LocateFixedIcon,
+  LocateIcon,
+  MapPin,
+  MapPinCheckIcon,
+} from "lucide-react";
 import { Interweave } from "interweave";
 import { polyfill } from "interweave-ssr";
 import Link from "next/link";
+import Image from "next/image";
 polyfill();
 interface JobProps {
   jobID: string;
@@ -15,12 +21,14 @@ const SimilarJobs = ({ similarJobs }: any) => {
     <div className="w-full">
       <p className="text-sm antialiased font-medium">Similar Jobs</p>
       {similarJobs.map((job: any) => (
-        <Link href={`/vitae/jobs/${job._id}`}>
+        <Link key={job._id} href={`/vitae/jobs/${job._id}`}>
           <div className="mt-4">
             <div className="border rounded-md border-gray-200 p-4">
               <div className="flex gap-3 mb-3 items-center">
                 {job.profileImage && (
-                  <img
+                  <Image
+                    width={40}
+                    height={40}
                     className="h-8 w-8"
                     src={
                       job.profileImage
@@ -98,7 +106,9 @@ async function CaregiverJob({ jobID }: JobProps) {
             {/* Job Details */}
             <div className="flex items-start gap-4 mb-6">
               {job.profileImage && (
-                <img
+                <Image
+                  width={40}
+                  height={40}
                   className="h-12 w-12 rounded-full object-cover"
                   src={
                     job.profileImage || "profileImage:userData?.profileImage"
@@ -115,14 +125,16 @@ async function CaregiverJob({ jobID }: JobProps) {
                   {job.contacts.city}
                 </p>
                 <div className="flex flex-wrap gap-2 mt-3">
-                  {job?.licenses?.slice(0, 3).map((license: any, index: any) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 text-xs bg-gray-100 text-gray-800 rounded-lg"
-                    >
-                      {license}
-                    </span>
-                  ))}
+                  {job?.licenses
+                    ?.slice(0, 3)
+                    .map((license: any, index: any) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 text-xs bg-gray-100 text-gray-800 rounded-lg"
+                      >
+                        {license}
+                      </span>
+                    ))}
                   {job?.schedule?.slice(0, 3).map((sch: any, index: any) => (
                     <span
                       key={index}
@@ -143,9 +155,11 @@ async function CaregiverJob({ jobID }: JobProps) {
               <div className="text-sm prose-sm text-gray-700 leading-relaxed mb-4">
                 <Interweave content={job.description} />
               </div>
-              <div className="text-sm prose-sm text-gray-700 leading-relaxed mb-4">
-                <Interweave content={job.certifications} />
-              </div>
+              {job.certifications && (
+                <div className="text-sm prose-sm text-gray-700 leading-relaxed mb-4">
+                  <Interweave content={job.certifications} />
+                </div>
+              )}
             </div>
 
             {/* Mobility */}

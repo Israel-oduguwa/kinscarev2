@@ -39,7 +39,7 @@ const JobPostCard: React.FC<{ job: Job }> = ({ job }) => (
       </div>
       <div className="w-full mb-3">
         <p className="text-sm text-gray-600 line-clamp-2">
-          <Interweave content={job.certifications} />
+          {/* <Interweave content={job?.certifications  ? job.certifications : ""} /> */}
         </p>
       </div>
       <div className="w-full flex-wrap gap-4 flex mb-3">

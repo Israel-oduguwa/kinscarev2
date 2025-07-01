@@ -11,11 +11,11 @@ export const metadata: Metadata = {
     title: "Find Professional Caregivers - Search and Connect",
     description:
       "Browse through a wide range of professional caregivers. Use filters to search by availability, skills, and location. Discover and hire your ideal caregiver now.",
-    url: "http://yourwebsite.com/caregivers",
+    url: "https://kinscare.org/caregivers",
     type: "website",
     images: [
       {
-        url: "http://yourwebsite.com/images/caregiver-og-image.jpg", // Replace with your image URL
+        url: "https://kinscare.org/images/caregiver-og-image.jpg", // Replace with your image URL
         width: 1200,
         height: 630,
         alt: "Caregiver Search and Connect",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     title: "Find Professional Caregivers - Search and Connect",
     description:
       "Browse through professional caregivers. Use filters to search by availability, skills, and location. Hire the best caregiver now.",
-    images: ["http://yourwebsite.com/images/caregiver-twitter-image.jpg"], // Replace with your image URL
+    images: ["https://kinscare.org/images/caregiver-twitter-image.jpg"], // Replace with your image URL
   },
 };
 

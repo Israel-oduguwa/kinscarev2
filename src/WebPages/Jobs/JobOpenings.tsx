@@ -5,6 +5,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import SearchBar from "./SearchBar";
 import OauthApply from "./OauthApply";
+import Image from "next/image";
 
 const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
   // console.log(job);
@@ -15,8 +16,10 @@ const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
         <Link href={`/jobs/${job._id}`} className="flex-1">
           <div className="flex items-center gap-4 mb-4">
             {job.profileImage && (
-              <img
+              <Image
                 className="h-14 w-14 rounded-full object-cover"
+                width={14}
+                height={14}
                 src={
                   job.profileImage ||
                   "https://lh3.googleusercontent.com/-g8IwNe70-kE/AAAAAAAAAAI/AAAAAAAAAAA/ALKGfkl1tpVAKXAezzCNWmKH5JWvlgr_xw/photo.jpg?sz=46"

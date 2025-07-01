@@ -4,16 +4,16 @@ import { Metadata } from "next";
 import ProviderJobSkeleton from "@/Providers/Jobs/ProviderJobSkelenton";
 
 export const metadata: Metadata = {
-  title: "Job Details - Your Company Name",
+  title: "Job Details - KinsCare",
   description: "View the details of the job posted by the provider. Get all necessary information and manage applications efficiently.",
   openGraph: {
-    title: "Job Details - Your Company Name",
+    title: "Job Details - KinsCare",
     description: "Discover the job details provided by the employer. Learn more about this opportunity.",
-    url: "https://yourwebsite.com/provider/job", // Replace with the dynamic URL
+    url: "https://www.kinscare.org/provider/job", // Replace with the dynamic URL
     type: "website",
     images: [
       {
-        url: "https://yourwebsite.com/assets/images/job-detail-og.jpg", // Replace with an appropriate image URL
+        url: "", // Replace with an appropriate image URL
         width: 1200,
         height: 630,
         alt: "Job Details Preview",
@@ -22,9 +22,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Job Details - Your Company Name",
+    title: "Job Details - KinsCare",
     description: "Explore the details of this job opportunity.",
-    images: ["https://yourwebsite.com/assets/images/job-detail-twitter.jpg"], // Replace with a Twitter-optimized image URL
+    images: ["https://about.x.com/content/dam/about-twitter/x/brand-toolkit/logo-black.png.twimg.1920.png"], // Replace with a Twitter-optimized image URL
   },
 };
 

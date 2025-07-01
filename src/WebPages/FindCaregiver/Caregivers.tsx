@@ -1,21 +1,43 @@
-import OAuthDialog from "@/Authentication/OAuthDialog";
-import ProfileAvatar from "@/components/ProfileAvatar";
+// app/caregivers/Caregivers.tsx
+
+import React from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Interweave } from "interweave";
 import { polyfill } from "interweave-ssr";
-import { MapPin, PersonStanding, Send, User } from "lucide-react";
-import Link from "next/link";
-import truncateHtml from "html-truncate"; // Ensure this is installed: `npm install html-truncate`
-import { Metadata } from "next";
-import {
-  JSXElementConstructor,
-  Key,
-  ReactElement,
-  ReactNode,
-  ReactPortal,
-} from "react";
+import { MapPin, User } from "lucide-react";
+import truncateHtml from "html-truncate";
 import SearchBar from "./SearchBar";
+import OAuthDialog from "@/Authentication/OAuthDialog";
+import ProfileAvatar from "@/components/ProfileAvatar";
+
 polyfill();
+
+interface Caregiver {
+  userID: string;
+  name: string;
+  profileImage?: string;
+  city: string;
+  zipcode: string;
+  certifications: string;
+  licenses: string[];
+  availability: string[];
+  auth?: { tel?: string; email?: string };
+}
+
+interface Pagination {
+  totalCaregivers: number;
+  totalPages: number;
+  currentPage: number;
+  limit: number;
+}
+
+interface CaregiversProps {
+  availability: string;
+  page: number;
+  licenses: string;
+}
+
 
 const sanitizeContent = (htmlContent: string) => {
   if (htmlContent) {
@@ -191,63 +213,117 @@ const CandidatesCard = ({ candidate, isAuthenticated }: any) => {
   );
 };
 
-async function Caregivers({
-  availability,
-  page,
-  licenses,
-}: {
-  availability: string;
-  page: number;
-  licenses: string;
-}) {
-  console.log(availability, licenses);
 
-  let data = await fetch(
-    `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${availability}&licenses=${licenses}&page=1&limit=10`,
-    { cache: "no-cache" }
-  );
-  const response = await data.json();
-  const {
-    caregivers,
-    pagination: { totalCaregivers, totalPages, currentPage, limit },
-  } = response;
-  // console.log(caregivers)
+/**
+ * Entire Caregivers server component in one file.
+ * Handles fetching, errors, and rendering.
+ */
+async function Caregivers({ availability, page, licenses }: CaregiversProps) {
+  // Prepare arrays for SearchBar
+  const availabilityArray = availability
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const licensesArray = licenses
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 
-  // convert the queries into an array
-  const availabilityArray = Array.isArray(availability)
-    ? availability
-    : availability.split(",");
-  const licensesArray = Array.isArray(licenses)
-    ? licenses
-    : licenses.split(",");
+  let caregivers: Caregiver[] = [];
+  let pagination: Pagination = {
+    totalCaregivers: 0,
+    totalPages: 1,
+    currentPage: page,
+    limit: 10,
+  };
+  let fetchError = false;
+
+  try {
+    const res = await fetch(
+      `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${encodeURIComponent(
+        availability
+      )}&licenses=${encodeURIComponent(licenses)}&page=${encodeURIComponent(
+        String(page)
+      )}&limit=10`,
+      { cache: "no-cache" }
+    );
+    if (!res.ok) {
+      fetchError = true;
+      console.error("Fetch error:", res.status, res.statusText);
+    } else {
+      const json = await res.json();
+      caregivers = Array.isArray(json.caregivers) ? json.caregivers : [];
+      pagination = {
+        totalCaregivers: json.pagination.totalCaregivers,
+        totalPages: json.pagination.totalPages,
+        currentPage: json.pagination.currentPage,
+        limit: json.pagination.limit,
+      };
+    }
+  } catch (err) {
+    fetchError = true;
+    console.error("Network or JSON parse error:", err);
+  }
+
   return (
-    <div className="w-full">
-      <div className="bg-gray-100 min-h-[100vh] p-3">
-        <div className="max-w-6xl py-10 mx-auto">
-          <div className="mb-6">
-            <SearchBar
-              availability={availabilityArray}
-              licenses={licensesArray}
-            />
+    <div className="w-full bg-gray-100 min-h-[100vh] p-3">
+      <div className="max-w-6xl py-10 mx-auto">
+        {/* Search Bar */}
+        <div className="mb-6">
+          <SearchBar
+            availability={availabilityArray}
+            licenses={licensesArray}
+          />
+        </div>
+
+        {/* Header */}
+        <h1 className="text-md text-gray-800 tracking-tight antialiased font-bold mb-4">
+          {fetchError
+            ? "Unable to load caregivers."
+            : `There are ${pagination.totalCaregivers} caregivers near you with ${licenses}`}
+        </h1>
+
+        {fetchError ? (
+          <div className="py-10 text-center">
+            <p className="text-lg text-gray-700 dark:text-gray-300">
+              Something went wrong loading caregivers. Please try again later.
+            </p>
           </div>
-          <h1 className="text-md text-gray-800 tracking-tight antialiased font-bold mb-4">
-            There are {totalCaregivers} caregivers near you with {licenses}
-          </h1>
+        ) : caregivers.length === 0 ? (
+          <div className="py-10 text-center">
+            <p className="text-lg text-gray-700 dark:text-gray-300">
+              No caregivers found matching your criteria.
+            </p>
+          </div>
+        ) : (
           <div>
-            {caregivers.map((caregiver: any, idx: any) => (
-              <div key={idx}>
-                {" "}
-                <CandidatesCard candidate={caregiver} />
-              </div>
+            {caregivers.map((candidate) => (
+              <CandidatesCard
+                key={candidate.userID}
+                candidate={candidate}
+                isAuthenticated={false}
+              />
             ))}
-            {currentPage < totalPages && (
-              <Button className="mt-4">Load More</Button>
+            {pagination.currentPage < pagination.totalPages && (
+              <div className="flex justify-center mt-6">
+                <Link
+                  href={`?availability=${encodeURIComponent(
+                    availability
+                  )}&licenses=${encodeURIComponent(
+                    licenses
+                  )}&page=${pagination.currentPage + 1}`}
+                  passHref
+                >
+                  <Button asChild>
+                   Load More
+                  </Button>
+                </Link>
+              </div>
             )}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
 }
-
 export default Caregivers;

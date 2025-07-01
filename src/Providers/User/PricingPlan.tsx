@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useContext, useState, useCallback, useEffect } from "react";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
@@ -13,6 +13,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchContactsData } from "@/lib/utils";
 import FrequentPaymentForm from "./FrequentPaymentForm";
+import { rewardReferrer } from "@/lib/paymentUtils";
 
 /* -------------------------------------------------------------------------- */
 /*                               Type Definitions                              */
@@ -89,6 +90,8 @@ const stripePromise = loadStripe(STRIPE_PUBLIC_KEY);
 /*                             Main Component                                 */
 /* -------------------------------------------------------------------------- */
 
+
+
 function PricingPlan({ closePricingDialog }: PricingPlanProps) {
   const { user, customData, setCustomData } = useContext(
     MongoContext
@@ -108,6 +111,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
   const [renewingPlan, setRenewingPlan] = useState<boolean>(false);
 
   const router = useRouter();
+
 
   const pricingPlans: PricingPlanItem[] = [
     {
@@ -347,6 +351,8 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
       );
       if (fetchedData) {
         setCustomData(fetchedData.result);
+        // send reward
+        await rewardReferrer(user.customData.userID, "subscription");
         setTimeout(() => {
           window.location.reload(); // Reload after the delay
           handleCloseDialog();
@@ -419,7 +425,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
               {customData.subscription_status === "expired" && (
                 <div>
                   {customData.plan === "daily" &&
-                   customData?.successful_payment_count == 1 ? (
+                  customData?.successful_payment_count == 1 ? (
                     <div className="bg-yellow-100 text-yellow-800 text-sm p-4 rounded-lg">
                       {" "}
                       <p>
@@ -456,7 +462,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                         : null;
 
                     return (
-                      <div className="relative">
+                      <div key={plan.id} className="relative">
                         <Button
                           key={plan.id}
                           variant={

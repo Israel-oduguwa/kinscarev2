@@ -12,6 +12,7 @@ import { Loader2 } from "lucide-react";
 import MongoContext from "@/app/MongoContext";
 import { fetchContactsData, trackEvents } from "@/lib/utils";
 import TagManager from "react-gtm-module";
+import { rewardReferrer } from "@/lib/paymentUtils";
 
 interface FrequentPaymentFormProps {
   clientSecret: string;
@@ -170,7 +171,8 @@ const FrequentPaymentForm: React.FC<FrequentPaymentFormProps> = ({
       );
       if (updatedData) {
         await setCustomData(updatedData.result);
-  
+        //send reward to refrrer if any exists 
+         await rewardReferrer(user.customData.userID, "subscription");
         // Wait for webhook processing (e.g., 2 seconds)
         setTimeout(() => {
           window.location.reload(); // Reload after the delay

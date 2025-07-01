@@ -92,6 +92,7 @@ import {
   navigationMenuTriggerStyle,
 } from "./navigation-menu";
 import { update } from "lodash";
+import Image from "next/image";
 
 export function AppSidebar({ children }: { children: React.ReactNode }) {
   // const [activeTeam, setActiveTeam] = React.useState(data.teams[0]);
@@ -132,6 +133,10 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
           {
             title: "New",
             url: "/vitae/crowd-post/update/new",
+          },
+          {
+            title: "Your referrals",
+            url: "/vitae/referrals",
           }
         ],
       },
@@ -222,7 +227,9 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <div className="flex  items-center justify-center ">
-                    <img
+                    <Image
+                      width={40}
+                      height={40}
                       className="h-6 pr-1 sm:h-8"
                       src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
                       alt="logo"
@@ -279,10 +286,10 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                 // console.log(isActive);
                 // console.log(item.url, isActive);
                 return (
-                  <>
+                  <div key={idx}>
                     {item.items ? (
                       <Collapsible
-                        key={idx}
+                        
                         asChild
                         defaultOpen={item.isActive}
                         className="group/collapsible"
@@ -321,7 +328,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                     asChild
                                   >
                                     <Link href={subItem.url}>
-                                      <span>{subItem.title}</span>
+                                      <span className="font-medium">{subItem.title}</span>
                                     </Link>
                                   </SidebarMenuSubButton>
                                 </SidebarMenuSubItem>
@@ -344,7 +351,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     )}
-                  </>
+                  </div>
                 );
               })}
 
@@ -511,22 +518,22 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
           <NavigationMenu className="hidden md:block">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link href="/vitae/jobs/all" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                
+                  <NavigationMenuLink  href="/vitae/jobs/all" className={navigationMenuTriggerStyle()}>
                     Find Jobs
                   </NavigationMenuLink>
-                </Link>
+                
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
           <NavigationMenu className="hidden md:block">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link href="/vitae/career-plan" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                
+                  <NavigationMenuLink href="/vitae/career-plan" className={navigationMenuTriggerStyle()}>
                     Career Plan
                   </NavigationMenuLink>
-                </Link>
+                
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>

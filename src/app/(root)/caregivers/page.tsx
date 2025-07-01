@@ -1,27 +1,41 @@
+// app/caregivers/page.tsx
+
+import React, { Suspense } from "react";
+import { Metadata } from "next";
+import Navbar from "@/WebPages/Navbar";
+import Footer from "@/WebPages/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CaregiverCardSkeleton } from "@/Providers/Candidates/CandidateSkelenton";
 import Caregivers from "@/WebPages/FindCaregiver/Caregivers";
-import Footer from "@/WebPages/Footer";
-import Navbar from "@/WebPages/Navbar";
-import { Metadata } from "next";
-import React, { Suspense } from "react";
 
+/**
+ * Prevent Next.js from caching this route so data and metadata remain fresh.
+ */
+export const dynamic = "force-dynamic";
+
+/**
+ * Generate dynamic metadata based on query parameters.
+ * Runs on the server.
+ */
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: { availability: string; licenses: string; page: number };
+  searchParams: { shifts?: string; licenses?: string; page?: string };
 }): Promise<Metadata> {
-  const { shifts, licenses, page }: any = await searchParams;
+  const { shifts, licenses, page } = searchParams;
 
   try {
     const response = await fetch(
-      `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${shifts}&licenses=${licenses}&page=${page}&limit=10`,
+      `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${encodeURIComponent(
+        shifts || ""
+      )}&licenses=${encodeURIComponent(licenses || "")}&page=${encodeURIComponent(
+        page || "1"
+      )}&limit=10`,
       { cache: "no-cache" }
     );
     const { caregivers } = await response.json();
 
-    // Truncate caregiver descriptions while preserving HTML
-    const truncatedDescription = caregivers
+    const truncatedDescription = (caregivers as any[])
       .map(
         (caregiver: any) =>
           `${caregiver.fname} ${caregiver.lname} - ${caregiver.certifications}`
@@ -30,39 +44,52 @@ export async function generateMetadata({
       .join(", ");
 
     return {
-      title: `Find Caregivers - ${licenses} Available`,
-      description: truncatedDescription,
+      title: `Find Caregivers${licenses ? ` - ${licenses}` : ""}`,
+      description:
+        truncatedDescription || "Browse available caregivers near you.",
       openGraph: {
-        title: `Find Caregivers - ${licenses}`,
-        description: truncatedDescription,
+        title: `Find Caregivers${licenses ? ` - ${licenses}` : ""}`,
+        description:
+          truncatedDescription || "Browse available caregivers near you.",
       },
       twitter: {
-        title: `Caregivers with ${licenses}`,
-        description: truncatedDescription,
+        title: `Caregivers${licenses ? ` - ${licenses}` : ""}`,
+        description:
+          truncatedDescription || "Browse available caregivers near you.",
       },
     };
   } catch (error) {
     console.error("Failed to fetch caregivers for metadata", error);
     return {
-      title: "Caregivers - Search",
+      title: "Caregivers — Search",
       description: "Find caregivers available near you.",
     };
   }
 }
-async function page({
-  searchParams,
-}: {
-  searchParams: { shifts?: string; licenses?: string, page:number };
-}) {
-  const { shifts, licenses, page }: any = await searchParams;
+
+interface PageProps {
+  searchParams: {
+    shifts?: string;
+    licenses?: string;
+    page?: string;
+  };
+}
+
+/**
+ * Main /caregivers page component.
+ * Uses Suspense for a loading skeleton while <Caregivers> loads.
+ * Any runtime errors within <Caregivers> will be caught by app/caregivers/error.tsx.
+ */
+export default function Page({ searchParams }: PageProps) {
+  const { shifts, licenses, page } = searchParams;
+
   return (
     <div className="mt-10">
-      <Navbar />
       <Suspense
         fallback={
           <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 py-10 mt-10 px-4 lg:px-0  gap-6">
-              <Skeleton className="w-full h-40 " />
+            <div className="grid grid-cols-1 py-10 mt-10 px-4 lg:px-0 gap-6">
+              <Skeleton className="w-full h-40" />
               {Array.from({ length: 6 }).map((_, idx) => (
                 <CaregiverCardSkeleton key={idx} />
               ))}
@@ -70,11 +97,12 @@ async function page({
           </div>
         }
       >
-        <Caregivers page={page} availability={shifts} licenses={licenses} />
-        <Footer/>
+        <Caregivers
+          page={Number(page || 1)}
+          availability={shifts || ""}
+          licenses={licenses || ""}
+        />
       </Suspense>
     </div>
   );
 }
-
-export default page;

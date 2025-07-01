@@ -1,8 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 import GetStartedBtn from "@/WebPages/Explore/GetStartedBtn";
 import Footer from "@/WebPages/Footer";
 import NavBar from "@/WebPages/Navbar";
 import TextAnimation from "@/WebPages/Explore/TextAnimation";
 import { Metadata } from "next";
+import Image from "next/image"; // ✅ Import Next.js Image
 
 export const metadata: Metadata = {
   title: "Explore Nursing & Allied Healthcare Careers - KinsCare",
@@ -12,7 +14,7 @@ export const metadata: Metadata = {
     title: "Explore Nursing & Allied Healthcare Careers - KinsCare",
     description:
       "Discover fulfilling careers in nursing and allied healthcare. Join the KinsCare community, find local training institutions, and explore rewarding career opportunities.",
-    url: "https://yourwebsite.com/explore",
+    url: "https://www.kinscare.org/explore",
     images: [
       {
         url: "https://kinscare-storage.s3.us-east-1.amazonaws.com/Kinscare+Explorer.png",
@@ -30,7 +32,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://yourwebsite.com/explore",
+    canonical: "https://www.kinscare.org/explore",
   },
 };
 
@@ -43,7 +45,7 @@ function page() {
       name: "Explore Nursing & Allied Healthcare Careers",
       description:
         "Discover fulfilling careers in nursing and allied healthcare. Join the KinsCare community, find local training institutions, and explore rewarding career opportunities.",
-      url: "https://yourwebsite.com/explore",
+      url: "https://www.kinscare.org/explore",
       mainEntity: [
         {
           "@type": "EducationalOccupationalProgram",
@@ -64,11 +66,12 @@ function page() {
       ],
       potentialAction: {
         "@type": "SearchAction",
-        target: "https://yourwebsite.com/explore?q={search_term_string}",
+        target: "https://www.kinscare.org/explore?q={search_term_string}",
         "query-input": "required name=search_term_string",
       },
     }),
   };
+
   return (
     <main>
       <script
@@ -76,9 +79,8 @@ function page() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <NavBar />
       {/* Hero Section */}
-      <section className="bg-gradient-to-br h-[90vh]  overflow-y-hidden from-blue-50 via-white to-purple-400 text-gray-800  items-center py-20">
+      <section className="bg-gradient-to-br h-[90vh] overflow-y-hidden from-blue-50 via-white to-purple-400 text-gray-800 items-center py-20">
         <div className="px-6 lg:px-12 py-10 text-center">
           {/* Header Section */}
           <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">
@@ -91,18 +93,27 @@ function page() {
           <TextAnimation />
           {/* Get Started Button */}
           <GetStartedBtn>
-            <div className="mt-8">
+            <div className="mt-8 mb-6">
               <button className="bg-indigo-600 text-white px-8 py-4 text-lg font-bold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300">
                 Get Started
               </button>
             </div>
           </GetStartedBtn>
+          {/* Hero Image */}
+          <div className="relative max-w-[1024px] mx-auto py-10 w-full h-[350px] md:h-[600px]">
+            <Image
+              src="https://kinscare-storage.s3.us-east-1.amazonaws.com/Kinscare+Explorer.png"
+              alt="dahsboard-feauture"
+              fill
+              className="object-contain mx-auto"
+              priority
+              sizes="(max-width: 1024px) 100vw, 1024px"
+            />
+          </div>
+          {/* Floating badges */}
+      
 
-          {/* the hero Image of the dashboard  */}
-          <img
-            className=" max-w-[1024px] mx-auto py-10"
-            src="https://kinscare-storage.s3.us-east-1.amazonaws.com/Kinscare+Explorer.png"
-          />
+       
         </div>
       </section>
 
@@ -110,14 +121,14 @@ function page() {
       <section className="bg-gray-50 py-36">
         <div className="max-w-7xl mx-auto">
           <div className="w-full">
-            <h2 className="text-4xl mb-4 max-w-xl mx-auto font-bold text-gray-900  tracking-tight text-center">
-              Explore the world of nursing and allied healthcare 
+            <h2 className="text-4xl mb-4 max-w-xl mx-auto font-bold text-gray-900 tracking-tight text-center">
+              Explore the world of nursing and allied healthcare
             </h2>
             <p className="max-w-4xl mx-auto text-gray-600 mb-6 text-center">
-              Find industries filled with rewarding opportunities. From registered nurses to
-              physical therapists, medical technicians, and beyond, these fields
-              offer diverse career paths with high demand now and an even
-              brighter future ahead.
+              Find industries filled with rewarding opportunities. From
+              registered nurses to physical therapists, medical technicians, and
+              beyond, these fields offer diverse career paths with high demand
+              now and an even brighter future ahead.
             </p>
             <p className=" max-w-4xl mx-auto text-center text-gray-600 mb-6">
               Enjoy flexibility in your work settings, from hospitals and
@@ -129,11 +140,15 @@ function page() {
         <div className="max-w-7xl pt-20 mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-2 items-center gap-12">
           {/* Image */}
           <div className="flex justify-center">
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-915206502-min%20(1).jpg?alt=media&token=fb876b23-e97e-4cd3-bb33-99979ce54e8a" // Replace with your image path
-              alt="Training Institutions"
-              className="rounded-lg shadow-lg w-full max-w-lg"
-            />
+            <div className="relative w-full max-w-lg h-[340px] md:h-[400px]">
+              <Image
+                src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-915206502-min%20(1).jpg?alt=media&token=fb876b23-e97e-4cd3-bb33-99979ce54e8a"
+                alt="Training Institutions"
+                fill
+                className="rounded-lg shadow-lg object-cover"
+                sizes="(max-width: 768px) 90vw, 420px"
+              />
+            </div>
           </div>
           <div className="w-full">
             <div className="text-center lg:text-left">
@@ -198,22 +213,20 @@ function page() {
               </GetStartedBtn>
             </div>
           </div>
-
           {/* Image */}
           <div className="flex justify-center">
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1792043615-min%20(1).jpg?alt=media&token=88e040f7-a86a-44ee-8108-bd3ffb5b3f06" // Replace with your image path
-              alt="Community"
-              className="rounded-lg shadow-lg w-full max-w-lg"
-            />
+            <div className="relative w-full max-w-lg h-[340px] md:h-[400px]">
+              <Image
+                src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1792043615-min%20(1).jpg?alt=media&token=88e040f7-a86a-44ee-8108-bd3ffb5b3f06"
+                alt="Community"
+                fill
+                className="rounded-lg shadow-lg object-cover"
+                sizes="(max-width: 768px) 90vw, 420px"
+              />
+            </div>
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-50 text-white py-10">
-        <Footer />
-      </footer>
     </main>
   );
 }

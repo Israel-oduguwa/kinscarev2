@@ -5,6 +5,7 @@ import React, { useContext, useEffect } from "react";
 
 function PreviewTrack({referrer_id}:any) {
   const { user, userData }: any = useContext(MongoContext);
+  console.log(userData)
   useEffect(() => {
     const mixpanelPayload = {
       name: "Crowd Post",
@@ -19,7 +20,7 @@ function PreviewTrack({referrer_id}:any) {
     trackEvent(user?.customData?.hash, "Preview", mixpanelPayload);
   }, [userData]);
 
-  return <div>PreviewTrack</div>;
+  return <div></div>;
 }
 
 export default PreviewTrack;

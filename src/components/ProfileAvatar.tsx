@@ -1,5 +1,6 @@
 import React from "react";
 import clsx from "clsx"; // For class merging
+import Image from "next/image";
 
 interface GradientAvatarProps {
   name?: string; // Optional name
@@ -50,12 +51,14 @@ const GradientAvatar: React.FC<GradientAvatarProps> = ({
 
   return profileImage ? (
     // Render profile image if available
-    <img
-      className={clsx("rounded-full flex-shrink-0", size)}
-      src={profileImage}
-      alt={`${name}'s profile`}
-     
-    />
+    <div className={`${size} relative`}>
+      <Image
+        fill
+        className={clsx("rounded-full flex-shrink-0")}
+        src={profileImage}
+        alt={`${name}'s profile`}
+      />
+    </div>
   ) : (
     // Render gradient avatar with initials if no image is available
     <div

@@ -11,10 +11,10 @@ export const metadata: Metadata = {
     title: "Find Trusted Caregivers Near You - KinsCare",
     description:
       "Easily find experienced and compassionate caregivers for your loved ones. Explore KinsCare for personalized caregiver matching services.",
-    url: "https://yourwebsite.com/find-caregiver",
+    url: "https://kinscare.org/find-caregiver",
     images: [
       {
-        url: "https://yourwebsite.com/images/find-caregiver-banner.jpg", // Replace with your actual banner image URL
+        url: "https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1380983332-min.jpg?alt=media&token=5f9db9a8-fe08-40a3-bb3c-cda1feb17bed", // Replace with your actual banner image URL
         alt: "Find Trusted Caregivers Near You",
       },
     ],
@@ -25,11 +25,11 @@ export const metadata: Metadata = {
     description:
       "Easily find experienced and compassionate caregivers for your loved ones. Explore KinsCare for personalized caregiver matching services.",
     images: [
-      "https://yourwebsite.com/images/find-caregiver-banner.jpg", // Replace with your actual banner image URL
+      "https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1380983332-min.jpg?alt=media&token=5f9db9a8-fe08-40a3-bb3c-cda1feb17bed", // Replace with your actual banner image URL
     ],
   },
   alternates: {
-    canonical: "https://yourwebsite.com/find-caregiver",
+    canonical: "https://kinscare.org/find-caregiver",
   },
 };
 
@@ -42,7 +42,7 @@ function page() {
       name: "Find Trusted Caregivers",
       description:
         "Easily find experienced and compassionate caregivers for your loved ones. Explore KinsCare for personalized caregiver matching services.",
-      url: "https://yourwebsite.com/find-caregiver",
+      url: "https://kinscare.org/find-caregiver",
       mainEntity: {
         "@type": "Service",
         name: "Caregiver Matching Service",
@@ -51,12 +51,12 @@ function page() {
         provider: {
           "@type": "Organization",
           name: "KinsCare",
-          url: "https://yourwebsite.com",
+          url: "https://kinscare.org",
         },
       },
       potentialAction: {
         "@type": "SearchAction",
-        target: "https://yourwebsite.com/find-caregiver?q={search_term_string}",
+        target: "https://kinscare.org/find-caregiver?q={search_term_string}",
         "query-input": "required name=search_term_string",
       },
     }),
@@ -67,14 +67,8 @@ function page() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-
-      <Navbar />
-
       <FindCaregiverLandingPage />
       {/* Footer */}
-      <footer className="bg-white text-white py-10">
-        <Footer />
-      </footer>
     </>
   );
 }

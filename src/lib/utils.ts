@@ -60,8 +60,17 @@ export const fetchContactsData = async (
   }
 };
 
+
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+// get the accessToken 
+export async function getValidAccessTokenFromContext(user:any) {
+  if (!user) throw new Error("User not logged in");
+  await user.refreshAccessToken();
+  return user.accessToken;
 }
 
 export const isAnon = (

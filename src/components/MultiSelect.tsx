@@ -40,6 +40,7 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
             options={options}
             onValueChange={(val: string[]) => onChange(val)}
             defaultValue={value}
+            modalPopover={true}
             value={value} // Bind the value properly to ensure selections work
             placeholder={placeholder}
             {...props}

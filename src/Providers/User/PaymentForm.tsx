@@ -1,13 +1,14 @@
 import MongoContext from "@/app/MongoContext";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
+import { rewardReferrer } from "@/lib/paymentUtils";
 import { fetchUserData, trackEvents } from "@/lib/utils";
 import {
   PaymentElement,
   useElements,
   useStripe,
 } from "@stripe/react-stripe-js";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useContext, useState } from "react";
@@ -24,6 +25,8 @@ interface PaymentFormProps {
   close: any;
   onError?: (error: any) => void; // Optional callback for handling errors
 }
+
+
 
 const PaymentForm: React.FC<PaymentFormProps> = ({
   clientSecret,
@@ -59,6 +62,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         update: {
           $set: {
             payment_method_id: paymentMethodID, // Update the PaymentMethod ID
+            verified:true,
             trial: true, // Mark free trial as active
             subscribed: false, // Mark subscription as inactive
             trial_start_date: new Date().toISOString(), // Set free trial start date
@@ -92,6 +96,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
       throw new Error(error.message);
     }
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -157,6 +162,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         city: userData?.city,
         email: userData?.auth?.email,
       };
+      // send reward
+      await rewardReferrer(userID, "identityVerified");
       trackEvents(
         user?.customData?.hash,
         "Add Payment Method",

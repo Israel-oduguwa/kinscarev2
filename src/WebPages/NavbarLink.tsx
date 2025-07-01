@@ -1,111 +1,58 @@
 "use client";
+
 import React from "react";
-// import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   NavigationMenu,
+  NavigationMenuList,
   NavigationMenuItem,
   NavigationMenuLink,
-  NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+
 function NavbarLink() {
-  //   const router:any = useRouter();
   const pathname = usePathname();
+
+  // Define your menu items in a small array so it’s easier to maintain
+  const menuItems = [
+    { label: "Jobs", href: "/find-jobs" },
+    { label: "Find Caregivers", href: "/find-caregivers" },
+    { label: "Jump Start Hiring", href: "/jumpstart-hiring" },
+    { label: "Explore", href: "/explore" },
+    { label: "Plans & Pricing", href: "/pricing" },
+    { label: "Blog", href: "/blog" },
+    { label: "Community", href: "/community" },
+  ];
+
   return (
-    <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
-      <NavigationMenu>
-        <NavigationMenuList className="gap-2">
-          <NavigationMenuItem>
-            <Link href="/find-jobs" legacyBehavior passHref>
-              <NavigationMenuLink
-                active={pathname === "/find-jobs"}
-                className={`${navigationMenuTriggerStyle()} ${
-                  pathname !== "/find-jobs" && "bg-transparent"
-                }`}
-              >
-                Jobs
+    <NavigationMenu>
+      <NavigationMenuList className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-3 lg:mt-0">
+        {menuItems.map((item) => {
+          const isActive = pathname === item.href;
+
+          return (
+            <NavigationMenuItem key={item.href}>
+              {/* 
+                Use `asChild` so that the NavigationMenuLink simply passes its behavior down to Link.
+                We then apply our own conditional className to indicate “active” vs “inactive.” 
+              */}
+              <NavigationMenuLink asChild>
+                <Link
+                  href={item.href}
+                  className={`
+                    ${navigationMenuTriggerStyle()} 
+                    ${!isActive ? "bg-transparent" : ""}
+                  `}
+                >
+                  {item.label}
+                </Link>
               </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/find-caregivers" legacyBehavior passHref>
-              <NavigationMenuLink
-                active={pathname === "/find-caregivers"}
-                className={`${navigationMenuTriggerStyle()} ${
-                  pathname !== "/find-caregiver" && "bg-transparent"
-                }`}
-              >
-                Find Caregivers
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          {/* <NavigationMenuItem>
-            <Link href="/subscribe" legacyBehavior passHref>
-              <NavigationMenuLink active={pathname === "/subscribe"}  className={`${navigationMenuTriggerStyle()} ${pathname !== "/subscribe" && "bg-transparent"}`}>
-                Pricing/plans
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem> */}
-          <NavigationMenuItem>
-            <Link href="/explore" legacyBehavior passHref>
-              <NavigationMenuLink
-                active={pathname === "/explore"}
-                className={`${navigationMenuTriggerStyle()} ${
-                  pathname !== "/explore" && "bg-transparent"
-                }`}
-              >
-                Explore
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/pricing" legacyBehavior passHref>
-              <NavigationMenuLink
-                active={pathname === "/pricing"}
-                className={`${navigationMenuTriggerStyle()} ${
-                  pathname !== "/pricing" && "bg-transparent"
-                }`}
-              >
-                Plans & Pricing
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/blog" legacyBehavior passHref>
-              <NavigationMenuLink
-                active={pathname === "/blog"}
-                className={`${navigationMenuTriggerStyle()} ${
-                  pathname !== "/blog" && "bg-transparent"
-                }`}
-              >
-                Blog
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/community" legacyBehavior passHref>
-              <NavigationMenuLink
-                active={pathname === "/community"}
-                className={`${navigationMenuTriggerStyle()} ${
-                  pathname !== "/community" && "bg-transparent"
-                }`}
-              >
-               Community
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          {/* <NavigationMenuItem>
-            <Link href="/why-kinscare" legacyBehavior passHref>
-              <NavigationMenuLink className={`${navigationMenuTriggerStyle()} ${pathname !== "/why-kinscare" && "bg-transparent"}`}>
-                Why Kinscare
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem> */}
-        </NavigationMenuList>
-      </NavigationMenu>
-    </ul>
+            </NavigationMenuItem>
+          );
+        })}
+      </NavigationMenuList>
+    </NavigationMenu>
   );
 }
 

@@ -43,11 +43,11 @@ const JobPostCard: React.FC<{ job: Job }> = ({ job }) => {
             </div>
 
             {/* Certifications */}
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <p className="text-sm text-gray-600 line-clamp-2">
                 <Interweave content={job.certifications} />
               </p>
-            </div>
+            </div> */}
 
             {/* Licenses and Schedule */}
             <div className="flex flex-wrap gap-2 mb-4">

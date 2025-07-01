@@ -1,107 +1,12 @@
+import OAuthDialog from "@/Authentication/OAuthDialog";
+import ProfileAvatar from "@/components/ProfileAvatar";
+import { Button } from "@/components/ui/button";
 import { Interweave } from "interweave";
-import { MapPin, MapPinCheckIcon, Send } from "lucide-react";
+import { polyfill } from "interweave-ssr";
+import { MapPin, Send } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import { polyfill } from "interweave-ssr";
-import { Button } from "@/components/ui/button";
-import ProviderDialog from "@/Providers/Candidates/ProviderDialog";
-import { Separator } from "@/components/ui/separator";
-import ProfileAvatar from "@/components/ProfileAvatar";
-import OAuthDialog from "@/Authentication/OAuthDialog";
 polyfill();
-// const SimilarCaregivers = ({ similarCaregivers }: any) => {
-//   // console.log(similarCaregivers);
-//   return (
-//     <div className="w-full">
-//       <p className="text-sm antialiased font-medium">Similar caregivers</p>
-//       {similarCaregivers.map((caregiver: any) => (
-//         <Link href={`/provider/candidates/${caregiver._id}`}>
-//           <div className="mt-4">
-//             <div className="border rounded-md border-gray-200 p-4">
-//               <div className="flex gap-3 mb-3 items-center">
-//                 <img
-//                   className="h-10 w-10 rounded-lg"
-//                   src="https://cdn.dribbble.com/users/4949363/avatars/normal/606bb85ee728fd3d78bbddf7e70b3901.jpg?1676454777"
-//                   alt="screen"
-//                 />
-//                 <div>
-//                   <p className="text-sm font-medium mb-1">
-//                     {caregiver.fname} {caregiver.lname}
-//                   </p>
-//                   <p className="text-xs font-normal">
-//                     {caregiver.zipcode}, {caregiver.city}
-//                   </p>
-//                 </div>
-//               </div>
-//               <div className="w-full flex-wrap gap-4 flex">
-//                 {caregiver.licenses
-//                   .slice(0, 2)
-//                   .map(
-//                     (
-//                       license:
-//                         | string
-//                         | number
-//                         | bigint
-//                         | boolean
-//                         | React.ReactElement<
-//                             any,
-//                             string | React.JSXElementConstructor<any>
-//                           >
-//                         | Iterable<React.ReactNode>
-//                         | React.ReactPortal
-//                         | Promise<React.AwaitedReactNode>
-//                         | null
-//                         | undefined,
-//                       index: React.Key | null | undefined
-//                     ) => (
-//                       <div
-//                         key={index}
-//                         className="relative text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
-//                       >
-//                         <span className="text-xs antialiased text-gray-600">
-//                           {license}
-//                         </span>
-//                       </div>
-//                     )
-//                   )}
-//                 {caregiver.availability
-//                   .slice(0, 2)
-//                   .map(
-//                     (
-//                       sch:
-//                         | string
-//                         | number
-//                         | bigint
-//                         | boolean
-//                         | React.ReactElement<
-//                             any,
-//                             string | React.JSXElementConstructor<any>
-//                           >
-//                         | Iterable<React.ReactNode>
-//                         | React.ReactPortal
-//                         | Promise<React.AwaitedReactNode>
-//                         | null
-//                         | undefined,
-//                       index: React.Key | null | undefined
-//                     ) => (
-//                       <div
-//                         key={index}
-//                         className="relative text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
-//                       >
-//                         <span className="text-xs antialiased text-gray-600">
-//                           {sch}
-//                         </span>
-//                       </div>
-//                     )
-//                   )}
-//               </div>
-//             </div>
-//           </div>
-//         </Link>
-//       ))}
-//     </div>
-//   );
-// };
 
 const CandidatesCard = ({ similarCaregivers }: any) => {
   const availability = false;

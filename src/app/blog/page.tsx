@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: "Latest Blogs",
       description: "Read trending articles on our blog.",
-      url: "https://yourwebsite.com/blogs",
+      url: "https://kinscare.org/blogs",
       type: "website",
     },
   };
@@ -39,7 +39,7 @@ async function fetchInitialBlogs() {
 async function fetchFeaturedArticle() {
   try {
     const res = await fetch(
-      `https://api.kinscare.org/api/v1/blogs/featured-article/681498355f27ab9fd5936f88`,
+      `https://api.kinscare.org/api/v1/blogs/featured-article/68633e79e236b3979597f4a8`,
       { cache: "no-cache" }
     );
 

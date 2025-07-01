@@ -11,99 +11,6 @@ import JobPostModal from "../Jobs/JobPostModal";
 import ProtectedCandidatesDetails from "./ProtectedCandidatesDetails";
 import Head from "next/head";
 polyfill();
-// const SimilarCaregivers = ({ similarCaregivers }: any) => {
-//   // console.log(similarCaregivers);
-//   return (
-//     <div className="w-full">
-//       <p className="text-sm antialiased font-medium">Similar caregivers</p>
-//       {similarCaregivers.map((caregiver: any) => (
-//         <Link href={`/provider/candidates/${caregiver._id}`}>
-//           <div className="mt-4">
-//             <div className="border rounded-md border-gray-200 p-4">
-//               <div className="flex gap-3 mb-3 items-center">
-//                 <img
-//                   className="h-10 w-10 rounded-lg"
-//                   src="https://cdn.dribbble.com/users/4949363/avatars/normal/606bb85ee728fd3d78bbddf7e70b3901.jpg?1676454777"
-//                   alt="screen"
-//                 />
-//                 <div>
-//                   <p className="text-sm font-medium mb-1">
-//                     {caregiver.fname} {caregiver.lname}
-//                   </p>
-//                   <p className="text-xs font-normal">
-//                     {caregiver.zipcode}, {caregiver.city}
-//                   </p>
-//                 </div>
-//               </div>
-//               <div className="w-full flex-wrap gap-4 flex">
-//                 {caregiver.licenses
-//                   .slice(0, 2)
-//                   .map(
-//                     (
-//                       license:
-//                         | string
-//                         | number
-//                         | bigint
-//                         | boolean
-//                         | React.ReactElement<
-//                             any,
-//                             string | React.JSXElementConstructor<any>
-//                           >
-//                         | Iterable<React.ReactNode>
-//                         | React.ReactPortal
-//                         | Promise<React.AwaitedReactNode>
-//                         | null
-//                         | undefined,
-//                       index: React.Key | null | undefined
-//                     ) => (
-//                       <div
-//                         key={index}
-//                         className="relative text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
-//                       >
-//                         <span className="text-xs antialiased text-gray-600">
-//                           {license}
-//                         </span>
-//                       </div>
-//                     )
-//                   )}
-//                 {caregiver.availability
-//                   .slice(0, 2)
-//                   .map(
-//                     (
-//                       sch:
-//                         | string
-//                         | number
-//                         | bigint
-//                         | boolean
-//                         | React.ReactElement<
-//                             any,
-//                             string | React.JSXElementConstructor<any>
-//                           >
-//                         | Iterable<React.ReactNode>
-//                         | React.ReactPortal
-//                         | Promise<React.AwaitedReactNode>
-//                         | null
-//                         | undefined,
-//                       index: React.Key | null | undefined
-//                     ) => (
-//                       <div
-//                         key={index}
-//                         className="relative text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
-//                       >
-//                         <span className="text-xs antialiased text-gray-600">
-//                           {sch}
-//                         </span>
-//                       </div>
-//                     )
-//                   )}
-//               </div>
-//             </div>
-//           </div>
-//         </Link>
-//       ))}
-//     </div>
-//   );
-// };
 
 const CandidatesCard = ({ similarCaregivers }: any) => {
   const availability = false;
@@ -235,7 +142,7 @@ async function CandidateDetails({ candidateID }: { candidateID: string }) {
         <meta property="og:image" content={caregiver.profileImage} />
         <meta
           property="og:url"
-          content={`http://yourwebsite.com/caregiver/${candidateID}`}
+          content={`https://kinscare.org/caregiver/${candidateID}`}
         />
         <meta property="og:type" content="profile" />
 
@@ -371,11 +278,14 @@ async function CandidateDetails({ candidateID }: { candidateID: string }) {
             Similar Caregivers
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {similarCaregivers.map((caregiver: any) => (
-              <CandidatesCard
-                key={caregiver.id}
+            {similarCaregivers.map((caregiver: any, index:any) => (
+              <div key={caregiver._id}>
+                  <CandidatesCard
+                
                 similarCaregivers={caregiver}
               />
+              </div>
+            
             ))}
           </div>
         </div>

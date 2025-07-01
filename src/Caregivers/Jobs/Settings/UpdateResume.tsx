@@ -25,7 +25,11 @@ import {
   LoaderCircle,
   X,
 } from "lucide-react";
-import { fetchContactsData, fetchUserData } from "@/lib/utils";
+import {
+  fetchContactsData,
+  fetchUserData,
+  getValidAccessTokenFromContext,
+} from "@/lib/utils";
 import DeleteAccount from "@/Providers/User/DeleteAccount";
 import TagManager from "react-gtm-module";
 import { useRouter } from "next/navigation";
@@ -295,9 +299,15 @@ const CaregiverProfileForm = () => {
         hash: user.customData.hash,
       };
       console.log(payload);
+      const accessToken = await getValidAccessTokenFromContext(user);
       await axios.post(
         `https://api.kinscare.org/api/v1/caregivers/resume/update/${userData.userID}`,
-        payload
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
       );
       toast({ title: "Profile updated successfully", variant: "default" });
       if (userData?.complete) {
@@ -794,9 +804,9 @@ const CaregiverProfileForm = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white shadow-sm my-10 rounded-lg p-8">
+      {/* <div className="bg-white shadow-sm my-10 rounded-lg p-8">
         <DeleteAccount />
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -23,6 +23,7 @@ import * as yup from "yup";
 import { fetchUserData } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { trackEvent } from "@/lib/mixpanelUtils";
+import { CustomerSignupParams, sendCustomerSignupEmail } from "@/lib/Email";
 interface IFormInputs {
   role: string;
   tel: string;
@@ -137,6 +138,16 @@ function SelectRole({ selectRoleModal, closeSelectModal }: any) {
         });
       }
 
+      // After Role is updated
+      const fullName = `${payload.fname || ""} ${payload.lname || ""}`.trim();
+      const emailParams: CustomerSignupParams = {
+        email: payload.email,
+        name: fullName,
+        role: payload.role,
+      };
+      // Fire & forget:
+      await sendCustomerSignupEmail(emailParams);
+
       const mixpanelPayload = {
         userID: user.customData.userID,
         fname: user.customData.fname,
@@ -215,8 +226,8 @@ function SelectRole({ selectRoleModal, closeSelectModal }: any) {
                         isPhoneValid
                           ? "border-green-500"
                           : isPhoneValid === false
-                          ? "border-red-500"
-                          : ""
+                            ? "border-red-500"
+                            : ""
                       }`}
                       onBlur={(e) => validatePhoneNumber(field.value)}
                     />

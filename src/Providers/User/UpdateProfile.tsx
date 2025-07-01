@@ -24,7 +24,7 @@ import TagManager from "react-gtm-module";
 const schema = yup.object().shape({
   address: yup.string().required("Please enter provider's street address"), //.max(2, 'Full name can only be 6 characters long.'),
   fname: yup.string().required("First name is required"),
-  name: yup.string().required("Your company name or provider name is required"),
+  name: yup.string().required("KinsCare or provider name is required"),
   lname: yup.string().required("Last name is required"),
   // email: yup.string().email("Invalid email").required("Email is required"),
   city: yup.string().required("City is required"),
@@ -235,7 +235,7 @@ const UpdateProfile = () => {
       // {
       //   "address": "Please enter provider's street address",
       //   "fname": "First name is required",
-      //   "name": "Your company name or provider name is required",
+      //   "name": "KinsCare or provider name is required",
       //   "lname": "Last name is required",
       //   "city": "City is required",
       //   "zipcode": "Zipcode is required",

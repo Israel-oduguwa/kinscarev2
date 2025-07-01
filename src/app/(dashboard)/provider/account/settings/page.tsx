@@ -11,11 +11,11 @@ export const metadata: Metadata = {
     title: "Account Settings - Manage Your Preferences",
     description:
       "Access your account settings to manage your preferences, update account details, and ensure your profile is up-to-date.",
-    url: "http://yourwebsite.com/account/settings", // Replace with the actual page URL
+    url: "https://kinscare.org/account/settings", // Replace with the actual page URL
     type: "website",
     images: [
       {
-        url: "http://yourwebsite.com/images/account-settings-og-image.jpg", // Replace with your relevant image URL
+        url: "https://kinscare.org/images/account-settings-og-image.jpg", // Replace with your relevant image URL
         width: 1200,
         height: 630,
         alt: "Account Settings",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     description:
       "Keep your account preferences up-to-date. Manage profile settings, privacy, and account details seamlessly.",
     images: [
-      "http://yourwebsite.com/images/account-settings-twitter-image.jpg", // Replace with a relevant image URL
+      "https://kinscare.org/images/account-settings-twitter-image.jpg", // Replace with a relevant image URL
     ],
   },
 };

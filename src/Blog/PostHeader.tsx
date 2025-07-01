@@ -27,7 +27,7 @@ const ArticleHeader: React.FC<ArticleHeaderProps> = ({
   const currentURL = typeof window !== "undefined" ? window.location.href : "";
 
   return (
-    <header className="relative isolate overflow-hidden  bg-blue-50 py-10 md:py-20 dark:from-gray-900/95 dark:to-gray-900">
+    <header className="relative isolate overflow-hidden  bg-gray-50 py-10 md:py-20 dark:from-gray-900/95 dark:to-gray-900">
       {/* Subtle grid pattern */}
       <div
         className="absolute inset-0 -z-10 opacity-15 dark:opacity-10"

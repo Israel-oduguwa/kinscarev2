@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   title: 'Posted Jobs - Kinscare',
   description: 'Explore all the jobs posted by you on our platform. Manage and update your job postings seamlessly.',
   openGraph: {
-    title: 'Posted Jobs - Your Company Name',
+    title: 'Posted Jobs - KinsCare',
     description: 'Explore and manage all the jobs you’ve posted on our platform.',
-    url: 'https://yourwebsite.com/posted-jobs', // Replace with your actual page URL
+    url: 'https://kinscare.org/posted-jobs', // Replace with your actual page URL
     type: 'website',
     images: [
       {
-        url: 'https://yourwebsite.com/assets/images/og-image.jpg', // Replace with an appropriate image URL
+        url: 'https://kinscare.org/assets/images/og-image.jpg', // Replace with an appropriate image URL
         width: 1200,
         height: 630,
         alt: 'Posted Jobs Preview',
@@ -22,9 +22,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Posted Jobs - Your Company Name',
+    title: 'Posted Jobs - KinsCare',
     description: 'Explore and manage all the jobs you’ve posted on our platform.',
-    images: ['https://yourwebsite.com/assets/images/twitter-image.jpg'], // Replace with a Twitter-optimized image URL
+    images: ['https://kinscare.org/assets/images/twitter-image.jpg'], // Replace with a Twitter-optimized image URL
   },
 };
 
