@@ -1,8 +1,12 @@
 import ExcelCNAAuth from "@/Authentication/ExcelCNAAuth";
-import React from "react";
+import React, { Suspense } from "react";
 
 function page() {
-  return <ExcelCNAAuth />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ExcelCNAAuth />
+    </Suspense>
+  );
 }
 
 export default page;
