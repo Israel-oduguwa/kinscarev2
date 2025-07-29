@@ -11,7 +11,7 @@ const IntercomProvider = () => {
   const [scriptLoaded, setScriptLoaded] = useState(false);
 
   // Determine if Intercom should be active
-  const shouldLoadIntercom = userData?.role === "provider" && pathname !== "/";
+  const shouldLoadIntercom = true // userData?.role === "provider" && pathname !== "/";
   console.log(userData);
   // Manage Intercom boot/shutdown when conditions or script status change
   console.log(pathname)
@@ -23,6 +23,7 @@ const IntercomProvider = () => {
     ) {
       window.Intercom("boot", {
         app_id: process.env.INTERCOM_APP_ID || "YOUR_APP_ID",
+        hide_default_launcher: true, // 👈 THIS hides the widget!
         user_id: userData?.userID ?? undefined,
         name:
           userData?.fname || userData?.lname

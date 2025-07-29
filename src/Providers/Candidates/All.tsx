@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import MongoContext from "@/app/MongoContext";
 import ProfileAvatar from "@/components/ProfileAvatar";
@@ -13,12 +14,14 @@ import axios from "axios";
 import { Interweave } from "interweave";
 import {
   AlertTriangle,
+  ArrowRight,
   Loader,
   Loader2,
   Mail,
   MapPin,
   Search,
   Send,
+  SquareArrowOutUpRight,
 } from "lucide-react";
 import Link from "next/link";
 import React, { useContext, useEffect, useState } from "react";
@@ -316,10 +319,10 @@ function All() {
               </>
             </div>
           </header>
-          <div className="pb-5">
+          <div className="pb-4">
             <Link href="/provider/job/update/new">
-              <p className="text-red-500 text-center">
-                Post your job now and let caregivers looking for work apply!
+              <p className="text-red-500 text-sm flex gap-1 items-center">
+            Post your job now and let caregivers looking for work apply! <SquareArrowOutUpRight className="h-3.5 w-3.5" />
               </p>
             </Link>
           </div>

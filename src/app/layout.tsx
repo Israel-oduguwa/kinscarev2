@@ -26,7 +26,7 @@ const headingFont = localFont({
   display: "swap",
   variable: "--header-font",
 });
-
+// const intercomAppId:any = process.env.INTERCOM_APP_ID!;
 export const metadata: Metadata = {
   icons: {
     icon: [
@@ -113,7 +113,7 @@ export default function RootLayout({
             <ContextProviders>
               {" "}
               <VoiceFlowProvider>
-              {/* <IntercomProvider /> */}
+              <IntercomProvider  />
               {/* Run the cookie consent  */}
               <CookieConsentBanner/>
               {children}

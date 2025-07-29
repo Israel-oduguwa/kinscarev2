@@ -95,7 +95,7 @@ function Navbar() {
               width={50}
               height={50}
             />
-            <p className="text-sm font-medium">Kinscare</p>
+            <p className="text-sm font-medium">KinsCare</p>
           </Link>
           {/* Right Section */}
           <div className="hidden lg:flex items-center lg:order-2">

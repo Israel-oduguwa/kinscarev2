@@ -29,7 +29,7 @@ export default function DashboardLayout({
             <main>
               {" "}
               <WelcomeDialog />
-              <IntercomProvider intercomAppId={intercomAppId} />
+              {/* <IntercomProvider intercomAppId={intercomAppId} /> */}
               {children}
             </main>
           </EmployerAppSidebar>

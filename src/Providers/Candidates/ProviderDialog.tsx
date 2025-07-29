@@ -13,7 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toast } from "@/components/ui/use-toast";
+import { toast as shadToast } from "@/components/ui/use-toast";
+import { toast } from "sonner"; // Import Sonner
 import { Elements } from "@stripe/react-stripe-js";
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
@@ -38,19 +39,19 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
   const mongodb: any = useContext(MongoContext);
   const { userData, user, setUserData, customData } = mongodb;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false); // Track if caregiver is favorite
+  const [isFavorite, setIsFavorite] = useState(false);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [clientSecret, setClientSecret] = useState("");
   const [selectedPlan, setSelectedPlan] = useState<any>("monthly");
   const [openInformation, setOpenInformation] = useState(false);
   const [isTrialDialogOpen, setIsTrialDialogOpen] = useState(false);
   const [message, setMessage] = useState(
-    `Hi ${candidate.fname} ${candidate.lname}, we think you're a great fit for our opening, and we would love to talk to you!`
+    `Hi ${candidate.name}, we think you're a great fit for our opening, and we would love to talk to you!`
   );
   const [isTrialExpired, setIsTrialExpired] = useState(
     !(customData.trial || customData.subscribed)
   );
-  const [isSending, setIsSending] = useState(false); // Track sending state
+  const [isSending, setIsSending] = useState(false);
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -65,55 +66,56 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
       exp_year: number;
     }[]
   >([]);
+
+  // Trial period & subscription state
   useEffect(() => {
-    const trialStart = customData.trial_start_date;
-    const trialEnd = customData.trial_end_date;
-    const isSubscribed = customData.subscribed;
-
-    if (isSubscribed) {
-      // If subscribed, the trial is irrelevant
-      setIsTrialExpired(false);
-      return;
+    try {
+      const trialStart = customData.trial_start_date;
+      const trialEnd = customData.trial_end_date;
+      const isSubscribed = customData.subscribed;
+      if (isSubscribed) {
+        setIsTrialExpired(false);
+        return;
+      }
+      if (trialStart && trialEnd) {
+        const trialActive = isTrialActive(trialStart, trialEnd);
+        setIsTrialExpired(!trialActive);
+      } else {
+        const trialFlag = customData.trial || false;
+        setIsTrialExpired(!trialFlag);
+      }
+    } catch (err) {
+      toast.error("Failed to determine trial/subscription state.");
+      setIsTrialExpired(true);
     }
-    if (trialStart && trialEnd) {
-      // Calculate trial status based on dates
-      const trialActive = isTrialActive(trialStart, trialEnd);
-      setIsTrialExpired(!trialActive);
-    } else {
-      // Fallback if no trial dates exist
-      const trialFlag = customData.trial || false;
-      setIsTrialExpired(!trialFlag);
-    }
-  }, [user]);
+  }, [user, customData]);
 
+  // Check if candidate is already a favorite
   useEffect(() => {
     if (userData?.saved_candidates) {
       const isFav = userData.saved_candidates.some(
         (favorite: any) => favorite.userID === candidate.userID
       );
-
-      // console.log(isFav, "sake");
-
       setIsFavorite(isFav);
     }
-  }, [userData]);
+  }, [userData, candidate.userID]);
 
+  // Handles dialog open/close
   const openDialog = () => setIsDialogOpen(true);
   const closeDialog = () => setIsDialogOpen(false);
+  const closeTrialDialogBox = () => setIsTrialDialogOpen(false);
 
+  // Prevent event bubbling
   const stopPropagation = (e: any) => {
     e.stopPropagation();
     e.nativeEvent.stopImmediatePropagation();
-  };
-  const closeTrialDialogBox = () => {
-    setIsTrialDialogOpen(false);
   };
 
   // Toggle Favorite Mutation
   const { mutate: toggleFavoriteCaregiver, isPending: isTogglingFavorite } =
     useMutation({
       mutationFn: async () => {
-        const token = user?.accessToken; // Retrieve the JWT
+        const token = user?.accessToken;
         const payload = {
           hash: userData?.hash,
           location: candidate.city,
@@ -127,13 +129,12 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
           availability: candidate.availability,
           type: isFavorite ? "remove" : "add",
         };
-
         const { data } = await axios.post(
           "https://api.kinscare.org/api/v1/providers/set_favorites",
           payload,
           {
             headers: {
-              Authorization: `Bearer ${token}`, // Include the token
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -141,104 +142,89 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
       },
       onSuccess: async () => {
         setIsFavorite((prev) => !prev);
-        const fetchedData: any = await fetchUserData(
-          user.customData.userID,
-          user.customData.email
-        );
-        // console.log(fetchedData);
-        setUserData(fetchedData.result);
-        toast({
-          title: isFavorite ? "Removed from Favorites" : "Added to Favorites",
-          description: `Caregiver ${candidate.fname} ${
-            candidate.lname
-          } has been ${
-            isFavorite ? "removed from" : "added to"
-          } your favorites.`,
-        });
+        try {
+          const fetchedData: any = await fetchUserData(
+            user.customData.userID,
+            user.customData.email
+          );
+          setUserData(fetchedData.result);
+          toast.success(
+            isFavorite
+              ? `Removed ${candidate.fname} ${candidate.lname} from Favorites`
+              : `Added ${candidate.fname} ${candidate.lname} to Favorites`
+          );
+        } catch (err) {
+          toast.error("Could not refresh user favorites list!");
+        }
       },
       onError: (err) => {
-        if (err instanceof AxiosError) {
-          toast({
-            title: "Error",
-            description: `Failed to ${
-              isFavorite ? "remove from" : "add to"
-            } favorites. Please try again.`,
-            variant: "destructive",
-          });
-        }
+        toast.error(
+          `Failed to ${isFavorite ? "remove from" : "add to"} favorites.`
+        );
         console.error(err);
       },
     });
-  // console.log(customData);
-  // Send Message Function
-  const sendMessage = async () => {
-    const trialStart = customData.trial_start_date;
-    const trialEnd = customData.trial_end_date;
-    const token = user?.accessToken; // Retrieve the JWT
 
+  // Sends SMS message to candidate
+  const sendMessage = async () => {
+    const token = user?.accessToken;
     setIsSending(true);
     try {
+      // Send SMS
       const sms_payload = {
         body: message,
-        to: candidate.settings.tel, // Replace with the caregiver's phone number
+        to: candidate.settings.tel,
       };
-      const sendMessage = await axios.post(
+      const sendMessageResp = await axios.post(
         "https://api.kinscare.org/api/v1/twilio/sms/send",
         sms_payload,
         {
-          headers: {
-            Authorization: `Bearer ${token}`, // Include the token
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
+      toast.success(
+        `Message sent to ${candidate.fname} ${candidate.lname}!`
+      );
 
-      // Show success toast
-      toast({
-        title: "Message Sent",
-        description: `Your message to ${candidate.fname} ${candidate.lname} has been sent successfully!`,
-      });
-      console.log("closed Dialogs");
-      // const isNotVerified = !(customData.subscribe === true
-      // );
+      // If not subscribed, prompt upgrade info
       if (!customData.subscribed || !customData.trial) {
         closeDialog();
         setOpenInformation(true);
-        // setIsTrialDialogOpen(true);
       } else {
         closeDialog();
-        // send the caregiver an email too  and push a notification
-        // send the caregiver a notification
-        await axios.post("https://api.kinscare.org/api/v1/notifications/send", {
-          type: "message_caregiver", // provider sends message to the caregiver
-          fromUserId: userData.userID, // the provider user id
-          toUserId: candidate.userID, // the caregiver user id
-          senderType: "caregiver", // the person sending the message role
-          message: `"You have a new message from ${userData.name}`,
-          metadata: {
-            caregiverEmail: candidate.settings.email,
-            providerEmail: userData.settings.email,
-            providerFullName: `${userData.fname} ${userData.lname}`,
-            providerName: userData.name,
-            caregiverName: candidate.name,
-          },
-        });
+        // Send notification to caregiver
+        await axios.post(
+          "https://api.kinscare.org/api/v1/notifications/send",
+          {
+            type: "message_caregiver",
+            fromUserId: userData.userID,
+            toUserId: candidate.userID,
+            senderType: "caregiver",
+            message: `"You have a new message from ${userData.name}`,
+            metadata: {
+              caregiverEmail: candidate.settings.email,
+              providerEmail: userData.settings.email,
+              providerFullName: `${userData.fname} ${userData.lname}`,
+              providerName: userData.name,
+              caregiverName: candidate.name,
+            },
+          }
+        );
       }
-    } catch (error) {
-      console.error("Error sending message:", error);
-      toast({
-        title: "Error",
-        description: "Failed to send the message. Please try again.",
-        variant: "destructive",
-      });
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to send the message. Please try again."
+      );
     } finally {
       setIsSending(false);
     }
   };
 
-  const closePaymentDialog = () => {
-    setPaymentDialogOpen(false);
-  };
+  // Saved Cards logic (Stripe payment, not shown in dialog here)
+  const closePaymentDialog = () => setPaymentDialogOpen(false);
 
+  // Set default card visually (Stripe)
   const handleSetDefault = (id: string) => {
     setSavedCards((prevCards) =>
       prevCards.map((card) =>
@@ -272,27 +258,28 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
         return null;
     }
   };
+  // Utility for getting price ID by plan (Stripe, not shown in UI)
   const getPriceIdByPlan = (plan: "daily" | "weekly" | "monthly"): string => {
     const priceIds = {
       daily: "price_1QSCmtAoahxG9SLG2kga6E01",
       weekly: "price_1QSCneAoahxG9SLGCHhFdN4C",
       monthly: "price_1QP2OuAoahxG9SLGNoc37Lxo",
     };
-
     if (!priceIds[plan]) {
+      toast.error("Invalid plan selected.");
       throw new Error(
         "Invalid plan selected. Please choose daily, weekly, or monthly."
       );
     }
-
     return priceIds[plan];
   };
+
+  // Create a new subscription (Stripe, not shown in UI)
   const createSubscription = async () => {
     if (!selectedCard) {
-      console.error("No card selected.");
+      toast.error("No card selected.");
       return;
     }
-
     const customerId = user.customData.customer_id;
     const priceId = getPriceIdByPlan(selectedPlan);
 
@@ -311,24 +298,23 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
         }
       );
       if (response.data.success) {
-        // console.log("Subscription created successfully:", response.data);
         const subscription = response.data.subscription;
-        // Step 2: Update the database using the CRUD operation API
+        // Update MongoDB user doc
         const updatePayload = {
-          collectionName: "contacts", // Adjust collection name as needed
-          operation: "updateOne", // Specify operation type
-          filter: { userID: userData.userID, role: "provider" }, // Customize filter
+          collectionName: "contacts",
+          operation: "updateOne",
+          filter: { userID: userData.userID, role: "provider" },
           update: {
             $set: {
-              subscription_id: subscription.id, // Save subscription ID
-              subscribed: true, // Mark user as subscribed
-              trial: "expired", // Mark trial as expired
+              subscription_id: subscription.id,
+              subscribed: true,
+              trial: "expired",
               subscription_start_date: new Date(
                 subscription.start_date * 1000
-              ).toISOString(), // Start date in ISO format
-              subscription_status: subscription.status, // Subscription status
-              plan_id: subscription.plan.id, // Save the plan ID
-              payment_verified: true, // Optionally set payment verified
+              ).toISOString(),
+              subscription_status: subscription.status,
+              plan_id: subscription.plan.id,
+              payment_verified: true,
             },
           },
         };
@@ -339,19 +325,13 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
             headers: { "Content-Type": "application/json" },
           }
         );
-        // console.log(crudResponse);
         if (crudResponse.data.success) {
-          console.log("User subscription details updated successfully.");
-          // Step 3: Refresh user data and the UI
           await user.refreshCustomData();
           router.refresh();
-          setIsDialogOpen(false); // Close dialog on success
-          router.refresh();
+          setIsDialogOpen(false);
+          toast.success("Subscription created and saved!");
         } else {
-          console.error(
-            "Failed to update user subscription in the database:",
-            crudResponse.data.message
-          );
+          toast.error("Failed to update user subscription in the database.");
         }
       } else {
         throw new Error(
@@ -359,17 +339,20 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
         );
       }
     } catch (error: any) {
-      console.error("Error creating subscription:", error.message);
+      toast.error(error?.message || "Subscription failed!");
     } finally {
       setLoading(false);
     }
   };
-  // Fetch saved cards when the dialog opens
+
+  // Fetch saved cards (Stripe) when dialog opens
   useEffect(() => {
     if (isDialogOpen) {
       fetchSavedCards();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDialogOpen]);
+
   const fetchSavedCards = async () => {
     try {
       const customerId = user.customData.customer_id;
@@ -377,7 +360,6 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
         `https://api.kinscare.org/api/v1/providers/payment-methods`,
         { customerId }
       );
-
       if (response.data.success) {
         const cards = response.data.data.map((card: any) => ({
           id: card.id,
@@ -387,26 +369,28 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
           exp_year: card.card.exp_year,
         }));
         setSavedCards(cards);
-
-        // Default to the first card if available
         if (cards.length > 0) {
           setSelectedCard(cards[0].id);
         }
       } else {
-        console.error("Failed to fetch saved cards:", response.data.message);
+        toast.error(
+          response.data.message || "Failed to fetch saved payment methods."
+        );
       }
     } catch (error: any) {
-      console.error("Error fetching saved cards:", error.message);
+      // toast.error(error?.message || "Error fetching saved cards.");
     }
   };
 
-  const appearance: any = {
-    theme: "flat",
+  // Stripe appearance theme
+  const appearance: any = { theme: "flat" };
+
+  // Debug: Refresh token
+  const refreshT = async () => {
+    await user.refreshCustomData();
+    toast.info("Token refreshed!");
   };
-  const refreshT = async () =>{
-   await user.refreshCustomData()
-    console.log(JSON.stringify(user.accessToken))
-  }
+
   return (
     <div>
       <div className="flex space-x-2">
@@ -441,6 +425,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
           </Button>
         )}
       </div>
+      {/* Main Dialog for Messaging */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="lg:max-w-2xl max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
           <DialogHeader>
@@ -453,17 +438,17 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
                 />
               </div>
               <p className="font-bold text-2xl text-gray-800">
-                {candidate.fname} {candidate.lname}
+                {candidate.name}
               </p>
               <div className="flex items-center space-x-2 mt-2">
                 <Mail size={16} />
                 <p className="text-sm font-medium text-gray-700">
-                  Send a message to {candidate.fname}
+                  Send a message to {candidate.name}
                 </p>
               </div>
             </DialogTitle>
           </DialogHeader>
-          <div className="mt-2 space-y-2">
+          <div className="space-y-2">
             <label
               htmlFor="message"
               className="block text-xs font-semibold text-gray-700"
@@ -494,7 +479,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
           </div>
         </DialogContent>
       </Dialog>
-      {/* Information  */}
+      {/* Information Dialog after sending */}
       <Dialog open={openInformation} onOpenChange={setOpenInformation}>
         <DialogContent className="max-w-xl mx-auto p-6 rounded-lg shadow-lg bg-white">
           <DialogHeader>
@@ -507,12 +492,9 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
               take the next step now.
             </DialogDescription>
           </DialogHeader>
-
-          {/* Call-to-Action */}
           <div className="mt-2">
             <p className="text-sm text-gray-700">
               <span className="font-semibold ">
-                {" "}
                 Need to connect with {candidate.name} directly?{" "}
               </span>
               Click the Reveal Contacts button below to access {candidate.name}

@@ -56,7 +56,7 @@ const pricingPlans = [
     features: [
       "24-hour access",
       "Full feature set",
-      "Email support during active period",
+      "Active support during active period",
     ],
   },
   {
@@ -71,7 +71,7 @@ const pricingPlans = [
     features: [
       "7-day access",
       "Full feature set",
-      "Email support during active period",
+      "Active support during active period",
     ],
   },
   {
@@ -86,15 +86,32 @@ const pricingPlans = [
     features: [
       "30-day access",
       "Full feature set",
-      "Email support during active period",
+      "Active support during active period",
     ],
   },
 ];
 
+const faqs = [
+  {
+    q: "What happens when my plan expires?",
+    a: "Your access ends, but you can renew anytime.",
+  },
+  {
+    q: "Does KinsCare handle hiring and vetting caregivers?",
+    a: "No, KinsCare is not a staffing agency. You contact and recruit caregivers directly.",
+  },
+  {
+    q: "Can I hire caregivers for different job types?",
+    a: "Yes! Find caregivers for full-time, part-time, live-in, on-call, or weekend shifts.",
+  },
+  {
+    q: "Can I cancel my plan?",
+    a: "Yes! There are no contracts, and you can cancel anytime.",
+  },
+];
 export default function Pricing() {
   return (
-    <div className="min-h-screen mt-10 bg-[hsl(var(--background))] flex flex-col">
-     
+    <div className="min-h-screen bg-[hsl(var(--background))] flex flex-col">
       <div className="max-w-screen-xl mx-auto space-y-16 px-6 lg:px-16 py-12">
         {/* Header Section */}
 
@@ -117,55 +134,72 @@ export default function Pricing() {
         </div>
         {/* Pricing Plans Section */}
         <div className="flex flex-col md:flex-row gap-8 md:gap-6 justify-center items-center max-w-7xl mx-auto mt-12">
-            {pricingPlans.map((plan, i) => (
-              <div
-                key={plan.id}
-                className={`
+          {pricingPlans.map((plan, i) => (
+            <div
+              key={plan.id}
+              className={`
                   group relative flex-1 min-w-[280px] max-w-xs bg-white/70 backdrop-blur-lg border border-gray-200
                   rounded-3xl shadow-xl px-7 py-10 transition-all duration-300
                   hover:scale-105 hover:shadow-2xl hover:border-blue-400
                   ${plan.id === "monthly" ? "ring-2 ring-blue-400" : ""}
                 `}
-              >
-                {plan.highlight && (
-                  <div className={`
+            >
+              {plan.highlight && (
+                <div
+                  className={`
                     absolute -top-5 left-1/2 -translate-x-1/2
                     flex items-center gap-1 px-4 py-1 rounded-full font-medium text-xs
-                    ${plan.id === "monthly" ? "bg-gradient-to-r from-blue-500 to-pink-500 text-white shadow-md" : "bg-blue-100 text-blue-600"}
-                  `}>
-                    {plan.id === "monthly" && <Star size={16} className="mr-1" />}
-                    {plan.highlight}
-                  </div>
-                )}
-                <h3 className="text-2xl font-bold mb-2 text-gray-800">{plan.title}</h3>
-                <div className="flex items-baseline justify-center mb-5">
-                  <span className="text-4xl font-extrabold text-gray-900">{plan.price}</span>
-                  <span className="ml-2 text-sm text-gray-400 font-medium">/plan</span>
+                    ${
+                      plan.id === "monthly"
+                        ? "bg-gradient-to-r from-blue-500 to-pink-500 text-white shadow-md"
+                        : "bg-blue-100 text-blue-600"
+                    }
+                  `}
+                >
+                  {plan.id === "monthly" && <Star size={16} className="mr-1" />}
+                  {plan.highlight}
                 </div>
-                <p className="text-gray-600 text-base mb-5">{plan.description}</p>
-                <ul className="space-y-3 mb-7">
-                  {plan.features.map((f, idx) => (
-                    <li key={idx} className="flex items-center gap-2 text-gray-700">
-                      <CheckCircle className="text-blue-500 w-4 h-4" />
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-                <PricingButton plan={plan.stripePriceId}>
-                  <Button
-                    className={`
-                      w-full py-3 rounded-xl text-lg font-bold shadow
-                      ${plan.id === "monthly"
-                        ? "bg-gradient-to-r from-blue-600 to-pink-500 text-white hover:from-pink-500 hover:to-blue-600"
-                        : "bg-indigo-600 text-white hover:bg-indigo-700"}
-                    `}
-                  >
-                    Get Started
-                  </Button>
-                </PricingButton>
+              )}
+              <h3 className="text-2xl font-bold mb-2 text-gray-800">
+                {plan.title}
+              </h3>
+              <div className="flex items-baseline justify-center mb-5">
+                <span className="text-4xl font-extrabold text-gray-900">
+                  {plan.price}
+                </span>
+                <span className="ml-2 text-sm text-gray-400 font-medium">
+                  /plan
+                </span>
               </div>
-            ))}
-          </div>
+              <p className="text-gray-600 text-base mb-5">{plan.description}</p>
+              <ul className="space-y-3 mb-7">
+                {plan.features.map((f, idx) => (
+                  <li
+                    key={idx}
+                    className="flex items-center gap-2 text-gray-700"
+                  >
+                    <CheckCircle className="text-blue-500 w-4 h-4" />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <PricingButton plan={plan.stripePriceId}>
+                <Button
+                  className={`
+                      w-full py-3 rounded-xl text-lg font-bold shadow
+                      ${
+                        plan.id === "monthly"
+                          ? "bg-gradient-to-r from-blue-600 to-pink-500 text-white hover:from-pink-500 hover:to-blue-600"
+                          : "bg-indigo-600 text-white hover:bg-indigo-700"
+                      }
+                    `}
+                >
+                  Get Started
+                </Button>
+              </PricingButton>
+            </div>
+          ))}
+        </div>
         {/* Note Section */}
         {/* <div className="bg-[hsl(var(--secondary))] rounded-[var(--radius)] p-6 shadow-sm">
           <p className="text-sm text-[hsl(var(--secondary-foreground))] text-center">
@@ -174,14 +208,14 @@ export default function Pricing() {
             pay-for-use service.
           </p>
         </div> */}
-        <div className="max-w-screen-xl mx-auto space-y-6 px-6 lg:px-16 py-10">
+        <div className="max-w-screen-xl mx-auto space-y-6 px-6 lg:px-16">
           {/* Every Plan Includes */}
-          <div className="space-y-8">
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] bg-clip-text text-transparent">
+          <div className="space-y-2">
+            <h2 className="text-3xl tracking-tight font-bold bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] bg-clip-text text-transparent">
               Every Plan Includes
             </h2>
-            <ul className="space-y-2 text-lg">
-              <li className="flex items-start gap-4 py-4 rounded-[var(--radius)]  transition-colors duration-200">
+            <ul className="text-lg">
+              <li className="flex items-start gap-4 py-2 rounded-[var(--radius)]  transition-colors duration-200">
                 <div className="shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
                   <svg
                     className="w-4 h-4 text-green-600"
@@ -199,7 +233,7 @@ export default function Pricing() {
                 </div>
                 <span>Full caregiver registry access</span>
               </li>
-              <li className="flex items-start gap-4 py-4 rounded-[var(--radius)]  transition-colors duration-200">
+              <li className="flex items-start gap-4 py-2 rounded-[var(--radius)]  transition-colors duration-200">
                 <div className="shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
                   <svg
                     className="w-4 h-4 text-blue-600"
@@ -219,7 +253,7 @@ export default function Pricing() {
                   Direct caregiver contact details – No third-party scheduling
                 </span>
               </li>
-              <li className="flex items-start gap-4 py-4 rounded-[var(--radius)]  transition-colors duration-200">
+              <li className="flex items-start gap-4 py-2 rounded-[var(--radius)]  transition-colors duration-200">
                 <div className="shrink-0 w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
                   <svg
                     className="w-4 h-4 text-purple-600"
@@ -237,7 +271,7 @@ export default function Pricing() {
                 </div>
                 <span>Instant job posting & applicant tracking</span>
               </li>
-              <li className="flex items-start gap-4 py-4 rounded-[var(--radius)]  transition-colors duration-200">
+              <li className="flex items-start gap-4 py-2 rounded-[var(--radius)]  transition-colors duration-200">
                 <div className="shrink-0 w-6 h-6 bg-pink-100 rounded-full flex items-center justify-center">
                   <svg
                     className="w-4 h-4 text-pink-600"
@@ -259,15 +293,15 @@ export default function Pricing() {
           </div>
           {/* Why Direct Contact Matters */}
           <div className="bg-[hsl(var(--secondary))] p-8 rounded-[var(--radius)]">
-            <h2 className="text-3xl font-bold mb-4">
+            <h2 className="text-3xl  tracking-tight font-bold mb-4">
               Why Direct Contact Matters
             </h2>
-            <p className="text-lg text-[hsl(var(--muted-foreground))] mb-6">
+            <p className=" text-[hsl(var(--muted-foreground))] mb-6">
               Tired of interview no-shows? When you can't communicate directly
               with candidates, it's hard to confirm appointments, follow up, or
               assess real interest.
             </p>
-            <p className="text-lg text-[hsl(var(--muted-foreground))]">
+            <p className=" text-[hsl(var(--muted-foreground))]">
               With KinsCare, you contact caregivers directly—no middlemen, no
               scheduling barriers. This means fewer no-shows and better hiring
               outcomes.
@@ -276,10 +310,10 @@ export default function Pricing() {
 
           {/* Cancel Anytime */}
           <div className="bg-gradient-to-r from-[hsl(var(--primary))]/10 to-[hsl(var(--accent))]/10 p-8 rounded-[var(--radius)]">
-            <h2 className="text-3xl font-bold mb-4">
+            <h2 className="text-3xl tracking-tight font-bold mb-4">
               Cancel Anytime – No Auto-Renewals
             </h2>
-            <p className="text-lg text-[hsl(var(--muted-foreground))] mb-6">
+            <p className=" text-[hsl(var(--muted-foreground))] mb-2">
               KinsCare is like Uber: you pay for access only when you need it.
             </p>
             <ul className="list-disc pl-6 space-y-3 text-[hsl(var(--muted-foreground))]">
@@ -290,8 +324,8 @@ export default function Pricing() {
           </div>
 
           {/* FAQs */}
-          <div className="space-y-8">
-            <h2 className="text-3xl font-bold">
+          <div className="space-y-8 py-10">
+            <h2 className="text-3xl tracking-tight font-bold">
               💡 Still have questions? Here's what providers want to know:
             </h2>
             <div className="space-y-6">
@@ -338,7 +372,6 @@ export default function Pricing() {
           </div>
         </div>
       </div>
-      
     </div>
   );
 }

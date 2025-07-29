@@ -186,7 +186,7 @@ const PricingButton: React.FC<PricingButtonProps> = ({ children, plan }) => {
           setAuthenticated(true);
           user.refreshCustomData();
           // router.refresh();
-          router.push(`/provider/candidates`);
+          router.push(`/provider/candidates/all`);
         } else {
           const fetchedData: any = await fetchUserData(
             userObj.id,
@@ -219,7 +219,7 @@ const PricingButton: React.FC<PricingButtonProps> = ({ children, plan }) => {
           setAuthenticated(true);
           user.refreshCustomData();
           // router.refresh();
-          router.push(`/provider/candidates`);
+          router.push(`/provider/candidates/all`);
         }
       } catch (error) {
         handleError(error);
@@ -280,7 +280,7 @@ const PricingButton: React.FC<PricingButtonProps> = ({ children, plan }) => {
           app.currentUser.refreshCustomData();
           user.refreshCustomData();
           router.refresh();
-          router.push(`/provider/candidates`);
+          router.push(`/provider/candidates/all`);
           setLoading(false);
         }
       }

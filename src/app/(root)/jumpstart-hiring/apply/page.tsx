@@ -1,3 +1,4 @@
+import HiringChat from "@/JumpStartHiring/HiringChat";
 import JumpStartForm from "@/JumpStartHiring/JumpStartForm";
 import React from "react";
 
@@ -95,12 +96,7 @@ function page() {
               <p className="text-sm text-gray-500 mb-2">
                 Our advisors are happy to answer any questions.
               </p>
-              <a
-                href="/contact"
-                className="inline-block mt-1 text-indigo-700 font-semibold hover:underline"
-              >
-                Chat with a Hiring Advisor
-              </a>
+              <HiringChat/>
             </div>
           </aside>
         </div>
