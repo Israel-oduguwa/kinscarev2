@@ -250,7 +250,7 @@ const CreateJobNewUser: React.FC<CrowdPostProps> = ({
     [setValue]
   );
 
-  const referralLink = "http://localhost:3000/refer-and-earn";
+  const referralLink = "https://www.kinscare.org/refer-and-earn";
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(referralLink);
@@ -258,7 +258,7 @@ const CreateJobNewUser: React.FC<CrowdPostProps> = ({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const pageUrl = "http://localhost:3000/refer-and-earn";
+  const pageUrl = "https://www.kinscare.org/refer-and-earn";
   const shareMsg =
     "Know a care home or agency hiring caregivers? Share a job lead on KinsCare and get rewarded when your referral signs up!,you earn up to $55, and they get a free 7-day trial to connect with top candidates";
 

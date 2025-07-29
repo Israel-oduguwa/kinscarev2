@@ -18,6 +18,7 @@ import MultiSelectField from "@/components/MultiSelect";
 import MongoContext from "@/app/MongoContext";
 
 import {
+  AlertCircle,
   Camera,
   CameraOffIcon,
   Cloudy,
@@ -71,6 +72,13 @@ const schema = yup.object().shape({
     .required("License is required."),
   profileImage: yup.string().required("image url is required"),
   resumeDocument: yup.string().optional(),
+  smsConsent: yup
+    .boolean()
+    .required()
+    .oneOf(
+      [true],
+      "Please confirm that you’d like to receive important updates via text from KinsCare."
+    ),
 });
 
 // the fields
@@ -154,8 +162,8 @@ const CaregiverProfileForm = () => {
           role: "caregiver",
           tel: userData.complete ? userData.settings.tel : userData?.auth?.tel,
           email: userData.complete
-            ? userData.settings.email
-            : userData.auth.email,
+            ? userData?.settings.email
+            : userData?.auth.email,
         },
         certifications:
           userData.complete || userData.certifications
@@ -648,7 +656,36 @@ const CaregiverProfileForm = () => {
                     </p>
                   )}
                 </div>
-
+                <div className="md:col-span-2 mt-4">
+                  <Controller
+                    name="smsConsent"
+                    control={control}
+                    render={({ field }) => (
+                      <label className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          {...field}
+                          checked={field.value}
+                          className="form-checkbox h-10 w-10 text-blue-600"
+                        />
+                        <span className="text-sm text-gray-700">
+                          I agree to receive text messages from KinsCare with
+                          updates about my profile, job opportunities, and
+                          important hiring information. Message frequency may
+                          vary. Standard message and data rates may apply. We do
+                          not share or sell your mobile number. Reply STOP to
+                          unsubscribe.
+                        </span>
+                      </label>
+                    )}
+                  />
+                  {errors.smsConsent && (
+                    <p className="text-red-500 text-xs mt-1.5 flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-1.5" />
+                      {errors.smsConsent.message}
+                    </p>
+                  )}
+                </div>
                 {/* Submit Button */}
                 <Button
                   disabled={loading || isSubmitting}

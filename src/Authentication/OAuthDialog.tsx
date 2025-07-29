@@ -28,6 +28,7 @@ import { trackEvent } from "@/lib/mixpanelUtils";
 import TagManager from "react-gtm-module";
 import ProviderDialog from "@/Providers/Candidates/ProviderDialog";
 import { CustomerSignupParams, sendCustomerSignupEmail } from "@/lib/Email";
+import { OrSeparator } from "@/components/OrSeperator";
 
 interface OAuthDialogProps {
   message: string; // Customizable message for the modal
@@ -46,6 +47,10 @@ const schema = yup.object().shape({
     .string()
     .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password")], "Passwords must match")
+    .required("Confirm password is required"),
   terms: yup.bool().oneOf([true], "You must accept the Terms and Conditions"),
 });
 
@@ -344,7 +349,7 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
                 <DialogTitle className="text-3xl font-bold tracking-tight  text-center">
                   Welcome to Kinscare
                 </DialogTitle>
-                <DialogDescription className="text-gray-600 text-sm text-center mb-6">
+                <DialogDescription className="text-gray-600 text-sm text-center mb-2">
                   {message === "caregiver"
                     ? "Sign in to Kinscare to connect with this caregiver."
                     : "Continue with Google or Facebook to join the Kinscare community effortlessly."}
@@ -368,7 +373,8 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
                   </div>
                 </>
               )}
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <OrSeparator />
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
                 <div className="flex gap-4">
                   <div className="w-1/2">
                     <label htmlFor="fname" className="block mb-1 text-sm">
@@ -484,9 +490,38 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
                     </p>
                   )}
                 </div>
-
+                <div className="flex-1">
+                  <label
+                    htmlFor="confirm-password"
+                    className="block mb-1 text-sm font-medium text-gray-800 dark:text-white"
+                  >
+                    Confirm password
+                  </label>
+                  <Controller
+                    name="confirmPassword"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        type="password"
+                        {...field}
+                        id="confirm-password"
+                        placeholder="••••••••"
+                        className={
+                          errors.confirmPassword
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }
+                      />
+                    )}
+                  />
+                  {errors.confirmPassword && (
+                    <p className="text-red-500 text-sm">
+                      {errors.confirmPassword.message}
+                    </p>
+                  )}
+                </div>
                 <div>
-                  <label className="inline-flex items-center space-x-2">
+                  <label className="inline-flex items-center py-2 space-x-2">
                     <Controller
                       name="terms"
                       control={control}

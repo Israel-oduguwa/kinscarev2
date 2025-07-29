@@ -1,5 +1,5 @@
 import { Dict } from "mixpanel-browser";
-import mixpanel from "./mixpanel";
+import {mixpanel} from "./mixpanel";
 
 interface EventProperties {
   [key: string]: any;

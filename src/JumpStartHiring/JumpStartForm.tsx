@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 import axios from "axios";
 import {
   AlertCircle,
@@ -30,15 +32,13 @@ interface FormData {
   fullName: string;
   email: string;
   phoneNumber: string;
-  orgName: string;
-  whoNeedsCare: string;
-  location: string;
-  careTypes: string[];
+  orgName?: string;
+  city: string;
+  zipcode: string;
   schedule: string[];
-  careStart: string;
   licenses: string[];
-  languages: string;
-  notes: string;
+  jobDescription: string;
+  smsConsent: boolean;
 }
 
 const groupSchedule = [
@@ -68,24 +68,26 @@ const schema = yup.object({
   email: yup.string().email("Invalid email").required("Email is required"),
   phoneNumber: yup
     .string()
-    .matches(/^\+?\d{10,15}$/, "Invalid phone number")
-    .required("Phone number is required"),
-  orgName: yup
-    .string()
-    .required("Organization name or 'Private Family' is required"),
-  whoNeedsCare: yup.string().required("Who needs care is required"),
-  location: yup.string().required("Location is required"),
-  careTypes: yup.array().min(1, "Select at least one type of care"),
+    .required("Phone number is required")
+    .test("valid-phone", "Invalid phone number", (value) =>
+      value ? value.replace(/\D/g, "").length >= 10 : false
+    ),
+  orgName: yup.string().notRequired(),
+  city: yup.string().required("City is required"),
+  zipcode: yup.string().required("Zip code is required"),
   schedule: yup.array().min(1, "Select at least one schedule"),
-  careStart: yup.string().required("Care start date is required"),
   licenses: yup.array().min(1, "Select at least one license"),
-  languages: yup.string().notRequired(),
-  notes: yup.string().notRequired(),
+  jobDescription: yup.string().required("Job description is required"),
+  smsConsent: yup
+    .boolean().required()
+    .oneOf([true], "To continue, please confirm you’d like to receive important updates by text from KinsCare."),
 });
+
 interface SubscriptionData {
   id?: string;
   // Extend as needed to match your subscription object structure
 }
+
 interface CreateSubscriptionResponse {
   clientSecret: string;
   subscriptionId: string;
@@ -128,22 +130,10 @@ function JumpStartForm() {
     return () => subscription.unsubscribe();
   }, [watch]);
 
-  const allFields: (keyof FormData)[] = [
-    "fullName",
-    "email",
-    "phoneNumber",
-    "orgName",
-    "whoNeedsCare",
-    "location",
-    "careTypes",
-    "schedule",
-    "careStart",
-    "licenses",
-    "languages",
-    "notes",
+  const fieldsPerStep: (keyof FormData)[][] = [
+    ["fullName", "email", "phoneNumber", "orgName", "city", "zipcode"],
+    ["schedule", "licenses", "jobDescription", "smsConsent"],
   ];
-
-  const fieldsPerStep: (keyof FormData)[][] = [allFields, []];
 
   const onNext = async () => {
     const fields = fieldsPerStep[step];
@@ -205,24 +195,18 @@ function JumpStartForm() {
   };
 
   const handleSignupSuccess = async (userData: any) => {
-    // we update the database and the user in here
     const payload = {
       userID: userData.userID,
-      email: formData.email,
-      name: formData.fullName,
-      phone: formData.phoneNumber,
+      email: watch("email"),
+      name: watch("fullName"),
+      phone: watch("phoneNumber"),
       application: {
-        careStart: formData.careStart,
-        type: formData.careTypes,
-        languages: formData.languages,
-        licenses: formData.licenses,
-        location: formData.location,
-        notes: formData.notes,
-        organizationName: formData.orgName,
-        schedule: formData.schedule,
-        whoNeedsCare: formData.whoNeedsCare,
-        name: formData.fullName,
-        phone: formData.phoneNumber,
+        jobDescription: watch("jobDescription"),
+        licenses: watch("licenses"),
+        schedule: watch("schedule"),
+        city: watch("city"),
+        zipcode: watch("zipcode"),
+        orgName: watch("orgName"),
       },
     };
     try {
@@ -231,7 +215,6 @@ function JumpStartForm() {
         payload
       );
       console.log(response);
-      // Create the Subscription for the Users
       await createSubscriptionClientSecret(userData.userID);
     } catch (error) {
       console.log(error);
@@ -243,7 +226,7 @@ function JumpStartForm() {
   return (
     <div>
       {/* Progress */}
-      <div className=" pt-0 pb-4">
+      <div className="pt-0 pb-4">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-medium text-blue-600">
             Step {step + 1} of 2
@@ -254,444 +237,286 @@ function JumpStartForm() {
         </div>
         <Progress value={percent} className="h-2.5 bg-gray-200 rounded-full" />
       </div>
-
-      {/* Form */}
-      <div className=" bg-white border-gray-100 ">
+      <div className="bg-white border-gray-100">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-8">
             {step === 0 && (
-              <div className="space-y-6">
-                {/* Contact Information */}
-                <section className="space-y-6 p-5 bg-gray-50 rounded-lg">
-                  <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                    <span className="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center mr-3">
-                      1
-                    </span>
-                    Contact Information
-                  </h3>
-                  <div className="grid text-start py-2 grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                      <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Full Name <span className="text-red-500">*</span>
-                      </label>
-                      <Controller
-                        name="fullName"
-                        control={control}
-                        render={({ field }) => (
-                          <Input
-                            {...field}
-                            placeholder="John Doe"
-                            className={cn(
-                              "rounded-lg",
-                              errors.fullName && "border-red-500"
-                            )}
-                          />
-                        )}
-                      />
-                      {errors.fullName && (
-                        <p className="text-red-500 text-xs mt-1.5 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1.5" />
-                          {errors.fullName.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Email <span className="text-red-500">*</span>
-                      </label>
-                      <Controller
-                        name="email"
-                        control={control}
-                        render={({ field }) => (
-                          <Input
-                            {...field}
-                            type="email"
-                            placeholder="john@example.com"
-                            className={cn(
-                              "rounded-lg",
-                              errors.email && "border-red-500"
-                            )}
-                          />
-                        )}
-                      />
-                      {errors.email && (
-                        <p className="text-red-500 text-xs mt-1.5 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1.5" />
-                          {errors.email.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Phone Number <span className="text-red-500">*</span>
-                      </label>
-                      <Controller
-                        name="phoneNumber"
-                        control={control}
-                        render={({ field }) => (
-                          <Input
-                            {...field}
-                            placeholder="+1234567890"
-                            className={cn(
-                              "rounded-lg",
-                              errors.phoneNumber && "border-red-500"
-                            )}
-                          />
-                        )}
-                      />
-                      {errors.phoneNumber && (
-                        <p className="text-red-500 text-xs mt-1.5 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1.5" />
-                          {errors.phoneNumber.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Organization Name{" "}
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <Controller
-                        name="orgName"
-                        control={control}
-                        render={({ field }) => (
-                          <Input
-                            {...field}
-                            placeholder="BrightView Home"
-                            className={cn(
-                              "rounded-lg",
-                              errors.orgName && "border-red-500"
-                            )}
-                          />
-                        )}
-                      />
-                      {errors.orgName && (
-                        <p className="text-red-500 text-xs mt-1.5 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1.5" />
-                          {errors.orgName.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </section>
-
-                {/* Care Needs */}
-                <section className="space-y-6 p-5 bg-gray-50 rounded-lg">
-                  <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                    <span className="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center mr-3">
-                      2
-                    </span>
-                    Care Needs
-                  </h3>
-                  <div className="grid text-start py-2 grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                      <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Who Needs Care? <span className="text-red-500">*</span>
-                      </label>
-                      <Controller
-                        name="whoNeedsCare"
-                        control={control}
-                        render={({ field }) => (
-                          <Input
-                            {...field}
-                            placeholder="Elderly parent"
-                            className={cn(
-                              "rounded-lg",
-                              errors.whoNeedsCare && "border-red-500"
-                            )}
-                          />
-                        )}
-                      />
-                      {errors.whoNeedsCare && (
-                        <p className="text-red-500 text-xs mt-1.5 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1.5" />
-                          {errors.whoNeedsCare.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Location <span className="text-red-500">*</span>
-                      </label>
-                      <Controller
-                        name="location"
-                        control={control}
-                        render={({ field }) => (
-                          <Input
-                            {...field}
-                            placeholder="Seattle, WA"
-                            className={cn(
-                              "rounded-lg",
-                              errors.location && "border-red-500"
-                            )}
-                          />
-                        )}
-                      />
-                      {errors.location && (
-                        <p className="text-red-500 text-xs mt-1.5 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1.5" />
-                          {errors.location.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Type of Care Needed{" "}
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <div
-                        className={cn(
-                          "rounded-lg",
-                          errors.careTypes && "border border-red-500 rounded-lg"
-                        )}
-                      >
-                        <MultiSelectField
-                          name="careTypes"
-                          control={control}
-                          options={careTypes}
-                          placeholder="Select care types"
-                          maxCount={4}
-                          isAnimation={true}
+              <section className="space-y-6 p-5 bg-gray-50 rounded-lg">
+                <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                  <span className="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center mr-3">
+                    1
+                  </span>
+                  Contact Information
+                </h3>
+                <div className="grid text-start py-2 grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-900">
+                      Full Name <span className="text-red-500">*</span>
+                    </label>
+                    <Controller
+                      name="fullName"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          placeholder="John Doe"
+                          className={cn(
+                            "rounded-lg",
+                            errors.fullName && "border-red-500"
+                          )}
                         />
-                      </div>
-                      {errors.careTypes && (
-                        <p className="text-red-500 text-xs mt-1.5 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1.5" />
-                          {errors.careTypes.message}
-                        </p>
                       )}
-                    </div>
+                    />
+                    {errors.fullName && (
+                      <p className="text-red-500 text-xs mt-1.5 flex items-center">
+                        <AlertCircle className="w-4 h-4 mr-1.5" />
+                        {errors.fullName.message}
+                      </p>
+                    )}
                   </div>
-                </section>
-
-                {/* Schedule */}
-                <section className="space-y-6 p-5 bg-gray-50 rounded-lg">
-                  <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                    <span className="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center mr-3">
-                      3
-                    </span>
-                    Schedule & Requirements
-                  </h3>
-                  <div className="grid text-start py-2 grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                      <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Schedule <span className="text-red-500">*</span>
-                      </label>
-                      <div
-                        className={cn(
-                          "rounded-lg",
-                          errors.schedule && "border border-red-500 rounded-lg"
-                        )}
-                      >
-                        <MultiSelectField
-                          name="schedule"
-                          control={control}
-                          options={groupSchedule}
-                          placeholder="Select schedule"
-                          maxCount={5}
-                          isAnimation={true}
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-900">
+                      Email <span className="text-red-500">*</span>
+                    </label>
+                    <Controller
+                      name="email"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          type="email"
+                          placeholder="john@example.com"
+                          className={cn(
+                            "rounded-lg",
+                            errors.email && "border-red-500"
+                          )}
                         />
-                      </div>
-                      {errors.schedule && (
-                        <p className="text-red-500 text-xs mt-1.5 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1.5" />
-                          {errors.schedule.message}
-                        </p>
                       )}
-                    </div>
-
-                    <div>
-                      <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Care Start Date <span className="text-red-500">*</span>
-                      </label>
-                      <Controller
-                        name="careStart"
-                        control={control}
-                        render={({ field }) => (
-                          <Input
-                            {...field}
-                            type="date"
-                            placeholder="ASAP or YYYY-MM-DD"
-                            className={cn(
-                              "rounded-lg bg-background pr-10",
-                              errors.careStart && "border-red-500"
-                            )}
-                          />
-                        )}
-                      />
-                      {errors.careStart && (
-                        <p className="text-red-500 text-xs mt-1.5 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1.5" />
-                          {errors.careStart.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Required Licenses{" "}
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <div
-                        className={cn(
-                          "rounded-lg",
-                          errors.licenses && "border border-red-500 rounded-lg"
-                        )}
-                      >
-                        <MultiSelectField
-                          name="licenses"
-                          control={control}
-                          options={groupLicenses}
-                          placeholder="Select licenses"
-                          maxCount={4}
-                          isAnimation={true}
-                        />
-                      </div>
-                      {errors.licenses && (
-                        <p className="text-red-500 text-xs mt-1.5 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1.5" />
-                          {errors.licenses.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Languages Required
-                      </label>
-                      <Controller
-                        name="languages"
-                        control={control}
-                        render={({ field }) => (
-                          <Input
-                            {...field}
-                            placeholder="Spanish, English"
-                            className="rounded-lg"
-                          />
-                        )}
-                      />
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Additional Notes
-                      </label>
-                      <Controller
-                        name="notes"
-                        control={control}
-                        render={({ field }) => (
-                          <Textarea
-                            {...field}
-                            placeholder="Any other important details..."
-                            className="rounded-lg min-h-[120px]"
-                          />
-                        )}
-                      />
-                    </div>
+                    />
+                    {errors.email && (
+                      <p className="text-red-500 text-xs mt-1.5 flex items-center">
+                        <AlertCircle className="w-4 h-4 mr-1.5" />
+                        {errors.email.message}
+                      </p>
+                    )}
                   </div>
-                </section>
-              </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-900">
+                      Phone Number <span className="text-red-500">*</span>
+                    </label>
+                    <Controller
+                      name="phoneNumber"
+                      control={control}
+                      render={({ field }) => (
+                        <PhoneInput
+                          {...field}
+                          id="tel"
+                          placeholder="Enter phone number"
+                          defaultCountry="US"
+                          international
+                          className={cn(
+                            "rounded-lg pr-10 input input-bordered w-full",
+                            errors.phoneNumber && "border-red-500"
+                          )}
+                        />
+                      )}
+                    />
+                    {errors.phoneNumber && (
+                      <p className="text-red-500 text-xs mt-1.5 flex items-center">
+                        <AlertCircle className="w-4 h-4 mr-1.5" />
+                        {errors.phoneNumber.message}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-900">
+                      Organization Name{" "}
+                    </label>
+                    <Controller
+                      name="orgName"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          placeholder="BrightView Home"
+                          className="rounded-lg"
+                        />
+                      )}
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-900">
+                      City <span className="text-red-500">*</span>
+                    </label>
+                    <Controller
+                      name="city"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          placeholder="Seattle"
+                          className={cn(
+                            "rounded-lg",
+                            errors.city && "border-red-500"
+                          )}
+                        />
+                      )}
+                    />
+                    {errors.city && (
+                      <p className="text-red-500 text-xs mt-1.5 flex items-center">
+                        <AlertCircle className="w-4 h-4 mr-1.5" />
+                        {errors.city.message}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-900">
+                      Zip Code <span className="text-red-500">*</span>
+                    </label>
+                    <Controller
+                      name="zipcode"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          placeholder="98101"
+                          className={cn(
+                            "rounded-lg",
+                            errors.zipcode && "border-red-500"
+                          )}
+                        />
+                      )}
+                    />
+                    {errors.zipcode && (
+                      <p className="text-red-500 text-xs mt-1.5 flex items-center">
+                        <AlertCircle className="w-4 h-4 mr-1.5" />
+                        {errors.zipcode.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </section>
             )}
 
             {step === 1 && (
-              <div className="space-y-8">
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4">
-                    <span className="text-blue-600">
-                      Premium Caregiver Matching
-                    </span>{" "}
-                    Package
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
-                      <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mb-3">
-                        <CheckCircle className="text-blue-600 w-6 h-6" />
-                      </div>
-                      <h3 className="font-bold text-gray-900">
-                        3 Pre-Screened Caregivers
-                      </h3>
-                      <p className="text-gray-600 text-sm mt-1">
-                        Professionally vetted candidates
-                      </p>
+              <section className="space-y-6 p-5 bg-gray-50 rounded-lg">
+                <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                  <span className="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center mr-3">
+                    2
+                  </span>
+                  Schedule & Requirements
+                </h3>
+                <div className="grid text-start py-2 grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-900">
+                      Schedule <span className="text-red-500">*</span>
+                    </label>
+                    <div
+                      className={cn(
+                        "rounded-lg",
+                        errors.schedule && "border border-red-500 rounded-lg"
+                      )}
+                    >
+                      <MultiSelectField
+                        name="schedule"
+                        control={control}
+                        options={groupSchedule}
+                        placeholder="Select schedule"
+                        maxCount={5}
+                        isAnimation={true}
+                      />
                     </div>
-                    <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
-                      <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mb-3">
-                        <CheckCircle className="text-blue-600 w-6 h-6" />
-                      </div>
-                      <h3 className="font-bold text-gray-900">
-                        2 Weeks Unlimited Access
-                      </h3>
-                      <p className="text-gray-600 text-sm mt-1">
-                        Full platform features
+                    {errors.schedule && (
+                      <p className="text-red-500 text-xs mt-1.5 flex items-center">
+                        <AlertCircle className="w-4 h-4 mr-1.5" />
+                        {errors.schedule.message}
                       </p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-900">
+                      Required Licenses <span className="text-red-500">*</span>
+                    </label>
+                    <div
+                      className={cn(
+                        "rounded-lg",
+                        errors.licenses && "border border-red-500 rounded-lg"
+                      )}
+                    >
+                      <MultiSelectField
+                        name="licenses"
+                        control={control}
+                        options={groupLicenses}
+                        placeholder="Select licenses"
+                        maxCount={4}
+                        isAnimation={true}
+                      />
                     </div>
-                    <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
-                      <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mb-3">
-                        <CheckCircle className="text-blue-600 w-6 h-6" />
-                      </div>
-                      <h3 className="font-bold text-gray-900">
-                        Verified Status
-                      </h3>
-                      <p className="text-gray-600 text-sm mt-1">
-                        Priority in search results
+                    {errors.licenses && (
+                      <p className="text-red-500 text-xs mt-1.5 flex items-center">
+                        <AlertCircle className="w-4 h-4 mr-1.5" />
+                        {errors.licenses.message}
                       </p>
-                    </div>
+                    )}
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block mb-2 text-sm font-medium text-gray-900">
+                      Please provide a detailed job description for the
+                      caregiving role that includes key information such as the
+                      desired care start date, any language requirements for the
+                      caregiver, and clearly specify who needs care. This will
+                      help us find the perfect match.
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <Controller
+                      name="jobDescription"
+                      control={control}
+                      render={({ field }) => (
+                        <Textarea
+                          {...field}
+                          rows={10}
+                          placeholder="Describe the role, who needs care, start date, language requirements, and other important details…"
+                          className={cn(
+                            "rounded-lg min-h-[120px]",
+                            errors.jobDescription && "border-red-500"
+                          )}
+                        />
+                      )}
+                    />
+                    {errors.jobDescription && (
+                      <p className="text-red-500 text-xs mt-1.5 flex items-center">
+                        <AlertCircle className="w-4 h-4 mr-1.5" />
+                        {errors.jobDescription.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="md:col-span-2 mt-4">
+                    <Controller
+                      name="smsConsent"
+                      control={control}
+                      render={({ field }) => (
+                        <label className="flex items-center space-x-3">
+                          <input
+                            type="checkbox"
+                            {...field}
+                            checked={field.value}
+                            className="form-checkbox h-10 w-10 text-blue-600"
+                          />
+                          <span className="text-sm text-gray-700">
+                          I agree to receive text messages from KinsCare with updates about my application, interview reminders, and important hiring information. Message frequency may vary. Standard message and data rates may apply. We do not share or sell your mobile number. Reply STOP to unsubscribe.
+                          </span>
+                        </label>
+                      )}
+                    />
+                    {errors.smsConsent && (
+                      <p className="text-red-500 text-xs mt-1.5 flex items-center">
+                        <AlertCircle className="w-4 h-4 mr-1.5" />
+                        {errors.smsConsent.message}
+                      </p>
+                    )}
                   </div>
                 </div>
-
-                <section className="border rounded-xl overflow-hidden">
-                  <div className="bg-gray-50 px-6 py-4 border-b">
-                    <h3 className="text-lg font-bold text-gray-900">
-                      Your Care Request Summary
-                    </h3>
-                  </div>
-                  <div className="divide-y">
-                    {[
-                      { label: "Full Name", value: watch("fullName") },
-                      { label: "Email", value: watch("email") },
-                      { label: "Phone", value: watch("phoneNumber") },
-                      { label: "Organization", value: watch("orgName") },
-                      { label: "Care Recipient", value: watch("whoNeedsCare") },
-                      { label: "Location", value: watch("location") },
-                      {
-                        label: "Care Types",
-                        value: watch("careTypes")?.join(", "),
-                      },
-                      {
-                        label: "Schedule",
-                        value: watch("schedule")?.join(", "),
-                      },
-                      { label: "Start Date", value: watch("careStart") },
-                      {
-                        label: "Licenses",
-                        value: watch("licenses")?.join(", "),
-                      },
-                      {
-                        label: "Languages",
-                        value: watch("languages") || "None",
-                      },
-                      { label: "Notes", value: watch("notes") || "None" },
-                    ].map((item, index) => (
-                      <div
-                        key={index}
-                        className="grid grid-cols-1 md:grid-cols-3 px-6 py-4 hover:bg-gray-50"
-                      >
-                        <div className="text-sm font-medium text-gray-500">
-                          {item.label}
-                        </div>
-                        <div className="md:col-span-2 text-gray-900 font-medium text-sm">
-                          {item.value}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              </div>
+              </section>
             )}
           </div>
 
@@ -707,31 +532,37 @@ function JumpStartForm() {
                 Back
               </button>
             ) : (
-              <div></div> // Empty div for spacing
+              <div></div>
             )}
 
-            {step < 1 ? (
+            {step < fieldsPerStep.length - 1 ? (
               <Button onClick={onNext}>
                 Continue
                 <ChevronRight className="w-5 h-5 ml-2" />
               </Button>
             ) : (
-              <button
+              <Button
                 type="button"
-                onClick={() => signupTriggerRef.current?.click()}
+                onClick={async () => {
+                  const fields = fieldsPerStep[step];
+                  const valid = await trigger(fields);
+                  if (valid) {
+                    signupTriggerRef.current?.click();
+                  }
+                }}
                 className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg hover:opacity-90 transition-opacity flex items-center shadow-md"
               >
                 <CheckCircle className="w-5 h-5 mr-2" />
-                Confirm & Continue to Payment
-              </button>
+                Continue
+              </Button>
             )}
           </div>
         </form>
       </div>
-
       {/* Signup Dialog */}
       <SignupDialog
         role="provider"
+        jumpstart={true}
         signupRoute="public_job_post"
         trigger={
           <button ref={signupTriggerRef} className="hidden">
@@ -740,7 +571,6 @@ function JumpStartForm() {
         }
         onSuccess={handleSignupSuccess}
       />
-
       {/* Payment Dialog */}
       <Dialog open={isPaymentOpen}>
         <DialogContent className="rounded-xl max-w-md">

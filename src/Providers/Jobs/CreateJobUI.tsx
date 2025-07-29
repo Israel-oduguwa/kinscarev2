@@ -11,7 +11,7 @@ import { toast } from "@/components/ui/use-toast";
 import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
 import { debounce } from "lodash";
-import { LoaderCircle } from "lucide-react";
+import { AlertCircle, LoaderCircle } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -57,6 +57,13 @@ const schema = Yup.object().shape({
   ),
   //   certifications: Yup.string(), //.required("Enter required "),
   description: Yup.string().required("Please enter job description"),
+  smsConsent: Yup
+    .boolean()
+    .required()
+    .oneOf(
+      [true],
+      "Please confirm that you’d like to receive important updates via text from KinsCare."
+    ),
 });
 
 const groupSchedule = [
@@ -113,6 +120,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
     defaultValues: {
       description: job.description,
       compensation: job.compensation,
+      smsConsent: false, 
       contacts: job.contacts,
       licenses: job.licenses ? job.licenses : [],
       schedule: job.schedule ? job.schedule : [],
@@ -297,7 +305,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
                     }} // To connect with react-hook-form
                   />
                   {errors.title && (
-                    <p className="text-red-500">{errors.title.message}</p>
+                    <p className="text-red-500 text-xs">{errors.title.message}</p>
                   )}
                 </div>
                 <div>
@@ -368,7 +376,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
                     }} // To connect with react-hook-form
                   />
                   {errors?.minHours && (
-                    <p className="text-red-500">{errors.minHours?.message}</p>
+                    <p className="text-red-500 text-xs">{errors.minHours?.message}</p>
                   )}
                 </div>
               </div>
@@ -396,7 +404,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
                       }} // To connect with react-hook-form
                     />
                     {errors.contacts?.city && (
-                      <p className="text-red-500">
+                      <p className="text-red-500 text-xs">
                         {errors.contacts?.city.message}
                       </p>
                     )}
@@ -443,7 +451,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
                     }} // To connect with react-hook-form
                   />
                   {errors.contacts?.address && (
-                    <p className="text-red-500">
+                    <p className="text-red-500 text-xs">
                       {errors.contacts?.address.message}
                     </p>
                   )}
@@ -499,7 +507,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
                     </div>
                   </div>
                 </div>
-                <div>
+                <div className="mb-10">
                   <h3 className="font-semibold text-sm mb-2">
                     Does the job require caregiver to drive?
                   </h3>
@@ -557,8 +565,38 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
                     }} // To connect with react-hook-form
                   />
                   {errors.compensation && (
-                    <p className="text-red-500">
+                    <p className="text-red-500 text-xs">
                       {errors.compensation.message}
+                    </p>
+                  )}
+                </div>
+                <div className="md:col-span-2 ">
+                  <Controller
+                    name="smsConsent"
+                    control={control}
+                    render={({ field }) => (
+                      <label className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          {...field}
+                          checked={field.value}
+                          className="form-checkbox h-8 w-8 text-blue-600"
+                        />
+                        <span className="text-sm text-gray-700">
+                          I agree to receive text messages from KinsCare with
+                          updates about my job posting, applicant status, and
+                          important hiring information. Message frequency may
+                          vary. Standard message and data rates may apply. We do
+                          not share or sell your mobile number. Reply STOP to
+                          unsubscribe.
+                        </span>
+                      </label>
+                    )}
+                  />
+                  {errors.smsConsent && (
+                    <p className="text-red-500 text-xs mt-1.5 flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-1.5" />
+                      {errors.smsConsent.message}
                     </p>
                   )}
                 </div>
@@ -572,8 +610,8 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
                     {loading || isSubmitting
                       ? "Posting...."
                       : type === "repost"
-                      ? "Repost Job"
-                      : "Post Job"}
+                        ? "Repost Job"
+                        : "Post Job"}
                   </Button>
                 </div>
               </div>

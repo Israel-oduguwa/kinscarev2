@@ -522,7 +522,7 @@ export default function Home() {
 
                 <div className="mt-4">
                   <button className="bg-indigo-600 text-white px-8 py-4 text-lg font-bold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300">
-                    <Link href="/find-caregivers">
+                    <Link href="/find-jobs">
                       Find Jobs That Match Your Skill Now
                     </Link>
                   </button>
@@ -657,7 +657,7 @@ export default function Home() {
 
                   <div className="mt-4">
                     <button className="bg-indigo-600 text-white px-8 py-4 text-lg font-bold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300">
-                      <Link href="/find-caregivers">
+                      <Link href="/explore">
                         Start exploring your future in healthcare →
                       </Link>
                     </button>

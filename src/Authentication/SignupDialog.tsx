@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { trackEvent } from "@/lib/mixpanelUtils";
 import TagManager from "react-gtm-module";
 import { CustomerSignupParams, sendCustomerSignupEmail } from "@/lib/Email";
+import { OrSeparator } from "@/components/OrSeperator";
 
 // Validation schema for the email signup form
 const schema = yup.object().shape({
@@ -33,6 +34,7 @@ const schema = yup.object().shape({
   lname: yup.string().required("Last name is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
   tel: yup.string().required("Phone number is required"),
+  confirmPassword: yup.string().oneOf([yup.ref("password")], "Passwords must match").required("Confirm password is required"),
   password: yup
     .string()
     .min(6, "Password must be at least 6 characters")
@@ -46,6 +48,7 @@ interface SignupDialogProps {
   onSuccess?: (userData: any) => void;
   signupRoute?: string;
   trigger: React.ReactNode;
+  jumpstart: boolean;
 }
 
 const SignupDialog: React.FC<SignupDialogProps> = ({
@@ -53,6 +56,7 @@ const SignupDialog: React.FC<SignupDialogProps> = ({
   additionalData = {},
   onSuccess,
   signupRoute = "",
+  jumpstart,
   trigger,
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -289,16 +293,31 @@ const SignupDialog: React.FC<SignupDialogProps> = ({
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>{trigger}</DialogTrigger>
         <DialogContent className="rounded-lg shadow-xl p-6 bg-white max-w-lg">
-          <div>
-            <DialogTitle className="text-3xl font-bold tracking-tight text-center">
-              Welcome to Kinscare
-            </DialogTitle>
-            <DialogDescription className="text-gray-600 text-sm text-center mb-2">
-              {role === "caregiver"
-                ? "Sign up to connect with caregivers."
-                : "Join the Kinscare community effortlessly."}
-            </DialogDescription>
-          </div>
+          {jumpstart ? (
+            <>
+              {" "}
+              <div>
+                <DialogTitle className="text-3xl font-bold tracking-tight text-center">
+                  Welcome to Kinscare
+                </DialogTitle>
+                <DialogDescription className="text-gray-600 text-sm text-center mb-2">
+                  Let us start matching you with caregivers—and enjoy 2 weeks of
+                  full access to browse and hire on your own.
+                </DialogDescription>
+              </div>
+            </>
+          ) : (
+            <div>
+              <DialogTitle className="text-3xl font-bold tracking-tight text-center">
+                Welcome to Kinscare
+              </DialogTitle>
+              <DialogDescription className="text-gray-600 text-sm text-center mb-2">
+                {role === "caregiver"
+                  ? "Sign up to connect with caregivers."
+                  : "Join the Kinscare community effortlessly."}
+              </DialogDescription>
+            </div>
+          )}
 
           {!loading ? (
             <div className="flex justify-center items-center flex-col gap-4">
@@ -309,7 +328,12 @@ const SignupDialog: React.FC<SignupDialogProps> = ({
                 theme="filled_black"
                 text="continue_with"
               />
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
+              <OrSeparator />
+
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="space-y-2 w-full"
+              >
                 <div className="flex gap-4">
                   <div className="w-1/2">
                     <label htmlFor="fname" className="block mb-1 text-sm">
@@ -423,6 +447,27 @@ const SignupDialog: React.FC<SignupDialogProps> = ({
                     </p>
                   )}
                 </div>
+                <div className="flex-1">
+                    <label htmlFor="confirm-password" className="block mb-1 text-sm font-medium text-gray-800 dark:text-white">
+                      Confirm password
+                    </label>
+                    <Controller
+                      name="confirmPassword"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          type="password"
+                          {...field}
+                          id="confirm-password"
+                          placeholder="••••••••"
+                          className={errors.confirmPassword ? "border-red-500" : "border-gray-300"}
+                        />
+                      )}
+                    />
+                    {errors.confirmPassword && (
+                      <p className="text-red-500 text-xs">{errors.confirmPassword.message}</p>
+                    )}
+                  </div>
                 <div>
                   <label className="inline-flex items-center space-x-2">
                     <Controller

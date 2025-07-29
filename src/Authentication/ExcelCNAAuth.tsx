@@ -1,251 +1,373 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import MongoContext from "@/app/MongoContext";
-import { fetchContactsData, fetchUserData, trackEvents } from "@/lib/utils";
-import axios, { AxiosRequestConfig } from "axios";
+
+import React, { useState, useContext } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
-import React, { useContext, useEffect, useState } from "react";
+import MongoContext from "@/app/MongoContext";
+import axios from "axios";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
+import { cn, fetchUserData } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
+import { useForm, Controller } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { trackEvent } from "@/lib/mixpanelUtils";
 import TagManager from "react-gtm-module";
-import { useRouter } from "next/navigation";
-import DashboardSkeleton from "@/Providers/DashboardSkelenton";
+import { CustomerSignupParams, sendCustomerSignupEmail } from "@/lib/Email";
 import * as Realm from "realm-web";
-function ExcelCNAAuth() {
-  const {
-    userData,
-    user,
-    client,
-    app,
-    setUserData,
-    setUser,
-    setCustomData,
-    setAuthenticated,
-    customData,
-  }: any = useContext(MongoContext);
-  const [loading, setLoading] = useState(true);
+
+// Validation schema for the email signup form
+const schema = yup.object().shape({
+  fname: yup.string().required("First name is required"),
+  lname: yup.string().required("Last name is required"),
+  email: yup.string().email("Invalid email").required("Email is required"),
+  tel: yup.string().required("Phone number is required"),
+  password: yup
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  terms: yup.bool().oneOf([true], "You must accept the Terms and Conditions"),
+});
+
+const ExcelCNASignupPage = () => {
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
   const router = useRouter();
-  useEffect(() => {
-    const signup = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const hashedUserData = params.get("hashedUserData");
-      const token = params.get("token");
-      const csrfToken = params.get("kincaret");
+  const searchParams = useSearchParams();
+  const hashedUserData = searchParams.get("hashedUserData");
 
-      const createUserDuringRegistration = async (payload: any) => {
-        const decodedToken: any = jwtDecode(payload);
-        // console.log(decodedToken);
-        const payloads = {
-          id: decodedToken.userId,
-          email: decodedToken.email,
-        };
-        const credentials = Realm.Credentials.function(payloads);
-        // console.log(credentials);
-        const userObj = await app.logIn(credentials);
-        // console.log(userObj);
-        const users = await client
-          .db("kinshealth")
-          .collection("contacts")
-          .find({
-            userID: userObj.id,
-            email: userObj.profile.name,
-          });
-        // console.log(user);
-        // console.log(users[0]?.returning, "these are users");
-        const hashedUserData = decodedToken.hashedUserData;
-        // console.log(hashedUserData);
-        // check if the user already exist
-        if (users.length < 1) {
-          const data_payload = {
-            email: app.currentUser.profile.name,
-            userID: app.currentUser.id,
-            role: decodedToken.role,
-            tel: decodedToken.phoneNumber,
-            fname: decodedToken.fname,
-            lname: decodedToken.lname,
-            auth_mode: "otp",
-            route: "Regular",
-            created: new Date(),
-            otp_hash: hashedUserData,
-          };
-          // if the user have not created the account before create the user
-          // add some data into the object
-          // get the user Ip address and get the city, address and state
-          const response = await axios.get("/api/ip");
-          if (response.data) {
-            const {
-              ip,
-              city,
-              latitude,
-              longitude,
-              country_code,
-              region_name,
-              zip,
-            } = response.data;
-            // if the address is gotten
-            Object.assign(data_payload, {
-              route: "excel_cna", // excel_cna
-              // assign all the rest data
-              zipcode: zip,
-              userIp: ip,
-              address: `${city}, ${region_name}, ${country_code}`,
-              geocode_address: {
-                lng: longitude,
-                lat: latitude,
-              },
-              city: city,
-              returning: false,
-            });
-            // call with function
-            // console.log(data_payload);
-            const createUser = await axios.post(
-              "https://api.kinscare.org/api/v1/auth/create_user",
-              data_payload
-            );
+  const mongo:any = useContext(MongoContext);
+  const { app, client, setAuthenticated, setUser, setUserData } = mongo;
 
-            // console.log(segment_tracking);
-            //refresh current user
-            await app.currentUser.refreshCustomData();
-            trackEvents(
-              app.currentUser.customData.hash,
-              "Sign Up",
-              data_payload
-            );
-            //set user
-            setUser(app.currentUser);
-            // //register user
-            //update user's data
-            const tagManagerArgs =
-              data_payload.auth_mode === "local-userpass"
-                ? {
-                    dataLayer: {
-                      event: `${data_payload.role}_sign_up`,
-                      userIp: response?.data?.userIp,
-                      flow: "join_kinscare", 
-                      added: new Date(),
-                      authEmail: data_payload.email,
-                      authMode: data_payload.auth_mode,
-                      authTel: data_payload.tel.trim(),
-                      role: `${data_payload.role}`,
-                      type: "Web",
-                      userId: `${userObj.id}`,
-                    },
-                  }
-                : {
-                    dataLayer: {
-                      event: `otp_sign_up`,
-                      added: new Date(),
-                      flow: "join_kinscare", // 
-                      userIp: response?.data?.userIp,
-                      authEmail: data_payload.email,
-                      authMode: data_payload.auth_mode,
-                      socialFname: data_payload.fname,
-                      socialLname: data_payload.lname,
-                      type: "Web",
-                      userId: `${userObj.id}`,
-                    },
-                  };
-            TagManager.dataLayer(tagManagerArgs);
-            setAuthenticated(true);
-
-            const userID = app.currentUser.id;
-            const emails = app.currentUser.email;
-            const user_data: any = await fetchUserData(userID, emails);
-            const updatedData: any = await fetchContactsData(userID, emails);
-            if (user_data) {
-              // console.log(user_data)
-              setCustomData(updatedData.result);
-              setUserData(user_data.result); // set the user data
-              user.refreshCustomData();
-              app.currentUser.refreshCustomData();
-              router.refresh();
-              // route the user to the appropriate page based on role
-            }
-          }
-        } else {
-          //if the user signing in does not have returning attribute, add it
-          console.log("Passed");
-          // if (!users[0]?.returning) {
-          //   await client
-          //     .db("kinshealth")
-          //     .collection("users")
-          //     .updateOne(
-          //       { userID: app.currentUser.id },
-          //       { $set: { returning: true } },
-          //       { upsert: true }
-          //     );
-          // }
-          const mixpanelPayload = {
-            auth_mode: "otp",
-            date_time: new Date().toISOString(),
-            route: "Regular",
-            email: app.currentUser.profile.name,
-          };
-          trackEvents(
-            app.currentUser.customData.hash,
-            "Sign In",
-            mixpanelPayload
-          );
-          setUser(app.currentUser);
-          // console.log("SetUser have fired");
-          // we then redirect the user to the dashboard
-          app.currentUser.refreshCustomData();
-          //   then route the user to the dashboard
-          const userID = app.currentUser.id;
-          const emails = app.currentUser.email;
-          const user_data: any = await fetchUserData(userID, emails);
-          const updatedData: any = await fetchContactsData(userID, emails);
-          // console.log(updatedData, "updated cutome Data")
-          if (user_data) {
-            setCustomData(updatedData.result);
-            setUserData(user_data.result); // set the user data
-            user.refreshCustomData();
-            app.currentUser.refreshCustomData();
-            router.refresh();
-            // route the user to the appropriate page based on role
-          }
-        }
-      };
-
-      const signupUser = async () => {
-        setLoading(true);
-        const payload = {
-          csrfToken,
-          hashedUserData,
-        };
-        try {
-          const headers: AxiosRequestConfig["headers"] = {
-            "Content-Type": "application/json",
-          };
-          console.log(payload);
-          const checkCSRF = await axios.post(
-            "https://api.kinscare.org/api/v1/auth/signin_users_from_excelcna",
-            payload,
-            {
-              withCredentials: true, // Important for sending cookies in cross-origin requests
-              headers,
-            }
-          );
-          // console.log(checkCSRF);
-          if (checkCSRF.data.tokenValid) {
-            // sign in the user
-            await createUserDuringRegistration(token);
-            router.push("/vitae/jobs/all");
-            setLoading(false);
-          } else {
-            console.log("not valid");
-          }
-        } catch (error) {
-          console.log(error);
-          setLoading(false);
-        }
-      };
-
-      signupUser();
-    };
-    if (client) {
-      signup();
+  // Decode hashedUserData if present
+  let decodedData:any = null;
+  if (hashedUserData) {
+    try {
+      decodedData = jwtDecode(hashedUserData);
+    } catch (error) {
+      console.error("Failed to decode hashedUserData:", error);
+      toast({
+        variant: "destructive",
+        description: "Invalid user data provided. Please try again.",
+      });
     }
-  }, [client]);
-  return <>{loading && <DashboardSkeleton />}</>;
-}
+  }
 
-export default ExcelCNAAuth;
+  // Set default form values based on decoded data
+  const defaultValues = {
+    fname: decodedData?.fname || "",
+    lname: decodedData?.lname || "",
+    email: decodedData?.email || "",
+    tel: decodedData?.phoneNumber || "",
+    password: "",
+    terms: false,
+  };
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues,
+  });
+
+  const handleError = (error:any) => {
+    console.error("An error occurred:", error);
+    let description = "An error occurred. Please try again.";
+    if (error.message && error.message.includes("name already in use")) {
+      description = "This email is already registered. Please log in instead.";
+    }
+    toast({
+      variant: "destructive",
+      className: cn(
+        "top-0 right-0 flex fixed md:max-w-[640px] md:top-4 md:right-4"
+      ),
+      description,
+      action: error.message && error.message.includes("name already in use") ? (
+        <ToastAction altText="Log in" onClick={() => router.push("/login")}>
+          Log in
+        </ToastAction>
+      ) : (
+        <ToastAction altText="Try again">Try again</ToastAction>
+      ),
+    });
+    setLoading(false);
+  };
+
+  const createUserDuringRegistration = async (payload:any) => {
+    try {
+      const response = await axios.get("/api/ip");
+      if (response.data) {
+        const {
+          ip,
+          city,
+          latitude,
+          longitude,
+          country_code,
+          region_name,
+          zip,
+        } = response.data;
+        Object.assign(payload, {
+          route: "excel_cna",
+          userIp: ip,
+          zipcode: zip,
+          address: `${city}, ${region_name}, ${country_code}`,
+          geocode_address: { lng: longitude, lat: latitude },
+          city,
+          returning: false,
+          role: decodedData?.role || "caregiver", // Use role from decoded data or default to "caregiver"
+        });
+
+        await axios.post(
+          "https://api.kinscare.org/api/v1/auth/create_user",
+          payload
+        );
+        const tagManagerArgs = {
+          dataLayer: {
+            event: `${payload.role}_sign_up`,
+            userIp: ip,
+            added: new Date(),
+            authEmail: payload.email,
+            authMode: payload.auth_mode,
+            authTel: payload.tel.trim(),
+            role: payload.role,
+            type: "Web",
+            userId: payload.userID,
+          },
+        };
+
+        TagManager.dataLayer(tagManagerArgs);
+        setAuthenticated(true);
+        const fullName = `${payload.fname || ""} ${payload.lname || ""}`.trim();
+        const emailParams = {
+          email: payload.email,
+          name: fullName,
+          role: payload.role,
+        };
+        await sendCustomerSignupEmail(emailParams);
+      }
+    } catch (error) {
+      handleError(error);
+      throw error;
+    }
+  };
+
+  const onSubmit = async (data:any) => {
+    try {
+      setLoading(true);
+      const email = data.email.toLowerCase();
+      const password = data.password;
+      await app.emailPasswordAuth.registerUser({ email, password });
+      const credentials = Realm.Credentials.emailPassword(email, password);
+      const userObj = await app.logIn(credentials);
+
+      if (userObj) {
+        setUser(userObj);
+        await userObj.refreshCustomData();
+        const payload = {
+          tel: data.tel,
+          fname: data.fname,
+          lname: data.lname,
+          userID: userObj.id,
+          email,
+          auth_mode: "local-userpass",
+        };
+        await createUserDuringRegistration(payload);
+        const fetchedData = await fetchUserData(userObj.id, email);
+        if (fetchedData) {
+          setUserData(fetchedData.result);
+          trackEvent(userObj.customData.hash, "Sign Up", payload);
+          userObj.refreshCustomData();
+          router.push("/dashboard"); // Redirect to dashboard after successful signup
+        }
+      }
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
+        <h1 className="text-3xl font-bold tracking-tight text-center mb-2">
+          Welcome to Kinscare
+        </h1>
+        <p className="text-gray-600 text-sm text-center mb-4">
+          {decodedData
+            ? "Your information has been pre-filled from ExcelCNA. Please review and complete the form to create your account."
+            : "Sign up to join the Kinscare community."}
+        </p>
+        {loading ? (
+          <div className="flex justify-center w-full items-center">
+            <Loader2 size={30} className="animate-spin" />
+          </div>
+        ) : (
+          <div className="flex justify-center items-center flex-col gap-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
+              <div className="flex gap-4">
+                <div className="w-1/2">
+                  <label htmlFor="fname" className="block mb-1 text-sm">
+                    First Name
+                  </label>
+                  <Controller
+                    name="fname"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        id="fname"
+                        placeholder="First Name"
+                        className={errors.fname ? "border-red-500" : ""}
+                      />
+                    )}
+                  />
+                  {errors.fname && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.fname.message}
+                    </p>
+                  )}
+                </div>
+                <div className="w-1/2">
+                  <label htmlFor="lname" className="block mb-1 text-sm">
+                    Last Name
+                  </label>
+                  <Controller
+                    name="lname"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        id="lname"
+                        placeholder="Last Name"
+                        className={errors.lname ? "border-red-500" : ""}
+                      />
+                    )}
+                  />
+                  {errors.lname && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.lname.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="email" className="block mb-1 text-sm">
+                  Email Address
+                </label>
+                <Controller
+                  name="email"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      id="email"
+                      placeholder="Email Address"
+                      className={errors.email ? "border-red-500" : ""}
+                    />
+                  )}
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.email.message}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label htmlFor="tel" className="block mb-1 text-sm">
+                  Phone Number
+                </label>
+                <Controller
+                  name="tel"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      id="tel"
+                      placeholder="123-456-7890"
+                      className={errors.tel ? "border-red-500" : ""}
+                    />
+                  )}
+                />
+                {errors.tel && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.tel.message}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label htmlFor="password" className="block mb-1 text-sm">
+                  Password
+                </label>
+                <Controller
+                  name="password"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      id="password"
+                      type="password"
+                      placeholder="Create a password"
+                      className={errors.password ? "border-red-500" : ""}
+                    />
+                  )}
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.password.message}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="inline-flex items-center space-x-2">
+                  <Controller
+                    name="terms"
+                    control={control}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="checkbox"
+                        checked={field.value}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                        className="form-checkbox h-5 w-5 text-blue-600"
+                      />
+                    )}
+                  />
+                  <span className="text-sm">
+                    I agree to the{" "}
+                    <a
+                      href="/terms"
+                      target="_blank"
+                      className="text-blue-500 underline"
+                    >
+                      Terms and Conditions
+                    </a>
+                  </span>
+                </label>
+                {errors.terms && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.terms.message}
+                  </p>
+                )}
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? (
+                  < loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  "Signup"
+                )}
+              </Button>
+            </form>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ExcelCNASignupPage;

@@ -37,7 +37,7 @@ function page() {
           <div className="lg:col-span-8 xl:col-span-8 flex flex-col justify-center">
             <div className="bg-white/80 backdrop-blur-xl border border-white/30 rounded-3xl shadow-xl p-6 md:p-10">
               <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2 text-left">
-                JumpStart Hiring
+                Jump start Hiring
               </h1>
               <p className="text-gray-600 mb-3 text-left">
                 Welcome! This is your first step to finding the best caregiver
@@ -53,7 +53,7 @@ function page() {
             {/* How it Works */}
             <div className="bg-white/80 backdrop-blur-xl border border-white/30 rounded-3xl shadow-lg p-7 flex flex-col gap-5">
               <h2 className="text-xl font-bold text-indigo-900 mb-2">
-                How JumpStart Works
+                How Jump start Works
               </h2>
               <ol className="list-decimal list-inside space-y-3 text-left text-gray-700">
                 <li>
@@ -96,7 +96,7 @@ function page() {
                 Our advisors are happy to answer any questions.
               </p>
               <a
-                href="/support"
+                href="/contact"
                 className="inline-block mt-1 text-indigo-700 font-semibold hover:underline"
               >
                 Chat with a Hiring Advisor

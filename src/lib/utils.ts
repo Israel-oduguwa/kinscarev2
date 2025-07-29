@@ -84,7 +84,7 @@ export const isAnon = (
 };
 
 // mixpanel Utilities
-import mixpanel from "./mixpanel";
+import { mixpanel } from "./mixpanel";
 // import Router from "next/router";
 import { Dict } from "mixpanel-browser";
 

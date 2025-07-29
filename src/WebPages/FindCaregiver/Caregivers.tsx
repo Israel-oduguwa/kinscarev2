@@ -10,6 +10,8 @@ import truncateHtml from "html-truncate";
 import SearchBar from "./SearchBar";
 import OAuthDialog from "@/Authentication/OAuthDialog";
 import ProfileAvatar from "@/components/ProfileAvatar";
+import StickyBanner from "./ConciergeSidebarCard";
+import ConciergeSidebarCard from "./ConciergeSidebarCard";
 
 polyfill();
 
@@ -267,63 +269,72 @@ async function Caregivers({ availability, page, licenses }: CaregiversProps) {
 
   return (
     <div className="w-full bg-gray-100 min-h-[100vh] p-3">
-      <div className="max-w-6xl py-10 mx-auto">
-        {/* Search Bar */}
-        <div className="mb-6">
-          <SearchBar
-            availability={availabilityArray}
-            licenses={licensesArray}
-          />
+    <div className="max-w-7xl mx-auto py-10">
+      {/* Full-width Search Bar */}
+      <div className="mb-6">
+        <SearchBar
+          availability={availabilityArray}
+          licenses={licensesArray}
+        />
+      </div>
+      {/* Grid for results + sidebar */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-7">
+        {/* Caregivers List */}
+        <div className="col-span-12 lg:col-span-9">
+          <h1 className="text-md text-gray-800 tracking-tight antialiased font-bold mb-4">
+            {fetchError
+              ? "Unable to load caregivers."
+              : `There are ${pagination.totalCaregivers} caregivers near you with ${licenses}`}. <span className="italic">Register or sign in to view caregiver contacts [Register]</span>
+          </h1>
+          {fetchError ? (
+            <div className="py-10 text-center">
+              <p className="text-lg text-gray-700 dark:text-gray-300">
+                Something went wrong loading caregivers. Please try again later.
+              </p>
+            </div>
+          ) : caregivers.length === 0 ? (
+            <div className="py-10 text-center">
+              <p className="text-lg text-gray-700 dark:text-gray-300">
+                No caregivers found matching your criteria.
+              </p>
+            </div>
+          ) : (
+            <div>
+              {caregivers.map((candidate) => (
+                <CandidatesCard
+                  key={candidate.userID}
+                  candidate={candidate}
+                  isAuthenticated={false}
+                />
+              ))}
+              {pagination.currentPage < pagination.totalPages && (
+                <div className="flex justify-center mt-6">
+                  <Link
+                    href={`?availability=${encodeURIComponent(
+                      availability
+                    )}&licenses=${encodeURIComponent(
+                      licenses
+                    )}&page=${pagination.currentPage + 1}`}
+                    passHref
+                  >
+                    <Button asChild>Load More</Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
+          {/* On mobile, sidebar card appears after list */}
+          <div className="block lg:hidden mt-4">
+            <ConciergeSidebarCard />
+          </div>
         </div>
-
-        {/* Header */}
-        <h1 className="text-md text-gray-800 tracking-tight antialiased font-bold mb-4">
-          {fetchError
-            ? "Unable to load caregivers."
-            : `There are ${pagination.totalCaregivers} caregivers near you with ${licenses}`}
-        </h1>
-
-        {fetchError ? (
-          <div className="py-10 text-center">
-            <p className="text-lg text-gray-700 dark:text-gray-300">
-              Something went wrong loading caregivers. Please try again later.
-            </p>
-          </div>
-        ) : caregivers.length === 0 ? (
-          <div className="py-10 text-center">
-            <p className="text-lg text-gray-700 dark:text-gray-300">
-              No caregivers found matching your criteria.
-            </p>
-          </div>
-        ) : (
-          <div>
-            {caregivers.map((candidate) => (
-              <CandidatesCard
-                key={candidate.userID}
-                candidate={candidate}
-                isAuthenticated={false}
-              />
-            ))}
-            {pagination.currentPage < pagination.totalPages && (
-              <div className="flex justify-center mt-6">
-                <Link
-                  href={`?availability=${encodeURIComponent(
-                    availability
-                  )}&licenses=${encodeURIComponent(
-                    licenses
-                  )}&page=${pagination.currentPage + 1}`}
-                  passHref
-                >
-                  <Button asChild>
-                   Load More
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </div>
-        )}
+        {/* Concierge Sidebar card: right side only on large screens */}
+        <div className="hidden lg:block mt-10 col-span-3">
+          <ConciergeSidebarCard />
+        </div>
       </div>
     </div>
+  </div>
   );
 }
 export default Caregivers;

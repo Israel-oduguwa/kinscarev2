@@ -13,6 +13,8 @@ import Script from "next/script";
 import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
 import { Toaster } from "sonner";
+import CookieConsentBanner from "@/Utils/CookieConsentBanner";
+import MixpanelProvider from "@/lib/MixpanelProvider";
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
@@ -97,6 +99,7 @@ export default function RootLayout({
           speed={200}
           shadow="0 0 10px #2299DD,0 0 5px #2299DD"
         />
+        <MixpanelProvider/>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
@@ -111,6 +114,8 @@ export default function RootLayout({
               {" "}
               <VoiceFlowProvider>
               {/* <IntercomProvider /> */}
+              {/* Run the cookie consent  */}
+              <CookieConsentBanner/>
               {children}
               </VoiceFlowProvider>
             </ContextProviders>

@@ -27,7 +27,8 @@ const JobUpdatePage = ({type}:any) => {
         "https://api.kinscare.org/api/v1/providers/post-job",
         payload
       );
-      const jobID = response.data.id;
+      console.log(response)
+      const jobID = response.data.jobId;
       setCurrentJobID(jobID); // Set new job ID
       const currentUrl = window.location.href; // Full URL
 

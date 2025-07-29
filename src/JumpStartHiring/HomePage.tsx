@@ -217,8 +217,8 @@ function HomePage() {
             <span className="font-bold text-[#feb47b] bg-white/10 px-2 py-1 rounded-md">
               3 qualified caregivers
             </span>
-            —personally found and scheduled for you by a KinsCare agent, in just
-            3 days. Plus, enjoy{" "}
+            —personally found and scheduled for you by our team, in just 3 days.
+            Plus, enjoy{" "}
             <span className="font-bold text-purple-100 bg-white/10 px-2 py-1 rounded-md">
               2 weeks of full access
             </span>{" "}
@@ -241,7 +241,7 @@ function HomePage() {
                 size="lg"
                 className={cn(
                   "bg-gradient-to-r from-[#ff7e5f] to-[#feb47b] text-white text-base md:text-lg font-bold",
-                  "px-8 py-7 rounded-xl transform transition-all duration-300",
+                  "px-16 py-8 rounded-xl transform transition-all duration-300",
                   "hover:from-[#ff6a4a] hover:to-[#fe9e6b] hover:scale-[1.03] hover:shadow-xl hover:shadow-[#ff7e5f]/30",
                   "relative overflow-hidden group"
                 )}
@@ -251,30 +251,7 @@ function HomePage() {
                 <div className="absolute inset-0 bg-white/10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Button>
             </Link>
-            <Link href="#how-it-works">
-              <Button
-                variant="outline"
-                size="lg"
-                className="text-white border-white/30 hover:border-white/60 bg-transparent hover:bg-white/5 px-8 py-7 rounded-xl font-semibold backdrop-blur-sm transition-all"
-              >
-                <span className="flex items-center gap-2">
-                  How It Works
-                  <svg
-                    className="w-4 h-4 animate-bounce-horizontal"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                    />
-                  </svg>
-                </span>
-              </Button>
-            </Link>
+        
           </motion.div>
 
           {/* Enhanced trust badges */}
@@ -334,7 +311,7 @@ function HomePage() {
                 x: [0, -15, 0],
               }}
               transition={{
-                duration:8,
+                duration: 8,
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
@@ -611,13 +588,14 @@ function HomePage() {
                 </h3>
               </div>
               <p className="text-gray-600">
-                No bots, no AI—your KinsCare agent is a real person who guides
-                you at every step, ensuring a smooth hiring process.
+                We believe in a personal touch. A dedicated member of our team
+                will be available to partner with you, ensuring you find the
+                right caregiver solution together.
               </p>
             </motion.div>
           </div>
 
-          <motion.div
+          {/* <motion.div
             variants={fadeIn}
             initial="hidden"
             animate={controls.trust}
@@ -669,7 +647,7 @@ function HomePage() {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </motion.div> */}
         </div>
 
         {/* Background elements */}

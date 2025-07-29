@@ -1,21 +1,26 @@
 /* eslint-disable react/no-unescaped-entities */
-/* eslint-disable @next/next/no-img-element */
-import React from "react";
+import { Check, PhoneForwarded, Pin, Search, Star, User } from "lucide-react";
+import Image from "next/image";
 import SearchBar from "./SearchBar";
-import { Pin } from "lucide-react";
-import { Button } from "@/components/ui/button";
 const FindLandingPage = async () => {
   return (
     <div>
-      <div
-        className="relative w-full h-[70vh] mt-5 bg-cover bg-top"
-        style={{
-          backgroundImage:
-            "url('https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1380983332-min.jpg?alt=media&token=5f9db9a8-fe08-40a3-bb3c-cda1feb17bed')",
-        }}
-      >
-        {/* Enhanced Overlay */}
-        <div className="absolute inset-0 top-[30vh] bg-black bg-opacity-5">
+      <div className="relative w-full h-[70vh] mt-5 overflow-hidden bg-top bg-cover">
+        {/* Background Image */}
+        <Image
+          src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1380983332-min.jpg?alt=media&token=5f9db9a8-fe08-40a3-bb3c-cda1feb17bed"
+          alt="Caregiver background"
+          layout="fill"
+          objectFit="cover"
+          objectPosition="top"
+          priority
+          className="pointer-events-none select-none"
+          // Remove draggable ghost image effect on mobile
+          draggable={false}
+        />
+
+        {/* Overlay (gradient + semi-transparent layer) */}
+        <div className="absolute inset-0 top-[30vh] bg-black bg-opacity-5 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900" />
         </div>
 
@@ -29,15 +34,16 @@ const FindLandingPage = async () => {
             Find the{" "}
             <span className="bg-[conic-gradient(var(--tw-gradient-stops))] from-yellow-500 via-red-500 to-pink-500 text-transparent bg-clip-text">
               Perfect Caregiver
-            </span>{" "}
+            </span>
           </h1>
 
           {/* Search Bar */}
-
-          <SearchBar />
+          <div className="max-w-7xl">
+            <SearchBar />
+          </div>
           <p className="text-gray-100 font-bold text-xl max-w-2xl mb-8">
             Over{" "}
-            <span className="text-white font-extrabold"> 30 caregivers </span>{" "}
+            <span className="text-white font-extrabold">30 caregivers</span>{" "}
             join Kinscare every day!
           </p>
         </div>
@@ -85,14 +91,20 @@ const FindLandingPage = async () => {
             </div>
           </div>
         </div>
-        <div className="py-10">
-          <h2 className="text-3xl md:text-4xl text-center font-bold tracking-tight text-gray-800 mb-3">
-            {/* Why use <span className="text-blue-600">Kinscare?</span> */}{" "}
-            Find Caregivers Faster & Easier
+        {/* Value Proposition Section */}
+        <div className="text-center max-w-screen-lg mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 dark:text-white">
+            Find Caregivers{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-500">
+              Faster
+            </span>
+            &{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-500">
+              Easier
+            </span>
           </h2>
-          <p className="text-gray-500 mx-auto max-w-6xl text-center mb-8">
-            {/* Kinscare focuses on connecting you with experienced caregivers,
-            saving you time and money. */}{" "}
+
+          <p className=" text-gray-600 mb-6 dark:text-gray-300">
             Finding reliable caregivers is one of the biggest challenges for
             providers. High turnover, last-minute staffing gaps, and increasing
             demand make it harder than ever to secure dependable care. Kinscare
@@ -103,117 +115,84 @@ const FindLandingPage = async () => {
             efficiently
           </p>
         </div>
-        <div className="max-w-7xl pb-20 mx-auto grid md:grid-cols-2 gap-16 ">
-          {/* Left Column */}
+        <section className="py-16 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="relative">
+                {/* Floating 3D card effect */}
+                <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl transform rotate-3 hover:rotate-0 transition-all duration-500">
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1336058538-min.jpg?alt=media&token=35eabd18-0e89-470b-a4d5-b8269b91a38c"
+                    alt="Caregivers"
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
 
-          {/* Right Column */}
-          <div className="relative">
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1336058538-min.jpg?alt=media&token=35eabd18-0e89-470b-a4d5-b8269b91a38c"
-              alt="Caregivers"
-              className="w-full h-auto rounded-xl"
-            />
+                {/* Floating decorative element */}
+                <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur-2xl opacity-30 z-0"></div>
+              </div>
+
+              <div>
+                <div className="inline-flex items-center bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-1 font-semibold  rounded-full mb-4">
+                  <Pin size={16} className="mr-2" />
+                  <span>Why Use KinsCare ?</span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {[
+                    {
+                      title: "Quick Matching",
+                      description: "Search caregivers who meet your needs.",
+                      icon: <Search size={20} className="text-cyan-500" />,
+                    },
+                    {
+                      title: "Direct Contact",
+                      description: "Connect instantly after signing up.",
+                      icon: (
+                        <PhoneForwarded size={20} className="text-purple-500" />
+                      ),
+                    },
+                    {
+                      title: "No Middleman:",
+                      description:
+                        "You recruit and hire directly—no agency fees.",
+                      icon: <User size={20} className="text-amber-500" />,
+                    },
+                    {
+                      title: "Flexible Hiring:",
+                      description:
+                        "Full-time, part-time, live-in, or on-call caregivers.",
+                      icon: <Check size={20} className="text-emerald-500" />,
+                    },
+                  ].map((item, index) => (
+                    <div
+                      key={index}
+                      className="p-5 rounded-xl backdrop-blur-sm bg-white/50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 shadow-sm hover:shadow-md transition-all duration-300"
+                    >
+                      <div className="flex items-start">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-gray-700 shadow-sm mr-4">
+                          {item.icon}
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-lg mb-1 dark:text-white">
+                            {item.title}
+                          </h3>
+                          <p className="text-gray-600 dark:text-gray-400 text-sm">
+                            {item.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-          <div>
-            <h4 className="tracking-tight text-3xl font-bold text-gray-800 mb-6 ">
-              Why Use Kinscare
-            </h4>
-            <ul className="space-y-4">
-              <li className="flex items-center">
-                <div className="w-10 h-10 bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 rounded-full mr-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <p className="text-gray-700">
-                  <span className="font-semibold ">Quick Matching: </span>Search
-                  caregivers who meet your needs.
-                </p>
-              </li>
-              <li className="flex items-center">
-                <div className="w-10 h-10 bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 rounded-full mr-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <p className="text-gray-700">
-                  <span className="font-semibold "> Direct Contact: </span>
-                  Connect instantly after signing up.
-                </p>
-              </li>
-              <li className="flex items-center">
-                <div className="w-10 h-10  bg-blue-100 text-blue-600 flex items-center justify-center rounded-full mr-4 flex-shrink-0">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <p className="text-gray-700 ">
-                  <span className="font-semibold ">No Middleman: </span> You
-                  recruit and hire directly—no agency fees.
-                </p>
-              </li>
-              <li className="flex items-center">
-                <div className="w-10 h-10 bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 rounded-full mr-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <p className="text-gray-700 ">
-                  {" "}
-                  <span className="font-semibold ">Flexible Hiring:</span>{" "}
-                  Full-time, part-time, live-in, or on-call caregivers.
-                </p>
-              </li>
-            </ul>
-          </div>
-        </div>
+        </section>
+
         <div className="max-w-7xl py-10 mx-auto grid md:grid-cols-1 gap-12 ">
           {/* Left Column */}
-          <div className="bg-blue-100 p-6 rounded-xl">
+          <div className="bg-blue-50 p-6 rounded-xl">
             <div>
               <h4 className="tracking-tight text-3xl font-bold text-gray-800 mb-6 ">
                 Why Finding the Right Caregiver Matters
@@ -298,14 +277,6 @@ const FindLandingPage = async () => {
               </ul>
             </div>
           </div>
-          {/* Right Column */}
-          {/* <div className="relative">
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1140153601-min.jpg?alt=media&token=93fce255-b7d8-4e0d-a28a-5e089a94d6e7"
-              alt="Caregivers"
-              className="w-full h-auto rounded-lg"
-            />
-          </div> */}
         </div>
         <div className="max-w-7xl py-10 mx-auto grid md:grid-cols-2  gap-12 ">
           {/* Left Column */}
@@ -336,187 +307,96 @@ const FindLandingPage = async () => {
           </div>
         </div>
       </div>
-      <section className="bg-gray-50 relative py-20 md:py-30 overflow-hidden dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto antialiased px-4 sm:px-6 lg:px-8">
+      {/* Testimonials Section */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl tracking-tight font-bold text-gray-900 dark:text-white md:text-4xl xl:text-5xl">
-              Trusted by Care Professionals
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 dark:text-white">
+              Trusted by{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
+                Care Professionals
+              </span>
             </h2>
-            <p className="mx-auto mt-4 text-gray-600 dark:text-gray-300 max-w-xl text-lg">
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto dark:text-gray-400">
               Join hundreds of healthcare professionals who've transformed their
-              hiring and job search
+              hiring
             </p>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-3 lg:gap-12">
-            {/* Testimonial 1 */}
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                    <span className="text-blue-600 dark:text-blue-300 font-semibold text-lg">
-                      MS
-                    </span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                name: "Maria Shevchenko",
+                role: "Care Home Manager",
+                content:
+                  "Kinscare makes finding caregivers easier than ever! I can post openings, get direct applications, and contact caregivers—no more waiting on referrals.",
+                initials: "MS",
+                color: "from-purple-500 to-indigo-500",
+              },
+              {
+                name: "Solomon Gebremariam",
+                role: "Healthcare Recruiter",
+                content:
+                  "I found qualified local caregivers quickly with Kinscare. It’s simple, effective, and saves me time compared to other hiring methods!",
+                initials: "SG",
+                color: "from-cyan-500 to-blue-500",
+              },
+              {
+                name: "Alice Kamau",
+                role: "Adult Family Home Owner",
+                content:
+                  "Kinscare is both affordable and flexible. I only pay when I need caregivers, and get direct access to candidates without extra hassle.",
+                initials: "AK",
+                color: "from-amber-500 to-orange-500",
+              },
+            ].map((testimonial, index) => (
+              <div
+                key={index}
+                className="p-8 rounded-3xl backdrop-blur-sm bg-white/50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+              >
+                <div className="flex items-center mb-6">
+                  <div
+                    className={`w-14 h-14 rounded-full bg-gradient-to-r ${testimonial.color} flex items-center justify-center text-white font-bold text-lg mr-4`}
+                  >
+                    {testimonial.initials}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-lg dark:text-white">
+                      {testimonial.name}
+                    </h4>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">
+                      {testimonial.role}
+                    </p>
                   </div>
                 </div>
-                <div className="ml-4">
-                  <p className="font-semibold text-gray-900 dark:text-white">
-                    Maria Shevchenko
-                  </p>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    Care Home Manager
-                  </p>
-                </div>
-              </div>
-              <div className="text-blue-600 text-3xl mb-4"></div>
-              <div className="flex mb-4">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <svg
-                    key={star}
-                    className="w-5 h-5 text-yellow-400"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed">
-                Kinscare makes finding caregivers easier than WhatsApp! I can
-                post openings, get direct applications, and contact
-                caregivers—no more waiting on referrals.
-              </p>
-            </div>
 
-            {/* Testimonial 2 */}
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
-                    <span className="text-green-600 dark:text-green-300 font-semibold text-lg">
-                      SG
-                    </span>
-                  </div>
+                <div className="flex mb-4">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      size={18}
+                      fill="#fbbf24"
+                      className="text-amber-400 mr-1"
+                    />
+                  ))}
                 </div>
-                <div className="ml-4">
-                  <p className="font-semibold text-gray-900 dark:text-white">
-                    Solomon Gebremariam
-                  </p>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    Healthcare Recruiter
-                  </p>
-                </div>
-              </div>
-              <div className="text-blue-600 text-3xl mb-4"></div>
-              <div className="flex mb-4">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <svg
-                    key={star}
-                    className="w-5 h-5 text-yellow-400"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed">
-                I found qualified local caregivers quickly with Kinscare. It’s
-                simple, effective, and saves me time compared to other hiring
-                methods!
-              </p>
-            </div>
 
-            {/* Testimonial 3 */}
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-                    <span className="text-purple-600 dark:text-purple-300 font-semibold text-lg">
-                      AK
-                    </span>
-                  </div>
-                </div>
-                <div className="ml-4">
-                  <p className="font-semibold text-gray-900 dark:text-white">
-                    Alice Kamau
-                  </p>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    Adult Family Home Owner
-                  </p>
-                </div>
+                <p className="text-gray-700 dark:text-gray-300 italic">
+                  "{testimonial.content}"
+                </p>
               </div>
-              <div className="text-blue-600 text-3xl mb-4"></div>
-              <div className="flex mb-4">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <svg
-                    key={star}
-                    className="w-5 h-5 text-yellow-400"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed">
-                Kinscare is both affordable and flexible. I only pay when I need
-                caregivers, and get direct access to candidates without extra
-                hassle.
-              </p>
-            </div>
+            ))}
           </div>
 
-          {/* Trust Badges */}
-          <div className="mt-20 text-center">
-            <p className="text-gray-500 dark:text-gray-400 text-sm uppercase tracking-wide mb-6 font-medium">
-              Trusted by 200+ healthcare organizations worldwide
-            </p>
-          </div>
-        </div>
-        <div className="max-w-6xl my-16 mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative bg-gradient-to-br from-indigo-900 to-blue-800 rounded-2xl p-8 md:p-12 overflow-hidden">
-            {/* Decorative elements */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl" />
-            <div className="mb-4">
-              <div className="inline-flex items-center gap-3 mb-1">
-                <svg
-                  className="w-8 h-8 text-emerald-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <h3 className="text-2xl font-semibold text-white">
-                  Trusted by Providers Like You
-                </h3>
-              </div>
-              <p className="text-lg text-indigo-100 leading-relaxed">
-                Join the growing community of healthcare professionals who trust
-                Kinscare
-              </p>
-            </div>
-            <div className="flex flex-row md:flex-row items-center gap-8 relative z-10">
-              {/* Left Section */}
-
-              {/* Right Section */}
-              <div className=" text-center md:text-left">
-                <div className="inline-flex items-center gap-3 mb-3">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-sky-500/20 blur-lg" />
-                    <span className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-sky-400 to-emerald-400 bg-clip-text text-transparent relative">
-                      200+
-                    </span>
-                  </div>
+          <div className="max-w-7xl my-8 mx-auto ">
+            <div className="relative bg-gradient-to-br from-indigo-900 to-blue-800 rounded-2xl p-6 md:p-10 overflow-hidden">
+              {/* Decorative elements */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl" />
+              <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl" />
+              <div className="mb-4">
+                <div className="inline-flex items-center gap-3 mb-1">
                   <svg
-                    className="w-8 h-8 text-rose-400 animate-pulse"
+                    className="w-8 h-8 text-emerald-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -525,25 +405,55 @@ const FindLandingPage = async () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth="2"
-                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
+                  <h3 className="text-xl font-semibold text-white">
+                    Trusted by Providers Like You
+                  </h3>
                 </div>
-                <p className="text-lg text-indigo-100 font-medium">
-                  Over 200 Providers in the Northwest use Kinscare and the
-                  number keeps
-                  <span className="text-emerald-300"> {""} growing daily!</span>
+                <p className="text-indigo-100 leading-relaxed">
+                  Join the growing community of healthcare professionals who
+                  trust Kinscare
                 </p>
               </div>
-            </div>
+              <div className="flex flex-row md:flex-row items-center gap-8 relative z-10">
+                {/* Left Section */}
 
-            {/* Provider Logos (Optional) */}
-            {/* <div className="mt-8 flex flex-wrap justify-center gap-6 opacity-75">
-            <div className="w-20 h-8 bg-indigo-400/10 rounded-lg backdrop-blur-sm" />
-            <div className="w-20 h-8 bg-indigo-400/10 rounded-lg backdrop-blur-sm" />
-            <div className="w-20 h-8 bg-indigo-400/10 rounded-lg backdrop-blur-sm" />
-            <div className="w-20 h-8 bg-indigo-400/10 rounded-lg backdrop-blur-sm" />
-          </div> */}
+                {/* Right Section */}
+                <div className=" text-center md:text-left">
+                  <div className="inline-flex items-center gap-3 mb-3">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-sky-500/20 blur-lg" />
+                      <span className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-sky-400 to-emerald-400 bg-clip-text text-transparent relative">
+                        200+
+                      </span>
+                    </div>
+                    <svg
+                      className="w-8 h-8 text-rose-400 animate-pulse"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                      />
+                    </svg>
+                  </div>
+                  <p className="text-indigo-100 font-medium">
+                    Over 200 Providers in the Northwest use Kinscare and the
+                    number keeps
+                    <span className="text-emerald-300">
+                      {" "}
+                      {""} growing daily!
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -650,13 +560,33 @@ const FindLandingPage = async () => {
           </div>
         </div>
       </div>
-      <div className="flex justify-center py-10">
-        <a href="#search-top">
-          <button className="bg-indigo-600 text-white px-8 py-4 text-lg font-bold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300">
-            Search Caregivers
-          </button>
-        </a>
-      </div>
+      {/* CTA Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="relative rounded-3xl overflow-hidden p-12 bg-gradient-to-br from-indigo-600 to-purple-700 shadow-2xl">
+            {/* Floating elements */}
+            <div className="absolute top-0 left-0 w-40 h-40 rounded-full bg-gradient-to-r from-cyan-400/20 to-blue-500/20 blur-3xl"></div>
+            <div className="absolute bottom-0 right-0 w-40 h-40 rounded-full bg-gradient-to-r from-pink-400/20 to-rose-500/20 blur-3xl"></div>
+
+            <div className="relative z-10">
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                Ready to Find Your Perfect Caregiver?
+              </h2>
+
+              <p className="text-xl text-indigo-100 max-w-2xl mx-auto mb-8">
+                Join thousands of providers who trust Kinscare to find reliable,
+                qualified caregivers quickly and easily.
+              </p>
+
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <button className="px-8 py-4 bg-white text-indigo-600 font-bold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+                  Search Caregivers Now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
