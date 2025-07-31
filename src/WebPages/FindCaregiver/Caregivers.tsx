@@ -291,7 +291,7 @@ async function Caregivers({ availability, page, licenses }: CaregiversProps) {
                   userID={caregivers[0].userID}
                   message="caregiver"
                 >
-                  <Button className="shadow-md px-2 py-1 shadow-slate-300 font-bold mx-2" variant="link">Register</Button>
+                  <Button className="font-bold m-0 p-0.5" variant="link">Register</Button>
                 </OAuthDialog>
               </span>
             </h1>

@@ -57,8 +57,7 @@ const schema = Yup.object().shape({
   ),
   //   certifications: Yup.string(), //.required("Enter required "),
   description: Yup.string().required("Please enter job description"),
-  smsConsent: Yup
-    .boolean()
+  smsConsent: Yup.boolean()
     .required()
     .oneOf(
       [true],
@@ -120,7 +119,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
     defaultValues: {
       description: job.description,
       compensation: job.compensation,
-      smsConsent: false, 
+      smsConsent: false,
       contacts: job.contacts,
       licenses: job.licenses ? job.licenses : [],
       schedule: job.schedule ? job.schedule : [],
@@ -305,7 +304,9 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
                     }} // To connect with react-hook-form
                   />
                   {errors.title && (
-                    <p className="text-red-500 text-xs">{errors.title.message}</p>
+                    <p className="text-red-500 text-xs">
+                      {errors.title.message}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -376,7 +377,9 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
                     }} // To connect with react-hook-form
                   />
                   {errors?.minHours && (
-                    <p className="text-red-500 text-xs">{errors.minHours?.message}</p>
+                    <p className="text-red-500 text-xs">
+                      {errors.minHours?.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -580,15 +583,10 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
                           type="checkbox"
                           {...field}
                           checked={field.value}
-                          className="form-checkbox h-8 w-8 text-blue-600"
+                          className="form-checkbox h-5 w-5 text-blue-600"
                         />
                         <span className="text-sm text-gray-700">
-                          I agree to receive text messages from KinsCare with
-                          updates about my job posting, applicant status, and
-                          important hiring information. Message frequency may
-                          vary. Standard message and data rates may apply. We do
-                          not share or sell your mobile number. Reply STOP to
-                          unsubscribe.
+                        We’ll text you if a provider wants to interview you or respond to your application. By continuing, you agree to receive job alerts from Kinscare. Message & data rates may apply. Reply STOP to opt out
                         </span>
                       </label>
                     )}
@@ -610,8 +608,8 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
                     {loading || isSubmitting
                       ? "Posting...."
                       : type === "repost"
-                        ? "Repost Job"
-                        : "Post Job"}
+                      ? "Repost Job"
+                      : "Post Job"}
                   </Button>
                 </div>
               </div>

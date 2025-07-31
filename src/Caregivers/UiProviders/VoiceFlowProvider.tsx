@@ -188,13 +188,13 @@ const VoiceFlowProvider: React.FC<VoiceFlowProviderProps> = ({ children }) => {
               }
             );
       
-            // 👇👇👇 *** Add this to automatically clear proactive message ***
-            window.voiceflow.chat.on('send', () => {
-              if (window.voiceflow.chat.proactive) {
-                window.voiceflow.chat.proactive.clear();
-              }
-            });
-            // 👆👆👆 *** End: Auto-clear proactive on user input ***
+            // // 👇👇👇 *** Add this to automatically clear proactive message ***
+            // window.voiceflow.chat.on('send', () => {
+            //   if (window.voiceflow.chat.proactive) {
+            //     window.voiceflow.chat.proactive.clear();
+            //   }
+            // });
+            // // 👆👆👆 *** End: Auto-clear proactive on user input ***
           });
         };
         // @ts-ignore
