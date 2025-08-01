@@ -1,25 +1,27 @@
 "use client";
-import React, { useState, useContext } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
 import MongoContext from "@/app/MongoContext";
-import axios from "axios";
+import { OrSeparator } from "@/components/OrSeperator";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
-import { cn, fetchUserData } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
-import { useForm, Controller } from "react-hook-form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { sendCustomerSignupEmail } from "@/lib/Email";
 import { trackEvent } from "@/lib/mixpanelUtils";
+import { cn, fetchUserData } from "@/lib/utils";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { CredentialResponse, GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import { Loader2 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useContext, useMemo, useState } from "react";
 import TagManager from "react-gtm-module";
-import { CustomerSignupParams, sendCustomerSignupEmail } from "@/lib/Email";
+import { Controller, useForm } from "react-hook-form";
 import * as Realm from "realm-web";
+import * as yup from "yup";
 
 // Validation schema for the email signup form
-const schema = yup.object().shape({
+const schema:any = yup.object().shape({
   fname: yup.string().required("First name is required"),
   lname: yup.string().required("Last name is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -31,36 +33,48 @@ const schema = yup.object().shape({
   terms: yup.bool().oneOf([true], "You must accept the Terms and Conditions"),
 });
 
-const ExcelCNASignupPage = () => {
+const ExcelCNASignupPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const hashedUserData = searchParams.get("hashedUserData");
-
-  const mongo:any = useContext(MongoContext);
+  const mongo = useContext(MongoContext) as any;
   const { app, client, setAuthenticated, setUser, setUserData } = mongo;
 
-  // Decode hashedUserData if present
-  let decodedData:any = null;
-  if (hashedUserData) {
-    try {
-      decodedData = jwtDecode(hashedUserData);
-    } catch (error) {
-      console.error("Failed to decode hashedUserData:", error);
-      toast({
-        variant: "destructive",
-        description: "Invalid user data provided. Please try again.",
-      });
+  // ---- Prefill Logic: decodedData or fallback to URL params ----
+  const prefillData = useMemo(() => {
+    let data: any = {};
+    const hashedUserData = searchParams.get("hashedUserData");
+    if (hashedUserData) {
+      try {
+        data = jwtDecode<Record<string, any>>(hashedUserData) || {};
+      } catch (err) {
+        toast({
+          variant: "destructive",
+          description: "Invalid user data provided. Please try again.",
+        });
+        data = {};
+      }
     }
-  }
+    // Fallback to URL params
+    const urlFields = ["fname", "lname", "email", "tel", "role"];
+    urlFields.forEach((key) => {
+      if (!data[key] && searchParams.get(key)) {
+        data[key] = searchParams.get(key);
+      }
+    });
+    // Map phoneNumber (from JWT) to tel
+    if (data.phoneNumber && !data.tel) data.tel = data.phoneNumber;
+    if (!data.role) data.role = "caregiver";
+    return data;
+  }, [searchParams, toast]);
 
-  // Set default form values based on decoded data
+  // Set default form values
   const defaultValues = {
-    fname: decodedData?.fname || "",
-    lname: decodedData?.lname || "",
-    email: decodedData?.email || "",
-    tel: decodedData?.phoneNumber || "",
+    fname: prefillData.fname || "",
+    lname: prefillData.lname || "",
+    email: prefillData.email || "",
+    tel: prefillData.tel || "",
     password: "",
     terms: false,
   };
@@ -69,12 +83,12 @@ const ExcelCNASignupPage = () => {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  }:any = useForm({
     resolver: yupResolver(schema),
     defaultValues,
   });
 
-  const handleError = (error:any) => {
+  const handleError = (error: any) => {
     console.error("An error occurred:", error);
     let description = "An error occurred. Please try again.";
     if (error.message && error.message.includes("name already in use")) {
@@ -97,7 +111,7 @@ const ExcelCNASignupPage = () => {
     setLoading(false);
   };
 
-  const createUserDuringRegistration = async (payload:any) => {
+  const createUserDuringRegistration = async (payload: any) => {
     try {
       const response = await axios.get("/api/ip");
       if (response.data) {
@@ -118,7 +132,7 @@ const ExcelCNASignupPage = () => {
           geocode_address: { lng: longitude, lat: latitude },
           city,
           returning: false,
-          role: decodedData?.role || "caregiver", // Use role from decoded data or default to "caregiver"
+          role: "caregiver", // Force role caregiver
         });
 
         await axios.post(
@@ -132,13 +146,12 @@ const ExcelCNASignupPage = () => {
             added: new Date(),
             authEmail: payload.email,
             authMode: payload.auth_mode,
-            authTel: payload.tel.trim(),
+            authTel: payload.tel?.trim(),
             role: payload.role,
             type: "Web",
             userId: payload.userID,
           },
         };
-
         TagManager.dataLayer(tagManagerArgs);
         setAuthenticated(true);
         const fullName = `${payload.fname || ""} ${payload.lname || ""}`.trim();
@@ -155,7 +168,100 @@ const ExcelCNASignupPage = () => {
     }
   };
 
-  const onSubmit = async (data:any) => {
+  // -- GOOGLE SIGNUP HANDLER --
+  const handleGoogleSuccess = async (response: CredentialResponse) => {
+    const token = response.credential;
+    if (token) {
+      try {
+        setLoading(true);
+        const decodedToken: any = jwtDecode(token);
+        const credentials = Realm.Credentials.jwt(token);
+        const userObj = await app.logIn(credentials);
+
+        const existingUser = await client
+          ?.db("kinshealth")
+          .collection("contacts")
+          .findOne({
+            userID: userObj.id,
+            email: userObj.profile.email,
+          });
+
+        if (!existingUser) {
+          const payload = {
+            email: userObj.profile.email,
+            userID: userObj.id,
+            profileImage: decodedToken.picture,
+            fname: decodedToken.given_name,
+            lname: decodedToken.family_name,
+            verified: decodedToken.email_verified,
+            auth_mode: "oauth2-google",
+            googleId: userObj.identities[0]?.id,
+            route: "excel_cna",
+            created: new Date(),
+            role: "caregiver",
+          };
+          await createUserDuringRegistration(payload);
+
+          const fetchedData: any = await fetchUserData(
+            userObj.id,
+            userObj.profile.email
+          );
+
+          trackEvent(userObj.customData.hash, "Sign Up", payload);
+
+          setUserData(fetchedData.result);
+          setUser(userObj);
+          setAuthenticated(true);
+          userObj.refreshCustomData();
+          router.push("/vitae/jobs/all");
+        } else {
+          const fetchedData: any = await fetchUserData(
+            userObj.id,
+            userObj.profile.email
+          );
+          const mixpanelPayload = {
+            auth_mode: "oauth2-google",
+            date_time: new Date().toISOString(),
+            route: "excel_cna",
+            created: new Date(),
+            role: "caregiver",
+          };
+          trackEvent(userObj.customData?.hash, "Sign In", mixpanelPayload);
+          const tagManagerArgs = {
+            dataLayer: {
+              event: `sign_in`,
+              added: new Date(),
+              auth_mode: "oauth2-google",
+              hash: userObj.customData?.hash,
+              role: "caregiver",
+              type: "Web",
+              userId: `${userObj?.id}`,
+            },
+          };
+          TagManager.dataLayer(tagManagerArgs);
+          setUserData(fetchedData.result);
+          setUser(userObj);
+          setAuthenticated(true);
+          userObj.refreshCustomData();
+          router.push("/vitae/jobs/all");
+        }
+      } catch (error) {
+        handleError(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleGoogleError = () => {
+    toast({
+      variant: "destructive",
+      description: "Google authentication failed. Please try again.",
+    });
+  };
+
+  // -- EMAIL/PASSWORD SUBMIT --
+  const onSubmit = async (data: any) => {
     try {
       setLoading(true);
       const email = data.email.toLowerCase();
@@ -174,6 +280,7 @@ const ExcelCNASignupPage = () => {
           userID: userObj.id,
           email,
           auth_mode: "local-userpass",
+          role: "caregiver",
         };
         await createUserDuringRegistration(payload);
         const fetchedData = await fetchUserData(userObj.id, email);
@@ -181,7 +288,7 @@ const ExcelCNASignupPage = () => {
           setUserData(fetchedData.result);
           trackEvent(userObj.customData.hash, "Sign Up", payload);
           userObj.refreshCustomData();
-          router.push("/dashboard"); // Redirect to dashboard after successful signup
+          router.push("/vitae/jobs/all");
         }
       }
     } catch (error) {
@@ -191,6 +298,7 @@ const ExcelCNASignupPage = () => {
     }
   };
 
+  // -- Render --
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
@@ -198,8 +306,8 @@ const ExcelCNASignupPage = () => {
           Welcome to Kinscare
         </h1>
         <p className="text-gray-600 text-sm text-center mb-4">
-          {decodedData
-            ? "Your information has been pre-filled from ExcelCNA. Please review and complete the form to create your account."
+          {Object.keys(prefillData).length > 0
+            ? "Grow your caregiving career—finish signing up to access KinsCare."
             : "Sign up to join the Kinscare community."}
         </p>
         {loading ? (
@@ -208,6 +316,21 @@ const ExcelCNASignupPage = () => {
           </div>
         ) : (
           <div className="flex justify-center items-center flex-col gap-4">
+              {/* OR Separator and Google OAuth */}
+           
+            <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_APP_ID as string}>
+              <div className="flex justify-center gap-4 w-full">
+                <GoogleLogin
+                  size="large"
+                  onSuccess={handleGoogleSuccess}
+                  onError={handleGoogleError}
+                  theme="filled_black"
+                  text="continue_with"
+                  width="100%"
+                />
+              </div>
+            </GoogleOAuthProvider>
+            <OrSeparator />
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
               <div className="flex gap-4">
                 <div className="w-1/2">
@@ -356,12 +479,13 @@ const ExcelCNASignupPage = () => {
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? (
-                  < loader2 className="h-5 w-5 animate-spin" />
+                  <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
                   "Signup"
                 )}
               </Button>
             </form>
+          
           </div>
         )}
       </div>
