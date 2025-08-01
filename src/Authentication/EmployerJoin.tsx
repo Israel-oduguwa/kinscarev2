@@ -33,7 +33,7 @@ const OrSeparator: React.FC = () => {
 };
 
 // Validation schema
-const schema = yup
+const schema:any = yup
   .object({
     password: yup
       .string()
@@ -138,7 +138,7 @@ const EmployerJoin: React.FC = () => {
 
   
   // Get email based on referal code
-  const extractEmailReferalCode = async (payload: object) => {
+  const extractEmailReferalCode = async (payload: any) => {
       try {       
           Object.assign(payload, {
             referal_code_: payload.referal_code_
@@ -283,7 +283,7 @@ const EmployerJoin: React.FC = () => {
           <div className="bg-white rounded-2xl shadow-xl dark:border md:mt-0 xl:p-0 dark:bg-gray-800 dark:border-gray-700">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
               <h1 className="text-xl text-center font-bold leading-tight tracking-tight antialiased text-gray-900 md:text-2xl dark:text-white">
-                Create Employer's Account
+                Create Employer&apos;s Account
               </h1>
               {/* Centered Google Sign-In */}
           

@@ -36,13 +36,24 @@ const OrSeparator: React.FC = () => (
 );
 
 // Validation schema using Yup
-const schema = yup.object({
-  email: yup.string().email("Invalid email address").required("Email is required"),
-  password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
-  confirmPassword: yup.string().oneOf([yup.ref("password")], "Passwords must match").required("Confirm password is required"),
-  tel: yup.string().required("Phone number is required"),
-  role: yup.string().required("Role is required"),
-}).required();
+const schema = yup
+  .object({
+    email: yup
+      .string()
+      .email("Invalid email address")
+      .required("Email is required"),
+    password: yup
+      .string()
+      .min(6, "Password must be at least 6 characters")
+      .required("Password is required"),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref("password")], "Passwords must match")
+      .required("Confirm password is required"),
+    tel: yup.string().required("Phone number is required"),
+    role: yup.string().required("Role is required"),
+  })
+  .required();
 
 // Form input types
 interface IFormInputs {
@@ -57,7 +68,16 @@ interface IFormInputs {
 const Signup: React.FC = () => {
   // Contexts and hooks
   const mongoContext = useContext(MongoContext) as any;
-  const { app, client, user, setUser, setUserData, setAuthenticated, loadingAuth, authenticated } = mongoContext;
+  const {
+    app,
+    client,
+    user,
+    setUser,
+    setUserData,
+    setAuthenticated,
+    loadingAuth,
+    authenticated,
+  } = mongoContext;
   const { setTheme } = useTheme();
   const { push, refresh } = useRouter();
 
@@ -89,7 +109,10 @@ const Signup: React.FC = () => {
   // --- UTILITY FUNCTIONS ---
 
   // Error handling utility
-  const handleError = (error: any, fallbackMessage = "An error occurred. Please try again.") => {
+  const handleError = (
+    error: any,
+    fallbackMessage = "An error occurred. Please try again."
+  ) => {
     console.error("An error occurred:", error);
     toast.error(error?.message || fallbackMessage, {
       description: "Please try again.",
@@ -144,7 +167,10 @@ const Signup: React.FC = () => {
       }
 
       // Backend call to create user
-      await axios.post("https://api.kinscare.org/api/v1/auth/create_user", payload);
+      await axios.post(
+        "https://api.kinscare.org/api/v1/auth/create_user",
+        payload
+      );
 
       // Tag Manager analytics
       const tagManagerArgs =
@@ -184,7 +210,10 @@ const Signup: React.FC = () => {
 
       setAuthenticated(true);
     } catch (error: any) {
-      handleError(error, "Could not complete user registration. Please try again.");
+      handleError(
+        error,
+        "Could not complete user registration. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -194,7 +223,10 @@ const Signup: React.FC = () => {
   const handleGoogleSuccess = async (response: any) => {
     const token = response?.credential;
     if (!token) {
-      handleError(new Error("No credential received from Google."), "Google authentication failed.");
+      handleError(
+        new Error("No credential received from Google."),
+        "Google authentication failed."
+      );
       return;
     }
     setGoogleLoading(true);
@@ -211,7 +243,10 @@ const Signup: React.FC = () => {
       const credentials = Realm.Credentials.jwt(token);
       const userObj = await app.logIn(credentials);
 
-      if (!client) throw new Error("Database client not initialized. Please refresh and try again.");
+      if (!client)
+        throw new Error(
+          "Database client not initialized. Please refresh and try again."
+        );
 
       // Check if user already exists
       const existingUser = await client
@@ -246,7 +281,10 @@ const Signup: React.FC = () => {
       } else {
         // User exists: set context, fetch data, and route
         setUser(userObj);
-        const fetchedData: any = await fetchUserData(userObj.id, userObj.profile.email);
+        const fetchedData: any = await fetchUserData(
+          userObj.id,
+          userObj.profile.email
+        );
         if (fetchedData?.result) await setUserData(fetchedData.result);
         setAuthenticated(true);
 
@@ -324,7 +362,10 @@ const Signup: React.FC = () => {
       await app.emailPasswordAuth.registerUser({ email, password });
       const credentials = Realm.Credentials.emailPassword(email, password);
       const credentialUser = await app.logIn(credentials);
-      if (!credentialUser) throw new Error("Registration succeeded but login failed. Please try signing in.");
+      if (!credentialUser)
+        throw new Error(
+          "Registration succeeded but login failed. Please try signing in."
+        );
 
       await credentialUser.refreshCustomData();
       setUser(credentialUser);
@@ -365,7 +406,11 @@ const Signup: React.FC = () => {
           auth_mode: "local-userpass",
         };
         try {
-          trackEvent(credentialUser.customData.hash, "Sign Up", mixpanelPayload);
+          trackEvent(
+            credentialUser.customData.hash,
+            "Sign Up",
+            mixpanelPayload
+          );
         } catch (mpError) {
           console.warn("Mixpanel tracking error:", mpError);
         }
@@ -376,7 +421,10 @@ const Signup: React.FC = () => {
         throw new Error("Unable to retrieve your user data. Please try again.");
       }
     } catch (error: any) {
-      handleError(error, "Sign-up failed. Please check your details and try again.");
+      handleError(
+        error,
+        "Sign-up failed. Please check your details and try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -389,12 +437,18 @@ const Signup: React.FC = () => {
   return (
     <div className="w-full min-h-[100vh] bg-gray-100 dark:bg-inherit">
       {/* Role selection modal (shown after Google signup if role missing) */}
-      <SelectRole selectRoleModal={selectRoleModal} closeSelectModal={closeSelectModal} />
+      <SelectRole
+        selectRoleModal={selectRoleModal}
+        closeSelectModal={closeSelectModal}
+      />
 
       {/* Header */}
       <header className="py-6 px-6 sm:py-4">
         <div className="flex justify-between items-center">
-          <Link href="/" className="flex items-center text-lg font-semibold text-gray-900 dark:text-white">
+          <Link
+            href="/"
+            className="flex items-center text-lg font-semibold text-gray-900 dark:text-white"
+          >
             <Image
               width={12}
               height={12}
@@ -402,10 +456,14 @@ const Signup: React.FC = () => {
               src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
               alt="logo"
             />
-            <p className="font-bold text-sm text-slate-900 tracking-tight">Kinscare</p>
+            <p className="font-bold text-sm text-slate-900 tracking-tight">
+              Kinscare
+            </p>
           </Link>
           <div className="flex justify-between gap-6 items-center">
-            <p className="text-md text-gray-800 antialiased hidden md:block">Already have an account?</p>
+            <p className="text-md text-gray-800 antialiased hidden md:block">
+              Already have an account?
+            </p>
             <Link href="/signin">
               <Button className="shadow-2xl">Signin</Button>
             </Link>
@@ -414,7 +472,7 @@ const Signup: React.FC = () => {
       </header>
 
       {/* Signup form */}
-      <section className="py-2 max-w-xl absolute inset-x-0 z-10 mx-auto">
+      <section className="py-2 max-w-lg absolute inset-x-0 z-10 mx-auto">
         <div className="mx-4">
           <div className="bg-white rounded-2xl shadow-xl dark:border md:mt-0 xl:p-0 dark:bg-gray-800 dark:border-gray-700">
             <div className="p-6 space-y-3 md:space-y-4 sm:p-8">
@@ -423,49 +481,72 @@ const Signup: React.FC = () => {
               </h1>
 
               {/* Google Sign-In */}
-              <div className="flex justify-center">
+              <div className="flex justify-center gap-4 w-full">
                 <GoogleLogin
                   size="large"
                   onSuccess={handleGoogleSuccess}
                   onError={handleGoogleError}
-                  theme="outline"
+                  theme="filled_blue"
                   text="continue_with"
+                  width="100%"
+                  shape="pill"
                 />
               </div>
 
               <OrSeparator />
 
               {/* Main signup form */}
-              <form className="space-y-3 md:space-y-3" onSubmit={handleSubmit(onSubmit)}>
+              <form
+                className="space-y-3 md:space-y-3"
+                onSubmit={handleSubmit(onSubmit)}
+              >
                 {/* Role Selection */}
                 <div>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 font-medium mb-2">Select your role:</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 font-medium mb-2">
+                    Select your role:
+                  </p>
                   <Controller
                     name="role"
                     control={control}
                     render={({ field }) => (
-                      <RadioGroup defaultValue={field.value} onValueChange={field.onChange}>
+                      <RadioGroup
+                        defaultValue={field.value}
+                        onValueChange={field.onChange}
+                      >
                         <div className="flex items-center mb-2 space-x-2">
                           <RadioGroupItem value="caregiver" id="r1" />
-                          <Label className="text-sm font-normal text-gray-700 dark:text-white" htmlFor="r1">
+                          <Label
+                            className="text-sm font-normal text-gray-700 dark:text-white"
+                            htmlFor="r1"
+                          >
                             I AM A CAREGIVER LOOKING FOR A JOB
                           </Label>
                         </div>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="provider" id="r2" />
-                          <Label className="text-sm font-normal text-gray-700 dark:text-white" htmlFor="r2">
+                          <Label
+                            className="text-sm font-normal text-gray-700 dark:text-white"
+                            htmlFor="r2"
+                          >
                             I AM A PROVIDER SEARCHING FOR CAREGIVER(S)/NACs
                           </Label>
                         </div>
                       </RadioGroup>
                     )}
                   />
-                  {errors.role && <p className="text-red-500 mt-1 text-sm">{errors.role.message}</p>}
+                  {errors.role && (
+                    <p className="text-red-500 mt-1 text-sm">
+                      {errors.role.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Phone Number */}
                 <div>
-                  <label htmlFor="tel" className="block mb-1 text-sm font-medium text-gray-800 dark:text-white">
+                  <label
+                    htmlFor="tel"
+                    className="block mb-1 text-sm font-medium text-gray-800 dark:text-white"
+                  >
                     Phone number
                   </label>
                   <Controller
@@ -476,16 +557,25 @@ const Signup: React.FC = () => {
                         {...field}
                         id="tel"
                         placeholder="123-456-7890"
-                        className={errors.tel ? "border-red-500" : "border-gray-300"}
+                        className={
+                          errors.tel ? "border-red-500" : "border-gray-300"
+                        }
                       />
                     )}
                   />
-                  {errors.tel && <p className="text-red-500 mt-1 text-sm">{errors.tel.message}</p>}
+                  {errors.tel && (
+                    <p className="text-red-500 mt-1 text-sm">
+                      {errors.tel.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Email */}
                 <div>
-                  <label htmlFor="email" className="block mb-1 text-sm font-medium text-gray-800 dark:text-white">
+                  <label
+                    htmlFor="email"
+                    className="block mb-1 text-sm font-medium text-gray-800 dark:text-white"
+                  >
                     Email
                   </label>
                   <Controller
@@ -496,17 +586,26 @@ const Signup: React.FC = () => {
                         {...field}
                         id="email"
                         placeholder="name@company.com"
-                        className={errors.email ? "border-red-500" : "border-gray-300"}
+                        className={
+                          errors.email ? "border-red-500" : "border-gray-300"
+                        }
                       />
                     )}
                   />
-                  {errors.email && <p className="text-red-500 mt-1 text-sm">{errors.email.message}</p>}
+                  {errors.email && (
+                    <p className="text-red-500 mt-1 text-sm">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Password & Confirm Password */}
                 <div className="flex flex-col space-y-4 sm:space-y-0 sm:space-x-4 sm:flex-row">
                   <div className="flex-1">
-                    <label htmlFor="password" className="block mb-1 text-sm font-medium text-gray-800 dark:text-white">
+                    <label
+                      htmlFor="password"
+                      className="block mb-1 text-sm font-medium text-gray-800 dark:text-white"
+                    >
                       Password
                     </label>
                     <Controller
@@ -518,14 +617,25 @@ const Signup: React.FC = () => {
                           {...field}
                           id="password"
                           placeholder="••••••••"
-                          className={errors.password ? "border-red-500" : "border-gray-300"}
+                          className={
+                            errors.password
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }
                         />
                       )}
                     />
-                    {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+                    {errors.password && (
+                      <p className="text-red-500 text-sm">
+                        {errors.password.message}
+                      </p>
+                    )}
                   </div>
                   <div className="flex-1">
-                    <label htmlFor="confirm-password" className="block mb-1 text-sm font-medium text-gray-800 dark:text-white">
+                    <label
+                      htmlFor="confirm-password"
+                      className="block mb-1 text-sm font-medium text-gray-800 dark:text-white"
+                    >
                       Confirm password
                     </label>
                     <Controller
@@ -537,12 +647,18 @@ const Signup: React.FC = () => {
                           {...field}
                           id="confirm-password"
                           placeholder="••••••••"
-                          className={errors.confirmPassword ? "border-red-500" : "border-gray-300"}
+                          className={
+                            errors.confirmPassword
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }
                         />
                       )}
                     />
                     {errors.confirmPassword && (
-                      <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>
+                      <p className="text-red-500 text-sm">
+                        {errors.confirmPassword.message}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -567,14 +683,19 @@ const Signup: React.FC = () => {
                   type="submit"
                   className="w-full hover:bg-primary-600 text-white py-2 px-4 rounded-lg transition"
                 >
-                  {(loading || googleLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {(loading || googleLoading) && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   Create an account
                 </Button>
 
                 {/* Link to signin */}
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                   Already have an account?{" "}
-                  <Link href="/signin" className="font-medium text-primary hover:underline dark:text-primary-500">
+                  <Link
+                    href="/signin"
+                    className="font-medium text-primary hover:underline dark:text-primary-500"
+                  >
                     Login here
                   </Link>
                 </p>
@@ -586,7 +707,11 @@ const Signup: React.FC = () => {
 
       {/* Decorative SVG bottom wave */}
       <div className="absolute bottom-0 -z-0 left-0 w-full">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1440 320"
+          preserveAspectRatio="none"
+        >
           <defs>
             <linearGradient id="gradient2" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stopColor="#6a11cb" />

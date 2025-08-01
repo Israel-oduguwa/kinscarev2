@@ -9,10 +9,16 @@ import { sendCustomerSignupEmail } from "@/lib/Email";
 import { trackEvent } from "@/lib/mixpanelUtils";
 import { cn, fetchUserData } from "@/lib/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { CredentialResponse, GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import {
+  CredentialResponse,
+  GoogleLogin,
+  GoogleOAuthProvider,
+} from "@react-oauth/google";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useContext, useMemo, useState } from "react";
 import TagManager from "react-gtm-module";
@@ -21,7 +27,7 @@ import * as Realm from "realm-web";
 import * as yup from "yup";
 
 // Validation schema for the email signup form
-const schema:any = yup.object().shape({
+const schema: any = yup.object().shape({
   fname: yup.string().required("First name is required"),
   lname: yup.string().required("Last name is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -83,7 +89,7 @@ const ExcelCNASignupPage: React.FC = () => {
     control,
     handleSubmit,
     formState: { errors },
-  }:any = useForm({
+  }: any = useForm({
     resolver: yupResolver(schema),
     defaultValues,
   });
@@ -100,13 +106,14 @@ const ExcelCNASignupPage: React.FC = () => {
         "top-0 right-0 flex fixed md:max-w-[640px] md:top-4 md:right-4"
       ),
       description,
-      action: error.message && error.message.includes("name already in use") ? (
-        <ToastAction altText="Log in" onClick={() => router.push("/login")}>
-          Log in
-        </ToastAction>
-      ) : (
-        <ToastAction altText="Try again">Try again</ToastAction>
-      ),
+      action:
+        error.message && error.message.includes("name already in use") ? (
+          <ToastAction altText="Log in" onClick={() => router.push("/login")}>
+            Log in
+          </ToastAction>
+        ) : (
+          <ToastAction altText="Try again">Try again</ToastAction>
+        ),
     });
     setLoading(false);
   };
@@ -300,196 +307,289 @@ const ExcelCNASignupPage: React.FC = () => {
 
   // -- Render --
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
-        <h1 className="text-3xl font-bold tracking-tight text-center mb-2">
-          Welcome to Kinscare
-        </h1>
-        <p className="text-gray-600 text-sm text-center mb-4">
-          {Object.keys(prefillData).length > 0
-            ? "Grow your caregiving career—finish signing up to access KinsCare."
-            : "Sign up to join the Kinscare community."}
-        </p>
-        {loading ? (
-          <div className="flex justify-center w-full items-center">
-            <Loader2 size={30} className="animate-spin" />
-          </div>
-        ) : (
-          <div className="flex justify-center items-center flex-col gap-4">
-              {/* OR Separator and Google OAuth */}
-           
-            <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_APP_ID as string}>
-              <div className="flex justify-center gap-4 w-full">
-                <GoogleLogin
-                  size="large"
-                  onSuccess={handleGoogleSuccess}
-                  onError={handleGoogleError}
-                  theme="filled_black"
-                  text="continue_with"
-                  width="100%"
+    <>
+      {" "}
+      {/* Header */}
+      <div className="min-h-screen flex flex-col justify-center bg-gray-50">
+        <div className=" max-w-xl mx-auto ">
+          <header className="py-2 px-6 sm:py-2">
+            <div className="flex justify-between items-center">
+              <Link
+                href="/"
+                className="flex items-center text-lg font-semibold text-gray-900 dark:text-white"
+              >
+                <Image
+                  width={12}
+                  height={12}
+                  className="w-12 mr-2"
+                  src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
+                  alt="logo"
                 />
+                <p className="font-bold text-sm text-slate-900 tracking-tight">
+                  Kinscare
+                </p>
+              </Link>
+            </div>
+          </header>
+          <div className="bg-white p-8 rounded-2xl shadow-xl max-w-lg w-full border border-gray-100 relative overflow-hidden">
+            {/* Decorative elements */}
+            <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-indigo-100 opacity-70"></div>
+            <div className="absolute -bottom-16 -left-16 w-32 h-32 rounded-full bg-blue-100 opacity-60"></div>
+
+            <div className="relative z-10">
+              <div className="text-center mb-6">
+                {/* <div className="mx-auto bg-gradient-to-r from-blue-500 to-indigo-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+          </div> */}
+                <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
+                  Welcome to Kinscare
+                </h1>
+                <p className="text-gray-600 mt-2 text-sm max-w-md mx-auto">
+                  {Object.keys(prefillData).length > 0
+                    ? "Grow your caregiving career—finish signing up to access KinsCare."
+                    : "Sign up to join the Kinscare community."}
+                </p>
               </div>
-            </GoogleOAuthProvider>
-            <OrSeparator />
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
-              <div className="flex gap-4">
-                <div className="w-1/2">
-                  <label htmlFor="fname" className="block mb-1 text-sm">
-                    First Name
-                  </label>
-                  <Controller
-                    name="fname"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        id="fname"
-                        placeholder="First Name"
-                        className={errors.fname ? "border-red-500" : ""}
-                      />
-                    )}
-                  />
-                  {errors.fname && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.fname.message}
-                    </p>
-                  )}
+
+              {loading ? (
+                <div className="flex justify-center w-full items-center py-12">
+                  <Loader2 size={40} className="animate-spin text-indigo-600" />
                 </div>
-                <div className="w-1/2">
-                  <label htmlFor="lname" className="block mb-1 text-sm">
-                    Last Name
-                  </label>
-                  <Controller
-                    name="lname"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        id="lname"
-                        placeholder="Last Name"
-                        className={errors.lname ? "border-red-500" : ""}
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <GoogleOAuthProvider
+                    clientId={`${process.env.GOOGLE_APP_ID}`}
+                  >
+                    <div className="flex justify-center gap-4 w-full">
+                      <GoogleLogin
+                        size="large"
+                        onSuccess={handleGoogleSuccess}
+                        onError={handleGoogleError}
+                        theme="filled_blue"
+                        text="continue_with"
+                        width="100%"
+                        shape="pill"
                       />
-                    )}
-                  />
-                  {errors.lname && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.lname.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-              <div>
-                <label htmlFor="email" className="block mb-1 text-sm">
-                  Email Address
-                </label>
-                <Controller
-                  name="email"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      id="email"
-                      placeholder="Email Address"
-                      className={errors.email ? "border-red-500" : ""}
-                    />
-                  )}
-                />
-                {errors.email && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.email.message}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label htmlFor="tel" className="block mb-1 text-sm">
-                  Phone Number
-                </label>
-                <Controller
-                  name="tel"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      id="tel"
-                      placeholder="123-456-7890"
-                      className={errors.tel ? "border-red-500" : ""}
-                    />
-                  )}
-                />
-                {errors.tel && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.tel.message}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label htmlFor="password" className="block mb-1 text-sm">
-                  Password
-                </label>
-                <Controller
-                  name="password"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      id="password"
-                      type="password"
-                      placeholder="Create a password"
-                      className={errors.password ? "border-red-500" : ""}
-                    />
-                  )}
-                />
-                {errors.password && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.password.message}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label className="inline-flex items-center space-x-2">
-                  <Controller
-                    name="terms"
-                    control={control}
-                    render={({ field }) => (
-                      <input
-                        {...field}
-                        type="checkbox"
-                        checked={field.value}
-                        onChange={(e) => field.onChange(e.target.checked)}
-                        className="form-checkbox h-5 w-5 text-blue-600"
+                    </div>
+                  </GoogleOAuthProvider>
+
+                  <OrSeparator />
+
+                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="fname"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          First Name
+                        </label>
+                        <Controller
+                          name="fname"
+                          control={control}
+                          render={({ field }) => (
+                            <Input
+                              {...field}
+                              id="fname"
+                              placeholder="First Name"
+                              className={` ${
+                                errors.fname ? "border-red-500" : ""
+                              }`}
+                            />
+                          )}
+                        />
+                        {errors.fname && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.fname.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="lname"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Last Name
+                        </label>
+                        <Controller
+                          name="lname"
+                          control={control}
+                          render={({ field }) => (
+                            <Input
+                              {...field}
+                              id="lname"
+                              placeholder="Last Name"
+                              className={` ${
+                                errors.lname ? "border-red-500" : ""
+                              }`}
+                            />
+                          )}
+                        />
+                        {errors.lname && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.lname.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Email Address
+                      </label>
+                      <Controller
+                        name="email"
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            id="email"
+                            placeholder="Email Address"
+                            className={` ${
+                              errors.email ? "border-red-500" : ""
+                            }`}
+                          />
+                        )}
                       />
-                    )}
-                  />
-                  <span className="text-sm">
-                    I agree to the{" "}
-                    <a
-                      href="/terms"
-                      target="_blank"
-                      className="text-blue-500 underline"
+                      {errors.email && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.email.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="tel"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Phone Number
+                      </label>
+                      <Controller
+                        name="tel"
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            id="tel"
+                            placeholder="123-456-7890"
+                            className={` ${errors.tel ? "border-red-500" : ""}`}
+                          />
+                        )}
+                      />
+                      {errors.tel && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.tel.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="password"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Password
+                      </label>
+                      <Controller
+                        name="password"
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            id="password"
+                            type="password"
+                            placeholder="Create a password"
+                            className={` ${
+                              errors.password ? "border-red-500" : ""
+                            }`}
+                          />
+                        )}
+                      />
+                      {errors.password && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.password.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex items-start space-x-3 pt-2">
+                      <Controller
+                        name="terms"
+                        control={control}
+                        render={({ field }) => (
+                          <div className="flex items-center h-5">
+                            <input
+                              {...field}
+                              type="checkbox"
+                              checked={field.value}
+                              onChange={(e) => field.onChange(e.target.checked)}
+                              className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                            />
+                          </div>
+                        )}
+                      />
+                      <div className="text-sm">
+                        <label
+                          htmlFor="terms"
+                          className="font-medium text-gray-700"
+                        >
+                          I agree to the{" "}
+                          <a
+                            href="/terms"
+                            target="_blank"
+                            className="text-indigo-600 hover:text-indigo-500 font-medium"
+                          >
+                            Terms and Conditions
+                          </a>
+                        </label>
+                        {errors.terms && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.terms.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      className="w-full  bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-700 hover:to-blue-600 transition-all shadow-md hover:shadow-lg"
+                      disabled={loading}
                     >
-                      Terms and Conditions
-                    </a>
-                  </span>
-                </label>
-                {errors.terms && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.terms.message}
-                  </p>
-                )}
-              </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  "Signup"
-                )}
-              </Button>
-            </form>
-          
+                      {loading ? (
+                        <Loader2 className="h-5 w-5 animate-spin text-white" />
+                      ) : (
+                        <span className="text-white font-medium">
+                          Create Account
+                        </span>
+                      )}
+                    </Button>
+                  </form>
+
+                  <div className="text-center pt-4">
+                    <p className="text-sm text-gray-600">
+                      Already have an account?{" "}
+                      <a
+                        href="/login"
+                        className="font-medium text-indigo-600 hover:text-indigo-500"
+                      >
+                        Sign in
+                      </a>
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

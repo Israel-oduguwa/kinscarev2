@@ -47,10 +47,10 @@ const schema = yup.object().shape({
     .string()
     .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
-  confirmPassword: yup
-    .string()
-    .oneOf([yup.ref("password")], "Passwords must match")
-    .required("Confirm password is required"),
+  // confirmPassword: yup
+  //   .string()
+  //   .oneOf([yup.ref("password")], "Passwords must match")
+  //   .required("Confirm password is required"),
   terms: yup.bool().oneOf([true], "You must accept the Terms and Conditions"),
 });
 
@@ -359,12 +359,14 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
               {!loading ? (
                 <div className="flex justify-center gap-4">
                   <GoogleLogin
-                    size="large"
-                    onSuccess={handleGoogleSuccess}
-                    onError={handleGoogleError}
-                    theme="filled_black"
-                    text="continue_with"
-                  />
+                        size="large"
+                        onSuccess={handleGoogleSuccess}
+                        onError={handleGoogleError}
+                        theme="filled_blue"
+                        text="continue_with"
+                        width="100%"
+                        shape="pill"
+                      />
                 </div>
               ) : (
                 <>
@@ -490,7 +492,7 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
                     </p>
                   )}
                 </div>
-                <div className="flex-1">
+                {/* <div className="flex-1">
                   <label
                     htmlFor="confirm-password"
                     className="block mb-1 text-sm font-medium text-gray-800 dark:text-white"
@@ -519,7 +521,7 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
                       {errors.confirmPassword.message}
                     </p>
                   )}
-                </div>
+                </div> */}
                 <div>
                   <label className="inline-flex items-center py-2 space-x-2">
                     <Controller
