@@ -12,6 +12,7 @@ import OAuthDialog from "@/Authentication/OAuthDialog";
 import ProfileAvatar from "@/components/ProfileAvatar";
 import StickyBanner from "./ConciergeSidebarCard";
 import ConciergeSidebarCard from "./ConciergeSidebarCard";
+import SigninModal from "@/Authentication/SiginModal";
 
 polyfill();
 
@@ -279,21 +280,25 @@ async function Caregivers({ availability, page, licenses }: CaregiversProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-7">
           {/* Caregivers List */}
           <div className="col-span-12 lg:col-span-9">
-            <h1 className="text-md text-gray-800 tracking-tight antialiased font-bold mb-4">
+            <h1 className="text-md text-gray-800 tracking-normal antialiased font-bold mb-4">
               {fetchError
                 ? "Unable to load caregivers."
                 : `There are ${pagination.totalCaregivers} caregivers near you with ${licenses}`}
               .{" "}
-              <span className="italic">
-                Register or sign in to view caregiver contacts{" "}
+              <span>
                 <OAuthDialog
                   caregiver={caregivers[0]}
                   userID={caregivers[0].userID}
                   message="caregiver"
                 >
-                  <Button className="font-bold m-0 p-0.5" variant="link">Register</Button>
+                  <span className="text-blue-600 cursor-pointer">Register</span>
                 </OAuthDialog>
-              </span>
+              </span>{" "}
+              or{" "}
+              <SigninModal role="provider">
+                <span className="text-blue-600 cursor-pointer">sign in</span>
+              </SigninModal>{" "}
+              to view their contact details and hire quickly.
             </h1>
             {fetchError ? (
               <div className="py-10 text-center">

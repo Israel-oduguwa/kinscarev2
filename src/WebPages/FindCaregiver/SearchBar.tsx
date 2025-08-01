@@ -180,14 +180,13 @@ const SearchBar: React.FC<SearchBarProps> = ({ availability, licenses }) => {
         {/* Concierge Blurb (low-key, for those exploring) */}
         <div className="mt-5 flex items-center justify-center">
           <span className="text-xs text-gray-600 text-center font-medium">
-            Prefer a hands-off approach?{" "}
+          Want help finding caregivers?{" "}
             <Link href="/jumpstart-hiring/apply">
               <span className="text-blue-600 font-semibold">
-                Our Concierge Service
+                Our team 
               </span>
             </Link>{" "}
-            matches you with 3 caregivers and schedules interviews—plus you keep
-            2 weeks of full access.
+            will match you with 3 qualified candidates and schedule interviews—while you keep full access to browse on your own.
           </span>
         </div>
       </div>

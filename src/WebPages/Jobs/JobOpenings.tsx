@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import SearchBar from "./SearchBar";
 import OauthApply from "./OauthApply";
 import Image from "next/image";
+import SigninModal from "@/Authentication/SiginModal";
 
 const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
   // console.log(job);
@@ -105,9 +106,12 @@ async function All({
       { cache: "no-cache" }
     );
   } else {
-    data = await fetch(`https://api.kinscare.org/api/v1/caregivers/jobs-search`, {
-      cache: "no-cache",
-    });
+    data = await fetch(
+      `https://api.kinscare.org/api/v1/caregivers/jobs-search`,
+      {
+        cache: "no-cache",
+      }
+    );
   }
   const response = await data.json();
   // console.log(response);
@@ -124,10 +128,17 @@ async function All({
         {/* Job Search Header */}
         <div className="mb-8">
           <SearchBar />
-          <h1 className="text-lg tracking-tight font-semibold text-gray-700 mt-6">
-            There are <span className="text-blue-600">{totalJobs}</span>{" "}
-            jobs near you
-            
+          <h1 className="tracking-tight font-semibold text-gray-700 mt-6">
+            There are <span className="text-blue-600">{totalJobs}</span> jobs
+            near you.{" "}
+            <OauthApply publicPage={true} job={jobs[0]} jobID={jobs[0]._id}>
+              <span className="text-blue-600 font-bold">Register</span>
+            </OauthApply>{" "}
+            or{" "}
+            <SigninModal role="caregiver">
+              <span className="cursor-pointer text-blue-600"> sign in</span>
+            </SigninModal>{" "}
+            now to view details and apply instantly.
           </h1>
         </div>
 

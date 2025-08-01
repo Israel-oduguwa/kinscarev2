@@ -30,10 +30,11 @@ interface OauthApplyProps {
   jobID?: string; // Passed from SSR page if available
   children: React.ReactNode; // Any button or content to act as the trigger
   job: any;
+  publicPage:any;
 }
 
 // Validation schema for the email signup form
-const schema = yup.object().shape({
+const schema:any = yup.object().shape({
   fname: yup.string().required("First name is required"),
   lname: yup.string().required("Last name is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -54,7 +55,7 @@ interface SignupFormInputs {
   terms: boolean;
 }
 
-const OauthApply: React.FC<OauthApplyProps> = ({ jobID, job, children }) => {
+const OauthApply: React.FC<OauthApplyProps> = ({ jobID, job, children, publicPage }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -282,7 +283,7 @@ const OauthApply: React.FC<OauthApplyProps> = ({ jobID, job, children }) => {
   return (
     <>
       {/* If already a signed-in caregiver, show ApplyNow */}
-      {userData && userData.role === "caregiver" ? (
+      {userData && userData.role === "caregiver" && !publicPage  ? (
         <ApplyNow providerName={job.provider} job={job} jobID={jobID} />
       ) : (
         <GoogleOAuthProvider clientId={`${process.env.GOOGLE_APP_ID}`}>
