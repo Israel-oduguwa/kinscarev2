@@ -1,7 +1,10 @@
+import { Skeleton } from "@/components/ui/skeleton";
+import { CaregiverCardSkeleton } from "@/Providers/Candidates/CandidateSkelenton";
 import FindCaregiverLandingPage from "@/WebPages/FindCaregiver/FindCaregiverLandingPage";
 import Footer from "@/WebPages/Footer";
 import Navbar from "@/WebPages/Navbar";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Find Trusted Caregivers Near You - KinsCare",
@@ -67,8 +70,17 @@ function page() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <Suspense fallback={ <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 py-10 mt-10  gap-6">
+              <Skeleton className="w-full h-40 " />
+              {Array.from({ length: 6 }).map((_, idx) => (
+                <CaregiverCardSkeleton key={idx} />
+              ))}
+            </div>
+          </div>}>
       <FindCaregiverLandingPage />
       {/* Footer */}
+      </Suspense>
     </>
   );
 }
