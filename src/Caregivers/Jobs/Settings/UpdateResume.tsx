@@ -811,9 +811,9 @@ const CaregiverProfileForm = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white shadow-sm my-10 rounded-lg p-8">
+      {/* <div className="bg-white shadow-sm my-10 rounded-lg p-8">
         <DeleteAccount />
-      </div>
+      </div> */}
     </div>
   );
 };
