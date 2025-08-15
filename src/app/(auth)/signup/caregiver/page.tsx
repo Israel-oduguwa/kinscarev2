@@ -1,7 +1,7 @@
 // app/caregiver-signup/page.tsx (or app/signup/caregiver/page.tsx)
 // Purpose: SEO-optimized caregiver signup page using Next.js 15 App Router
 
-import React from "react";
+import React, { Suspense } from "react";
 import Signup from "@/Authentication/Signup";
 import type { Metadata } from "next";
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -189,10 +189,11 @@ export default function Page() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-
-      <GoogleOAuthProvider clientId={`${process.env.GOOGLE_APP_ID}`}>
-        <CaregiverSignupPage />
-      </GoogleOAuthProvider>
+      <Suspense fallback={<div className="p-6 text-sm">Loading…</div>}>
+        <GoogleOAuthProvider clientId={`${process.env.GOOGLE_APP_ID}`}>
+          <CaregiverSignupPage />
+        </GoogleOAuthProvider>
+      </Suspense>
     </>
   );
 }
