@@ -12,9 +12,9 @@ const IntercomProvider = () => {
 
   // Determine if Intercom should be active
   const shouldLoadIntercom = true // userData?.role === "provider" && pathname !== "/";
-  console.log(userData);
+  // console.log(userData);
   // Manage Intercom boot/shutdown when conditions or script status change
-  console.log(pathname)
+  // console.log(pathname)
   useEffect(() => {
     if (
       scriptLoaded &&

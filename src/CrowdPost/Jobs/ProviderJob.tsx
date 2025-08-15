@@ -103,7 +103,7 @@ interface JobProps {
 // };
 async function CaregiverJob({ jobID }: JobProps) {
   let data = await fetch(
-    `https://api.kinscare.org/api/v1/caregivers/job/${jobID}`,
+    `https://kinscare-backend.onrender.com/api/v1/caregivers/job/${jobID}`,
     { cache: "no-cache" }
   );
   const response = await data.json();

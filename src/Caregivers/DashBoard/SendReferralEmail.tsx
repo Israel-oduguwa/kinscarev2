@@ -70,14 +70,14 @@ const { closeDialog } = useDialog(); // Access the closeDialog function
     };
     try {
       const addPlan = await axios.post(
-        "https://api.kinscare.org/api/v1/auth/crud-operation",
+        "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
         payload
       );
       const fetchedData: any = await fetchUserData(
         userData.userID,
         userData.settings?.email ? userData.settings.email : userData.auth.email
       );
-      console.log(fetchedData);
+      // console.log(fetchedData);
       setUserData(fetchedData.result);
       // console.log(addPlan);
     } catch (error) {
@@ -87,7 +87,7 @@ const { closeDialog } = useDialog(); // Access the closeDialog function
 
   // Handle sending email and calculating points
   const onSubmit = async (data: any) => {
-   console.log(userData)
+  //  console.log(userData)
     setLoading(true); // Set loading to true when the submission starts
     const newReferrals = points.referrals + 1;
     let newPoints = points.totalPoints;
@@ -100,9 +100,9 @@ const { closeDialog } = useDialog(); // Access the closeDialog function
         organizationName: data.organization,
         senderUserID: userData.userID,
       };
-      console.log(payload)
+      // console.log(payload)
       const sendReferEmail = await axios.post(
-        "https://api.kinscare.org/api/v1/email/refer-employer",
+        "https://kinscare-backend.onrender.com/api/v1/email/refer-employer",
         payload
       );
       if (sendReferEmail.data.success) {

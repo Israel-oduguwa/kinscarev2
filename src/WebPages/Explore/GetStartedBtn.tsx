@@ -18,14 +18,13 @@ import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { ArrowBigLeft, Loader2, Loader2Icon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import React, { useContext, useState } from "react";
-import { trackEvent } from "@/lib/mixpanelUtils";
-// import FacebookLogin from "react-facebook-login";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import Link from "next/link";
 import TagManager from "react-gtm-module";
+import { useCioId, updateCustomerioUser } from "@/lib/customerio"; // ← NEW
 
 // Validation schema for the email signup form
 const schema = yup.object().shape({
@@ -40,12 +39,43 @@ const schema = yup.object().shape({
   terms: yup.bool().oneOf([true], "You must accept the Terms and Conditions"),
 });
 
+// ----- Attribution helpers -----
+type Attribution = {
+  email?: string | null;
+  fn?: string | null;
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
+};
+
+const LS_KEY_PREFS = "kc_search_prefs";
+
+const safeLocalGet = <T,>(key: string): T | null => {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : null;
+  } catch {
+    return null;
+  }
+};
+
+const safeLocalSet = (key: string, value: unknown) => {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // ignore quota errors
+  }
+};
+
 function GetStartedBtn({ children }: any) {
   const [isDialogOpen, setIsDialogOpen] = useState(false); // Social login modal
   const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false); // Email signup modal
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const mongo: any = useContext(MongoContext);
   const {
@@ -63,9 +93,67 @@ function GetStartedBtn({ children }: any) {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
+    getValues,
+    setValue,
   } = useForm({
     resolver: yupResolver(schema),
   });
+
+  // Pull Customer.io personId (cid from URL / LS / cookie)
+  const personId = useCioId(); // ← NEW
+
+  // Read URL params for /explore?email=...&fn=...&utm_*
+  const attribution: Attribution = useMemo(() => {
+    return {
+      email: searchParams.get("email"),
+      fn: searchParams.get("fn"),
+      utm_source: searchParams.get("utm_source"),
+      utm_medium: searchParams.get("utm_medium"),
+      utm_campaign: searchParams.get("utm_campaign"),
+    };
+  }, [searchParams]);
+
+  // Persist attribution to LS and prefill form if empty
+  useEffect(() => {
+    // Merge into kc_search_prefs for reuse elsewhere (OAuthDialog, etc.)
+    const prev = safeLocalGet<any>(LS_KEY_PREFS) ?? {};
+
+    const merged = {
+      ...prev,
+      email: attribution.email ?? prev.email ?? null,
+      name: attribution.fn ?? prev.name ?? null,
+      utm_source: attribution.utm_source ?? prev.utm_source ?? null,
+      utm_medium: attribution.utm_medium ?? prev.utm_medium ?? null,
+      utm_campaign: attribution.utm_campaign ?? prev.utm_campaign ?? null,
+      path:
+        typeof window !== "undefined" ? window.location.pathname : prev.path,
+      href: typeof window !== "undefined" ? window.location.href : prev.href,
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Only write when something is present to avoid unnecessary writes
+    if (
+      attribution.email ||
+      attribution.fn ||
+      attribution.utm_source ||
+      attribution.utm_medium ||
+      attribution.utm_campaign
+    ) {
+      safeLocalSet(LS_KEY_PREFS, merged);
+    }
+
+    // Prefill First Name and Email if fields are blank
+    const currentFname = getValues("fname");
+    const currentEmail = getValues("email");
+    if (!currentFname && attribution.fn) {
+      setValue("fname", attribution.fn);
+    }
+    if (!currentEmail && attribution.email) {
+      setValue("email", attribution.email.toLowerCase());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // run once on mount
 
   const handleError = (error: any) => {
     console.error("An error occurred:", error);
@@ -93,6 +181,9 @@ function GetStartedBtn({ children }: any) {
           region_name,
           zip,
         } = response.data;
+
+        // Attach attribution + context
+        const ls = safeLocalGet<any>(LS_KEY_PREFS) ?? {};
         Object.assign(payload, {
           route: "Regular",
           userIp: ip,
@@ -103,14 +194,22 @@ function GetStartedBtn({ children }: any) {
           returning: false,
           role: "caregiver",
           signup_route: "explorer",
+          // marketing / attribution
+          acquisition_channel: ls?.utm_source || "email",
+          utm_source: ls?.utm_source || attribution.utm_source || null,
+          utm_medium: ls?.utm_medium || attribution.utm_medium || null,
+          utm_campaign: ls?.utm_campaign || attribution.utm_campaign || null,
+          landing_path: ls?.path,
+          landing_href: ls?.href,
         });
 
         await axios.post(
-          "https://api.kinscare.org/api/v1/auth/create_user",
+          "https://kinscare-backend.onrender.com/api/v1/auth/create_user",
           payload
         );
         setAuthenticated(true);
 
+        // GTM (include UTM metadata)
         const tagManagerArgs =
           payload.auth_mode === "local-userpass"
             ? {
@@ -118,20 +217,23 @@ function GetStartedBtn({ children }: any) {
                   event: `explorer_sign_up`,
                   userIp: response?.data?.userIp,
                   added: new Date(),
-                  signup_route:"explorer",
+                  signup_route: "explorer",
                   authEmail: payload.email,
                   authMode: payload.auth_mode,
-                  authTel: payload.tel.trim(),
+                  authTel: (payload.tel || "").toString().trim(),
                   role: `${payload.role}`,
                   type: "Web",
                   userId: `${payload.userID}`,
+                  utm_source: payload.utm_source || null,
+                  utm_medium: payload.utm_medium || null,
+                  utm_campaign: payload.utm_campaign || null,
                 },
               }
             : {
                 dataLayer: {
                   event: `explorer_sign_up`,
                   added: new Date(),
-                  signup_route:"explorer",
+                  signup_route: "explorer",
                   userIp: response?.data?.userIp,
                   authEmail: payload.email,
                   authMode: payload.auth_mode,
@@ -139,6 +241,9 @@ function GetStartedBtn({ children }: any) {
                   socialLname: payload.lname,
                   type: "Web",
                   userId: `${payload.userID}`,
+                  utm_source: payload.utm_source || null,
+                  utm_medium: payload.utm_medium || null,
+                  utm_campaign: payload.utm_campaign || null,
                 },
               };
 
@@ -157,7 +262,7 @@ function GetStartedBtn({ children }: any) {
         const decodedToken: any = jwtDecode(token);
         const credentials = Realm.Credentials.jwt(token);
         const userObj = await app.logIn(credentials);
-        console.log(userObj);
+
         const existingUser = await client
           ?.db("kinshealth")
           .collection("contacts")
@@ -165,6 +270,7 @@ function GetStartedBtn({ children }: any) {
             userID: userObj.id,
             email: userObj.profile.email,
           });
+
         if (!existingUser) {
           const payload = {
             email: userObj.profile.email,
@@ -178,10 +284,15 @@ function GetStartedBtn({ children }: any) {
             route: "Regular",
             created: new Date(),
           };
+
           await createUserDuringRegistration(payload);
+
+          // ---- Customer.io update (non-blocking) ----
+          await updateCustomerioUser(personId, payload.userID); // ← NEW
+
           await setUser(userObj);
           await user.refreshCustomData();
-          console.log(userObj.id, userObj.profile.email);
+
           const fetchedData: any = await fetchUserData(
             userObj.id,
             userObj.profile.email
@@ -190,10 +301,8 @@ function GetStartedBtn({ children }: any) {
             userObj.id,
             userObj.profile.email
           );
-          //  trackEvent(app.currentUser.customData.hash, "Explorer Sign Up", payload);
 
           if (fetchedData.result) {
-            console.log(fetchedData);
             setAuthenticated(true);
             await user.refreshCustomData();
             setCustomData(fetchedCustomData.result);
@@ -211,7 +320,7 @@ function GetStartedBtn({ children }: any) {
             userObj.profile.email
           );
           setUser(userObj);
-          console.log(fetchedData.result);
+
           if (fetchedData.result) {
             setUserData(fetchedData.result);
             await user.refreshCustomData();
@@ -235,17 +344,6 @@ function GetStartedBtn({ children }: any) {
     });
   };
 
-  // const handleFacebookCallback = (response: any) => {
-  //   if (response?.status === "unknown") {
-  //     toast({
-  //       variant: "destructive",
-  //       description: "Facebook Login Failed. Please try again.",
-  //     });
-  //     return;
-  //   }
-  //   console.log(response);
-  // };
-
   const onSubmit = async (data: any) => {
     try {
       setLoading(true);
@@ -254,27 +352,31 @@ function GetStartedBtn({ children }: any) {
       await app.emailPasswordAuth.registerUser({ email, password });
       const credentials = Realm.Credentials.emailPassword(email, password);
       await app.logIn(credentials);
+
       if (app.currentUser) {
         setUser(app.currentUser);
-        // console.log("User logged in, refreshing custom data");
-        await app.currentUser.refreshCustomData(); // Try to refresh the data here
+        await app.currentUser.refreshCustomData();
+
         const payload = {
           tel: data.tel,
-          role: data.role,
+          role: "caregiver",
           fname: data.fname,
           lname: data.lname,
           userID: app.currentUser.id,
           email,
           auth_mode: "local-userpass",
         };
-        // add the user to the database
+
         await createUserDuringRegistration(payload);
-        // then we should fetch the user data to the client side
+
+        // ---- Customer.io update (non-blocking) ----
+        await updateCustomerioUser(personId, payload.userID); // ← NEW
+
         const caregiverUserID = app.currentUser.id;
         const emails = app.currentUser.email;
         const user_data: any = await fetchUserData(caregiverUserID, emails);
         if (user_data) {
-          setUserData(user_data.result); // set the user data
+          setUserData(user_data.result);
           app.currentUser.refreshCustomData();
           user.refreshCustomData();
           router.refresh();
@@ -295,7 +397,6 @@ function GetStartedBtn({ children }: any) {
     setIsDialogOpen(true);
   };
 
-  console.log(userData);
   return (
     <>
       {userData && userData.role === "caregiver" ? (
@@ -327,11 +428,9 @@ function GetStartedBtn({ children }: any) {
                   />
                 </div>
               ) : (
-                <>
-                  <div className="flex justify-center w-full items-center">
-                    <Loader2Icon size={30} className="animate-spin" />
-                  </div>
-                </>
+                <div className="flex justify-center w-full items-center">
+                  <Loader2Icon size={30} className="animate-spin" />
+                </div>
               )}
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -354,7 +453,7 @@ function GetStartedBtn({ children }: any) {
                     />
                     {errors.fname && (
                       <p className="text-red-500 text-xs mt-1">
-                        {errors.fname.message}
+                        {errors.fname.message as string}
                       </p>
                     )}
                   </div>
@@ -376,7 +475,7 @@ function GetStartedBtn({ children }: any) {
                     />
                     {errors.lname && (
                       <p className="text-red-500 text-xs mt-1">
-                        {errors.lname.message}
+                        {errors.lname.message as string}
                       </p>
                     )}
                   </div>
@@ -401,7 +500,7 @@ function GetStartedBtn({ children }: any) {
                   />
                   {errors.email && (
                     <p className="text-red-500 text-xs mt-1">
-                      {errors.email.message}
+                      {errors.email.message as string}
                     </p>
                   )}
                 </div>
@@ -423,7 +522,7 @@ function GetStartedBtn({ children }: any) {
                   />
                   {errors.tel && (
                     <p className="text-red-500 text-xs mt-1">
-                      {errors.tel.message}
+                      {errors.tel.message as string}
                     </p>
                   )}
                 </div>
@@ -446,7 +545,7 @@ function GetStartedBtn({ children }: any) {
                   />
                   {errors.password && (
                     <p className="text-red-500 text-xs mt-1">
-                      {errors.password.message}
+                      {errors.password.message as string}
                     </p>
                   )}
                 </div>
@@ -458,9 +557,9 @@ function GetStartedBtn({ children }: any) {
                       control={control}
                       render={({ field }) => (
                         <input
-                          {...field}
                           type="checkbox"
-                          value=""
+                          checked={!!field.value}
+                          onChange={(e) => field.onChange(e.target.checked)}
                           className="form-checkbox h-5 w-5 text-blue-600"
                         />
                       )}
@@ -478,7 +577,7 @@ function GetStartedBtn({ children }: any) {
                   </label>
                   {errors.terms && (
                     <p className="text-red-500 text-xs mt-1">
-                      {errors.terms.message}
+                      {errors.terms.message as string}
                     </p>
                   )}
                 </div>
@@ -505,6 +604,7 @@ function GetStartedBtn({ children }: any) {
                   Signup with Email
                 </DialogTitle>
               </div>
+              <DialogDescription />
             </DialogContent>
           </Dialog>
         </GoogleOAuthProvider>
@@ -514,18 +614,3 @@ function GetStartedBtn({ children }: any) {
 }
 
 export default GetStartedBtn;
-
-// {!loading && (
-//   <p className="mt-4 text-center text-gray-500">
-//     Don’t have social accounts?{" "}
-//     <button
-//       onClick={() => {
-//         setIsDialogOpen(false);
-//         setIsEmailDialogOpen(true);
-//       }}
-//       className="text-blue-500 underline"
-//     >
-//       Signup with email
-//     </button>
-//   </p>
-// )}

@@ -45,7 +45,7 @@ export default function FeedbackForm({ onSubmit }: FeedbackFormProps) {
     try {
       // Use Axios to send the POST request to your API
       const response = await axios.post(
-        "https://api.kinscare.org/api/v1/email/customer_feedback",
+        "https://kinscare-backend.onrender.com/api/v1/email/customer_feedback",
         formData,
         {
           headers: {

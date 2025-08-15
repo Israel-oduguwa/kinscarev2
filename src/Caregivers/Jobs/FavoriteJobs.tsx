@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import MongoContext from "@/app/MongoContext";
 import { Button } from "@/components/ui/button";
@@ -123,7 +124,7 @@ function FavoriteJobs() {
     try {
       setLoading(true);
       const { data }: any = await axios.get(
-        `https://api.kinscare.org/api/v1/caregivers/jobs/favorite/${user.customData.userID}`
+        `https://kinscare-backend.onrender.com/api/v1/caregivers/jobs/favorite/${user.customData.userID}`
       );
       setJobs(data.jobs);
       setTotalJobs(data.totalJobs);
@@ -138,7 +139,7 @@ function FavoriteJobs() {
       fetchJob();
     }
   }, [user]);
-  console.log(jobs);
+  // console.log(jobs);
   return (
     <div className="py-6 px-2 bg-gray-100 md:px-4 min-h-[100vh]">
       <div className="max-w-6xl mx-auto">

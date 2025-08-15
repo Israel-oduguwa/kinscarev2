@@ -39,7 +39,7 @@ function FreeTrialPayment({onClose}:any) {
               priceId="price_1QP2OuAoahxG9SLGNoc37Lxo"
               intentType="setup"
               onSuccess={(result) => {
-                console.log("Card saved successfully:", result);
+                // console.log("Card saved successfully:", result);
                 alert("Card saved!");
               } }
               onError={(error) => {

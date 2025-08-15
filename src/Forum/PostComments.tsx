@@ -28,7 +28,7 @@ function PostComments({ postID, threadId }: any) {
       };
       // console.log(payload);
       const { data } = await axios.post(
-        `https://api.kinscare.org/api/v1/forum/posts/${postID}/replies`,
+        `https://kinscare-backend.onrender.com/api/v1/forum/posts/${postID}/replies`,
         payload
       );
       //   console.log(data)

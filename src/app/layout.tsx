@@ -2,7 +2,7 @@
 import VoiceFlowProvider from "@/Caregivers/UiProviders/VoiceFlowProvider";
 import ContextProviders from "@/components/ContextProviders";
 import MongoProvider from "@/components/MongoProvider";
-
+import JumpstartBannerTop from "@/WebPages/HomePage/JumpstartBanner";
 import { ThemeProvider } from "@/lib/Theme";
 import IntercomProvider from "@/Providers/Utils/IntercomLoader";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -49,7 +49,7 @@ export default function RootLayout({
   //   initializeGTM(gtmId);
   // }
   return (
-    <html lang="en" suppressHydrationWarning={true}>
+    <html lang="en">
       <head>
         <link
           rel="stylesheet"
@@ -79,7 +79,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} ${headingFont.variable}`}>
+      <body suppressHydrationWarning className={`${inter.className} ${headingFont.variable}`}>
         <noscript>
           <iframe
             src="https://sst.kinscare.org/ns.html?id=GTM-WJ9XKTWL"
@@ -116,6 +116,8 @@ export default function RootLayout({
               <IntercomProvider  />
               {/* Run the cookie consent  */}
               <CookieConsentBanner/>
+                {/* Layout UI */}
+        {/* <JumpstartBannerTop ctaHref="/jumpstart" /> */}
               {children}
               </VoiceFlowProvider>
             </ContextProviders>

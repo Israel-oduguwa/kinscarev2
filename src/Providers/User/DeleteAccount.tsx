@@ -58,7 +58,7 @@ function DeleteAccount() {
       //   we first delete the user data from the database'
       
       const response = await axios.post(
-        "https://api.kinscare.org/api/v1/email/account_delete_email",
+        "https://kinscare-backend.onrender.com/api/v1/email/account_delete_email",
         {
           reason: payload.reason,
           feedback: payload.feedback,
@@ -73,7 +73,7 @@ function DeleteAccount() {
       await app.deleteUser(app.currentUser);
 
       const deleteDbData = await axios.post(
-        `https://api.kinscare.org/api/v1/auth/delete_account`,
+        `https://kinscare-backend.onrender.com/api/v1/auth/delete_account`,
         { userID: userData.userID, email: userData.auth.email }
       );
 

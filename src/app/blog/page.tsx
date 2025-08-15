@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import BlogList from "@/Blog/BlogList";
 import FeaturedArticle from "@/Blog/FeaturedArticle";
 
-const API_URL = "https://api.kinscare.org/api/v1/blogs/all";
+const API_URL = "https://kinscare-backend.onrender.com/api/v1/blogs/all";
 
 // **Generate SEO Metadata**
 export async function generateMetadata(): Promise<Metadata> {
@@ -39,7 +39,7 @@ async function fetchInitialBlogs() {
 async function fetchFeaturedArticle() {
   try {
     const res = await fetch(
-      `https://api.kinscare.org/api/v1/blogs/featured-article/68633e79e236b3979597f4a8`,
+      `https://kinscare-backend.onrender.com/api/v1/blogs/featured-article/68633e79e236b3979597f4a8`,
       { cache: "no-cache" }
     );
 

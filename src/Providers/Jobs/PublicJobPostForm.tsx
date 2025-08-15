@@ -516,7 +516,7 @@ const PublicJobPostPage = () => {
         profileImage: "",
       };
       const jobs = await axios.post(
-        "https://api.kinscare.org/api/v1/providers/post-job",
+        "https://kinscare-backend.onrender.com/api/v1/providers/post-job",
         payload
       );
       // console.log(jobs)

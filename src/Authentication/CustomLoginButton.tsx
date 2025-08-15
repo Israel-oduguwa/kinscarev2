@@ -56,7 +56,7 @@ const CustomLoginButton: React.FC = () => {
           "Content-Type": "application/json",
         };
         const response = await axios.get(
-          "https://api.kinscare.org/api/v1/auth/get_user_info",
+          "https://kinscare-backend.onrender.com/api/v1/auth/get_user_info",
           {
             withCredentials: true, // Important for sending cookies in cross-origin requests
             headers,
@@ -76,25 +76,25 @@ const CustomLoginButton: React.FC = () => {
 
   const createUserDuringRegistration = async (payload: any) => {
     const decodedToken: any = jwtDecode(payload);
-    console.log(decodedToken);
+    // console.log(decodedToken);
     const payloads = {
       id: decodedToken.userId,
       email: decodedToken.email,
     };
     const credentials = Realm.Credentials.function(payloads);
-    console.log(credentials);
+    // console.log(credentials);
     const userObj = await app.logIn(credentials);
-    console.log(userObj.profile.name, userObj.id);
+    // console.log(userObj.profile.name, userObj.id);
     const users = await client.db("kinshealth").collection("contacts").find({
       userID: userObj.id,
       email: userObj.profile.name,
     });
-    console.log(users[0]?.returning, "these are users");
+    // console.log(users[0]?.returning, "these are users");
     // check if the user already exist
     if (users.length < 1) {
     } else {
       //if the user signing in does not have returning attribute, add it
-      console.log("Passed");
+      // console.log("Passed");
 
       const mixpanelPayload = {
         auth_mode: "otp",
@@ -139,9 +139,9 @@ const CustomLoginButton: React.FC = () => {
       // Assuming createUserDuringRegistration is defined elsewhere
       await createUserDuringRegistration(jwt_generate.data.token);
       router.push("/vitae/jobs/all");
-      console.log("JWT Generated token d:", jwt_generate.data.token);
+      // console.log("JWT Generated token d:", jwt_generate.data.token);
     } catch (error) {
-      console.log("Error during login:", error);
+      // console.log("Error during login:", error);
     } finally {
       setLoading(false);
     }

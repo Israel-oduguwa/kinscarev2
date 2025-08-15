@@ -470,7 +470,7 @@ function QuoteEditor({
       formData.append("file", file);
 
       const { data } = await axios.post(
-        "https://api.kinscare.org/api/v1/upload-file",
+        "https://kinscare-backend.onrender.com/api/v1/upload-file",
         formData,
         {
           headers: {
@@ -505,7 +505,7 @@ function QuoteEditor({
     console.log(fileUrl, "delete the url");
     try {
       await axios.post(
-        "https://api.kinscare.org/api/v1/delete-file",
+        "https://kinscare-backend.onrender.com/api/v1/delete-file",
         { fileUrl }
       );
       console.log(`File deleted: ${fileUrl}`);

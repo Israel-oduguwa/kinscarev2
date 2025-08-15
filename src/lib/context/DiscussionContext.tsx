@@ -44,7 +44,7 @@ export const DiscussionProvider = ({
     setIsLoading(true);
     try {
       const response = await fetch(
-        `https://api.kinscare.org/api/v1/forum/threads?page=${page + 1}&limit=10&filters=${JSON.stringify(
+        `https://kinscare-backend.onrender.com/api/v1/forum/threads?page=${page + 1}&limit=10&filters=${JSON.stringify(
           filters
         )}`
       );
@@ -65,7 +65,7 @@ export const DiscussionProvider = ({
     setPage(1); // Reset the page
     try {
       const response = await fetch(
-        `https://api.kinscare.org/api/v1/forum/threads?page=1&limit=10&filters=${JSON.stringify(
+        `https://kinscare-backend.onrender.com/api/v1/forum/threads?page=1&limit=10&filters=${JSON.stringify(
           newFilters
         )}`
       );

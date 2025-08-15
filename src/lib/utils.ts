@@ -25,7 +25,7 @@ export const fetchUserData = async (
 
   try {
     const response = await axios.post(
-      "https://api.kinscare.org/api/v1/auth/crud-operation",
+      "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
       payload
     );
     return response.data;
@@ -50,7 +50,7 @@ export const fetchContactsData = async (
 
   try {
     const response = await axios.post(
-      "https://api.kinscare.org/api/v1/auth/crud-operation",
+      "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
       payload
     );
     return response.data;
@@ -109,7 +109,7 @@ export const updateMixpanelProfile = (
     ...properties,
   });
 
-  console.log("✅ Updated user profile in Mixpanel:", properties);
+  // console.log("✅ Updated user profile in Mixpanel:", properties);
 };
 type DateInput = string | Date;
 

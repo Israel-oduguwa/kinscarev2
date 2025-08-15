@@ -243,7 +243,7 @@ const SigninModal = ({ children, role }: any) => {
       }
 
       await axios.post(
-        "https://api.kinscare.org/api/v1/auth/create_user",
+        "https://kinscare-backend.onrender.com/api/v1/auth/create_user",
         payload
       );
 
@@ -301,7 +301,7 @@ const SigninModal = ({ children, role }: any) => {
       const password = data.password;
       const credentials = Realm.Credentials.emailPassword(email, password);
       const credentialUser = await app.logIn(credentials);
-      console.log(credentialUser);
+      // console.log(credentialUser);
 
       if (credentialUser) {
         setUser(credentialUser);

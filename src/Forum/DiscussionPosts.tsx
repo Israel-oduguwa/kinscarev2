@@ -6,7 +6,7 @@ interface PostProps {
 
 async function DiscussionPosts({ threadID }: PostProps) {
   let data = await fetch(
-    `https://api.kinscare.org/api/v1/forum/threads/${threadID}/posts`,
+    `https://kinscare-backend.onrender.com/api/v1/forum/threads/${threadID}/posts`,
     // { next: { revalidate:1 } }
     { cache: "no-cache" }
   );

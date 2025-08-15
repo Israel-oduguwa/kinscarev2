@@ -64,7 +64,7 @@ function AdminAuthentication() {
     },
   });
 
-  console.log(signupForm.watch());
+  // console.log(signupForm.watch());
 
   const handleError = (error: any) => {
     console.error("An error occurred:", error);
@@ -105,7 +105,7 @@ function AdminAuthentication() {
         });
 
         await axios.post(
-          "https://api.kinscare.org/api/v1/auth/create_user",
+          "https://kinscare-backend.onrender.com/api/v1/auth/create_user",
           payload
         );
         setAuthenticated(true);

@@ -31,7 +31,7 @@ const JobPostActions: React.FC<JobPostActionsProps> = ({ jobID }) => {
     setLoading(true);
     try {
       const response = await axios.delete(
-        `https://api.kinscare.org/api/v1/providers/job/delete/${jobID}`
+        `https://kinscare-backend.onrender.com/api/v1/providers/job/delete/${jobID}`
       );
       if (response.status === 200) {
         toast({

@@ -1,5 +1,4 @@
 "use client";
-
 import SignupDialog from "@/Authentication/SignupDialog";
 import MultiSelectField from "@/components/MultiSelect";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -18,12 +17,16 @@ import {
   CheckCircle,
   ChevronLeft,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo, useContext } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import JumpStartPayment from "./JumpStartPayment";
 import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
+import MongoContext from "@/app/MongoContext";
+import { useToast } from "@/components/ui/use-toast";
 
 const STRIPE_PUBLIC_KEY = process.env.STRIPE_PUBLIC_KEY ?? "";
 const stripePromise = loadStripe(STRIPE_PUBLIC_KEY);
@@ -35,8 +38,8 @@ interface FormData {
   orgName?: string;
   city: string;
   zipcode: string;
-  schedule: string[];
-  licenses: string[];
+  schedule: (string | undefined)[];
+  licenses: (string | undefined)[];
   jobDescription: string;
   smsConsent: boolean;
 }
@@ -72,20 +75,31 @@ const schema = yup.object({
     .test("valid-phone", "Invalid phone number", (value) =>
       value ? value.replace(/\D/g, "").length >= 10 : false
     ),
-  orgName: yup.string().notRequired(),
+  orgName: yup.string().optional(),
   city: yup.string().required("City is required"),
   zipcode: yup.string().required("Zip code is required"),
-  schedule: yup.array().min(1, "Select at least one schedule"),
-  licenses: yup.array().min(1, "Select at least one license"),
+  schedule: yup
+    .array()
+    .of(yup.string())
+    .min(1, "Select at least one schedule")
+    .required(),
+  licenses: yup
+    .array()
+    .of(yup.string())
+    .min(1, "Select at least one license")
+    .required(),
   jobDescription: yup.string().required("Job description is required"),
   smsConsent: yup
-    .boolean().required()
-    .oneOf([true], "To continue, please confirm you’d like to receive important updates by text from KinsCare."),
+    .boolean()
+    .required()
+    .oneOf(
+      [true],
+      "To continue, please confirm you’d like to receive important updates by text from KinsCare."
+    ),
 });
 
 interface SubscriptionData {
   id?: string;
-  // Extend as needed to match your subscription object structure
 }
 
 interface CreateSubscriptionResponse {
@@ -94,22 +108,70 @@ interface CreateSubscriptionResponse {
   subscription: SubscriptionData;
 }
 
+// ---------- Helpers ----------
+type Attribution = {
+  cio_id?: string | null;
+  email?: string | null;
+  name?: string | null;
+};
+
+const LS_KEY_PREFS = "kc_search_prefs";
+
+const safeLocalGet = <T,>(key: string): T | null => {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : null;
+  } catch {
+    return null;
+  }
+};
+
+const safeLocalSet = (key: string, value: unknown) => {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch {}
+};
+
+const parseFirstLast = (full?: string | null) => {
+  if (!full) return { first: undefined, last: undefined };
+  const parts = full.trim().split(/\s+/);
+  if (parts.length === 1) return { first: parts[0], last: "" };
+  return { first: parts[0], last: parts.slice(1).join(" ") };
+};
+
 function JumpStartForm() {
-  const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const signupTriggerRef = useRef<HTMLButtonElement>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isFetchingSecret, setIsFetchingSecret] = useState(false);
+  const { user, userData }: any = useContext(MongoContext);
   const [subscription, setSubscription] = useState<SubscriptionData | null>(
     null
   );
   const [subscriptionID, setSubscriptionID] = useState<string>("");
+
+  const { toast } = useToast();
+  const notify = {
+    success: (message: string) => toast({ description: message }),
+    error: (message: string) =>
+      toast({ variant: "destructive", description: message }),
+    warning: (message: string) => toast({ description: message }),
+  };
+
+  const searchParams = useSearchParams();
+
   const saved =
     typeof window !== "undefined"
       ? localStorage.getItem("jumpstartForm")
       : null;
-  const defaultValues = saved ? JSON.parse(saved) : {};
+  const defaultValues = saved
+    ? JSON.parse(saved)
+    : {
+        orgName: userData?.name ? userData?.name : "",
+      };
 
   const {
     control,
@@ -117,15 +179,80 @@ function JumpStartForm() {
     trigger,
     reset,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<FormData>({
     defaultValues,
     resolver: yupResolver(schema),
   });
 
+  // Prefill form values: use LS if present, else use user context if logged in
+  useEffect(() => {
+    if (saved) return; // LS takes priority
+    if (user && user.customData && userData) {
+      const prefill: Partial<FormData> = {
+        fullName: user
+          ? `${user?.customData?.fname ?? ""} ${user?.customData?.lname ?? ""}`.trim()
+          : "",
+        email: user?.customData?.email || "",
+        orgName: userData?.name || "",
+        phoneNumber: userData?.auth?.tel || "",
+        city: userData?.city || "",
+        zipcode: userData?.zipcode || "",
+      };
+      reset((prev) => ({ ...prev, ...prefill }), { keepDirty: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, userData]);
+
+  // Attribution from URL -> persist to LS (shared with your other flows)
+  const attribution: Attribution = useMemo(() => {
+    const urlCio = searchParams.get("cio_id");
+    const urlEmail = searchParams.get("email");
+    const urlName =
+      searchParams.get("name") ??
+      searchParams.get("contact_name") ??
+      searchParams.get("Contact%20Name");
+    return { cio_id: urlCio, email: urlEmail, name: urlName };
+  }, [searchParams]);
+
+  useEffect(() => {
+    // Merge into kc_search_prefs
+    const prev = safeLocalGet<any>(LS_KEY_PREFS) ?? {};
+    const merged = {
+      ...prev,
+      cio_id: attribution.cio_id ?? prev.cio_id ?? null,
+      email: attribution.email ?? prev.email ?? null,
+      name: attribution.name ?? prev.name ?? null,
+      path:
+        typeof window !== "undefined" ? window.location.pathname : prev.path,
+      href: typeof window !== "undefined" ? window.location.href : prev.href,
+      updatedAt: new Date().toISOString(),
+    };
+    if (attribution.cio_id || attribution.email || attribution.name) {
+      safeLocalSet(LS_KEY_PREFS, merged);
+    }
+
+    // Prefill form fields only if they are empty/not already saved by user
+    const current = saved ? JSON.parse(saved) : {};
+    const next: Partial<FormData> = { ...current };
+    if (!current?.fullName && attribution.name) {
+      next.fullName = attribution.name;
+    }
+    if (!current?.email && attribution.email) {
+      next.email = attribution.email.toLowerCase();
+    }
+    if (next.fullName || next.email) {
+      reset({ ...current, ...next }, { keepDirty: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // once
+
+  // Persist draft to LS
   useEffect(() => {
     const subscription = watch((data) => {
-      localStorage.setItem("jumpstartForm", JSON.stringify(data));
+      try {
+        localStorage.setItem("jumpstartForm", JSON.stringify(data));
+      } catch {}
     });
     return () => subscription.unsubscribe();
   }, [watch]);
@@ -146,26 +273,51 @@ function JumpStartForm() {
   const onBack = () => setStep((s) => Math.max(0, s - 1));
 
   const onSubmit = async (data: FormData) => {
-    console.log("Final payload:", data);
-    localStorage.removeItem("jumpstartForm");
-    reset();
-    setOpen(false);
+    // Not used since we gate through Signup/Direct-pay, but keep for safety.
+    // console.log("Final payload:", data);
+    try {
+      localStorage.removeItem("jumpstartForm");
+    } catch {}
     setStep(0);
   };
-  const formData = watch();
-  console.log(formData);
 
-  const createSubscriptionClientSecret = async (userID: any) => {
+  const formData = watch();
+
+  // Track provider signup (via Customer.io) FIRST, if they came from email
+  const trackProviderSignupFirst = async (userID: string) => {
+    if (!attribution.cio_id) return; // only if came from your email
+    const { first, last } = parseFirstLast(formData.fullName);
+    try {
+      await axios.post(
+        "https://kinscare-backend.onrender.com/api/v1/auth/track-provider-signup",
+        {
+          cio_id: attribution.cio_id,
+          email: formData.email,
+          userID,
+          first,
+          last,
+        }
+      );
+    } catch (err) {
+      console.warn("Customer.io tracking failed (jumpstart):", err);
+      notify.warning("We couldn't record email attribution. Continuing...");
+    }
+  };
+
+  const createSubscriptionClientSecret = async (userID: string) => {
     setIsFetchingSecret(true);
     try {
+      // Create Stripe subscription
       const response = await axios.post<CreateSubscriptionResponse>(
-        "https://api.kinscare.org/api/v1/providers/jumpstart/make-payment",
+        "https://kinscare-backend.onrender.com/api/v1/providers/jumpstart/make-payment",
         {
           userID,
           customerEmail: formData.email,
           priceId: "price_1RgAOgAoahxG9SLGmlFb19nn",
         }
       );
+
+      // Patch user plan
       const payload = {
         collectionName: "contacts",
         operation: "updateOne",
@@ -176,48 +328,91 @@ function JumpStartForm() {
           },
         },
       };
-      const database_response = await axios.post(
-        "https://api.kinscare.org/api/v1/auth/crud-operation",
+      await axios.post(
+        "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
         payload,
         { headers: { "Content-Type": "application/json" } }
       );
+
       const { clientSecret, subscriptionId, subscription } = response.data;
       setSubscriptionID(subscriptionId);
       setSubscription(subscription);
       setClientSecret(clientSecret);
-      localStorage.setItem("client_secret", clientSecret);
+      try {
+        localStorage.setItem("client_secret", clientSecret);
+      } catch {}
       setIsPaymentOpen(true);
+      notify.success("Secured checkout is ready.");
     } catch (error) {
       console.error("Error creating subscription client secret:", error);
+      notify.error("Unable to prepare payment. Please try again.");
     } finally {
       setIsFetchingSecret(false);
     }
   };
 
-  const handleSignupSuccess = async (userData: any) => {
+  const handleSignupSuccess = async (ud: any) => {
+    const finalUserID: string =
+      ud?.userID || userData?.userID || user?.id || "";
+
+    if (!finalUserID) {
+      notify.error("Could not resolve your user ID. Please sign in again.");
+      return;
+    }
+
+    // 1) Track goal FIRST for attribution (only if cio_id present)
+    await trackProviderSignupFirst(finalUserID);
+
+    // 2) Submit Jumpstart application
     const payload = {
-      userID: userData.userID,
-      email: watch("email"),
-      name: watch("fullName"),
-      phone: watch("phoneNumber"),
+      userID: finalUserID,
+      email: formData.email,
+      name: formData.fullName,
+      phone: formData.phoneNumber,
       application: {
-        jobDescription: watch("jobDescription"),
-        licenses: watch("licenses"),
-        schedule: watch("schedule"),
-        city: watch("city"),
-        zipcode: watch("zipcode"),
-        orgName: watch("orgName"),
+        jobDescription: formData.jobDescription,
+        licenses: formData.licenses,
+        schedule: formData.schedule,
+        city: formData.city,
+        zipcode: formData.zipcode,
+        orgName: formData.orgName,
       },
     };
     try {
-      const response = await axios.post(
-        `https://api.kinscare.org/api/v1/providers/jumpstart/submit-applcation`,
+      await axios.post(
+        `https://kinscare-backend.onrender.com/api/v1/providers/jumpstart/submit-applcation`,
         payload
       );
-      console.log(response);
-      await createSubscriptionClientSecret(userData.userID);
+
+      notify.success("Application submitted. Loading payment…");
+      // 3) Proceed to payment
+      await createSubscriptionClientSecret(finalUserID);
     } catch (error) {
-      console.log(error);
+      console.error("Application submit error:", error);
+      notify.error("Could not submit application. Please try again.");
+    }
+  };
+
+  // NEW: Final continue handler — skip signup if already signed in with userData
+  const handleFinalContinue = async () => {
+    const fields = fieldsPerStep[step];
+    const valid = await trigger(fields);
+    if (!valid) return;
+
+    const isSignedInWithProfile = !!userData?.userID;
+    console.log(isSignedInWithProfile, userData?.userID, user?.id);
+
+    if (isSignedInWithProfile) {
+      notify.success("You're signed in — skipping signup.");
+      // Construct minimal data object compatible with onSuccess contract
+      const synthetic = {
+        userID: userData?.userID || user?.id,
+        email: userData?.email || user?.profile?.email || formData.email,
+      };
+      await handleSignupSuccess(synthetic);
+    } else {
+      // Open Signup dialog
+      signupTriggerRef.current?.click();
     }
   };
 
@@ -498,12 +693,20 @@ function JumpStartForm() {
                         <label className="flex items-center space-x-3">
                           <input
                             type="checkbox"
-                            {...field}
+                            name={field.name}
+                            ref={field.ref}
                             checked={field.value}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
                             className="form-checkbox h-10 w-10 text-blue-600"
                           />
                           <span className="text-sm text-gray-700">
-                          I agree to receive text messages from KinsCare with updates about my application, interview reminders, and important hiring information. Message frequency may vary. Standard message and data rates may apply. We do not share or sell your mobile number. Reply STOP to unsubscribe.
+                            I agree to receive text messages from KinsCare with
+                            updates about my application, interview reminders,
+                            and important hiring information. Message frequency
+                            may vary. Standard message and data rates may apply.
+                            We do not share or sell your mobile number. Reply
+                            STOP to unsubscribe.
                           </span>
                         </label>
                       )}
@@ -532,7 +735,7 @@ function JumpStartForm() {
                 Back
               </button>
             ) : (
-              <div></div>
+              <div />
             )}
 
             {step < fieldsPerStep.length - 1 ? (
@@ -543,23 +746,19 @@ function JumpStartForm() {
             ) : (
               <Button
                 type="button"
-                onClick={async () => {
-                  const fields = fieldsPerStep[step];
-                  const valid = await trigger(fields);
-                  if (valid) {
-                    signupTriggerRef.current?.click();
-                  }
-                }}
+                onClick={handleFinalContinue}
                 className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg hover:opacity-90 transition-opacity flex items-center shadow-md"
+                disabled={isFetchingSecret}
               >
                 <CheckCircle className="w-5 h-5 mr-2" />
-                Continue
+                {isFetchingSecret ? <> <Loader2 className="animate-spin"/> Preparing Payment… </> : "Submit"}
               </Button>
             )}
           </div>
         </form>
       </div>
-      {/* Signup Dialog */}
+
+      {/* Signup Dialog (only used if not signed in) */}
       <SignupDialog
         role="provider"
         jumpstart={true}
@@ -571,8 +770,9 @@ function JumpStartForm() {
         }
         onSuccess={handleSignupSuccess}
       />
+
       {/* Payment Dialog */}
-      <Dialog open={isPaymentOpen}>
+      <Dialog open={isPaymentOpen} onOpenChange={setIsPaymentOpen}>
         <DialogContent className="rounded-xl max-w-md">
           {clientSecret && (
             <Elements stripe={stripePromise} options={{ clientSecret }}>
@@ -580,11 +780,15 @@ function JumpStartForm() {
                 subscription={subscription}
                 plan="bi-weekly"
                 subscriptionID={subscriptionID}
-                onSuccess={(result) => console.log("Payment success:", result)}
-                onError={(error) => console.log("Payment error:", error)}
-                close={function (): void {
-                  throw new Error("Function not implemented.");
+                onSuccess={(result) => {
+                  notify.success("Payment successful. Welcome to Jumpstart!");
+                  setIsPaymentOpen(false);
                 }}
+                onError={(error) => {
+                  // console.log("Payment error:", error);
+                  notify.error("Payment failed. Please try again.");
+                }}
+                close={() => setIsPaymentOpen(false)}
               />
             </Elements>
           )}

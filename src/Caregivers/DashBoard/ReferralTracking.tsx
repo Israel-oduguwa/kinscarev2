@@ -51,7 +51,7 @@ interface CrowdPost {
   applicantCount: number;
 }
 
-const API_URL = "https://api.kinscare.org/api/v1/caregivers/referrer-rewards";
+const API_URL = "https://kinscare-backend.onrender.com/api/v1/caregivers/referrer-rewards";
 
 export const ReferralTracking: React.FC = () => {
   const { userData }: any = useContext(MongoContext);
@@ -65,7 +65,6 @@ export const ReferralTracking: React.FC = () => {
   // Pagination state for crowd posts
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 4;
-
   // Calculate total earned across all milestones & referrals
   const totalEarned = useMemo(() => {
     return referrals.reduce((sumRef, ref) => {
@@ -130,6 +129,7 @@ export const ReferralTracking: React.FC = () => {
     (currentPage - 1) * postsPerPage,
     currentPage * postsPerPage
   );
+  // console.log(paginatedPosts)
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-12">
       {/* Referral Rewards Section */}

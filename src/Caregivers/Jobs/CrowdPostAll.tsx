@@ -88,10 +88,10 @@ function CrowdPostAll() {
       setLoading(true);
       try {
         const response = await axios.get(
-          `https://api.kinscare.org/api/v1/providers/crowd-posted-jobs/${user?.customData?.hash}`
+          `https://kinscare-backend.onrender.com/api/v1/providers/crowd-posted-jobs/${user?.customData?.hash}`
         );
         setJobs(response.data.jobs);
-        console.log(response.data.jobs);
+        // console.log(response.data.jobs);
         setError(null);
       } catch (error: any) {
         // toast({

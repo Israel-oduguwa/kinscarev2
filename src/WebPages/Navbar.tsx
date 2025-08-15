@@ -1,23 +1,19 @@
 "use client";
-
+import MongoContext from "@/app/MongoContext";
+import CaregiverNavbarRight from "@/Caregivers/CaregiverNavbarRight";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
+  SheetTrigger
 } from "@/components/ui/sheet";
+import ProviderNavbarRight from "@/Providers/ProviderNavbarRight";
 import { Menu } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import NavbarLink from "./NavbarLink";
-import MongoContext from "@/app/MongoContext";
 import { useContext } from "react";
-import CaregiverNavbarRight from "@/Caregivers/CaregiverNavbarRight";
-import ProviderNavbarRight from "@/Providers/ProviderNavbarRight";
-import Image from "next/image";
+import NavbarLink from "./NavbarLink";
 
 function MobileMenu() {
   const pathname = usePathname();
@@ -99,7 +95,7 @@ function Navbar() {
           </Link>
           {/* Right Section */}
           <div className="hidden lg:flex items-center lg:order-2">
-            { userData && userData.role === "caregiver" ? (
+            {userData && userData.role === "caregiver" ? (
               <>
                 <CaregiverNavbarRight />
               </>
@@ -124,14 +120,11 @@ function Navbar() {
                         Sign in
                       </Button>
                     </Link>
-                    <Link href="/signup">
-                      <Button
-                        className={`py-2 px-4 font-semibold text-sm ${
-                          pathname === "/signup" ? "bg-blue-500 text-white" : ""
-                        }`}
-                      >
-                        Get started
-                      </Button>
+                    <Link
+                      className="inline-flex items-center justify-center px-6 py-2 text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:from-indigo-700 hover:to-violet-800 hover:-translate-y-1"
+                      href="/signup"
+                    >
+                      Get started
                     </Link>
                   </>
                 )}

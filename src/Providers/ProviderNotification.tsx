@@ -31,7 +31,7 @@ function ProviderNotification() {
     try {
       console.log("fetching");
       const { data } = await axios.get(
-        `https://api.kinscare.org/api/v1/notifications/fetch`,
+        `https://kinscare-backend.onrender.com/api/v1/notifications/fetch`,
         {
           params: { userId: user.customData.userID },
         }
@@ -56,7 +56,7 @@ function ProviderNotification() {
     try {
       console.log("marking as read");
       await axios.post(
-        `https://api.kinscare.org/api/v1/notifications/mark-as-read`,
+        `https://kinscare-backend.onrender.com/api/v1/notifications/mark-as-read`,
         { notificationId }
       );
       setNotifications((prev) =>

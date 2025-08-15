@@ -46,7 +46,7 @@ function ThreadMenuAction({ threadID, authorID, usage }: any) {
         userID: userData.userID,
       };
       const response = await axios.post(
-        `https://api.kinscare.org/api/v1/forum/delete-thread/${threadID}`,
+        `https://kinscare-backend.onrender.com/api/v1/forum/delete-thread/${threadID}`,
         payload
       );
       // TODO: Update your UI accordingly after deletion

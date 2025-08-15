@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import MongoContext from "@/app/MongoContext";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ import * as Realm from "realm-web";
 import * as yup from "yup";
 import SelectRole from "./SelectRole";
 import Image from "next/image";
+import { sendSignupDripSMS } from "@/Utils/sendSmsSignup";
 
 const OrSeparator: React.FC = () => {
   return (
@@ -33,7 +35,7 @@ const OrSeparator: React.FC = () => {
 };
 
 // Validation schema
-const schema:any = yup
+const schema: any = yup
   .object({
     password: yup
       .string()
@@ -43,7 +45,7 @@ const schema:any = yup
       .string()
       .oneOf([yup.ref("password")], "Passwords must match")
       .required("Confirm password is required"),
-    tel: yup.string().required("Phone number is required")
+    tel: yup.string().required("Phone number is required"),
   })
   .required();
 
@@ -80,7 +82,7 @@ const EmployerJoin: React.FC = () => {
   });
   const [loading, setLoading] = useState(false);
   const [signupPageLoading, setSignupPageLoading] = useState(true);
-  const [emailEmployer, setEmailEmployer] = useState('');
+  const [emailEmployer, setEmailEmployer] = useState("");
 
   const [selectRoleModal, setSelectRoleModal] = useState(false);
   const { push, refresh } = useRouter();
@@ -97,7 +99,6 @@ const EmployerJoin: React.FC = () => {
     });
     setLoading(false);
   };
-
 
   // Register user during registration
   const createUserDuringRegistration = async (payload: object) => {
@@ -124,7 +125,7 @@ const EmployerJoin: React.FC = () => {
           returning: false,
         });
         const createUser = await axios.post(
-          "https://api.kinscare.org/api/v1/auth/create_user",
+          "https://kinscare-backend.onrender.com/api/v1/auth/create_user",
           payload
         );
         console.log(createUser);
@@ -136,25 +137,21 @@ const EmployerJoin: React.FC = () => {
     }
   };
 
-  
   // Get email based on referal code
   const extractEmailReferalCode = async (payload: any) => {
-      try {       
-          Object.assign(payload, {
-            referal_code_: payload.referal_code_
-             });
-          const emailID = await axios.post(
-            "https://api.kinscare.org/api/v1/email/invited-employer-email",
-            payload
-          );
-          setEmailEmployer(emailID.data.data.referral_email);
-      } catch (error) {
-        handleError(error);
-      }
-    };
-  
-
-
+    try {
+      Object.assign(payload, {
+        referal_code_: payload.referal_code_,
+      });
+      const emailID = await axios.post(
+        "https://kinscare-backend.onrender.com/api/v1/email/invited-employer-email",
+        payload
+      );
+      setEmailEmployer(emailID.data.data.referral_email);
+    } catch (error) {
+      handleError(error);
+    }
+  };
 
   useEffect(() => {
     // we check if the user Data is available if not we check is user id is available
@@ -165,12 +162,11 @@ const EmployerJoin: React.FC = () => {
     const referralCode = queryParams.get("utm_content");
 
     let data = {
-      referal_code_: referralCode
-   }
-    extractEmailReferalCode(data)
+      referal_code_: referralCode,
+    };
+    extractEmailReferalCode(data);
     // check google one tap login
   }, [1]);
-
 
   const routeUser = (role: string) => {
     switch (role) {
@@ -188,13 +184,13 @@ const EmployerJoin: React.FC = () => {
         break;
     }
   };
-  
+
   // Form submit handler
 
   const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
     try {
       setLoading(true);
-      const email = emailEmployer.toLowerCase()
+      const email = emailEmployer.toLowerCase();
       const password = data.password;
       await app.emailPasswordAuth.registerUser({ email, password });
       const credentials = Realm.Credentials.emailPassword(email, password);
@@ -205,7 +201,7 @@ const EmployerJoin: React.FC = () => {
         await app.currentUser.refreshCustomData(); // Try to refresh the data here
         const payload = {
           tel: data.tel,
-          role: 'provider',
+          role: "provider",
           userID: app.currentUser.id,
           email,
           auth_mode: "local-userpass",
@@ -215,6 +211,14 @@ const EmployerJoin: React.FC = () => {
         // then we should fetch the user data to the client side
         const userID = app.currentUser.id;
         const emails = app.currentUser.email;
+        await sendSignupDripSMS({
+          providerPhone: data.tel,
+          country: "NG",
+          role: "provider",
+          actionUrl:
+            "https://www.kinscare.org/provider/account/settings/profile",
+          jumpstartUrl: "https://www.kinscare.org/jumpstart-hiring",
+        });
         const user_data: any = await fetchUserData(userID, emails);
         if (user_data) {
           setUserData(user_data.result); // set the user data
@@ -233,7 +237,7 @@ const EmployerJoin: React.FC = () => {
   };
 
   const closeSelectModal = () => setSelectRoleModal(false);
-//  for one tap login 
+  //  for one tap login
   // googleLogout();
 
   if (loadingAuth === "authenticating") {
@@ -286,12 +290,11 @@ const EmployerJoin: React.FC = () => {
                 Create Employer&apos;s Account
               </h1>
               {/* Centered Google Sign-In */}
-          
+
               <form
                 className="space-y-4 md:space-y-4"
                 onSubmit={handleSubmit(onSubmit)}
               >
-
                 {/* Phone Number */}
                 <div>
                   <label

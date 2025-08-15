@@ -65,8 +65,8 @@ function SheetDemo() {
 }
 
 const UserAvatar = ({ userData, user, LogOutUser }: any) => {
-  console.log(user.customData, "this sef");
-  console.log(userData)
+  // console.log(user.customData, "this sef");
+  // console.log(userData)
   const userImg =
     "https://cdn.dribbble.com/users/7083770/avatars/normal/3d8dff526cb837d420cd4ae1fb73db01.png?1723696294";
   return (
@@ -233,7 +233,7 @@ function ProviderNavbarRight() {
 
       await app?.currentUser?.logOut();
       // localStorage.clear();
-      console.log("logout")
+      // console.log("logout")
       router.push("/signin");
       const anonymousUser = await app?.logIn(Realm.Credentials.anonymous());
       

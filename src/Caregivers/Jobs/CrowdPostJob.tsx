@@ -27,7 +27,7 @@ interface JobProps {
 
 export default async function CrowdPostJob({ jobID, isProvider }: JobProps) {
   const res = await fetch(
-    `https://api.kinscare.org/api/v1/providers/crowd-post/${jobID}`,
+    `https://kinscare-backend.onrender.com/api/v1/providers/crowd-post/${jobID}`,
     { cache: "no-cache" }
   );
   const { job, similarJobs } = await res.json();
@@ -41,7 +41,7 @@ export default async function CrowdPostJob({ jobID, isProvider }: JobProps) {
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
-console.log(job)
+// console.log(job)
   return (
     <section className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

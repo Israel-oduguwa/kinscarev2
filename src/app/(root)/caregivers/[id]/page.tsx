@@ -91,7 +91,7 @@ export async function generateMetadata({
 
   try {
     const response = await fetch(
-      `https://api.kinscare.org/api/v1/providers/caregivers/${candidateID}`,
+      `https://kinscare-backend.onrender.com/api/v1/providers/caregivers/${candidateID}`,
       { cache: 'no-cache' }
     );
     const { caregiver } = await response.json();

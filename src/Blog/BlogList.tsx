@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Clock, Flame } from "lucide-react";
 
-const API_URL = "https://api.kinscare.org/api/v1/blogs/all";
+const API_URL = "https://kinscare-backend.onrender.com/api/v1/blogs/all";
 
 interface Blog {
   _id: string;

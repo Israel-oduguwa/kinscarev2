@@ -86,11 +86,11 @@ export async function generateMetadata({
   try {
     // Fetch thread and posts data
     const threadResponse = await fetch(
-      `https://api.kinscare.org/api/v1/forum/threads/${id}`,
+      `https://kinscare-backend.onrender.com/api/v1/forum/threads/${id}`,
       { cache: "no-cache" }
     );
     const postsResponse = await fetch(
-      `https://api.kinscare.org/api/v1/forum/threads/${id}/posts`,
+      `https://kinscare-backend.onrender.com/api/v1/forum/threads/${id}/posts`,
       { cache: "no-cache" }
     );
 

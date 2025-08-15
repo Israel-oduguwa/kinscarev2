@@ -117,7 +117,7 @@ export default function ProviderTracking() {
   const fetchDetails = async () => {
     try {
       const { data } = await axios.get(
-        `https://api.kinscare.org/api/v1/providers/jumpstart/request?userID=${userID}`
+        `https://kinscare-backend.onrender.com/api/v1/providers/jumpstart/request?userID=${userID}`
       );
       setOrder(data.order || null);
       console.log(data);
@@ -180,7 +180,7 @@ export default function ProviderTracking() {
           request to get matched with qualified caregivers.
         </p>
         <a
-          href="/jumpstart"
+          href="/jumpstart-hiring/apply"
           className="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200"
         >
           Get Started

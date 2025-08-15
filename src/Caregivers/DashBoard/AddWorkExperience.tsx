@@ -110,7 +110,7 @@ function AddWorkExperience() {
     };
     try {
       const addPlan = await axios.post(
-        "https://api.kinscare.org/api/v1/auth/crud-operation",
+        "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
         payload
       );
       const fetchedData: any = await fetchUserData(

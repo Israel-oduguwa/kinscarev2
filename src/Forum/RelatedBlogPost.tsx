@@ -18,7 +18,7 @@ function RelatedBlogPost({ threadID }: { threadID: string }) {
     setLoading(true);
     try {
       const { data } = await axios.get(
-        `https://api.kinscare.org/api/v1/blogs/get-article-similar-to-thread/${threadID}`
+        `https://kinscare-backend.onrender.com/api/v1/blogs/get-article-similar-to-thread/${threadID}`
       );
       setSimilarArticles(data.similarArticles || []);
     } catch (error) {

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import MongoContext from "@/app/MongoContext";
 import { Button } from "@/components/ui/button";
@@ -198,12 +199,12 @@ function AppliedJobs() {
   const { user, userData } = mongo;
   const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState([]);
-  console.log(userData);
+  // console.log(userData);
   const fetchJob = async () => {
     try {
       setLoading(true);
       const { data }: any = await axios.get(
-        `https://api.kinscare.org/api/v1/caregivers/jobs/applied-job/${user.customData.userID}`
+        `https://kinscare-backend.onrender.com/api/v1/caregivers/jobs/applied-job/${user.customData.userID}`
       );
       setJobs(data.jobs);
     } catch (error) {

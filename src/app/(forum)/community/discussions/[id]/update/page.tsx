@@ -46,10 +46,10 @@ const Page = (props: { params: Promise<{ id: string }> }) => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `https://api.kinscare.org/api/v1/forum/threads/${id}`
+          `https://kinscare-backend.onrender.com/api/v1/forum/threads/${id}`
         );
         const { thread }: any = response.data;
-        console.log(thread);
+        // console.log(thread);
         setDiscussionData(thread);
         setContent(thread.content);
         setSelectedCategories(thread.categories);
@@ -74,9 +74,9 @@ const Page = (props: { params: Promise<{ id: string }> }) => {
         content: content,
         tags: [],
       };
-      console.log("jo");
+      // console.log("jo");
       const { data } = await axios.put(
-        `https://api.kinscare.org/api/v1/forum/threads/${id}`,
+        `https://kinscare-backend.onrender.com/api/v1/forum/threads/${id}`,
         payload
       );
       return data as string;

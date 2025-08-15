@@ -38,8 +38,8 @@ const nextConfig = {
         : process.env.STRIPE_PUBLIC_KEY,
     STRIPE_SECRET_KEY:
       process.env.NODE_ENV === "production"
-        ? process.env.STRIPE_SECRETE_KEY
-        : process.env.STRIPE_TEST_SECRETE,
+        ?process.env.STRIPE_SECRETE_KEY
+        :process.env.STRIPE_SECRETE_KEY,
     GTM_KEY: process.env.GTM_KEY,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
     REALM_ID: process.env.REALM_ID,

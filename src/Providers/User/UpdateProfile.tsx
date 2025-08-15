@@ -15,11 +15,18 @@ import * as yup from "yup";
 import MongoContext from "@/app/MongoContext";
 import MultiSelectField from "@/components/MultiSelect";
 
-import { Camera, LoaderCircle, X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRouter } from "next/navigation";
 import { fetchContactsData } from "@/lib/utils";
+import { Camera, LoaderCircle, ShieldAlert, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import TagManager from "react-gtm-module";
+import VerifyAccount from "../Candidates/VerifyAccount";
 // Form Validation Schema with Yup
 const schema = yup.object().shape({
   address: yup.string().required("Please enter provider's street address"), //.max(2, 'Full name can only be 6 characters long.'),
@@ -66,6 +73,12 @@ const groupProvider = [
   { label: "Other", value: "Other" },
 ];
 
+const verifyPaymentMethod = () => {
+  // Your verification logic here
+  // For now, just close the dialog
+  setIsVerificationDialogOpen(false);
+};
+
 const groupCall = [
   { label: "Phone Call", value: "Phone_call" },
   { label: "SMS/Text message", value: "SMS/Text message" },
@@ -79,6 +92,12 @@ interface IFormInput {
 const UpdateProfile = () => {
   const mongodb: any = useContext(MongoContext);
   const { user, userData, setCustomData } = mongodb;
+  // Add for verification dialog
+
+  // Inside your component (UpdateProfile)
+  const [isVerificationDialogOpen, setIsVerificationDialogOpen] =
+    useState(false); // Add for verification dialog
+
   const router = useRouter();
   const {
     register,
@@ -108,6 +127,7 @@ const UpdateProfile = () => {
   );
   const [resumePreview, setResumePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false); // General loading state
+  const [openModal, setOpenModal] = useState(false);
   const [imageLoading, setImageLoading] = useState(false); // Image upload loading state
   const [documentLoading, setDocumentLoading] = useState(false); // Document upload loading state
   console.log(errors);
@@ -162,7 +182,7 @@ const UpdateProfile = () => {
       const formData = new FormData();
       formData.append("file", file[0]);
       const { data } = await axios.post(
-        "https://api.kinscare.org/api/v1/upload-file",
+        "https://kinscare-backend.onrender.com/api/v1/upload-file",
         formData
       );
       setValue("profileImage", data.url);
@@ -192,7 +212,7 @@ const UpdateProfile = () => {
       }
       const payload = { fileUrl: url };
       const { data } = await axios.post(
-        "https://api.kinscare.org/api/v1/delete-file",
+        "https://kinscare-backend.onrender.com/api/v1/delete-file",
         payload
       );
       if (data.success) {
@@ -226,12 +246,12 @@ const UpdateProfile = () => {
       };
       console.log(payload);
       await axios.post(
-        `https://api.kinscare.org/api/v1/providers/settings/update/${userData.userID}`,
+        `https://kinscare-backend.onrender.com/api/v1/providers/settings/update/${userData.userID}`,
         payload
       );
 
       toast({ title: "Profile updated successfully", variant: "default" });
-    //  This are the data that was passed as ...data 
+      //  This are the data that was passed as ...data
       // {
       //   "address": "Please enter provider's street address",
       //   "fname": "First name is required",
@@ -248,11 +268,11 @@ const UpdateProfile = () => {
       //   "type_of_setting": "Please select provider type of care setting(s).",
       //   "profileImage": "image url is required"
       // }
-      
+
       const tagManagerArgs = {
         dataLayer: {
           event: `update_profile`,
-          ...data
+          ...data,
         },
       };
       TagManager.dataLayer(tagManagerArgs);
@@ -282,10 +302,54 @@ const UpdateProfile = () => {
     }
   };
   // console.log(userData?.availability);
+ const verifyPaymentMethod = () => {
+    setOpenModal(true);
+    setIsVerificationDialogOpen(false);
+  };
 
   return (
     <div className="bg-gray-100 py-10">
       <div className="max-w-6xl mx-auto ">
+        {!user?.customData?.verified && (
+          <div className="flex items-center gap-2 mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+            <ShieldAlert className="w-5 text-red-700 h-5" />
+            <span className="text-yellow-700 text-sm font-medium">
+              Your account is not verified.{" "}
+              <Button
+                variant="link"
+                onClick={() => setIsVerificationDialogOpen(true)}
+              >
+                Click here to verify your account.
+              </Button>
+            </span>
+          </div>
+        )}
+        <Dialog
+          open={isVerificationDialogOpen}
+          onOpenChange={setIsVerificationDialogOpen}
+        >
+          <DialogContent
+            closePosition="left"
+            className="mx-auto bg-white rounded-lg shadow-lg overflow-hidden"
+          >
+            <DialogTitle className="pt-4">
+              Get Verified & Connect To More Caregivers
+            </DialogTitle>
+            <DialogDescription className="">
+              You probably hate being solicited by scammers and so do our
+              caregivers. To prevent exploitation, we now require all employers
+              to complete a quick, FREE one-time identity verification. This
+              ensures trust, safety, and shows caregivers your interest is
+              genuine. Verify now to help maintain a secure community!
+            </DialogDescription>
+            <Button
+              className="mt-4 bg-blue-500 hover:bg-blue-700"
+              onClick={verifyPaymentMethod}
+            >
+              Verify Now
+            </Button>
+          </DialogContent>
+        </Dialog>
         <div className="mx-4 xl:mx-0 px-4 py-10 md:px-10 rounded-lg shadow-lg bg-white">
           {userData ? (
             <>
@@ -693,6 +757,7 @@ const UpdateProfile = () => {
           )}
         </div>
       </div>
+      <VerifyAccount setOpenModal={setOpenModal} openModal={openModal} />
     </div>
   );
 };

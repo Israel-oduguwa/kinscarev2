@@ -1,6 +1,5 @@
 import MongoContext from "@/app/MongoContext";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
 import { rewardReferrer } from "@/lib/paymentUtils";
 import { fetchContactsData, trackEvents } from "@/lib/utils";
 import {
@@ -13,6 +12,7 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useContext, useState } from "react";
 import TagManager from "react-gtm-module";
+import { toast } from "sonner";
 
 interface JumpStartPaymentProps {
   onSuccess: (result: any) => void;
@@ -35,238 +35,254 @@ const JumpStartPayment: React.FC<JumpStartPaymentProps> = ({
   const elements = useElements();
   const router = useRouter();
   const { user, setCustomData, userData }: any = useContext(MongoContext);
-  const userID = userData.userID;
+  const userID = userData?.userID || user?.customData?.userID;
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
+  // -------- utils ----------
+  const getErrMsg = (e: any, fallback = "Something went wrong.") => {
+    if (!e) return fallback;
+    if (typeof e === "string") return e;
+    return e?.response?.data?.message || e?.message || fallback;
+  };
+
+  const notifyError = (e: any, ctx?: string) => {
+    const base = getErrMsg(e);
+    toast.error(ctx ? `${ctx}: ${base}` : base);
+  };
+
+  const requireStripeReady = () => {
+    if (!stripe || !elements) {
+      const m = "Stripe is not loaded. Please refresh and try again.";
+      setMessage(m);
+      toast.error(m);
+      return false;
+    }
+    return true;
+  };
+
+  // -------- data updates ----------
   const updatePaymentMethod = async () => {
-    try {
-      const freeTrialEndDate = new Date();
-      freeTrialEndDate.setDate(freeTrialEndDate.getDate() + 7);
+    const start = subscription?.current_period_start
+      ? new Date(subscription.current_period_start * 1000).toISOString()
+      : new Date().toISOString();
+    const end = subscription?.current_period_end
+      ? new Date(subscription.current_period_end * 1000).toISOString()
+      : new Date(Date.now() + 14 * 24 * 3600 * 1000).toISOString();
 
-      const payload = {
-        collectionName: "contacts",
-        operation: "updateOne",
-        filter: { userID, role: "provider" },
-        update: {
-          $set: {
-            subscription_id: subscriptionID,
-            subscribed: true,
-            trial: "expired",
-            subscription_start_date: new Date(
-              subscription.current_period_start * 1000
-            ).toISOString(),
-            subscription_end_date: new Date(
-              subscription.current_period_end * 1000
-            ).toISOString(),
-            subscription_status: "complete",
-            plan,
-            plan_id: subscription.plan.id,
-            payment_verified: true,
-          },
+    const planId = subscription?.plan?.id ?? null;
+
+    const payload = {
+      collectionName: "contacts",
+      operation: "updateOne",
+      filter: { userID, role: "provider" },
+      update: {
+        $set: {
+          subscription_id: subscriptionID,
+          subscribed: true,
+          trial: "expired",
+          subscription_start_date: start,
+          subscription_end_date: end,
+          subscription_status: "complete",
+          plan,
+          plan_id: planId,
+          payment_verified: true,
         },
-      };
+      },
+    };
 
-      const response = await axios.post(
-        "https://api.kinscare.org/api/v1/auth/crud-operation",
-        payload,
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      if (!response.data.success) {
-        throw new Error(
-          response.data.message || "Failed to update payment data."
-        );
-      }
-
-      await user.refreshCustomData();
-      router.refresh();
-    } catch (error: any) {
-      console.error("Error updating payment method:", error.message);
-      throw error;
+    const res = await axios.post(
+      "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
+      payload,
+      { headers: { "Content-Type": "application/json" } }
+    );
+    if (!res?.data?.success) {
+      throw new Error(res?.data?.message || "Failed to update payment data.");
     }
   };
 
   const updateJumpstartPayment = async () => {
-    try {
-      // Format dates from Stripe's epoch time
-      const startDate = new Date(
-        subscription.current_period_start * 1000
-      ).toISOString();
-      const endDate = new Date(
-        subscription.current_period_end * 1000
-      ).toISOString();
+    const start = subscription?.current_period_start
+      ? new Date(subscription.current_period_start * 1000).toISOString()
+      : new Date().toISOString();
+    const end = subscription?.current_period_end
+      ? new Date(subscription.current_period_end * 1000).toISOString()
+      : new Date(Date.now() + 14 * 24 * 3600 * 1000).toISOString();
 
-      // Build payload for the backend API
-      const payload = {
-        collectionName: "jumpstart_hiring",
-        operation: "updateOne",
-        filter: { "user.userID": userID },
-        update: {
-          $set: {
-            status: "active",
-            "payment.status": "complete",
-            "payment.subscription_id": subscriptionID,
-            "payment.verified": true,
-            "payment.plan": plan,
-            "payment.plan_id": subscription.plan.id,
-            "payment.subscription_start_date": startDate,
-            "payment.subscription_end_date": endDate,
-            "payment.subscription_status": "complete",
-            "payment.payment_verified": true,
-            updatedAt: new Date().toISOString(),
-          },
-          $push: {
-            auditTrail: {
-              event: "payment_completed",
-              by: "user",
-              timestamp: new Date(),
-            },
+    const planId = subscription?.plan?.id ?? null;
+
+    const payload = {
+      collectionName: "jumpstart_hiring",
+      operation: "updateOne",
+      filter: { "user.userID": userID },
+      update: {
+        $set: {
+          status: "active",
+          "payment.status": "complete",
+          "payment.subscription_id": subscriptionID,
+          "payment.verified": true,
+          "payment.plan": plan,
+          "payment.plan_id": planId,
+          "payment.subscription_start_date": start,
+          "payment.subscription_end_date": end,
+          "payment.subscription_status": "complete",
+          "payment.payment_verified": true,
+          updatedAt: new Date().toISOString(),
+        },
+        $push: {
+          auditTrail: {
+            event: "payment_completed",
+            by: "user",
+            timestamp: new Date(),
           },
         },
-      };
-
-      // Make API call
-      const response = await axios.post(
-        "https://api.kinscare.org/api/v1/auth/crud-operation",
-        payload,
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      if (!response.data.success) {
-        throw new Error(
-          response.data.message || "Failed to update payment data."
-        );
-      }
-
-      // Optionally refresh user data or UI as needed
-      // await user.refreshCustomData();
-      // router.refresh();
-
-      return true; // or response.data if you want details
-    } catch (error) {
-      // console.error("Error updating Jumpstart payment:", error.message);
-      throw error;
-    }
-  };
-
-  const sendConfirmationEmail = async ({ email, first_name, id }: any) => {
-    const payload = {
-      email,
-      first_name,
+      },
     };
-    try {
-      axios.post(
-        "https://api.kinscare.org/api/v1/email/jumpstart/payment-confirmation",
-        payload
-      );
-    } catch (error) {
-      console.log(error);
+
+    const res = await axios.post(
+      "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
+      payload,
+      { headers: { "Content-Type": "application/json" } }
+    );
+    if (!res?.data?.success) {
+      throw new Error(res?.data?.message || "Failed to sync Jumpstart payment.");
     }
   };
 
+  const sendConfirmationEmail = async ({
+    email,
+    first_name,
+  }: {
+    email: string;
+    first_name: string;
+  }) => {
+    try {
+      await axios.post(
+        "https://kinscare-backend.onrender.com/api/v1/email/jumpstart/payment-confirmation",
+        { email, first_name }
+      );
+    } catch (e) {
+      // non-blocking
+      console.warn("Email send failed:", getErrMsg(e));
+    }
+  };
+
+  // -------- submit ----------
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!stripe || !elements) {
-      setMessage("Stripe is not loaded. Please try again.");
+    // Guard rails
+    if (!userID) {
+      toast.error("Missing user session. Please sign in and try again.");
       return;
     }
+    if (!requireStripeReady()) return;
 
     setIsLoading(true);
+    setMessage(null);
 
     try {
       // Confirm the payment
-      const result = await stripe.confirmPayment({
-        elements,
-        confirmParams: {},
+      const result = await stripe!.confirmPayment({
+        elements: elements!,
+        confirmParams: {}, // using default return_url-less, with redirect: "if_required"
         redirect: "if_required",
       });
 
-      // Handle errors in payment confirmation
+      // Handle Stripe error object
       if (result.error) {
-        toast({
-          title: "Error",
-          description: result.error.message || "An unknown error occurred.",
-          variant: "destructive",
-        });
         if (onError) onError(result.error);
+        notifyError(result.error, "Payment failed");
         setIsLoading(false);
         return;
       }
 
-      // Get the Payment Method ID
-      const paymentMethodID = result.paymentIntent?.payment_method;
-      if (!paymentMethodID) throw new Error("Payment method ID is missing.");
+      // Ensure we have a PaymentIntent and acceptable status
+      const pi = result.paymentIntent;
+      const status = pi?.status;
 
-      // Update the payment method
-      await updatePaymentMethod();
-
-      //Also update the Jumpstart Collection
-      await updateJumpstartPayment();
-      // Event payload for tracking
-      const eventPayload = {
-        // subscription_id: subscriptionID,
-        settings: userData?.settings,
-        lname: userData?.lname,
-        subscription_status: "complete",
-        plan,
-        subscription_start_date: new Date(
-          subscription.current_period_start * 1000
-        ).toISOString(),
-        fname: userData?.fname,
-        tel: userData?.auth?.tel,
-        // plan_id: subscription.plan.id,
-        zipcode: userData?.zipcode,
-        city: userData?.city,
-        // payment_verified: true,
-        email: userData?.auth?.email,
-      };
-
-      const tagManagerArgs = {
-        dataLayer: {
-          ...eventPayload,
-          event: `payment_jumpstart`,
-        },
-      };
-      TagManager.dataLayer(tagManagerArgs);
-
-      // Track purchase event
-      trackEvents(user?.customData?.hash, "Purchase Plan", eventPayload);
-
-      // Call onSuccess callback with payment method ID
-      onSuccess({ paymentMethodID });
-      const payload = {
-        email: userData.auth.email,
-        first_name: `${userData.fname} ${userData.lname}`,
-      };
-      sendConfirmationEmail(payload);
-      // Fetch updated data after payment
-      const updatedData = await fetchContactsData(
-        user.customData.userID,
-        user.customData.email
-      );
-
-      if (updatedData) {
-        await setCustomData(updatedData.result);
-        //send reward to refrrer if any exists
-        //  await rewardReferrer(user.customData.userID, "subscription");
-        // Wait for webhook processing (e.g., 2 seconds)
-        setTimeout(() => {
-          router.push("/provider/jumpstart");
-          close();
-          setIsLoading(false); // Ensure loading state is turned off
-        }, 3000); // 3-second delay
+      if (!pi || !status) {
+        throw new Error("No payment confirmation received from Stripe.");
       }
-    } catch (error: any) {
-      // Handle errors and show a toast notification
-      toast({
-        title: "Payment Failed",
-        description: error.message || "An error occurred.",
-        variant: "destructive",
-      });
-      if (onError) onError(error);
+
+      // Acceptable statuses for proceeding:
+      // - succeeded (paid)
+      // - processing (bank debit etc.); proceed but inform user
+      // - requires_capture (if using manual capture; unlikely here)
+      if (
+        !["succeeded", "processing", "requires_capture"].includes(status)
+      ) {
+        // Common failure statuses:
+        // requires_payment_method, requires_confirmation, requires_action
+        throw new Error(
+          `Payment not completed (status: ${status}). Please try another payment method.`
+        );
+      }
+
+      const paymentMethodID = pi.payment_method;
+      if (!paymentMethodID) {
+        throw new Error("Payment method ID was not returned by Stripe.");
+      }
+
+      // Persist updates
+      await updatePaymentMethod();
+      await updateJumpstartPayment();
+
+      // Tag Manager + Mixpanel tracking (best-effort)
+      try {
+        const eventPayload = {
+          settings: userData?.settings,
+          lname: userData?.lname,
+          subscription_status: "complete",
+          plan,
+          subscription_start_date: subscription?.current_period_start
+            ? new Date(subscription.current_period_start * 1000).toISOString()
+            : undefined,
+          fname: userData?.fname,
+          tel: userData?.auth?.tel,
+          zipcode: userData?.zipcode,
+          city: userData?.city,
+          email: userData?.auth?.email,
+        };
+        TagManager.dataLayer({ dataLayer: { ...eventPayload, event: "payment_jumpstart" } });
+        trackEvents(user?.customData?.hash, "Purchase Plan", eventPayload);
+      } catch (e) {
+        console.warn("Tracking failed:", getErrMsg(e));
+      }
+
+      // Fire success callback early (UI responsiveness)
+      onSuccess({ paymentMethodID });
+
+      // Confirmation email (non-blocking)
+      if (userData?.auth?.email) {
+        await sendConfirmationEmail({
+          email: userData.auth.email,
+          first_name: `${userData?.fname ?? ""} ${userData?.lname ?? ""}`.trim(),
+        });
+      }
+
+      // Refresh contact data (best-effort)
+      try {
+        const updatedData = await fetchContactsData(
+          user?.customData?.userID,
+          user?.customData?.email
+        );
+        if (updatedData?.result && typeof setCustomData === "function") {
+          await setCustomData(updatedData.result);
+        }
+      } catch (e) {
+        console.warn("Post-payment refresh failed:", getErrMsg(e));
+      }
+
+      toast.success("Payment successful. Welcome to Jumpstart!");
+      // Route then close
+      router.push("/provider/jumpstart");
+      close();
+    } catch (e: any) {
+      notifyError(e, "Payment Failed");
+      if (onError) onError(e);
     } finally {
+      setIsLoading(false);
     }
   };
 
@@ -274,9 +290,13 @@ const JumpStartPayment: React.FC<JumpStartPaymentProps> = ({
     <form id="payment-form" onSubmit={handleSubmit} className="space-y-6">
       <PaymentElement id="payment-element" options={{ layout: "tabs" }} />
       <div className="flex justify-end">
-        <Button disabled={isLoading || !stripe || !elements} id="submit">
+        <Button
+          className="bg-indigo-600 text-white px-8 py-6 text-lg font-bold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300"
+          disabled={isLoading || !stripe || !elements}
+          id="submit"
+        >
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Pay 200$ to Jumpstart Hire
+          Pay $200 to Jumpstart Hire
         </Button>
       </div>
       {message && <p className="text-red-500">{message}</p>}

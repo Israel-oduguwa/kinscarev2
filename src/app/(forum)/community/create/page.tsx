@@ -46,7 +46,7 @@ const Page = () => {
         tags: [],
       };
       const { data } = await axios.post(
-        `https://api.kinscare.org/api/v1/forum/threads`,
+        `https://kinscare-backend.onrender.com/api/v1/forum/threads`,
         payload
       );
       return data as string;

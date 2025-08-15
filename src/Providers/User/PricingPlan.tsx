@@ -155,7 +155,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
 
       try {
         const response = await axios.post<CreateSubscriptionResponse>(
-          "https://api.kinscare.org/api/v1/providers/create-subscription",
+          "https://kinscare-backend.onrender.com/api/v1/providers/create-subscription",
           {
             customerId: user.customData.customer_id,
             customerEmail: user.customData.email,
@@ -176,7 +176,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
         };
 
         const database_response = await axios.post(
-          "https://api.kinscare.org/api/v1/auth/crud-operation",
+          "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
           payload,
           { headers: { "Content-Type": "application/json" } }
         );
@@ -209,7 +209,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
 
       try {
         const response = await axios.post<CreateSubscriptionResponse>(
-          "https://api.kinscare.org/api/v1/providers/create-subscription",
+          "https://kinscare-backend.onrender.com/api/v1/providers/create-subscription",
           {
             customerId: user.customData.customer_id,
             coupon: discountPercentage,
@@ -231,7 +231,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
         };
 
         const database_response = await axios.post(
-          "https://api.kinscare.org/api/v1/auth/crud-operation",
+          "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
           payload,
           { headers: { "Content-Type": "application/json" } }
         );
@@ -264,7 +264,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
         const selectedPlan = pricingPlans.find((plan) => plan.id === "monthly");
         try {
           const response = await axios.post<CreateSubscriptionResponse>(
-            "https://api.kinscare.org/api/v1/providers/create-subscription",
+            "https://kinscare-backend.onrender.com/api/v1/providers/create-subscription",
             {
               customerId: user.customData.customer_id,
               customerEmail: user.customData.email,
@@ -298,7 +298,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
   const fetchSavedCards = useCallback(async () => {
     try {
       const response = await axios.post<PaymentMethodsResponse>(
-        "https://api.kinscare.org/api/v1/providers/payment-methods",
+        "https://kinscare-backend.onrender.com/api/v1/providers/payment-methods",
         {
           customerId: user.customData.customer_id,
         }
@@ -331,7 +331,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
     setLoading(true);
     try {
       await axios.post(
-        "https://api.kinscare.org/api/v1/providers/subscription",
+        "https://kinscare-backend.onrender.com/api/v1/providers/subscription",
         {
           customerId,
           priceId: currentPlan.stripePriceId,
@@ -768,7 +768,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                 plan={currentPlan?.id}
                 priceId={currentPlan?.stripePriceId ?? ""}
                 subscriptionID={subscriptionID}
-                onSuccess={(result) => console.log("Payment success:", result)}
+                onSuccess={(result) => console.log("Payment success:")}
                 onError={(error) => console.log("Payment error:", error)}
                 customerId={""}
                 intentType={""}

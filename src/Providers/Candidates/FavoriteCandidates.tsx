@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import MongoContext from "@/app/MongoContext";
 import React, { useContext, useEffect, useState } from "react";
@@ -183,7 +184,7 @@ function FavoriteCandidates() {
       setError(null);
       try {
         const response = await axios.get(
-          `https://api.kinscare.org/api/v1/providers/favorite-caregivers/${user.customData.userID}`
+          `https://kinscare-backend.onrender.com/api/v1/providers/favorite-caregivers/${user.customData.userID}`
         );
         if (response.status === 200) {
           setCandidates(response.data.data);

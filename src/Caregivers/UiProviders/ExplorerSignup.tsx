@@ -125,7 +125,7 @@ const ExplorerSignup = ({ setDialog }: any) => {
       });
 
       await axios.post(
-        "https://api.kinscare.org/api/v1/auth/create_user",
+        "https://kinscare-backend.onrender.com/api/v1/auth/create_user",
         payload
       );
       setAuthenticated(true);
@@ -219,7 +219,7 @@ const ExplorerSignup = ({ setDialog }: any) => {
           };
 
           fetch(
-            "https://api.kinscare.org/api/v1/caregivers/save-recommendation",
+            "https://kinscare-backend.onrender.com/api/v1/caregivers/save-recommendation",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -250,7 +250,7 @@ const ExplorerSignup = ({ setDialog }: any) => {
           };
 
           fetch(
-            "https://api.kinscare.org/api/v1/caregivers/save-recommendation",
+            "https://kinscare-backend.onrender.com/api/v1/caregivers/save-recommendation",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -317,7 +317,7 @@ const ExplorerSignup = ({ setDialog }: any) => {
           };
 
           fetch(
-            "https://api.kinscare.org/api/v1/caregivers/save-recommendation",
+            "https://kinscare-backend.onrender.com/api/v1/caregivers/save-recommendation",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },

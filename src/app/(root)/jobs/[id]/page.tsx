@@ -19,7 +19,7 @@ export async function generateMetadata(
 
   try {
     const response = await fetch(
-      `https://api.kinscare.org/api/v1/caregivers/job/${id}`,
+      `https://kinscare-backend.onrender.com/api/v1/caregivers/job/${id}`,
       { cache: "no-cache" }
     );
     const { job } = await response.json();
@@ -109,7 +109,7 @@ async function page(props: { params: Promise<{ id: string }> }) {
   const { id } = params;
   return (
     <div className="mt-10">
-      <Navbar />
+      
       <Suspense fallback={<JobDetailSkeleton />}>
         <div className="bg-white ">
           <JobDetails jobID={id} />

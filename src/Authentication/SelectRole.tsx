@@ -67,7 +67,7 @@ function SelectRole({ selectRoleModal, closeSelectModal }: any) {
     try {
       setValidating(true);
       const response = await axios.post(
-        "https://api.kinscare.org/api/v1/auth/phone/validate",
+        "https://kinscare-backend.onrender.com/api/v1/auth/phone/validate",
         {
           phone: phone,
         }
@@ -128,7 +128,7 @@ function SelectRole({ selectRoleModal, closeSelectModal }: any) {
       };
       console.log(payload);
       const response = await axios.post(
-        "https://api.kinscare.org/api/v1/auth/update-role-tel",
+        "https://kinscare-backend.onrender.com/api/v1/auth/update-role-tel",
         payload
       );
       if (response.data.success) {

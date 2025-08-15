@@ -62,7 +62,7 @@ interface CandidatesApiResponse {
 const fetchCandidates = async (userID: string, page: number) => {
   try {
     const response = await axios.get(
-      `https://api.kinscare.org/api/v1/providers/caregivers/match/${userID}?page=${page}&limit=10`
+      `https://kinscare-backend.onrender.com/api/v1/providers/caregivers/match/${userID}?page=${page}&limit=10`
     );
     return response.data;
   } catch (error) {
@@ -253,7 +253,7 @@ function All() {
     fetchFilteredCandidatesData,
     selectedShifts,
     selectedLicenses,
-  } = useContext(CandidatesContext)!;
+  }:any = useContext(CandidatesContext)!;
   // console.log(candidates);
   // Shift and license options
   const shiftOptions = [
@@ -346,7 +346,7 @@ function All() {
             </div>
           ) : candidates.length > 0 ? (
             <>
-              {candidates.map((candidate, idx) => (
+              {candidates.map((candidate: Candidates, idx: number) => (
                 <CandidatesCard key={candidate._id} candidate={candidate} />
               ))}
               {page < totalPages && (

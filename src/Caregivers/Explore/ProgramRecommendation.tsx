@@ -113,7 +113,7 @@ const ProgramRecommendation: React.FC = () => {
       try {
         setProgress(1);
         const scrapeRes = await axios.post(
-          "https://api.kinscare.org/api/v1/ai/scrape-web",
+          "https://kinscare-backend.onrender.com/api/v1/ai/scrape-web",
           { urls: selectedUrls.map((u) => u.url) },
           { timeout: 80000 }
         );
@@ -123,7 +123,7 @@ const ProgramRecommendation: React.FC = () => {
 
         setProgress(2);
         const parseRes = await axios.post(
-          "https://api.kinscare.org/api/v1/ai/parse-content",
+          "https://kinscare-backend.onrender.com/api/v1/ai/parse-content",
           { content: scraped },
           { timeout: 80000 }
         );

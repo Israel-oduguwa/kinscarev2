@@ -29,7 +29,7 @@ polyfill();
 
 async function ApplyCrowdPostJob({ jobID }: any) {
   const res = await fetch(
-    `https://api.kinscare.org/api/v1/providers/crowd-post/${jobID}`,
+    `https://kinscare-backend.onrender.com/api/v1/providers/crowd-post/${jobID}`,
     { cache: "no-cache" }
   );
   const { job, similarJobs } = await res.json();

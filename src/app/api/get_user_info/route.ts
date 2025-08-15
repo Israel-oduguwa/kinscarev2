@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     
     const otpHash = cookieStore.get('user_token')
     // Get the OTP hash from the request cookies
-    console.log(cookieStore, otpHash)
+    // console.log(cookieStore, otpHash)
     // If no OTP hash is found, return 401 Unauthorized
     if (!otpHash) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

@@ -13,7 +13,7 @@ function MatchingCaregiver({ jobID }: { jobID: string }) {
     try {
     setLoading(true)
       const caregiver = await axios.get(
-        `https://api.kinscare.org/api/v1/providers/jobs/${jobID}/matching-caregivers`
+        `https://kinscare-backend.onrender.com/api/v1/providers/jobs/${jobID}/matching-caregivers`
       );
       console.log(caregiver)
       setMatchingCaregiver(caregiver.data.caregivers);

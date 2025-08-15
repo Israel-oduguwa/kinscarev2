@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import ProfileAvatar from "@/components/ProfileAvatar";
 import OAuthDialog from "@/Authentication/OAuthDialog";
 import OauthApply from "./OauthApply";
+import Image from "next/image";
 
 polyfill();
 
@@ -18,12 +19,14 @@ const SimilarJobs = ({ similarJobs }: any) => {
     <div className="w-full">
       <p className="text-sm antialiased font-medium">Similar Jobs</p>
       {similarJobs.map((job: any) => (
-        <Link href={`/jobs/${job._id}`}>
+        <Link key={job._id} href={`/jobs/${job._id}`}>
           <div className="mt-4">
             <div className="border rounded-md border-gray-200 p-4">
               <div className="flex gap-3 mb-3 items-center">
                 {job.profileImage && (
-                  <img
+                  <Image
+                  width={32}
+                  height={32}
                     className="h-8 w-8"
                     src={
                       job.profileImage
@@ -78,7 +81,7 @@ const SimilarJobs = ({ similarJobs }: any) => {
 
 async function JobDetails({ jobID }: { jobID: string }) {
   let data = await fetch(
-    `https://api.kinscare.org/api/v1/caregivers/job/${jobID}`,
+    `https://kinscare-backend.onrender.com/api/v1/caregivers/job/${jobID}`,
     { cache: "no-cache" }
   );
   const response = await data.json();

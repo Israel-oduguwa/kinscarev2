@@ -12,7 +12,7 @@ import { useParams } from "next/navigation";
 import MongoContext from "@/app/MongoContext";
 import { convertEditorJsToHtml } from "./editorJsToHtml";
 
-const BASEURL = "https://api.kinscare.org";
+const BASEURL = "https://kinscare-backend.onrender.com";
 
 // ------------------------
 // Custom Block Parsers

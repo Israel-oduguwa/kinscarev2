@@ -40,7 +40,7 @@ export default function AdminBlogList() {
     const fetchBlogs = async () => {
       try {
         const response = await axios.get(
-          `https://api.kinscare.org/api/v1/blogs/author/${userData.userID}`
+          `https://kinscare-backend.onrender.com/api/v1/blogs/author/${userData.userID}`
         );
         setBlogs(response.data);
       } catch (error) {
@@ -57,7 +57,7 @@ export default function AdminBlogList() {
     setCreatingBlog(true);
     try {
       const response = await axios.post(
-        "https://api.kinscare.org/api/v1/blogs/create",
+        "https://kinscare-backend.onrender.com/api/v1/blogs/create",
         {
           title: "Untitled Blog",
           category: "",
@@ -89,7 +89,7 @@ export default function AdminBlogList() {
   const deleteBlog = async (blogId: string) => {
     setDeletingBlog(blogId);
     try {
-      await axios.delete(`https://api.kinscare.org/api/v1/blogs/delete/${blogId}`);
+      await axios.delete(`https://kinscare-backend.onrender.com/api/v1/blogs/delete/${blogId}`);
       setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog._id !== blogId));
      
     } catch (error) {

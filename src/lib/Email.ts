@@ -2,7 +2,7 @@
 
 import axios from "axios";
 
-const baseUrl = "https://api.kinscare.org/api/v1/email";
+const baseUrl = "https://kinscare-backend.onrender.com/api/v1/email";
 
 export interface CustomerSignupParams {
   email: string;

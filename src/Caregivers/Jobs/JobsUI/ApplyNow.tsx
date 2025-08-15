@@ -19,13 +19,13 @@ function ApplyNow({ jobID, job }: any) {
   const [hasApplied, setHasApplied] = useState(false); // To track if the user has already applied
   const router = useRouter(); // To refresh after mutation
   const { applicants } = job;
-  const providerName = job.provider;
+  const providerName = `${job?.provider?.fname} ${job?.provider?.lname}`;
   // Check if the job is already favorite when the page loads
   // console.log(userData)
   console.log(applicants);
   useEffect(() => {
     if (userData?.favorite_jobs) {
-      console.log("check");
+      // console.log("check");
       const isFav = userData.favorite_jobs.some(
         (favorite: any) => favorite.jobID === jobID || favorite.jobId === jobID // Check both fields
       );
@@ -36,7 +36,7 @@ function ApplyNow({ jobID, job }: any) {
       const alreadyApplied = applicants.some(
         (applicant: any) => applicant?.userID === userData.userID
       );
-      console.log(alreadyApplied);
+      // console.log(alreadyApplied);
       setHasApplied(alreadyApplied);
     }
   }, [userData, jobID, applicants]);
@@ -63,7 +63,7 @@ function ApplyNow({ jobID, job }: any) {
           providerName,
         };
         const { data } = await axios.post(
-          "https://api.kinscare.org/api/v1/caregivers/job/apply",
+          " https://kinscare-backend.onrender.com/api/v1/caregivers/job/apply",
           payload
         );
         return data;
@@ -73,6 +73,18 @@ function ApplyNow({ jobID, job }: any) {
       if (userData.complete) {
         // Instead of refreshing, we manually update the state
         setHasApplied(true); // Mark as applied
+
+        // Send an SMS to the provider
+        const sendSMS = await axios.post(
+          "https://kinscare-backend.onrender.com/api/v1/twilio/sms/send",
+          {
+            body: `New Application for ${job.title} by ${userData.fname} ${userData.lname}
+            click the link below to see the application: https://www.kinscare.org/provider/job/${jobID}`,
+            to: job.contacts.tel,
+            country:"US"
+          } 
+        );
+        console.log(sendSMS, "sms sent");
         // lets update the userData
         const fetchedData: any = await fetchUserData(
           user.customData.userID,
@@ -103,7 +115,7 @@ function ApplyNow({ jobID, job }: any) {
           },
         };
         TagManager.dataLayer(tagManagerArgs);
-
+        router.refresh(); // Refresh the page to reflect changes
         // Track purchase event
         trackEvents(user?.customData?.hash, "Apply Job", eventPayload);
         toast({
@@ -114,6 +126,7 @@ function ApplyNow({ jobID, job }: any) {
       }
     },
     onError: (err) => {
+      console.log(err)
       toast({
         title: "Could not apply for job",
         description: err.message,
@@ -141,7 +154,7 @@ function ApplyNow({ jobID, job }: any) {
         action,
       };
       const { data } = await axios.post(
-        "https://api.kinscare.org/api/v1/caregivers/job/favorite",
+        " https://kinscare-backend.onrender.com/api/v1/caregivers/job/favorite",
         payload
       );
       return data;
@@ -181,8 +194,8 @@ function ApplyNow({ jobID, job }: any) {
           {isApplying
             ? "Applying..."
             : hasApplied
-              ? "Already Applied"
-              : "Apply Now"}
+            ? "Already Applied"
+            : "Apply Now"}
         </Button>
 
         {/* Favorite Button */}

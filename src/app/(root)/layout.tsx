@@ -1,4 +1,5 @@
 import Footer from "@/WebPages/Footer";
+import JumpstartBannerTop from "@/WebPages/HomePage/JumpstartBanner";
 import Navbar from "@/WebPages/Navbar";
 
 export default function RootPageLayout({
@@ -9,14 +10,13 @@ export default function RootPageLayout({
   return (
     <html lang="en">
       <body>
-        {/* Layout UI */}
-
+      
         <div>
           {/* We place the Navbar*/}
           <Navbar />
         </div>
         {/* Place children where you want to render a page or nested layout */}
-        <main>{children}</main>
+        <main>{children} </main>
         <Footer />
       </body>
     </html>

@@ -136,7 +136,7 @@ const CandidatesCard = ({ similarCaregivers }: any) => {
 
 async function CaregiverDetails({ candidateID }: { candidateID: string }) {
   let data = await fetch(
-    `https://api.kinscare.org/api/v1/providers/caregivers/${candidateID}`,
+    `https://kinscare-backend.onrender.com/api/v1/providers/caregivers/${candidateID}`,
     { cache: "no-cache" }
   );
   const response = await data.json();

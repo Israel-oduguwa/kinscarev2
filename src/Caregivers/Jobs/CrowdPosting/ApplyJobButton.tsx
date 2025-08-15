@@ -31,7 +31,7 @@ interface OauthApplyProps {
   job: any;
 }
 
-const schema = yup.object().shape({
+const schema:any = yup.object().shape({
   fname: yup.string().required("First name is required"),
   lname: yup.string().required("Last name is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -59,7 +59,7 @@ interface FormInputs {
   email: string;
   tel: string;
   password: string;
-  terms: boolean;
+  terms: boolean; // must be required, not optional
   licenses: string[];
   availability: string[];
 }
@@ -152,7 +152,7 @@ function ApplyJobButton({ jobID, job }: OauthApplyProps) {
       });
 
       await axios.post(
-        "https://api.kinscare.org/api/v1/auth/create_user",
+        "https://kinscare-backend.onrender.com/api/v1/auth/create_user",
         payload
       );
       setAuthenticated(true);
@@ -340,7 +340,7 @@ function ApplyJobButton({ jobID, job }: OauthApplyProps) {
         claimed: job.claimed,
       };
       const { data } = await axios.post(
-        "https://api.kinscare.org/api/v1/caregivers/job/apply-referred",
+        "https://kinscare-backend.onrender.com/api/v1/caregivers/job/apply-referred",
         payload
       );
       // console.log(data);
@@ -588,9 +588,13 @@ function ApplyJobButton({ jobID, job }: OauthApplyProps) {
                       control={control}
                       render={({ field }) => (
                         <input
-                          {...field}
                           type="checkbox"
                           className="form-checkbox h-5 w-5 text-blue-600"
+                          checked={field.value}
+                          onChange={e => field.onChange(e.target.checked)}
+                          onBlur={field.onBlur}
+                          ref={field.ref}
+                          name={field.name}
                         />
                       )}
                     />

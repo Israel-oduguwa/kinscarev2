@@ -61,7 +61,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const params = await rawParams; // Await the params object
   const data = await fetch(
-    `https://api.kinscare.org/api/v1/providers/caregivers/${params.id}`,
+    `https://kinscare-backend.onrender.com/api/v1/providers/caregivers/${params.id}`,
     { cache: "no-cache" }
   );
   // console.log("Check Data", await data.json())

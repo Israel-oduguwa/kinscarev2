@@ -18,7 +18,7 @@ import MongoContext from "@/app/MongoContext";
 import SignupDialog from "@/Authentication/SignupDialog";
 import { WhatsappIcon, WhatsappShareButton } from "next-share";
 
-const CROWDPOST_URL = "https://api.kinscare.org/api/v1/providers/crowd-post";
+const CROWDPOST_URL = "https://kinscare-backend.onrender.com/api/v1/providers/crowd-post";
 
 const groupLicenses = [
   { label: "CNA", value: "CNA or NAC" },
@@ -79,7 +79,7 @@ interface FormValues {
   description: string;
 }
 
-const formSchema = Yup.object<FormValues>({
+const formSchema: any = Yup.object<FormValues>({
   title: Yup.string().required("Please enter the title of your job"),
   employer_name: Yup.string()
     .max(50, "Employer name must be at most 50 characters")
@@ -185,6 +185,22 @@ const CreateJobNewUser: React.FC<CrowdPostProps> = ({
             _id: jobID,
             draft: false,
           });
+          // console.log(result)
+          // send the Sms
+          const smsPayload = {
+            type: "referral_drip",
+            providerPhone: result.jobData?.phone_number,
+            caregiverName:`${ userData.fname} ${userData.lname}`,
+            url: result.referralLink,
+            country:"US"
+          };
+          // console.log("sening sms payload", smsPayload)
+          const send = await axios.post(
+            "https://kinscare-backend.onrender.com/api/v1/twilio/send-referrred-provider-sms",
+            smsPayload
+          );
+          // console.log(send)
+          // track the event
           const mixpanelPayload = {
             name: "Crowd Post",
             user_id: userData.userID,
@@ -258,7 +274,6 @@ const CreateJobNewUser: React.FC<CrowdPostProps> = ({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const pageUrl = "https://www.kinscare.org/refer-and-earn";
   const shareMsg =
     "Know a care home or agency hiring caregivers? Share a job lead on KinsCare and get rewarded when your referral signs up!,you earn up to $55, and they get a free 7-day trial to connect with top candidates";
 
@@ -577,6 +592,7 @@ const CreateJobNewUser: React.FC<CrowdPostProps> = ({
             const formData = getValues();
             postJob(formData, userData);
           }}
+          jumpstart={false}
         />
       </div>
       <div className="col-span-12 md:col-span-4">

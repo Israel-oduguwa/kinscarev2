@@ -26,7 +26,7 @@ export async function generateMetadata({
 
   try {
     const response = await fetch(
-      `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${encodeURIComponent(
+      `https://kinscare-backend.onrender.com/api/v1/providers/find-caregivers/filter?availability=${encodeURIComponent(
         shifts || ""
       )}&licenses=${encodeURIComponent(licenses || "")}&page=${encodeURIComponent(
         page || "1"

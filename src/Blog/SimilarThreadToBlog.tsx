@@ -28,7 +28,7 @@ function SimilarThreadToBlog({ slug }: SimilarThreadToBlogProps) {
         setLoading(true);
         setError(null);
         const res = await fetch(
-          `https://api.kinscare.org/api/v1/blogs/get-thread-similar-to-article/${slug}`
+          `https://kinscare-backend.onrender.com/api/v1/blogs/get-thread-similar-to-article/${slug}`
         );
         if (!res.ok) {
           throw new Error("Failed to fetch similar threads");

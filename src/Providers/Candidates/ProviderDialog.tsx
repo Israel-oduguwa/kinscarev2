@@ -130,7 +130,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
           type: isFavorite ? "remove" : "add",
         };
         const { data } = await axios.post(
-          "https://api.kinscare.org/api/v1/providers/set_favorites",
+          "https://kinscare-backend.onrender.com/api/v1/providers/set_favorites",
           payload,
           {
             headers: {
@@ -174,13 +174,14 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
       const sms_payload = {
         body: message,
         to: candidate.settings.tel,
+        country:"US"
       };
       const sendMessageResp = await axios.post(
-        "https://api.kinscare.org/api/v1/twilio/sms/send",
+        "https://kinscare-backend.onrender.com/api/v1/twilio/sms/send",
         sms_payload,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        // {
+        //   headers: { Authorization: `Bearer ${token}` },
+        // }
       );
       toast.success(
         `Message sent to ${candidate.fname} ${candidate.lname}!`
@@ -194,13 +195,13 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
         closeDialog();
         // Send notification to caregiver
         await axios.post(
-          "https://api.kinscare.org/api/v1/notifications/send",
+          "https://kinscare-backend.onrender.com/api/v1/notifications/send",
           {
             type: "message_caregiver",
             fromUserId: userData.userID,
             toUserId: candidate.userID,
             senderType: "caregiver",
-            message: `"You have a new message from ${userData.name}`,
+            message: `"You have a new message from ${userData.fname} ${userData.lname}`,
             metadata: {
               caregiverEmail: candidate.settings.email,
               providerEmail: userData.settings.email,
@@ -291,7 +292,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
         paymentMethodId: selectedCard,
       };
       const response = await axios.post(
-        "https://api.kinscare.org/api/v1/providers/subscription",
+        "https://kinscare-backend.onrender.com/api/v1/providers/subscription",
         payload,
         {
           headers: { "Content-Type": "application/json" },
@@ -319,7 +320,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
           },
         };
         const crudResponse = await axios.post(
-          "https://api.kinscare.org/api/v1/auth/crud-operation",
+          "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
           updatePayload,
           {
             headers: { "Content-Type": "application/json" },
@@ -357,7 +358,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
     try {
       const customerId = user.customData.customer_id;
       const response = await axios.post(
-        `https://api.kinscare.org/api/v1/providers/payment-methods`,
+        `https://kinscare-backend.onrender.com/api/v1/providers/payment-methods`,
         { customerId }
       );
       if (response.data.success) {

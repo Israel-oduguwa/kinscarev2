@@ -16,7 +16,20 @@ import { fetchContactsData, isTrialActive, trackEvents } from "@/lib/utils";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
-import { Cloudy, CreditCard, FileText, Loader, X } from "lucide-react";
+import {
+  ArrowLeft,
+  BadgeCheck,
+  Cloudy,
+  CreditCard,
+  Download,
+  FileText,
+  Loader,
+  Loader2,
+  Lock,
+  ShieldCheck,
+  UploadCloud,
+  X,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import PaymentForm from "../User/PaymentForm";
@@ -124,7 +137,7 @@ function ProtectedCandidatesDetails({
       const formData = new FormData();
       formData.append("file", file[0]);
       const { data } = await axios.post(
-        "https://api.kinscare.org/api/v1/upload-file",
+        "https://kinscare-backend.onrender.com/api/v1/upload-file",
         formData
       );
       if (data.url) {
@@ -152,7 +165,7 @@ function ProtectedCandidatesDetails({
       const formData = new FormData();
       formData.append("file", file[0]);
       const { data } = await axios.post(
-        "https://api.kinscare.org/api/v1/upload-file",
+        "https://kinscare-backend.onrender.com/api/v1/upload-file",
         formData
       );
       if (data.url) {
@@ -181,7 +194,7 @@ function ProtectedCandidatesDetails({
         if (!governmentID) return;
         const payload = { fileUrl: governmentID };
         const { data } = await axios.post(
-          "https://api.kinscare.org/api/v1/delete-file",
+          "https://kinscare-backend.onrender.com/api/v1/delete-file",
           payload
         );
         if (data.success) {
@@ -192,7 +205,7 @@ function ProtectedCandidatesDetails({
         if (!attestationPreview) return;
         const payload = { fileUrl: attestationPreview };
         const { data } = await axios.post(
-          "https://api.kinscare.org/api/v1/delete-file",
+          "https://kinscare-backend.onrender.com/api/v1/delete-file",
           payload
         );
         if (data.success) {
@@ -215,7 +228,7 @@ function ProtectedCandidatesDetails({
   const getSecrete = async () => {
     try {
       const response = await axios.post(
-        "https://api.kinscare.org/api/v1/providers/create-setup-intent",
+        "https://kinscare-backend.onrender.com/api/v1/providers/create-setup-intent",
         {
           customerId: user?.customData?.customer_id,
         }
@@ -223,7 +236,7 @@ function ProtectedCandidatesDetails({
       const { clientSecret } = response.data;
       localStorage.setItem("client_secret", clientSecret);
       setClientSecret(clientSecret);
-      console.log(clientSecret)
+      // console.log(clientSecret);
 
       const isNotVerified = !(
         customData?.trial === true || customData?.subscribe === true
@@ -232,7 +245,7 @@ function ProtectedCandidatesDetails({
         setIsTrialDialogOpen(true);
       }
     } catch (error) {
-      console.log("Error fetching Setup Intent:", error);
+      // console.log("Error fetching Setup Intent:", error);
     }
   };
 
@@ -311,13 +324,13 @@ function ProtectedCandidatesDetails({
         },
       };
       const setReveal = await axios.post(
-        "https://api.kinscare.org/api/v1/auth/crud-operation",
+        "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
         payload,
         {
           headers: { "Content-Type": "application/json" },
         }
       );
-      console.log(setReveal, "setReveal");
+      // console.log(setReveal, "setReveal");
       setCustomData((prev: any) => ({ ...prev, [field]: true }));
     } catch (error) {
       console.error("Error updating reveal status:", error);
@@ -339,7 +352,7 @@ function ProtectedCandidatesDetails({
     const trialStart = customData?.trial_start_date;
     const trialEnd = customData?.trial_end_date;
     const isSubscribed = customData?.subscribed;
-    console.log(isSubscribed, "ProtectedCandidatesDetails");
+    // console.log(isSubscribed, "ProtectedCandidatesDetails");
     if (isSubscribed) {
       // console.log(isSubscribed)
       setIsTrialExpired(false);
@@ -353,7 +366,7 @@ function ProtectedCandidatesDetails({
         customData?.trial === false || customData?.trial === "expired"
           ? false
           : true;
-      console.log(trialFlag);
+      // console.log(trialFlag);
       setIsTrialExpired(!trialFlag);
     }
     const fetchCustomDataAPI = async () => {
@@ -381,7 +394,7 @@ function ProtectedCandidatesDetails({
       const customerId = user?.customData?.customer_id;
       if (!customerId) return;
       const response = await axios.post(
-        "https://api.kinscare.org/api/v1/providers/payment-methods",
+        "https://kinscare-backend.onrender.com/api/v1/providers/payment-methods",
         { customerId }
       );
       if (response.data.success) {
@@ -474,7 +487,7 @@ function ProtectedCandidatesDetails({
           },
         };
         await axios.post(
-          "https://api.kinscare.org/api/v1/auth/crud-operation",
+          "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
           payload,
           { headers: { "Content-Type": "application/json" } }
         );
@@ -664,241 +677,289 @@ function ProtectedCandidatesDetails({
           <PricingPlan closePricingDialog={closePricingDialog} />
         </DialogContent>
       </Dialog>
-
       {/* ============== TRIAL VERIFICATION (ATT. LETTER / PAYMENT) DIALOG ============== */}
       <Dialog open={isTrialDialogOpen} onOpenChange={setIsTrialDialogOpen}>
         <DialogContent
           closePosition="left"
-          className="h-[100vh] md:h-auto max-w-4xl overflow-y-auto"
+          className="max-w-3xl p-0 m-0 space-y-0 overflow-y-auto h-[90vh]"
         >
-          <DialogHeader className="pt-5">
-            <DialogTitle className="flex flex-col items-center text-center">
-              <h2 className="font-bold tracking-tight mb-1 text-2xl text-gray-800">
-                {currentStep === "selection" && "Get Verified & Connect To More Caregivers"}
-                {currentStep === "payment" &&
-                  "Get Verified with Payment Method"}
-                {currentStep === "attestation" &&
-                  "Upload a Signed Attestation Letter & Government-Issued ID"}
-              </h2>
-              {currentStep === "selection" && (
-                <p className="text-gray-700">
-                  To protect our caregivers and ensure a safe platform, verify
-                  your identity with one of these options
-                </p>
-              )}
-            </DialogTitle>
-          </DialogHeader>
+          <div className="px-6">
+            <div className="relative pb-3  pt-6">
+              <div className="absolute top-4 right-4 flex items-center">
+                <BadgeCheck className="text-blue-500 mr-2" size={20} />
+                <span className="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                  Secure Payment
+                </span>
+              </div>
+              <DialogHeader>
+                <div className="flex items-center justify-between mt-5">
+                  <DialogTitle className="text-2xl font-bold text-gray-800">
+                    {currentStep === "selection" &&
+                      "Get Verified & Connect To More Caregivers"}
+                    {currentStep === "attestation" && "Document Verification"}
+                    {currentStep === "selection" && (
+                      <p className="text-gray-600 font-normal tracking-normal text-sm">
+                        To protect our caregivers and ensure a safe platform,
+                        verify your identity with one of these options
+                      </p>
+                    )}
+                  </DialogTitle>
+                </div>
+              </DialogHeader>
+            </div>
+            {currentStep === "selection" && (
+              <div className="space-y-6">
+                <div className="border border-blue-100 bg-blue-50 rounded-xl p-4">
+                  <div className="flex items-start">
+                    <div className="bg-blue-100 p-2 hidden md:block  rounded-lg mr-4">
+                      <CreditCard className="text-blue-600" size={16} />
+                    </div>
+                    <div className="w-full">
+                      <div className="flex items-center">
+                        <h3 className="font-bold text-gray-800">
+                          Instant Verification with Payment Method
+                        </h3>
+                        <span className="ml-2 text-sm font-medium text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">
+                          Recommended
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Fast, secure, and FREE. Fill the form below for an
+                        instant, one-time verification
+                      </p>
 
-          {currentStep === "selection" && (
-            <div className="space-y-6">
-              <div className="space-y-4 text-gray-800">
-                <div className="space">
-                  <p className="text-md">
-                    <span className="font-bold">
-                      1. Verify Identity with Payment Details
-                    </span>{" "}
-                    <span className="italic">
-                      (preferred by most employers)
-                    </span>
-                  </p>
-                  <p className="text-sm">
-                    Fast, secure, and FREE. Fill the form below for an instant,{" "}
-                    <span className="font-bold">one-time verification</span>
-                  </p>
+                      <div className="mt-4">
+                        {clientSecret && userData ? (
+                          <Elements
+                            stripe={stripePromise}
+                            options={{ clientSecret, appearance }}
+                          >
+                            <div className="bg-white p-4 rounded-lg border">
+                              <PaymentForm
+                                close={closeRevealContacts}
+                                setIsTrialExpired={setIsTrialExpired}
+                                clientSecret={clientSecret}
+                                userID={userData.userID}
+                                customerId={customData?.customer_id}
+                                priceId="price_1QP2OuAoahxG9SLGNoc37Lxo"
+                                intentType="setup"
+                                onSuccess={() => {
+                                  handleOnSuccess();
+                                }}
+                                onError={(error) => {
+                                  console.error("Error saving card:", error);
+                                }}
+                              />
+                            </div>
+                          </Elements>
+                        ) : (
+                          <div className="flex justify-center py-8">
+                            <Loader2
+                              className="animate-spin text-blue-500"
+                              size={24}
+                            />
+                            <span className="ml-2 text-gray-600">
+                              Loading secure payment...
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center my-4">
+                  <div className="flex-grow border-t border-gray-200" />
+                  <span className="mx-4 text-sm text-gray-500">OR</span>
+                  <div className="flex-grow border-t border-gray-200" />
+                </div>
+
+                <div
+                  className="border border-gray-200 rounded-xl p-4 cursor-pointer hover:border-blue-300 transition-colors"
+                  onClick={() => setCurrentStep("attestation")}
+                >
+                  <div className="flex items-start">
+                    <div className="bg-gray-100 p-2 rounded-lg mr-4">
+                      <FileText className="text-gray-600" size={20} />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-800">
+                        Manual Verification with Documents
+                      </h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Upload signed attestation letter and government ID. This
+                        process may take 1-2 business days.
+                      </p>
+                      <Button
+                        variant="outline"
+                        className="mt-3 w-full font-semibold text-blue-700 border-blue-300 hover:bg-blue-50 transition"
+                        onClick={() => setCurrentStep("attestation")}
+                      >
+                        Choose Manual Verification
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="mt-4">
-                {clientSecret && userData ? (
-                  <Elements
-                    stripe={stripePromise}
-                    options={{ clientSecret, appearance }}
-                  >
-                    <PaymentForm
-                      close={closeRevealContacts}
-                      setIsTrialExpired={setIsTrialExpired}
-                      clientSecret={clientSecret}
-                      userID={userData.userID}
-                      customerId={customData?.customer_id}
-                      priceId="price_1QP2OuAoahxG9SLGNoc37Lxo"
-                      intentType="setup"
-                      onSuccess={() => {
-                        handleOnSuccess();
-                      }}
-                      onError={(error) => {
-                        console.error("Error saving card:", error);
-                      }}
-                    />
-                  </Elements>
-                ) : (
-                  <p>Loading...</p>
-                )}
-              </div>
-              <OrSeparator />
-              <h3 className="font-bold text-gray-800">
-                2. Verify Identity with Signed Attestation Letter &
-                Government-Issued ID
-              </h3>
-              <div
-                className="flex items-center p-4 border shadow-lg rounded-lg cursor-pointer hover:shadow-xl transition"
-                onClick={() => setCurrentStep("attestation")}
-              >
-                <FileText className="w-10 h-10 text-blue-500 mr-4" />
-                <div>
+            )}
+
+            {currentStep === "attestation" && (
+              <div className="space-y-6">
+                <div className="border border-blue-100 bg-blue-50 rounded-xl p-4">
+                  <h3 className="font-bold text-gray-800 mb-2">
+                    Upload Required Documents
+                  </h3>
                   <p className="text-sm text-gray-600">
-                    Download and print a signable attestation letter, then
-                    upload it along with a government-issued ID that includes
-                    your address. This option is more time-consuming.
+                    To complete manual verification, please provide the
+                    following documents
                   </p>
                 </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex items-center mb-2">
+                      <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center mr-2">
+                        1
+                      </span>
+                      <label className="font-medium text-gray-800">
+                        Download Attestation Letter
+                      </label>
+                    </div>
+                    <p className="text-sm text-gray-600 ml-7 mb-3">
+                      Fill out, sign, and upload the completed document
+                    </p>
+                    <Button
+                      onClick={downloadFile}
+                      className="inline-flex items-center justify-center ml-6 px-6 py-2 text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:from-indigo-700 hover:to-violet-800 hover:-translate-y-1"
+                    >
+                      <Download className="mr-2" size={16} />
+                      Download Attestation Letter
+                    </Button>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center mb-2">
+                      <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center mr-2">
+                        2
+                      </span>
+                      <label className="font-medium text-gray-800">
+                        Upload Signed Attestation
+                      </label>
+                    </div>
+                    <p className="text-sm text-gray-600 ml-7 mb-3">
+                      PDF or DOCX format (max 3MB)
+                    </p>
+                    <div className="ml-7">
+                      {attestationPreview ? (
+                        <div className="relative bg-gray-50 rounded-lg border p-4">
+                          <div className="flex items-center">
+                            <FileText className="text-blue-500 mr-3" />
+                            <span className="font-medium text-sm">
+                              attestation-letter.pdf
+                            </span>
+                            <Button
+                              onClick={() => deleteFile(attestationPreview)}
+                              className="ml-auto"
+                              variant="ghost"
+                              size="icon"
+                            >
+                              <X size={16} />
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <Dropzone
+                          onDrop={(acceptedFiles) =>
+                            handleDocumentUpload(acceptedFiles)
+                          }
+                          disabled={documentLoading}
+                          accept={{
+                            "application/pdf": [".pdf"],
+                            "application/msword": [".doc", ".docx"],
+                          }}
+                          maxSize={3145728}
+                        >
+                          {({ getRootProps, getInputProps }) => (
+                            <div
+                              {...getRootProps()}
+                              className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-300 bg-gray-50 transition-colors"
+                            >
+                              {documentLoading ? (
+                                <div className="flex flex-col items-center">
+                                  <Loader2
+                                    className="animate-spin text-blue-500 mb-2"
+                                    size={24}
+                                  />
+                                  <p className="text-sm text-gray-600">
+                                    Uploading document...
+                                  </p>
+                                </div>
+                              ) : (
+                                <>
+                                  <input {...getInputProps()} />
+                                  <div className="flex flex-col items-center">
+                                    <UploadCloud
+                                      className="text-gray-400 mb-2"
+                                      size={24}
+                                    />
+                                    <p className="font-medium text-gray-700">
+                                      Drag & drop your file here
+                                    </p>
+                                    <p className="text-sm text-gray-500 mt-1">
+                                      or click to browse
+                                    </p>
+                                    <p className="text-xs text-gray-400 mt-2">
+                                      PDF, DOC, DOCX (max 3MB)
+                                    </p>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          )}
+                        </Dropzone>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Government ID section would go here if enabled */}
+                </div>
+
+                <div className="flex justify-between pt-4">
+                  <Button
+                    variant="outline"
+                    className="inline-flex items-center justify-center px-6 py-2 text-sm font-bold text-gray-700 bg-white border border-gray-300 rounded-full shadow hover:shadow-md transition-all duration-300 hover:bg-gray-50"
+                    onClick={() => setCurrentStep("selection")}
+                  >
+                    <ArrowLeft className="mr-2" size={16} />
+                    Back to options
+                  </Button>
+                  <Button
+                    disabled={!attestationPreview || submitting}
+                    onClick={submitDocument}
+                    className="inline-flex items-center justify-center px-6 py-2 text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:from-indigo-700 hover:to-violet-800 hover:-translate-y-1"
+                  >
+                    {submitting && (
+                      <Loader2 className="mr-2 animate-spin" size={16} />
+                    )}
+                    Submit Verification
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="bg-gray-50 px-6 py-4 border-t">
+            <div className="flex items-center text-sm text-gray-500">
+              <Lock className="mr-2" size={14} />
+              <span>Your information is securely encrypted</span>
+              <div className="ml-auto flex space-x-4">
+                <ShieldCheck className="text-green-500" size={16} />
+                <BadgeCheck className="text-blue-500" size={16} />
               </div>
             </div>
-          )}
-
-          {currentStep === "attestation" && (
-            <>
-              <div className="space-y-4 text-gray-600">
-                <p className="text-sm">
-                  Download and print an attestation letter, sign it, and upload
-                  it along with a government-issued ID containing your address.
-                </p>
-              </div>
-              <div className="mt-4">
-                <p className="font-semibold tracking-tight antialiased">
-                  Attestation letter
-                </p>
-                {attestationPreview ? (
-                  <div className="relative">
-                    <iframe
-                      src={attestationPreview}
-                      className="w-full h-[200px]"
-                    />
-                    <Button
-                      onClick={() => deleteFile(attestationPreview)}
-                      className="absolute -top-4 right-0 bg-gray-800 text-white rounded-full"
-                      size="icon"
-                      variant="ghost"
-                    >
-                      <X
-                        className={`${documentLoading && "animate-spin"}`}
-                        size={20}
-                      />
-                    </Button>
-                  </div>
-                ) : (
-                  <Dropzone
-                    onDrop={(acceptedFiles: any) => {
-                      handleDocumentUpload(acceptedFiles);
-                    }}
-                    disabled={documentLoading}
-                    accept={{
-                      "application/pdf": [".pdf"],
-                      "application/msword": [".doc", ".docx"],
-                    }}
-                    maxSize={3145728}
-                  >
-                    {({ getRootProps, getInputProps }: any) => (
-                      <div
-                        {...getRootProps()}
-                        className="p-4 border-2 border-dashed rounded-lg text-center cursor-pointer"
-                      >
-                        {documentLoading ? (
-                          <Loader className="animate-spin" />
-                        ) : (
-                          <>
-                            <input {...getInputProps()} />
-                            <div className="flex flex-col items-center gap-4">
-                              <Cloudy />
-                              <p className="text-xs font-bold antialiased">
-                                Drag and drop your attestation letter (PDF/DOCX)
-                                here or click to select
-                              </p>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </Dropzone>
-                )}
-              </div>
-              {/* <div className="mt-4">
-                <p className="font-semibold tracking-tight antialiased">
-                  Government issued ID
-                </p>
-                {governmentID ? (
-                  <div className="relative">
-                    <iframe src={governmentID} className="w-full h-[200px]" />
-                    <Button
-                      onClick={() => deleteFile("government")}
-                      className="absolute -top-4 right-0 bg-gray-800 text-white rounded-full"
-                      size="icon"
-                      variant="ghost"
-                    >
-                      <X
-                        className={`${documentLoading && "animate-spin"}`}
-                        size={20}
-                      />
-                    </Button>
-                  </div>
-                ) : (
-                  <Dropzone
-                    onDrop={(acceptedFiles: any) => {
-                      handleGovernmentID(acceptedFiles);
-                    }}
-                    disabled={documentLoading}
-                    accept={{
-                      "application/pdf": [".pdf"],
-                      "application/msword": [".doc", ".docx"],
-                    }}
-                    maxSize={3145728}
-                  >
-                    {({ getRootProps, getInputProps }: any) => (
-                      <div
-                        {...getRootProps()}
-                        className="p-4 border-2 border-dashed rounded-lg text-center cursor-pointer"
-                      >
-                        {documentLoading ? (
-                          <Loader className="animate-spin" />
-                        ) : (
-                          <>
-                            <input {...getInputProps()} />
-                            <div className="flex flex-col items-center gap-4">
-                              <Cloudy />
-                              <p className="text-xs font-bold antialiased">
-                                Drag and drop your government-issued ID
-                                (PDF/DOCX) here or click to select
-                              </p>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </Dropzone>
-                )}
-              </div> */}
-              <div className="mt-4">
-                <Button
-                  onClick={downloadFile}
-                  className="bg-blue-500 text-white"
-                >
-                  Download Attestation Letter
-                </Button>
-              </div>
-              <Button
-                disabled={submitting}
-                onClick={submitDocument}
-                className="mt-4 bg-gray-300 hover:bg-gray-400 text-gray-800"
-              >
-                {submitting && <Loader className="mr-2 animate-spin" />}
-                Submit Document
-              </Button>
-              <Button onClick={() => setCurrentStep("selection")}>
-                Go Back
-              </Button>
-            </>
-          )}
+          </div>
         </DialogContent>
       </Dialog>
-
       {/* ============== ATTESTATION CONFIRMATION MODAL ============== */}
       <Dialog
         open={showAttestationConfirmation}

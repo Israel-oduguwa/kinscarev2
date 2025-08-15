@@ -87,7 +87,7 @@ function StartCaregiver() {
         });
 
         await axios.post(
-          "https://api.kinscare.org/api/v1/auth/create_user",
+          "https://kinscare-backend.onrender.com/api/v1/auth/create_user",
           payload
         );
         setAuthenticated(true);
@@ -168,7 +168,7 @@ function StartCaregiver() {
       });
       return;
     }
-    console.log(response);
+    // console.log(response);
   };
 
   const onSubmit = async (data: any) => {

@@ -9,6 +9,7 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import axios, { AxiosResponse } from "axios";
+import { first } from "lodash";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useContext, useState } from "react";
@@ -25,8 +26,6 @@ interface PaymentFormProps {
   close: any;
   onError?: (error: any) => void; // Optional callback for handling errors
 }
-
-
 
 const PaymentForm: React.FC<PaymentFormProps> = ({
   clientSecret,
@@ -62,7 +61,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         update: {
           $set: {
             payment_method_id: paymentMethodID, // Update the PaymentMethod ID
-            verified:true,
+            verified: true,
             trial: true, // Mark free trial as active
             subscribed: false, // Mark subscription as inactive
             trial_start_date: new Date().toISOString(), // Set free trial start date
@@ -74,7 +73,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
       // Send the request to the CRUD operation endpoint
       const response = await axios.post(
-        "https://api.kinscare.org/api/v1/auth/crud-operation",
+        "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
         payload,
         {
           headers: { "Content-Type": "application/json" },
@@ -96,7 +95,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
       throw new Error(error.message);
     }
   };
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,7 +122,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           description: result.error.message || "An unknown error occurred.",
           variant: "destructive",
         });
-        console.log(result.error);
+        // console.log(result.error);
         if (onError) onError(result.error);
         setIsLoading(false);
         return;
@@ -132,7 +130,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
       // Extract the PaymentMethod ID
       const paymentMethodID: any = result.setupIntent?.payment_method;
-      console.log(paymentMethodID);
+      // console.log(paymentMethodID);
       if (!paymentMethodID) {
         throw new Error("PaymentMethod ID is missing.");
       }
@@ -170,6 +168,23 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         payloadAddPayment
       );
 
+      // also lets track the user in customerio
+      await axios.post(
+        "https://kinscare-backend.onrender.com/api/v1/auth/track_customerio_event",
+        {
+          userID,
+          eventName: "IdentityVerified",
+          data: {
+            lname: userData?.lname,
+            fname: userData?.fname,
+            tel: userData?.auth?.tel,
+            zipcode: userData?.zipcode,
+            city: userData?.city,
+            email: userData?.auth?.email,
+            trial: true, // this tells the user that he's in free trial
+          },
+        }
+      );
       // Create the subscription with the backend API
       // const subscription = await createSubscription();
 
@@ -206,9 +221,13 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     <form id="payment-form" onSubmit={handleSubmit} className="space-y-6">
       <PaymentElement id="payment-element" options={paymentElementOptions} />
       <div className="flex justify-end">
-        <Button disabled={isLoading || !stripe || !elements} id="submit">
+        <Button
+          className="inline-flex items-center justify-center px-6 py-2 text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:from-indigo-700 hover:to-violet-800 hover:-translate-y-1"
+          disabled={isLoading || !stripe || !elements}
+          id="submit"
+        >
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{" "}
-          Submit
+          Verify Identity
         </Button>
       </div>
       {/* Show error or success messages */}
@@ -222,3 +241,5 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 };
 
 export default PaymentForm;
+
+// This function Only helps add Payment Card for verification, it doe not subscribe the user to any plan.

@@ -1,5 +1,5 @@
 import { Thread, Post, PaginatedResponse } from '../../types';
-const BaseUrl = "https://api.kinscare.org/api/v1"
+const BaseUrl = "https://kinscare-backend.onrender.com/api/v1"
 export async function getThreads(page: number, limit: number): Promise<PaginatedResponse<Thread>> {
   const res = await fetch(`${BaseUrl}/threads?page=${page}&limit=${limit}`);
   if (!res.ok) throw new Error('Failed to fetch threads');

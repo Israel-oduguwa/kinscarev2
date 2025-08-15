@@ -28,12 +28,12 @@ function CaregiverNotification() {
     setLoading(true);
     try {
       const { data } = await axios.get(
-        `https://api.kinscare.org/api/v1/notifications/fetch`,
+        `https://kinscare-backend.onrender.com/api/v1/notifications/fetch`,
         {
           params: { userId: userData.userID }, // Pass the user ID in params
         }
       );
-      console.log(data, "notifications");
+      // console.log(data, "notifications");
       setNotifications(data.notifications);
       setUnreadCount(
         data.notifications.filter((notif: any) => !notif.read).length
@@ -55,7 +55,7 @@ function CaregiverNotification() {
     try {
       console.log("jos");
       await axios.post(
-        `https://api.kinscare.org/api/v1/notifications/mark-as-read`,
+        `https://kinscare-backend.onrender.com/api/v1/notifications/mark-as-read`,
         { notificationId }
       );
       setNotifications((prev) =>

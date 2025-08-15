@@ -189,7 +189,7 @@ export default function EditBlog() {
   const router = useRouter();
   const { id } = useParams();
   const { userData }: any = useContext(MongoContext);
-  const BASEURL = "https://api.kinscare.org";
+  const BASEURL = "https://kinscare-backend.onrender.com";
 
   // --- State variables for blog fields ---
   const [loading, setLoading] = useState<boolean>(true);
@@ -393,7 +393,7 @@ export default function EditBlog() {
     );
 
     const { html, toc } = convertEditorJsToHtml(content);
-    console.log(html, toc);
+    // console.log(html, toc);
 
     const postData = {
       title,

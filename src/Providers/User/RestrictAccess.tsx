@@ -35,14 +35,14 @@ const RestrictAccess: React.FC<RestrictAccessProps> = ({ children, mode = "wrap"
       try {
         setLoading(true);
         const response = await axios.post(
-          "https://api.kinscare.org/api/v1/providers/create-setup-intent",
+          "https://kinscare-backend.onrender.com/api/v1/providers/create-setup-intent",
           {
             customerId: user.customData.customer_id,
           }
         );
         const { clientSecret } = response.data;
         setClientSecret(clientSecret);
-        console.log(clientSecret)
+        // console.log(clientSecret)
         localStorage.setItem("client_secret", clientSecret);
         setLoading(false);
       } catch (error) {

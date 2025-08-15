@@ -132,7 +132,7 @@ const PublicJobPostForm = ({ onSubmit, job, jobID, loading }: any) => {
       mobility: "car_needed",
     },
   });
-  console.log(job);
+  // console.log(job);
   // Clear errors when form values change
   useEffect(() => {
     const subscription = watch(() => {
@@ -163,7 +163,7 @@ const PublicJobPostForm = ({ onSubmit, job, jobID, loading }: any) => {
   const savetoDB = debounce(async (formData: any) => {
     try {
       await axios.post(
-        "https://api.kinscare.org/api/v1/providers/post-job",
+        "https://kinscare-backend.onrender.com/api/v1/providers/post-job",
         formData
       );
       console.log("hi");
@@ -615,7 +615,7 @@ const CreateJobUI = ({ job, jobID }: any) => {
       });
 
       const userResponse = await axios.post(
-        "https://api.kinscare.org/api/v1/auth/create_user",
+        "https://kinscare-backend.onrender.com/api/v1/auth/create_user",
         payload
       );
       setAuthenticated(true);
@@ -648,7 +648,7 @@ const CreateJobUI = ({ job, jobID }: any) => {
         address: createdUserData.address,
       };
       const jobs = await axios.post(
-        "https://api.kinscare.org/api/v1/providers/post-job",
+        "https://kinscare-backend.onrender.com/api/v1/providers/post-job",
         payload
       );
       setJobData(jobs?.data?.jobData);

@@ -74,7 +74,7 @@ const UpgradeSubscription: React.FC<UpgradeSubscriptionProps> = ({
   const fetchSubscriptionData = useCallback(async () => {
     try {
       const response = await axios.get(
-        `https://api.kinscare.org/api/v1/providers/subscription/${customData.customer_id}`
+        `https://kinscare-backend.onrender.com/api/v1/providers/subscription/${customData.customer_id}`
       );
       setSubscriptionData(response.data.subscription);
 
@@ -96,7 +96,7 @@ const UpgradeSubscription: React.FC<UpgradeSubscriptionProps> = ({
     try {
       setFetchingSavedCard(true);
       const response = await axios.post(
-        "https://api.kinscare.org/api/v1/providers/payment-methods",
+        "https://kinscare-backend.onrender.com/api/v1/providers/payment-methods",
         {
           customerId: customData.customer_id,
         }
@@ -134,7 +134,7 @@ const UpgradeSubscription: React.FC<UpgradeSubscriptionProps> = ({
     setLoading(true);
     try {
       await axios.post(
-        "https://api.kinscare.org/api/v1/providers/subscription/upgrade",
+        "https://kinscare-backend.onrender.com/api/v1/providers/subscription/upgrade",
         {
           subscriptionId: subscriptionData.id,
           priceId: selectedPlan.stripePriceId,
@@ -156,7 +156,7 @@ const UpgradeSubscription: React.FC<UpgradeSubscriptionProps> = ({
       };
 
       await axios.post(
-        "https://api.kinscare.org/api/v1/auth/crud-operation",
+        "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
         payload,
         { headers: { "Content-Type": "application/json" } }
       );
@@ -186,7 +186,7 @@ const UpgradeSubscription: React.FC<UpgradeSubscriptionProps> = ({
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://api.kinscare.org/api/v1/providers/create-setup-intent",
+        "https://kinscare-backend.onrender.com/api/v1/providers/create-setup-intent",
         {
           customerId: customData?.customer_id,
         }
@@ -408,7 +408,7 @@ const PaymentWithCard = ({
         confirmParams: {},
         redirect: "if_required",
       });
-      console.log(setupIntent);
+      // console.log(setupIntent);
       if (error) {
         console.log(error);
         console.error("Error confirming SetupIntent:", error.message);
@@ -417,20 +417,20 @@ const PaymentWithCard = ({
       }
       setClientSecret(null);
       if (setupIntent?.status === "succeeded") {
-        console.log("s");
+        // console.log("s");
         // Get the paymentMethodId from the confirmed SetupIntent
         const paymentMethodId = setupIntent.payment_method;
 
         // Send the paymentMethodId to the backend to upgrade the subscription
         const send = await axios.post(
-          "https://api.kinscare.org/api/v1/providers/subscription/upgrade",
+          "https://kinscare-backend.onrender.com/api/v1/providers/subscription/upgrade",
           {
             subscriptionId: subscriptionData.id,
             priceId: selectedPlan.stripePriceId,
             paymentMethodId,
           }
         );
-        console.log(send);
+        // console.log(send);
         const payload = {
           collectionName: "contacts",
           operation: "updateOne",
@@ -443,7 +443,7 @@ const PaymentWithCard = ({
         };
 
         await axios.post(
-          "https://api.kinscare.org/api/v1/auth/crud-operation",
+          "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
           payload,
           { headers: { "Content-Type": "application/json" } }
         );

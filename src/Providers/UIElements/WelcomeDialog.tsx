@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import React, { useContext, useState } from "react";
 import {
@@ -17,11 +18,7 @@ export default function WelcomeDialog() {
   const { customData }: any = useContext(MongoContext); // Access MongoContext for customData
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  console.log(
-    !customData?.complete,
-    customData?.signup_route === "caregiver",
-    !customData.welcome_read
-  );
+  
   // Ensure the modal only opens if `customData.complete` is true
   React.useEffect(() => {
     if (
@@ -29,7 +26,7 @@ export default function WelcomeDialog() {
       customData?.signup_route === "caregiver" &&
       !customData.welcome_read
     ) {
-      console.log("hi");
+      // console.log("hi");
       setIsOpen(true); // Open the modal
     } else {
       setIsOpen(false); // Ensure it's closed
@@ -54,7 +51,7 @@ export default function WelcomeDialog() {
         },
       };
       const readWelcome = await axios.post(
-        "https://api.kinscare.org/api/v1/auth/crud-operation",
+        "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
         payload,
         {
           headers: { "Content-Type": "application/json" },

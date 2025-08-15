@@ -9,43 +9,43 @@ import Link from "next/link";
 import Footer from "../../WebPages/Footer";
 
 export const metadata = {
-  title: "Kinscare -Seamlessly Matching Caregivers with Providers",
+  title: "KinsCare -Seamlessly Matching Caregivers with Providers",
   description:
-    "Kinscare helps providers find qualified caregivers and caregivers find best-fitting jobs. Our aim is to deliver value to our users with a growing registry.",
+    "KinsCare helps providers find qualified caregivers and caregivers find best-fitting jobs. Our aim is to deliver value to our users with a growing registry.",
   keywords: [
     "caregivers",
     "providers",
-    "Kinscare",
+    "KinsCare",
     "Jobs",
     "Registry",
     "job",
     "health",
     "Care Platform",
-    "kinscare",
+    "KinsCare",
   ],
   openGraph: {
-    title: "Kinscare -Seamlessly Matching Caregivers with Providers",
+    title: "KinsCare -Seamlessly Matching Caregivers with Providers",
     description:
-      "Kinscare helps providers find qualified caregivers and caregivers find best-fitting jobs. Our aim is to deliver value to our users with a growing registry.",
-    url: "https://www.kinscare.com",
-    siteName: "Kinscare",
+      "KinsCare helps providers find qualified caregivers and caregivers find best-fitting jobs. Our aim is to deliver value to our users with a growing registry.",
+    url: "https://www.KinsCare.com",
+    siteName: "KinsCare",
     images: [
       {
-        url: "https://kinscare-storage.s3.us-east-1.amazonaws.com/Kinscare+Logo.png",
+        url: "https://KinsCare-storage.s3.us-east-1.amazonaws.com/KinsCare+Logo.png",
         width: 1200,
         height: 630,
-        alt: "Kinscare Hero Image",
+        alt: "KinsCare Hero Image",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kinscare -Seamlessly Matching Caregivers with Providers",
+    title: "KinsCare -Seamlessly Matching Caregivers with Providers",
     description:
-      "Kinscare helps providers find qualified caregivers and caregivers find best-fitting jobs. Our aim is to deliver value to our users with a growing registry.",
+      "KinsCare helps providers find qualified caregivers and caregivers find best-fitting jobs. Our aim is to deliver value to our users with a growing registry.",
     images: [
-      "https://kinscare-storage.s3.us-east-1.amazonaws.com/Kinscare+Logo.png",
+      "https://KinsCare-storage.s3.us-east-1.amazonaws.com/KinsCare+Logo.png",
     ],
   },
 };
@@ -59,15 +59,15 @@ export default function Home() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Organization",
-            name: "Kinscare",
-            url: "https://www.kinscare.com",
-            logo: "https://www.kinscare.com/logo.png",
+            name: "KinsCare",
+            url: "https://www.KinsCare.com",
+            logo: "https://www.KinsCare.com/logo.png",
             description:
-              "Kinscare helps providers find qualified caregivers and caregivers find best-fitting jobs. Our aim is to deliver value to our users with a growing registry.",
+              "KinsCare helps providers find qualified caregivers and caregivers find best-fitting jobs. Our aim is to deliver value to our users with a growing registry.",
             sameAs: [
-              "https://www.facebook.com/kinscare",
-              "https://www.twitter.com/kinscare",
-              "https://www.linkedin.com/company/kinscare",
+              "https://www.facebook.com/KinsCare",
+              "https://www.twitter.com/KinsCare",
+              "https://www.linkedin.com/company/KinsCare",
             ],
           }),
         }}
@@ -90,7 +90,7 @@ export default function Home() {
 
               <p className="text-lg md:text-xl text-slate-700 mb-8 max-w-xl">
                 Whether you're hiring, seeking caregiving opportunities, or
-                exploring a future in healthcare—Kinscare is built for you.
+                exploring a future in healthcare—KinsCare is built for you.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 mb-10">
@@ -98,7 +98,7 @@ export default function Home() {
                   href="/find-caregivers"
                   className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:from-indigo-700 hover:to-violet-800 hover:-translate-y-1"
                 >
-                  Find Your Match
+                  Find Caregivers Now
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform"
@@ -129,12 +129,12 @@ export default function Home() {
                     Providers in the Northwest
                   </div>
                 </div>
-                <div className="flex items-center">
+                {/* <div className="flex items-center">
                   <div className="text-lg font-bold text-indigo-600">98%</div>
                   <div className="ml-3 text-sm text-slate-600">
                     Satisfaction Rate
                   </div>
-                </div>
+                </div> */}
                 <div className="flex items-center">
                   <div className="text-lg font-bold text-indigo-600">24/7</div>
                   <div className="ml-3 text-sm text-slate-600">Support</div>
@@ -210,18 +210,6 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-
-                {/* Floating badges */}
-                {/* <div className="absolute -bottom-6 left-0 bg-white rounded-full py-2 px-4 shadow-lg flex items-center">
-                  <div className="w-3 h-3 bg-emerald-500 rounded-full mr-2 animate-pulse"></div>
-                  <span className="font-medium text-slate-800">
-                    24/7 Support Available
-                  </span>
-                </div> */}
-
-                {/* <div className="absolute -top-6 right-10 bg-gradient-to-r from-indigo-600 to-violet-700 text-white rounded-full py-2 px-4 shadow-lg">
-                  <span className="font-bold">Trusted by 200+ Providers</span>
-                </div> */}
               </div>
             </div>
           </div>
@@ -234,7 +222,7 @@ export default function Home() {
               Empowering <span>care</span>, simplifying connections
             </h2>
             <p className="mx-auto mt-6 antialiased text-slate-600 dark:text-gray-300 max-w-md text-center">
-              #1 best platform for providers to find qualified caregivers.
+              Built for providers to hire faster. 
             </p>
           </div>
           <div className="relative">
@@ -251,7 +239,7 @@ export default function Home() {
                     </div>
                     <p className="text-gray-600 text-lg leading-relaxed">
                       Finding reliable caregivers shouldn't be difficult.
-                      Kinscare connects you with{" "}
+                      KinsCare connects you with{" "}
                       <span className="font-bold text-gray-800 ">
                         qualified local caregivers and CNAs
                       </span>{" "}
@@ -725,7 +713,7 @@ export default function Home() {
                 ))}
               </div>
               <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed">
-                Kinscare makes finding caregivers easier than WhatsApp! I can
+                KinsCare makes finding caregivers easier than WhatsApp! I can
                 post openings, get direct applications, and contact
                 caregivers—no more waiting on referrals.
               </p>
@@ -764,7 +752,7 @@ export default function Home() {
                 ))}
               </div>
               <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed">
-                I found qualified local caregivers quickly with Kinscare. It’s
+                I found qualified local caregivers quickly with KinsCare. It’s
                 simple, effective, and saves me time compared to other hiring
                 methods!
               </p>
@@ -803,7 +791,7 @@ export default function Home() {
                 ))}
               </div>
               <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed">
-                Kinscare is both affordable and flexible. I only pay when I need
+                KinsCare is both affordable and flexible. I only pay when I need
                 caregivers, and get direct access to candidates without extra
                 hassle.
               </p>
@@ -813,7 +801,7 @@ export default function Home() {
           {/* Trust Badges */}
           <div className="mt-20 text-center">
             <p className="text-gray-500 dark:text-gray-400 text-sm uppercase tracking-wide mb-6 font-medium">
-              Trusted by 200+ healthcare organizations worldwide
+              Trusted by 200+ healthcare in the northwest
             </p>
           </div>
         </div>
@@ -866,7 +854,7 @@ export default function Home() {
                   </h3>
                 </div>
                 <p className="text-gray-300 ">
-                  Kinscare makes it simple to find caregivers, apply for a
+                  KinsCare makes it simple to find caregivers, apply for a
                   caregiving job, or explore local nursing and allied healthcare
                   programs. Clear, step-by-step guidance helps you navigate the
                   platform effortlessly, whether you're using a computer or a
@@ -936,7 +924,7 @@ export default function Home() {
                 </div>
                 <p className="text-gray-300 leading-relaxed">
                   Thinking about a career in nursing or allied healthcare?
-                  Kinscare provides information on training programs to help you
+                  KinsCare provides information on training programs to help you
                   get started. Plus, our community forums let you connect with
                   others, ask questions, and learn from those on a similar path.
                 </p>

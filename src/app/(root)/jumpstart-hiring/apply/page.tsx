@@ -1,6 +1,42 @@
 import HiringChat from "@/JumpStartHiring/HiringChat";
 import JumpStartForm from "@/JumpStartHiring/JumpStartForm";
+import { Metadata } from "next";
 import React from "react";
+
+
+export const metadata: Metadata = {
+  title: "Jumpstart Hiring – Find Trusted Caregivers Fast | KinsCare",
+  description:
+    "Jumpstart your caregiver hiring with KinsCare. Fill out our quick form, get matched with top caregivers, and hire with confidence – risk-free.",
+  keywords: [
+    "caregiver hiring",
+    "find caregivers",
+    "KinsCare jumpstart",
+    "caregiver matching service",
+    "hire a caregiver",
+    "jumpstart hiring program"
+  ],
+  alternates: {
+    canonical: "https://www.kinscare.org/provider/jumpstart",
+  },
+  openGraph: {
+    title: "Jumpstart Hiring – Find Trusted Caregivers Fast | KinsCare",
+    description:
+      "Get matched with vetted caregivers in just days. KinsCare Jumpstart Hiring makes finding the right caregiver simple and fast.",
+    url: "https://www.kinscare.org/provider/jumpstart",
+    siteName: "KinsCare",
+    images: [
+      {
+        url: "https://www.kinscare.org/images/jumpstart-og.jpg",
+        width: 1200,
+        height: 630,
+        alt: "KinsCare Jumpstart Hiring – Find Trusted Caregivers",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+};
 
 function page() {
   return (

@@ -118,7 +118,7 @@ const VoiceFlowProvider: React.FC<VoiceFlowProviderProps> = ({ children }) => {
               console.log(recommendation)
               try {
                 const { data: collegeRecommendation } = await axios.post(
-                  `https://api.kinscare.org/api/v1/ai/college-recommendation/`,
+                  `https://kinscare-backend.onrender.com/api/v1/ai/college-recommendation/`,
                   { program: recommendation }
                 );
                 const aiRecommendation = {

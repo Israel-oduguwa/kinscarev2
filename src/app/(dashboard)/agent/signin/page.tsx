@@ -88,7 +88,7 @@ export default function AgentSignup() {
         });
 
         await axios.post(
-          "https://api.kinscare.org/api/v1/auth/create_user",
+          "https://kinscare-backend.onrender.com/api/v1/auth/create_user",
           payload
         );
         const tagManagerArgs =

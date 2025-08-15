@@ -10,7 +10,7 @@ import { notFound } from "next/navigation";
 
 async function getAllPosts(): Promise<string[]> {
   try {
-    const res = await fetch("https://api.kinscare.org/api/v1/blogs/get-blog-slugs");
+    const res = await fetch("https://kinscare-backend.onrender.com/api/v1/blogs/get-blog-slugs");
     if (!res.ok) {
       throw new Error("Failed to fetch blog slugs");
     }
@@ -25,7 +25,7 @@ async function getAllPosts(): Promise<string[]> {
 
 async function getPostBySlug(slug: string) {
   try {
-    const res = await fetch(`https://api.kinscare.org/api/v1/blogs/blog/${slug}`);
+    const res = await fetch(`https://kinscare-backend.onrender.com/api/v1/blogs/blog/${slug}`);
     if (!res.ok) {
       throw new Error("Failed to fetch post");
     }

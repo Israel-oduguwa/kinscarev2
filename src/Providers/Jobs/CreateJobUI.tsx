@@ -144,9 +144,9 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
           profileImage: userData?.profileImage,
           hash: user.customData.hash,
         };
-        console.log(payload);
+        // console.log(payload);
         const response = await axios.post(
-          "https://api.kinscare.org/api/v1/providers/post-job",
+          "https://kinscare-backend.onrender.com/api/v1/providers/post-job",
           payload
         );
         const tagManagerArgs = {
@@ -168,9 +168,9 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
           hash: user.customData.hash,
           profileImage: userData?.profileImage,
         };
-        console.log(payload);
+        // console.log(payload);
         await axios.post(
-          "https://api.kinscare.org/api/v1/providers/post-job",
+          "https://kinscare-backend.onrender.com/api/v1/providers/post-job",
           payload
         );
         const tagManagerArgs = {
@@ -246,10 +246,10 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
     if (type !== "repost") {
       try {
         const save = await axios.post(
-          "https://api.kinscare.org/api/v1/providers/post-job",
+          "https://kinscare-backend.onrender.com/api/v1/providers/post-job",
           formData
         );
-        console.log(save);
+        // console.log(save);
       } catch (error) {
         console.error(error);
       }

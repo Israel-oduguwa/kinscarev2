@@ -727,9 +727,9 @@ function TextEditor({
               const file = item.getAsFile();
               if (file) {
                 uploadFile(file).then((url) => {
-                  console.log(url);
+                  // console.log(url);
                   const { schema } = view.state;
-                  console.log(schema);
+                  // console.log(schema);
                   const node = schema.nodes.image.create({ src: url });
                   const transaction = view.state.tr.replaceSelectionWith(node);
                   view.dispatch(transaction);
@@ -807,7 +807,7 @@ function TextEditor({
       formData.append("file", file);
 
       const { data } = await axios.post(
-        "https://api.kinscare.org/api/v1/upload-file",
+        "https://kinscare-backend.onrender.com/api/v1/upload-file",
         formData,
         {
           headers: {
@@ -842,7 +842,7 @@ function TextEditor({
     console.log(fileUrl, "delete the url");
     try {
       await axios.post(
-        "https://api.kinscare.org/api/v1/delete-file",
+        "https://kinscare-backend.onrender.com/api/v1/delete-file",
         { fileUrl }
       );
       console.log(`File deleted: ${fileUrl}`);

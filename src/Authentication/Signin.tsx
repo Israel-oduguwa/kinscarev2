@@ -1,16 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
-/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import { useState, useEffect, useContext } from "react";
 import MongoContext from "@/app/MongoContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
-import { cn, fetchUserData, isAnon } from "@/lib/utils";
+import { fetchUserData, isAnon } from "@/lib/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { ToastAction } from "@radix-ui/react-toast";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { Loader2 } from "lucide-react";
@@ -24,7 +21,14 @@ import TagManager from "react-gtm-module";
 import SelectRole from "./SelectRole";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { trackEvent } from "@/lib/mixpanelUtils";
+import { toast } from "sonner";
 import CustomLoginButton from "./CustomLoginButton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const OrSeparator: React.FC = () => (
   <div className="w-full flex items-center gap-2 my-4">
@@ -53,6 +57,30 @@ interface IFormInputs {
   password: string;
 }
 
+// ----- Toast helpers (Sonner only) -----
+const getErrMsg = (e: any, fallback = "Something went wrong.") => {
+  if (!e) return fallback;
+  if (typeof e === "string") return e;
+  return e?.response?.data?.message || e?.message || fallback;
+};
+
+const notifyError = (e: any, ctx?: string) => {
+  const base = getErrMsg(e);
+  toast.error(ctx ? `${ctx}: ${base}` : base);
+};
+const notifySuccess = (msg: string) => toast.success(msg);
+const notifyWarning = (msg: string) => toast.warning(msg);
+
+// Heuristic to decide when to suggest/reset after a signin failure
+const shouldSuggestReset = (e: any) => {
+  const msg = getErrMsg(e, "").toLowerCase();
+  return (
+    /(invalid|incorrect|wrong).*(password|credential)/i.test(msg) ||
+    /user.*not.*found|no.*user.*found|account.*does.*not/i.test(msg) ||
+    /authentication.*failed|failed.*to.*authenticate/i.test(msg)
+  );
+};
+
 const Signin: React.FC = () => {
   const mongoContext: any = useContext(MongoContext);
   const {
@@ -66,12 +94,12 @@ const Signin: React.FC = () => {
     loadingAuth,
   } = mongoContext;
 
-  const { toast } = useToast();
   const { push, refresh } = useRouter();
 
   // React Hook Form setup
   const {
     control,
+    watch,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<IFormInputs>({
@@ -85,26 +113,37 @@ const Signin: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [selectRoleModal, setSelectRoleModal] = useState(false);
 
-  // Generic error handler
-  const handleError = (error: any, fallbackMessage = "An error occurred. Please try again.") => {
+  // Forgot password dialog state
+  const [isForgotOpen, setIsForgotOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [sendingReset, setSendingReset] = useState(false);
+
+  // Generic error handler -> Sonner
+  const handleError = (
+    error: any,
+    fallbackMessage = "An error occurred. Please try again."
+  ) => {
     console.error("An error occurred:", error);
-    toast({
-      variant: "destructive",
-      className: cn(
-        "top-0 right-0 flex fixed md:max-w-[640px] md:top-4 md:right-4"
-      ),
-      description: error?.message || fallbackMessage,
-      action: <ToastAction altText="Try again">Try again</ToastAction>,
+    toast.error(error?.message || fallbackMessage, {
+      action: {
+        label: "Close",
+        onClick: () => {},
+      },
     });
     setLoading(false);
     setGoogleLoading(false);
   };
 
+  const formEmail = String(watch("email") || "").trim();
+
   // Google login success handler
   const handleGoogleSuccess = async (response: any) => {
     const token = response?.credential;
     if (!token) {
-      handleError(new Error("No credential received from Google."), "Google authentication failed.");
+      notifyError(
+        new Error("No credential received from Google."),
+        "Google authentication failed"
+      );
       return;
     }
 
@@ -121,7 +160,9 @@ const Signin: React.FC = () => {
       const userObj = await app.logIn(credentials);
 
       if (!client) {
-        throw new Error("Database client not initialized. Please refresh and try again.");
+        throw new Error(
+          "Database client not initialized. Please refresh and try again."
+        );
       }
 
       const existingUser = await client
@@ -141,7 +182,7 @@ const Signin: React.FC = () => {
           lname: decodedToken.family_name,
           verified: decodedToken.email_verified,
           auth_mode: "oauth2-google",
-          googleId: userObj.identities[0].id,
+          googleId: userObj.identities?.[0]?.id || userObj.id,
           route: "Regular",
           created: new Date(),
         };
@@ -154,11 +195,15 @@ const Signin: React.FC = () => {
         refresh();
 
         trackEvent(app.currentUser.customData.hash, "Sign Up", payload);
+        notifySuccess("Signed in with Google.");
       } else {
         setUser(userObj);
         setAuthenticated(true);
 
-        const fetchedData: any = await fetchUserData(userObj.id, userObj.profile.email);
+        const fetchedData: any = await fetchUserData(
+          userObj.id,
+          userObj.profile.email
+        );
         if (fetchedData?.result) {
           await setUserData(fetchedData.result);
         }
@@ -183,6 +228,7 @@ const Signin: React.FC = () => {
           },
         });
 
+        notifySuccess("Signed in with Google.");
         if (existingUser.role) {
           if (fetchedData.result.role === "provider") {
             push("/provider/candidates/all");
@@ -198,13 +244,9 @@ const Signin: React.FC = () => {
     }
   };
 
-  // Google login error handler
+  // Google login error handler -> Sonner
   const handleGoogleError = () => {
-    toast({
-      variant: "destructive",
-      description: "Google Login Failed. Please try again.",
-      action: <ToastAction altText="Okay">Okay</ToastAction>,
-    });
+    toast.error("Google Login Failed. Please try again.");
   };
 
   // Role-based redirect
@@ -230,7 +272,15 @@ const Signin: React.FC = () => {
     try {
       const ipResponse = await axios.get("/api/ip");
       if (ipResponse?.data) {
-        const { ip, city, latitude, longitude, country_code, region_name, zip } = ipResponse.data;
+        const {
+          ip,
+          city,
+          latitude,
+          longitude,
+          country_code,
+          region_name,
+          zip,
+        } = ipResponse.data;
         Object.assign(payload, {
           route: "Regular",
           userIp: ip,
@@ -242,7 +292,10 @@ const Signin: React.FC = () => {
         });
       }
 
-      await axios.post("https://api.kinscare.org/api/v1/auth/create_user", payload);
+      await axios.post(
+        "https://kinscare-backend.onrender.com/api/v1/auth/create_user",
+        payload
+      );
 
       const tagManagerArgs =
         payload.auth_mode === "local-userpass"
@@ -280,8 +333,12 @@ const Signin: React.FC = () => {
       }
 
       setAuthenticated(true);
+      notifySuccess("Account created successfully.");
     } catch (error: any) {
-      handleError(error, "Could not complete user registration. Please try again.");
+      handleError(
+        error,
+        "Could not complete user registration. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -330,7 +387,6 @@ const Signin: React.FC = () => {
       const password = data.password;
       const credentials = Realm.Credentials.emailPassword(email, password);
       const credentialUser = await app.logIn(credentials);
-      console.log(credentialUser)
 
       if (credentialUser) {
         setUser(credentialUser);
@@ -350,23 +406,66 @@ const Signin: React.FC = () => {
             route: "Regular",
             role: credentialUser.customData.role,
           };
-          trackEvent(credentialUser.customData.hash, "Sign In", mixpanelPayload);
+          trackEvent(
+            credentialUser.customData.hash,
+            "Sign In",
+            mixpanelPayload
+          );
 
+          toast.success("Signed in successfully.");
           routeUser(fetched.result.role);
         } else {
-          throw new Error("Unable to retrieve your user data. Please try again.");
+          throw new Error(
+            "Unable to retrieve your user data. Please try again."
+          );
         }
       } else {
         throw new Error("Invalid email or password.");
       }
     } catch (error: any) {
-      handleError(error, "Sign-in failed. Please check your details and try again.");
+      // Show error and auto-open forgot-password dialog on relevant failures
+      handleError(
+        error,
+        "Sign-in failed. Please check your details and try again."
+      );
+      if (shouldSuggestReset(error)) {
+        setResetEmail(formEmail);
+        setIsForgotOpen(true);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const closeSelectModal = () => setSelectRoleModal(false);
+
+  // ----- Forgot Password: send reset -----
+  const isValidResetEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail || "");
+  const sendReset = async () => {
+    try {
+      setSendingReset(true);
+      const email = String(resetEmail || "").trim().toLowerCase();
+      if (!email || !isValidResetEmail) {
+        toast.error("Enter a valid email address.");
+        return;
+      }
+      try {
+        // Signature A
+        
+        await app.emailPasswordAuth.sendResetPasswordEmail(email);
+      } catch {
+        // Signature B
+        
+        await app.emailPasswordAuth.sendResetPasswordEmail({ email });
+      }
+      toast.success(`If ${email} is registered, a reset link has been sent.`);
+      setIsForgotOpen(false);
+    } catch (e) {
+      notifyError(e, "Couldn't send reset link");
+    } finally {
+      setSendingReset(false);
+    }
+  };
 
   return (
     <GoogleOAuthProvider clientId={`${process.env.GOOGLE_APP_ID}`}>
@@ -398,7 +497,7 @@ const Signin: React.FC = () => {
             <div>
               <div className="flex justify-between gap-6 items-center">
                 <p className="text-md text-gray-800 dark:text-gray-50 antialiased hidden md:block">
-                  Don't have an account?
+                  Don&apos;t have an account?
                 </p>
                 <Link href="/signup">
                   <Button className="shadow-2xl">Signup</Button>
@@ -421,15 +520,19 @@ const Signin: React.FC = () => {
                     size="large"
                     onSuccess={handleGoogleSuccess}
                     onError={handleGoogleError}
-                    theme="outline"
+                    theme="filled_blue"
                     text="continue_with"
-                    disabled={googleLoading}
+                    width="100%"
+                    shape="pill"
                   />
                 </div>
 
                 <OrSeparator />
 
-                <form className="space-y-4 md:space-y-4" onSubmit={handleSubmit(onSubmit)}>
+                <form
+                  className="space-y-4 md:space-y-4"
+                  onSubmit={handleSubmit(onSubmit)}
+                >
                   <div>
                     <label
                       htmlFor="email"
@@ -450,7 +553,9 @@ const Signin: React.FC = () => {
                       )}
                     />
                     {errors.email && (
-                      <p className="text-red-500 mt-1 text-sm">{errors.email.message}</p>
+                      <p className="text-red-500 mt-1 text-sm">
+                        {errors.email.message}
+                      </p>
                     )}
                   </div>
 
@@ -475,12 +580,27 @@ const Signin: React.FC = () => {
                       )}
                     />
                     {errors.password && (
-                      <p className="text-red-500 mt-1 text-sm">{errors.password.message}</p>
+                      <p className="text-red-500 mt-1 text-sm">
+                        {errors.password.message}
+                      </p>
                     )}
                   </div>
 
+                  <div className="flex mt-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setResetEmail(formEmail);
+                        setIsForgotOpen(true);
+                      }}
+                      className="text-xs text-blue-600 underline hover:opacity-80"
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+
                   <Button
-                    disabled={loading || !isValid}
+                    disabled={loading || googleLoading || !isValid}
                     type="submit"
                     className="text-center w-full"
                   >
@@ -491,7 +611,7 @@ const Signin: React.FC = () => {
                   </Button>
 
                   <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                    Don't have an account?{" "}
+                    Don&apos;t have an account?{" "}
                     <Link
                       href="/signup"
                       className="font-medium text-primary hover:underline dark:text-primary-500"
@@ -508,6 +628,60 @@ const Signin: React.FC = () => {
             </div>
           </div>
         </section>
+
+        {/* Forgot Password dialog */}
+        <Dialog open={isForgotOpen} onOpenChange={setIsForgotOpen}>
+          <DialogContent className="rounded-lg shadow-xl p-6 bg-white max-w-md">
+            <DialogTitle className="text-xl font-semibold">
+              Reset your password
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 text-sm">
+              Enter the email tied to your account. We’ll send you a secure
+              reset link.
+            </DialogDescription>
+
+            <div className="mt-3 space-y-3">
+              <div>
+                <label htmlFor="reset-email" className="block mb-1 text-sm">
+                  Email address
+                </label>
+                <Input
+                  id="reset-email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                />
+                {!isValidResetEmail && resetEmail?.length > 0 && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Enter a valid email address.
+                  </p>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsForgotOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  onClick={sendReset}
+                  disabled={sendingReset || !isValidResetEmail}
+                >
+                  {sendingReset ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    "Send reset link"
+                  )}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         <div className="absolute bottom-0 -z-0 left-0 w-full">
           <svg

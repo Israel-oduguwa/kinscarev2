@@ -20,7 +20,7 @@ import MongoContext from "@/app/MongoContext";
 const AGENT_NAME = "Agent Name";
 const AGENT_ID = "AGENT_USER_ID"; // fetch from context/auth in production
 
-const BASE_URL = "https://api.kinscare.org/api/v1/providers/";
+const BASE_URL = "https://kinscare-backend.onrender.com/api/v1/providers/";
 
 function AgentQueue() {
   const [apps, setApps] = useState([]);
@@ -38,7 +38,7 @@ function AgentQueue() {
     setError("");
     try {
       const res = await axios.get(`${BASE_URL}jumpstart/queue`);
-      console.log(res.data);
+      // console.log(res.data);
       // Move taken applications (with .takenBy) to the end
       const sorted: any = [...(res.data.queue || [])].sort((a, b) => {
         if (!!a.takenBy && !b.takenBy) return 1;

@@ -231,12 +231,11 @@ const Footer = () => {
             © Kinscare {new Date().getFullYear()} &middot; All rights reserved.
           </p>
           <p className="mt-8 text-xs text-[hsl(var(--muted-foreground))] max-w-2xl mx-auto leading-relaxed">
-            At KinsCare we connect caregivers and providers. While we do not
-            employ caregivers or independently verify every profile or posting,
-            we encourage all users to carefully review and select the right fit
-            for their needs.
+            KinsCare connects caregivers and providers. We don’t employ
+            caregivers. Profiles and postings are user-submitted; always verify
+            credentials, references, and fit before hiring
             <span className="block mt-1 font-medium">
-              For extra peace of mind, try our&nbsp;
+              Try our&nbsp;
               <Link
                 href="/jumpstart-hiring"
                 className="underline text-primary hover:text-[hsl(var(--primary-dark))] transition"

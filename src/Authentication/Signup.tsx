@@ -25,6 +25,7 @@ import * as Realm from "realm-web";
 import { toast } from "sonner";
 import * as yup from "yup";
 import SelectRole from "./SelectRole";
+import { sendSignupDripSMS } from "@/Utils/sendSmsSignup";
 
 // Or separator for UI
 const OrSeparator: React.FC = () => (
@@ -168,7 +169,7 @@ const Signup: React.FC = () => {
 
       // Backend call to create user
       await axios.post(
-        "https://api.kinscare.org/api/v1/auth/create_user",
+        "https://kinscare-backend.onrender.com/api/v1/auth/create_user",
         payload
       );
 
@@ -352,7 +353,7 @@ const Signup: React.FC = () => {
   }, [user, loadingAuth, authenticated]);
 
   // Local email/password signup handler
-  const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
+  const onSubmit: SubmitHandler<IFormInputs> = async (data: any) => {
     setLoading(true);
     try {
       const email = data.email.toLowerCase();
@@ -388,7 +389,16 @@ const Signup: React.FC = () => {
         role: payload.role,
       };
       await sendCustomerSignupEmail(emailParams);
-
+      await sendSignupDripSMS({
+        providerPhone: data.tel,
+        country: "NG",
+        role: data.role,
+        actionUrl:
+          data.role === "caregiver"
+            ? "https://www.kinscare.org/vitae/update"
+            : "https://www.kinscare.org/provider/account/settings/profile",
+        jumpstartUrl: "https://www.kinscare.org/jumpstart-hiring",
+      });
       // Fetch user data and track signup
       const fetched: any = await fetchUserData(credentialUser.id, email);
       if (fetched?.result) {

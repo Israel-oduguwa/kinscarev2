@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     // Insert CSRF token into the database
     const result = await csrfCollection.insertOne({ csrfToken });
-    console.log("Inserted CSRF token:", result);
+    // console.log("Inserted CSRF token:", result);
 
     // Encrypt the CSRF token
     const encryptedToken = encrypt(csrfToken, encryptKey);

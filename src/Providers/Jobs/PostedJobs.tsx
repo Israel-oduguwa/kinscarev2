@@ -85,10 +85,10 @@ function PostedJobs() {
       setLoading(true);
       try {
         const response = await axios.get(
-          `https://api.kinscare.org/api/v1/providers/posted-jobs/${user?.customData?.hash}`
+          `https://kinscare-backend.onrender.com/api/v1/providers/posted-jobs/${user?.customData?.hash}`
         );
         setJobs(response.data.jobs);
-        console.log(response.data.jobs);
+        // console.log(response.data.jobs);
         setError(null);
       } catch (error: any) {
         // toast({
@@ -106,7 +106,7 @@ function PostedJobs() {
 
   const postedJobs = jobs.filter((job) => !job.draft);
   const draftJobs = jobs.filter((job) => job.draft);
-  console.log(jobs)
+  // console.log(jobs)
   return (
     <div className="py-6  px-4 bg-gray-100 min-h-[100vh]">
       {loading && (

@@ -62,7 +62,7 @@ export default function AddCoursePlan() {
     setIsLoading(true);
     setFeedback({});
     try {
-      await axios.post("https://api.kinscare.org/api/v1/auth/crud-operation", {
+      await axios.post("https://kinscare-backend.onrender.com/api/v1/auth/crud-operation", {
         collectionName: "users",
         operation: "updateOne",
         filter: { userID: userData.userID },

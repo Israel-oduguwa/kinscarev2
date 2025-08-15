@@ -20,13 +20,13 @@ interface RewardReferrerRequest {
       const payload: RewardReferrerRequest = { providerUserID, milestone };
 
       const response: AxiosResponse<RewardReferrerResponse> = await axios.post(
-        "https://api.kinscare.org/api/v1/providers/reward-referrer", // Or your full API URL
+        "https://kinscare-backend.onrender.com/api/v1/providers/reward-referrer", // Or your full API URL
         payload
       );
 
       if (response.data && response.data.success) {
         // Success
-        console.log(response.data.message);
+        // console.log(response.data.message);
         return response.data;
       } else {
         // Server returned a valid response, but not success

@@ -82,17 +82,18 @@ export const CandidatesProvider: React.FC<Props> = ({ children }) => {
 
   // Unfiltered candidates fetch
   const fetchCandidatesData = async (userID: string, page: number) => {
-    console.log(userID, "thso=s");
+    // console.log(userID, "thso=s");
     try {
       setLoading(true);
       const response = await axios.get(
-        `https://api.kinscare.org/api/v1/providers/caregivers/match/${userID}?page=${page}&limit=10`
+        `https://kinscare-backend.onrender.com/api/v1/providers/caregivers/match/${userID}?page=${page}&limit=10`
       );
       const data: CandidatesApiResponse = response.data;
       setCandidates(data.candidates);
       setTotalPages(data.totalPages);
       setIsFilteredSearch(false);
     } catch (err) {
+      console.log(err)
       setError((err as Error).message);
     } finally {
       setLoading(false);
@@ -106,7 +107,7 @@ export const CandidatesProvider: React.FC<Props> = ({ children }) => {
       const availabilityParam = selectedShifts.join(",");
       const licensesParam = selectedLicenses.join(",");
       const response = await axios.get(
-        `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${availabilityParam}&licenses=${licensesParam}&page=1&limit=40`
+        `https://kinscare-backend.onrender.com/api/v1/providers/find-caregivers/filter?availability=${availabilityParam}&licenses=${licensesParam}&page=1&limit=40`
       );
       const data: CaregiverApiResponse = response.data;
       setCandidates(data.caregivers);
@@ -131,7 +132,7 @@ export const CandidatesProvider: React.FC<Props> = ({ children }) => {
       const availabilityParam = selectedShifts.join(",");
       const licensesParam = selectedLicenses.join(",");
       const response = await axios.get(
-        `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${availabilityParam}&licenses=${licensesParam}&page=1&limit=40`
+        `https://kinscare-backend.onrender.com/api/v1/providers/find-caregivers/filter?availability=${availabilityParam}&licenses=${licensesParam}&page=1&limit=40`
       );
       const data: CaregiverApiResponse = response.data;
       console.log(data)
@@ -169,13 +170,13 @@ export const CandidatesProvider: React.FC<Props> = ({ children }) => {
         const availabilityParam = selectedShifts.join(",");
         const licensesParam = selectedLicenses.join(",");
         const response = await axios.get(
-          `https://api.kinscare.org/api/v1/providers/find-caregivers/filter?availability=${availabilityParam}&licenses=${licensesParam}&page=${nextPage}&limit=40`
+          `https://kinscare-backend.onrender.com/api/v1/providers/find-caregivers/filter?availability=${availabilityParam}&licenses=${licensesParam}&page=${nextPage}&limit=40`
         );
         const data: CaregiverApiResponse = response.data;
         setCandidates((prev) => [...prev, ...data.caregivers]);
       } else {
         const response = await axios.get(
-          `https://api.kinscare.org/api/v1/providers/caregivers/match/${userID}?page=${nextPage}&limit=10`
+          `https://kinscare-backend.onrender.com/api/v1/providers/caregivers/match/${userID}?page=${nextPage}&limit=10`
         );
         const data: CandidatesApiResponse = response.data;
         setCandidates((prev) => [...prev, ...data.candidates]);

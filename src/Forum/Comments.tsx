@@ -14,7 +14,7 @@ polyfill();
 
 async function Comments({ postID, threadID }: any) {
   let data = await fetch(
-    `https://api.kinscare.org/api/v1/forum/posts/${postID}/replies`,
+    `https://kinscare-backend.onrender.com/api/v1/forum/posts/${postID}/replies`,
     { cache: "no-cache" }
   );
 
