@@ -1,12 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import React, { useContext, ReactNode, useEffect } from "react";
 import MongoContext from "@/app/MongoContext";
-import { useRouter } from "next/navigation";
-import DashboardSkeleton from "../DashboardSkelenton";
-import mixpanel from "@/lib/mixpanel";
 import { identifyUser } from "@/lib/mixpanelUtils"; // Import your identify function
+import { useRouter } from "next/navigation";
+import { ReactNode, useContext, useEffect } from "react";
+import DashboardSkeleton from "../DashboardSkelenton";
 
 interface ProviderAuthProps {
   children: ReactNode;

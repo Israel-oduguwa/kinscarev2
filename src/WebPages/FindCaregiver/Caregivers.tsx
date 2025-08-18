@@ -1,5 +1,4 @@
 // app/caregivers/Caregivers.tsx
-
 import OAuthDialog from "@/Authentication/OAuthDialog";
 import SigninModal from "@/Authentication/SiginModal";
 import ProfileAvatar from "@/components/ProfileAvatar";
@@ -14,6 +13,9 @@ import SearchBar from "./SearchBar";
 
 polyfill();
 
+/* =========================
+   Types
+   ========================= */
 interface Caregiver {
   userID: string;
   name: string;
@@ -39,6 +41,9 @@ interface CaregiversProps {
   licenses: string; // comma-separated
 }
 
+/* =========================
+   Utilities
+   ========================= */
 const sanitizeContent = (htmlContent?: string) =>
   (htmlContent || "").replace(/<img[^>]*>/gi, "");
 
@@ -89,6 +94,21 @@ function formatPhoneNumberToDigitsWithPlus(phone?: string) {
   return phone.replace(/(?!^\+)\D/g, "");
 }
 
+/* =========================
+   Small UI helpers
+   ========================= */
+const Chip: React.FC<{ children: React.ReactNode; title?: string }> = ({ children, title }) => (
+  <span
+    title={title}
+    className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-700"
+  >
+    {children}
+  </span>
+);
+
+/* =========================
+   Candidate Card
+   ========================= */
 function CandidatesCard({
   candidate,
   isAuthenticated,
@@ -103,20 +123,31 @@ function CandidatesCard({
   const encryptedTel = obfuscateText(formatPhoneNumberToDigitsWithPlus(candidate?.auth?.tel));
   const encryptedEmail = obfuscateText(candidate?.auth?.email);
 
+  const locationLine = [candidate.city ?? "", candidate.zipcode ?? ""]
+    .filter(Boolean)
+    .join(", ");
+
   return (
-    <div className="w-full mb-6">
-      <div className="bg-white flex flex-col lg:flex-row items-start lg:items-start justify-between shadow-md border border-gray-100 rounded-lg p-6">
-        <Link href={`caregivers/${encodeURIComponent(candidate.userID)}`} className="flex-1">
-          <div className="flex mb-3 flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-4">
-            <div className="flex items-center space-x-2">
+    <div className="w-full">
+      <div
+        className="group relative flex flex-col lg:flex-row items-start justify-between rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md focus-within:shadow-md"
+        role="article"
+      >
+        <Link
+          href={`caregivers/${encodeURIComponent(candidate.userID)}`}
+          className="flex-1 outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-xl"
+          aria-label={`Open caregiver ${candidate.name}`}
+        >
+          <div className="mb-3 flex flex-col lg:flex-row lg:items-center gap-4">
+            <div className="flex items-center gap-3">
               <ProfileAvatar
                 size="w-14 h-14"
                 name={candidate.name}
                 profileImage={candidate?.profileImage}
               />
-              <div>
-                <p className="flex items-center text-lg font-bold text-gray-900">
-                  {displayName}{" "}
+              <div className="min-w-0">
+                <p className="flex items-center text-base font-semibold text-gray-900">
+                  <span className="truncate">{displayName}</span>
                   {availabilityPulse && (
                     <span className="ml-2 relative flex h-3 w-3">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
@@ -124,70 +155,89 @@ function CandidatesCard({
                     </span>
                   )}
                 </p>
-                <p className="text-sm text-gray-600 flex items-center gap-2">
-                  <MapPin size={15} />
-                  {(candidate.city ?? "—")}, {(candidate.zipcode ?? "—")}{" "}
+                <p className="mt-1 text-sm text-gray-600 flex items-center gap-1">
+                  <MapPin className="h-4 w-4" />
+                  <span className="truncate">{locationLine || "—"}</span>
                   {availabilityPulse && (
-                    <span className="text-sm text-green-600 font-medium">Available now</span>
+                    <span className="ml-2 text-xs font-medium text-green-600">Available now</span>
                   )}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="py-1">
-            <h4 className="text-sm font-bold mb-1 text-gray-700">Licences</h4>
-            {(candidate.licenses ?? []).length ? (
-              (candidate.licenses ?? []).map((license, idx) => (
-                <span key={`${license}-${idx}`} className="px-3 py-1 mr-2 text-sm bg-gray-100 text-gray-800 rounded-lg">
-                  {license}
-                </span>
-              ))
-            ) : (
-              <span className="text-sm text-gray-500">Not provided</span>
-            )}
+          {/* Meta chips */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-1">
+                Licences
+              </h4>
+              {(candidate.licenses ?? []).length ? (
+                <div className="flex flex-wrap gap-2">
+                  {(candidate.licenses ?? []).map((license, idx) => (
+                    <Chip key={`${license}-${idx}`} title={license}>
+                      {license}
+                    </Chip>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">Not provided</p>
+              )}
+            </div>
+
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-1">
+                Availability
+              </h4>
+              {(candidate.availability ?? []).length ? (
+                <div className="flex flex-wrap gap-2">
+                  {(candidate.availability ?? []).map((sch, idx) => (
+                    <Chip key={`${sch}-${idx}`} title={sch}>
+                      {sch}
+                    </Chip>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">Not provided</p>
+              )}
+            </div>
           </div>
 
-          <div className="py-1">
-            <h4 className="text-sm font-bold mb-1 text-gray-700">Availability</h4>
-            {(candidate.availability ?? []).length ? (
-              (candidate.availability ?? []).map((sch, idx) => (
-                <span key={`${sch}-${idx}`} className="px-3 py-1 mr-2 text-sm bg-gray-100 text-gray-800 rounded-lg">
-                  {sch}
-                </span>
-              ))
-            ) : (
-              <span className="text-sm text-gray-500">Not provided</span>
-            )}
-          </div>
-
-          <div className="py-2">
-            <h4 className="text-sm font-bold text-gray-700">Certifications</h4>
-            <div className="text-sm text-gray-600 line-clamp-2">
+          {/* Certifications (sanitized) */}
+          <div className="mt-4">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-1">
+              Certifications
+            </h4>
+            <div className="text-sm text-gray-700 line-clamp-2">
               <Interweave content={sanitizedContent} />
             </div>
           </div>
 
-          <div className="py-2">
-            <h4 className="text-sm font-bold text-gray-700">Contact Details</h4>
-            <div>
-              <p className="text-sm">Phone: {encryptedTel || "Hidden"}</p>
-              <p className="text-sm">Email: {encryptedEmail || "Hidden"}</p>
+          {/* Contact Details (obfuscated) */}
+          <div className="mt-4">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-1">
+              Contact Details
+            </h4>
+            <div className="text-sm text-gray-700 space-y-0.5">
+              <p>Phone: {encryptedTel || "Hidden"}</p>
+              <p>Email: {encryptedEmail || "Hidden"}</p>
             </div>
           </div>
 
-          <div className="pt-1">
-            <p className="text-sm px-3 cursor-pointer max-w-[400px] font-semibold mt-1 py-2 rounded-md bg-blue-50 text-blue-900">
-              Click {`"View Caregiver"`} to see contact details
+          {/* Info banner */}
+          <div className="mt-4">
+            <p className="text-sm px-3 py-2 max-w-[460px] rounded-md bg-blue-50 text-blue-900 font-medium">
+              Contact details are hidden. Click <span className="font-semibold">“View Caregiver”</span> to see full info and hire.
             </p>
           </div>
         </Link>
 
+        {/* CTA */}
         <div className="mt-6 w-full lg:w-auto lg:mt-0 lg:ml-4 flex-shrink-0">
           <OAuthDialog caregiver={candidate} userID={candidate.userID} message="caregiver">
-            <Button className="px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md w-full lg:w-auto">
+            <Button className="w-full lg:w-auto rounded-xl px-6 py-3 shadow-[0_8px_20px_-8px_rgba(59,130,246,0.6)] transition hover:shadow-[0_12px_28px_-10px_rgba(59,130,246,0.65)]">
               <span className="flex items-center gap-2">
-                <User /> View Caregiver
+                <User className="h-4 w-4" /> View Caregiver
               </span>
             </Button>
           </OAuthDialog>
@@ -197,6 +247,9 @@ function CandidatesCard({
   );
 }
 
+/* =========================
+   Page
+   ========================= */
 export default async function Caregivers({ availability, page, licenses }: CaregiversProps) {
   const availabilityArray = availability
     .split(",")
@@ -226,7 +279,7 @@ export default async function Caregivers({ availability, page, licenses }: Careg
 
     const res = await fetch(
       `https://kinscare-backend.onrender.com/api/v1/providers/find-caregivers/filter?${params.toString()}`,
-      { cache: "no-cache" },
+      { cache: "no-cache" }
     );
 
     if (!res.ok) {
@@ -264,50 +317,101 @@ export default async function Caregivers({ availability, page, licenses }: Careg
 
   const firstCandidate = caregivers[0];
 
+  // Build “Load more” href (preserve filters)
+  const nextPage =
+    pagination.currentPage < pagination.totalPages
+      ? pagination.currentPage + 1
+      : null;
+  const loadMoreHref = nextPage
+    ? `?availability=${encodeURIComponent(availability)}&licenses=${encodeURIComponent(
+        licenses
+      )}&page=${nextPage}`
+    : "#";
+
   return (
-    <div className="w-full bg-gray-100 min-h-[100vh] p-3">
-      {/* Client toast bridge */}
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      {/* Server-to-client toasts */}
       <ToastPortal messages={toasts} />
 
-      <div className="max-w-7xl mx-auto py-10">
-        <div className="mb-6">
-          {/* Search is client – fine to render here */}
-          <SearchBar
-            availability={availabilityArray}
-            licenses={licensesArray}
-          />
-        </div>
+      {/* Header with search + summary */}
+      <div className="relative border-b border-gray-200/70 bg-[radial-gradient(60%_80%_at_50%_-20%,rgba(59,130,246,0.10),transparent)]">
+        <div className="mx-auto max-w-7xl px-4 py-8">
+          <div className="flex flex-col py-6 gap-4">
+            <SearchBar availability={availabilityArray} licenses={licensesArray} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-7">
-          <div className="col-span-12 lg:col-span-9">
-            <h1 className="text-md text-gray-8 00 tracking-normal antialiased font-bold mb-4">
-              {`There ${pagination.totalCaregivers === 1 ? "is" : "are"} ${pagination.totalCaregivers} caregiver${pagination.totalCaregivers === 1 ? "" : "s"} near you`}
-              {licenses ? ` with ${licenses}` : ""}.
-              {" "}
-              {firstCandidate ? (
-                <OAuthDialog caregiver={firstCandidate} userID={firstCandidate.userID} message="caregiver">
-                  <span className="text-blue-600 cursor-pointer">Register</span>
-                </OAuthDialog>
-              ) : (
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h1 className="text-base font-semibold tracking-tight text-gray-800">
+                {`There ${pagination.totalCaregivers === 1 ? "is" : "are"} `}
+                <span className="text-blue-600">{pagination.totalCaregivers}</span>{" "}
+                {`caregiver${pagination.totalCaregivers === 1 ? "" : "s"} near you`}
+                {licenses ? ` with ${licenses}` : ""}.
+                {" "}
+                {firstCandidate ? (
+                  <OAuthDialog caregiver={firstCandidate} userID={firstCandidate.userID} message="caregiver">
+                    <span className="cursor-pointer font-semibold text-blue-600 underline-offset-4 hover:underline">
+                      Register
+                    </span>
+                  </OAuthDialog>
+                ) : (
+                  <SigninModal role="provider">
+                    <span className="cursor-pointer font-semibold text-blue-600 underline-offset-4 hover:underline">
+                      Register
+                    </span>
+                  </SigninModal>
+                )}{" "}
+                or{" "}
                 <SigninModal role="provider">
-                  <span className="text-blue-600 cursor-pointer">Register</span>
-                </SigninModal>
-              )}{" "}
-              or{" "}
-              <SigninModal role="provider">
-                <span className="text-blue-600 cursor-pointer">sign in</span>
-              </SigninModal>{" "}
-              to view contact details and hire quickly.
-            </h1>
+                  <span className="cursor-pointer text-blue-600 underline-offset-4 hover:underline">
+                    sign in
+                  </span>
+                </SigninModal>{" "}
+                to view contact details and hire quickly.
+              </h1>
 
+              {/* Active filters */}
+              <div className="flex flex-wrap items-center gap-2">
+                {availabilityArray.map((a, i) => (
+                  <Chip key={`avail-${a}-${i}`}>Availability: {a}</Chip>
+                ))}
+                {licensesArray.map((l, i) => (
+                  <Chip key={`lic-${l}-${i}`}>License: {l}</Chip>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <div className="grid grid-cols-1 gap-7 lg:grid-cols-12">
+          {/* Results */}
+          <div className="col-span-12 lg:col-span-9">
             {caregivers.length === 0 ? (
-              <div className="py-10 text-center">
-                <p className="text-lg text-gray-700">
+              <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center">
+                <div className="mx-auto mb-4 h-16 w-16 text-gray-300">
+                  <svg viewBox="0 0 24 24" fill="none" className="h-full w-full">
+                    <path
+                      d="M7 4h10a2 2 0 0 1 2 2v11l-4-2-4 2-4-2-4 2V6a2 2 0 0 1 2-2Z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M9 8h6M9 12h4"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </div>
+                <p className="text-sm text-gray-700">
                   No caregivers found matching your criteria.
                 </p>
               </div>
             ) : (
-              <div>
+              <div className="space-y-6">
                 {caregivers.map((candidate) => (
                   <CandidatesCard
                     key={candidate.userID}
@@ -316,29 +420,28 @@ export default async function Caregivers({ availability, page, licenses }: Careg
                   />
                 ))}
 
-                {pagination.currentPage < pagination.totalPages && (
-                  <div className="flex justify-center mt-6">
-                    <Link
-                      href={`?availability=${encodeURIComponent(availability)}&licenses=${encodeURIComponent(
-                        licenses,
-                      )}&page=${pagination.currentPage + 1}`}
-                      passHref
-                    >
-                      <Button asChild>Load More</Button>
+                {nextPage && (
+                  <div className="flex justify-center">
+                    <Link href={loadMoreHref} passHref>
+                      <Button className="rounded-xl px-8">Load More</Button>
                     </Link>
                   </div>
                 )}
               </div>
             )}
 
-            <div className="block lg:hidden mt-4">
+            {/* Mobile concierge card */}
+            <div className="mt-6 block lg:hidden">
               <ConciergeSidebarCard />
             </div>
           </div>
 
-          <div className="hidden lg:block mt-10 col-span-3">
-            <ConciergeSidebarCard />
-          </div>
+          {/* Sidebar */}
+          <aside className="col-span-3 hidden lg:block">
+            <div className="lg:sticky lg:top-24">
+              <ConciergeSidebarCard />
+            </div>
+          </aside>
         </div>
       </div>
     </div>

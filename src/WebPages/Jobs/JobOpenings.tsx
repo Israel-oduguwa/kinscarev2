@@ -6,9 +6,13 @@ import SearchBar from "./SearchBar";
 import OauthApply from "./OauthApply";
 import Image from "next/image";
 import SigninModal from "@/Authentication/SiginModal";
+import { MapPin, Clock, BadgeCheck } from "lucide-react";
+import JobListingLogo from "@/components/JobListingLogo";
 
 /** Safe query builder to avoid "undefined" in URLs */
-const buildQuery = (params: Record<string, string | number | null | undefined>) => {
+const buildQuery = (
+  params: Record<string, string | number | null | undefined>
+) => {
   const sp = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) {
     if (v === undefined || v === null) continue;
@@ -20,67 +24,108 @@ const buildQuery = (params: Record<string, string | number | null | undefined>) 
   return q ? `?${q}` : "";
 };
 
-const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
+const Logo: React.FC<{ src?: string; alt?: string }> = ({ src, alt }) => {
+  const fallback =
+    "https://lh3.googleusercontent.com/-g8IwNe70-kE/AAAAAAAAAAI/AAAAAAAAAAA/ALKGfkl1tpVAKXAezzCNWmKH5JWvlgr_xw/photo.jpg?sz=64";
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 my-4 w-full mx-auto">
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-        <Link href={`/jobs/${job._id}`} className="flex-1">
-          <div className="flex items-center gap-4 mb-4">
-            {!!job?.profileImage && (
-              <Image
-                className="h-14 w-14 rounded-full object-cover"
-                width={56}
-                height={56}
-                src={
-                  job.profileImage ||
-                  "https://lh3.googleusercontent.com/-g8IwNe70-kE/AAAAAAAAAAI/AAAAAAAAAAA/ALKGfkl1tpVAKXAezzCNWmKH5JWvlgr_xw/photo.jpg?sz=46"
-                }
-                alt="company logo"
-              />
-            )}
-            <div>
-              <h2 className="text-lg font-bold text-gray-800 tracking-tight">
+    <div className="relative h-14 w-14 rounded-2xl overflow-hidden ring-1 ring-black/5">
+      <Image
+        src={src || fallback}
+        alt={alt || "logo"}
+        fill
+        sizes="56px"
+        className="object-cover"
+        priority={false}
+      />
+    </div>
+  );
+};
+
+const Chip: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-700">
+    {children}
+  </span>
+);
+
+const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
+  const locationLine = [
+    job?.contacts?.address ?? "",
+    job?.contacts?.city ?? "",
+    job?.contacts?.zipcode ?? "",
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  return (
+    <div
+      className="group relative w-full rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:shadow-md focus-within:shadow-md"
+      role="article"
+    >
+      <div className="absolute inset-0 -z-10 rounded-2xl opacity-0 ring-2 ring-blue-500/0 transition group-hover:opacity-100 group-hover:ring-blue-500/10" />
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+        <Link
+          href={`/jobs/${job._id}`}
+          className="flex flex-1 items-start gap-2 outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-xl"
+        >
+          <JobListingLogo
+            src={job?.profileImage || undefined} // pass ONLY the real URL; no random fallback
+            alt={job?.title || job?.employer_name || "Job"}
+            seed={job?.employer_name || job?.title || job?._id} // deterministic gradient
+            size={40}
+            rounded="full" // use "full" for a perfect circle like Vercel
+          />
+
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-lg font-semibold tracking-tight text-gray-900">
                 {job?.title}
               </h2>
-              <p className="text-sm text-gray-600">
-                {job?.contacts?.address ?? "—"}
-                {job?.contacts?.city ? `, ${job.contacts.city}` : ""}
-                {job?.contacts?.zipcode ? `, ${job.contacts.zipcode}` : ""}
-              </p>
+              {Array.isArray(job?.licenses) && job.licenses.length > 0 && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-blue-100">
+                  <BadgeCheck className="h-3.5 w-3.5" />
+                  {job.licenses[0]}
+                </span>
+              )}
             </div>
-          </div>
 
-          <div className="mb-4">
-            <div className="text-sm text-gray-700 line-clamp-2">
-              <Interweave content={job?.certifications ?? ""} />
+            <div className="mt-1 flex items-center gap-2 text-sm text-gray-600">
+              <MapPin className="h-4 w-4 shrink-0" />
+              <span className="truncate">{locationLine || "—"}</span>
             </div>
-          </div>
 
-          <div className="flex flex-wrap gap-3 mb-4">
-            {Array.isArray(job?.licenses) &&
-              job.licenses.map((license: string, i: number) => (
-                <div key={`lic-${i}`} className="text-sm bg-gray-100 text-gray-800 rounded-full px-3 py-1">
-                  {license}
-                </div>
-              ))}
-            {Array.isArray(job?.schedule) &&
-              job.schedule.map((sch: string, i: number) => (
-                <div key={`sch-${i}`} className="text-sm bg-gray-100 text-gray-800 rounded-full px-3 py-1">
-                  {sch}
-                </div>
-              ))}
-          </div>
+            {job.certifications && job.certifications.length > 0 && (
+              <div className="mt-3 text-sm text-gray-700 line-clamp-2">
+                <Interweave content={job?.certifications ?? ""} />
+              </div>
+            )}
 
-          <div className="flex items-center gap-6">
-            <p className="text-sm text-gray-700">
-              Min Hours: <span className="font-medium">{job?.minHours ?? "—"} hours/week</span>
-            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {Array.isArray(job?.licenses) &&
+                job.licenses.map((license: string, i: number) => (
+                  <Chip key={`lic-${i}`}>{license}</Chip>
+                ))}
+              {Array.isArray(job?.schedule) &&
+                job.schedule.map((sch: string, i: number) => (
+                  <Chip key={`sch-${i}`}>
+                    <Clock className="h-3.5 w-3.5" />
+                    {sch}
+                  </Chip>
+                ))}
+              <Chip>
+                Min Hours:{" "}
+                <span className="ml-1 font-semibold">
+                  {job?.minHours ?? "—"} / wk
+                </span>
+              </Chip>
+            </div>
           </div>
         </Link>
 
-        <div className="flex-shrink-0 w-full lg:w-auto self-center lg:self-start">
+        <div className="w-full lg:w-auto">
           <OauthApply job={job} jobID={job?._id}>
-            <Button className="w-full lg:w-auto px-6 py-3 text-white rounded-lg">Apply Now</Button>
+            <Button className="w-full rounded-xl px-6 py-3 shadow-[0_8px_20px_-8px_rgba(59,130,246,0.6)] transition hover:shadow-[0_12px_28px_-10px_rgba(59,130,246,0.65)]">
+              Apply Now
+            </Button>
           </OauthApply>
         </div>
       </div>
@@ -99,7 +144,8 @@ async function All({
   minHours?: string;
   page?: number;
 }) {
-  const base = "https://kinscare-backend.onrender.com/api/v1/caregivers/jobs-search";
+  const base =
+    "https://kinscare-backend.onrender.com/api/v1/caregivers/jobs-search";
   const qs = buildQuery({
     schedule,
     licenses,
@@ -112,6 +158,7 @@ async function All({
   const response = await res.json();
 
   const jobs: any[] = Array.isArray(response?.jobs) ? response.jobs : [];
+  console.log(jobs);
   const pagination = response?.pagination ?? {};
   const {
     mode = "stream",
@@ -145,86 +192,152 @@ async function All({
     : "#";
 
   return (
-    <div className="py-20 px-4 bg-gray-50 min-h-screen">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <SearchBar />
-          <h1 className="tracking-tight font-semibold text-gray-700 mt-6">
-            There are <span className="text-blue-600">{totalJobs}</span> jobs near you.{" "}
-            {jobs.length > 0 ? (
-              <>
-                <OauthApply publicPage={true} job={jobs[0]} jobID={jobs[0]?._id}>
-                  <span className="text-blue-600 font-bold">Register</span>
-                </OauthApply>{" "}
-                or{" "}
-                <SigninModal role="caregiver">
-                  <span className="cursor-pointer text-blue-600"> sign in</span>
-                </SigninModal>{" "}
-                now to view details and apply instantly.
-              </>
-            ) : (
-              <span className="text-gray-600">Adjust your filters to discover more opportunities.</span>
-            )}
-          </h1>
-        </div>
+    <div className="min-h-screen py-20 bg-gradient-to-b from-gray-50 to-white">
+      {/* Top header zone */}
+      <div className="relative border-b  border-gray-200/70 bg-[radial-gradient(60%_80%_at_50%_-20%,rgba(59,130,246,0.10),transparent)]">
+        <div className="mx-auto max-w-6xl px-4 py-4">
+          <div className="flex flex-col gap-6">
+            <SearchBar />
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h1 className=" font-semibold tracking-tight text-gray-800">
+                <span className="text-gray-600">There are</span>{" "}
+                <span className="text-blue-600">{totalJobs}</span>{" "}
+                <span className="text-gray-600">jobs near you.</span>
+                {jobs.length > 0 ? (
+                  <>
+                    {" "}
+                    <OauthApply
+                      publicPage={true}
+                      job={jobs[0]}
+                      jobID={jobs[0]?._id}
+                    >
+                      <span className="cursor-pointer font-semibold text-blue-600 underline-offset-4 hover:underline">
+                        Register
+                      </span>
+                    </OauthApply>{" "}
+                    <span className="text-gray-600">or</span>{" "}
+                    <SigninModal role="caregiver">
+                      <span className="cursor-pointer text-blue-600 underline-offset-4 hover:underline">
+                        sign in
+                      </span>
+                    </SigninModal>{" "}
+                    <span className="text-gray-600">
+                      to view details and apply instantly.
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-gray-600">
+                    Adjust your filters to discover more opportunities.
+                  </span>
+                )}
+              </h1>
 
-        <div className="space-y-6">
+              {/* Active filters (visual summary) */}
+              <div className="flex flex-wrap items-center gap-2">
+                {filters?.schedule ? (
+                  <Chip>Schedule: {filters.schedule}</Chip>
+                ) : null}
+                {filters?.licenses ? (
+                  <Chip>License: {filters.licenses}</Chip>
+                ) : null}
+                {filters?.minHours ? (
+                  <Chip>Min Hours: {filters.minHours}</Chip>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Results */}
+      <div className="mx-auto max-w-6xl px-4 py-8">
+        <div className="grid grid-cols-1 gap-5">
           {jobs.length > 0 ? (
             jobs.map((job: any) => <JobPostCard key={job._id} job={job} />)
           ) : (
-            <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <p className="text-gray-700">No jobs found for the selected filters.</p>
+            <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center">
+              <div className="mx-auto mb-4 h-16 w-16 text-gray-300">
+                {/* simple inline illustration */}
+                <svg viewBox="0 0 24 24" fill="none" className="h-full w-full">
+                  <path
+                    d="M7 4h10a2 2 0 0 1 2 2v11l-4-2-4 2-4-2-4 2V6a2 2 0 0 1 2-2Z"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M9 8h6M9 12h4"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+              <p className="text-sm text-gray-700">
+                No jobs found for the selected filters.
+              </p>
             </div>
           )}
         </div>
 
         {/* Pagination vs Read-more */}
-        <div className="mt-8">
+        <div className="mt-10">
           {mode === "paged" ? (
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
               {currentPage > 1 ? (
-                <Link
-                  href={prevHref}
-                  className="px-6 py-3 text-sm text-white bg-gray-600 hover:bg-gray-700 rounded-lg shadow-md transition"
-                >
-                  Previous
+                <Link href={prevHref} className="w-full sm:w-auto">
+                  <Button
+                    variant="secondary"
+                    className="w-full rounded-xl border border-gray-200"
+                  >
+                    Previous
+                  </Button>
                 </Link>
               ) : (
-                <button className="px-6 py-3 text-sm text-gray-400 bg-gray-200 rounded-lg cursor-not-allowed" disabled>
+                <Button
+                  variant="secondary"
+                  className="w-full cursor-not-allowed rounded-xl border border-gray-200 text-gray-400 sm:w-auto"
+                  disabled
+                >
                   Previous
-                </button>
+                </Button>
               )}
 
-              <div className="text-sm text-gray-800 dark:text-white font-medium">
-                Page <span className="font-bold">{currentPage}</span> of <span className="font-bold">{totalPages}</span>
+              <div className="text-sm font-medium text-gray-800">
+                Page <span className="font-bold">{currentPage}</span> of{" "}
+                <span className="font-bold">{totalPages}</span>
               </div>
 
               {currentPage < totalPages ? (
-                <Link
-                  href={nextHref}
-                  className="px-6 py-3 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md transition"
-                >
-                  Next
+                <Link href={nextHref} className="w-full sm:w-auto">
+                  <Button className="w-full rounded-xl sm:w-auto">Next</Button>
                 </Link>
               ) : (
-                <button className="px-6 py-3 text-sm text-gray-400 bg-gray-200 rounded-lg cursor-not-allowed" disabled>
+                <Button
+                  className="w-full cursor-not-allowed rounded-xl bg-gray-200 text-gray-500 sm:w-auto"
+                  disabled
+                >
                   Next
-                </button>
+                </Button>
               )}
             </div>
           ) : (
             <div className="flex justify-center">
               {hasMore ? (
-                <Link
-                  href={nextHref}
-                  className="px-8 py-3 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md transition"
-                >
-                  Load more
+                <Link href={nextHref} className="w-full sm:w-auto">
+                  <Button className="w-full rounded-xl px-8 sm:w-auto">
+                    Load more
+                  </Button>
                 </Link>
               ) : (
-                <button className="px-8 py-3 text-sm text-gray-400 bg-gray-200 rounded-lg cursor-not-allowed" disabled>
+                <Button
+                  variant="secondary"
+                  className="cursor-not-allowed rounded-xl bg-gray-200 text-gray-500"
+                  disabled
+                >
                   No more jobs
-                </button>
+                </Button>
               )}
             </div>
           )}

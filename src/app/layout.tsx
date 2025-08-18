@@ -49,7 +49,7 @@ export default function RootLayout({
   //   initializeGTM(gtmId);
   // }
   return (
-    <html lang="en">
+    <html suppressHydrationWarning lang="en">
       <head>
         <link
           rel="stylesheet"
@@ -79,7 +79,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body suppressHydrationWarning className={`${inter.className} ${headingFont.variable}`}>
+      <body className={`${inter.className} ${headingFont.variable}`}>
         <noscript>
           <iframe
             src="https://sst.kinscare.org/ns.html?id=GTM-WJ9XKTWL"

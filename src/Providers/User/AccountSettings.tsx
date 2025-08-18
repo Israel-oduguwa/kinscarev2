@@ -170,11 +170,11 @@ function AccountSettings() {
                     icon: <CreditCard className="w-5 h-5" />,
                     label: "Billing & Plans",
                   },
-                  {
-                    id: "delete",
-                    icon: <Trash2 className="w-5 h-5" />,
-                    label: "Delete Account",
-                  },
+                  // {
+                  //   id: "delete",
+                  //   icon: <Trash2 className="w-5 h-5" />,
+                  //   label: "Delete Account",
+                  // },
                 ].map((item) => (
                   <button
                     key={item.id}
@@ -272,7 +272,7 @@ function AccountSettings() {
                         <div className="space-y-4">
                           <div>
                             <p className="text-xs text-gray-500">Full Name</p>
-                            <p className="font-medium">{userData.name}</p>
+                            <p className="font-medium">{userData.fname} {userData.lname}</p>
                           </div>
                           <div>
                             <p className="text-xs text-gray-500">

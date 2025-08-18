@@ -2,66 +2,18 @@
 import * as React from "react";
 import {
   AudioWaveform,
-  BadgeCheck,
-  Bell,
-  BookmarkCheck,
-  BookOpen,
-  Bot,
   BriefcaseBusiness,
   BriefcaseMedical,
   ChevronRight,
-  ChevronsUpDown,
-  Command,
-  CreditCard,
-  Folder,
-  Forward,
-  Frame,
   GalleryVerticalEnd,
-  House,
-  LibraryBig,
-  LogOut,
   Map,
-  MessageCircle,
-  MoreHorizontal,
   PieChart,
-  Plus,
   SearchCheck,
-  Settings2,
-  Sparkles,
-  Speech,
-  SquareTerminal,
-  Trash2,
+  BookOpen,
   User2Icon,
-  UserPen,
+  Speech,
 } from "lucide-react";
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -71,7 +23,6 @@ import {
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
@@ -81,9 +32,17 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+
 import Link from "next/link";
 import CaregiverNavbarRight from "@/Caregivers/CaregiverNavbarRight";
 import { usePathname } from "next/navigation";
+
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -91,13 +50,32 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "./navigation-menu";
-import { update } from "lodash";
 import Image from "next/image";
 
+/**
+ * Small helpers for stateful styles & a11y
+ */
+const itemClasses = (active: boolean) =>
+  [
+    "font-semibold antialiased py-5",
+    "[&>svg]:w-5 [&>svg]:h-5",
+    "transition-colors duration-150",
+    active
+      ? "bg-blue-100 text-blue-700 hover:bg-blue-200 hover:text-blue-800"
+      : "text-gray-700 hover:text-gray-900 hover:bg-gray-50",
+  ].join(" ");
+
+const subItemClasses = (active: boolean) =>
+  [
+    "py-3 pl-3 pr-2 rounded-md",
+    "transition-colors duration-150",
+    active
+      ? "bg-blue-50 text-blue-700 border-l-4 border-blue-600"
+      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900",
+  ].join(" ");
+
 export function AppSidebar({ children }: { children: React.ReactNode }) {
-  // const [activeTeam, setActiveTeam] = React.useState(data.teams[0]);
   const pathname = usePathname();
-  // console.log(pathname);
 
   const data = {
     user: {
@@ -106,27 +84,14 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
       avatar: "/avatars/shadcn.jpg",
     },
     teams: [
-      {
-        name: "Acme Inc",
-        logo: GalleryVerticalEnd,
-        plan: "Enterprise",
-      },
-      {
-        name: "Acme Corp.",
-        logo: AudioWaveform,
-        plan: "Startup",
-      },
-      {
-        name: "Evil Corp.",
-        logo: Command,
-        plan: "Free",
-      },
+      { name: "Acme Inc", logo: GalleryVerticalEnd, plan: "Enterprise" },
+      { name: "Acme Corp.", logo: AudioWaveform, plan: "Startup" },
+      { name: "Evil Corp.", logo: GalleryVerticalEnd, plan: "Free" },
     ],
-
     navMain: [
       {
         title: "Refer + Make $.",
-        url: "",
+        url: "/vitae/crowd-post", // base bucket
         icon: BriefcaseBusiness,
         isActive: false,
         items: [
@@ -137,83 +102,34 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
           {
             title: "Your referrals",
             url: "/vitae/referrals",
-          }
+          },
         ],
       },
-      // {
-      //   title: "Career Path",
-      //   url: "/vitae/home",
-      //   icon: LibraryBig,
-      //   isActive: true,
-      //   items: [
-      //     {
-      //       title: "Home",
-      //       url: "/vitae/career-plan",
-      //     },
-      //     // {
-      //     //   title: "Add Course Plan",
-      //     //   url: "/vitae/add-course-plan",
-      //     // },
-      //     // {
-      //     //   title: "Add Work Experience",
-      //     //   url: "/vitae/add-work-experience",
-      //     // },
-      //     // {
-      //     //   title: "Invite Friends",
-      //     //   url: "/vitae/refer-friends",
-      //     // },
-      //     // {
-      //     //   title: "Refer Employer",
-      //     //   url: "/vitae/referral",
-      //     // },
-      //   ],
-      // },
-
-      // {
-      //   title: "Conversations",
-      //   url: "/vitae/conversations",
-      //   icon: MessageCircle,
-      // },
-      // {
-      //   title: "Profile",
-      //   url: "/vitae/update",
-      //   isActive: true,
-      //   icon: UserPen,
-      //   items: [
-      //     {
-      //       title: "Update Resume",
-      //       url: "/vitae/update",
-      //     },
-      //   ],
-      // },
     ],
     projects: [
-      {
-        name: "Design Engineering",
-        url: "#",
-        icon: Frame,
-      },
-      {
-        name: "Sales & Marketing",
-        url: "#",
-        icon: PieChart,
-      },
-      {
-        name: "Travel",
-        url: "#",
-        icon: Map,
-      },
+      { name: "Design Engineering", url: "#", icon: PieChart },
+      { name: "Sales & Marketing", url: "#", icon: PieChart },
+      { name: "Travel", url: "#", icon: Map },
     ],
   };
-  const checkIsActive = (url: string): boolean => {
-    return pathname === url;
+
+  /** Robust active checks (top-level & nested) */
+  const isCurrent = (url: string) => pathname === url;
+  const startsWith = (url: string) =>
+    pathname === url || pathname.startsWith(`${url}/`);
+
+  const findJobsActive = isCurrent("/vitae/jobs/all");
+  const savedJobsActive = isCurrent("/vitae/favorites");
+  const appliedJobsActive = isCurrent("/vitae/applied-jobs");
+  const careerPlanActive = isCurrent("/vitae/career-plan");
+  const updateResumeActive = isCurrent("/vitae/update");
+  const crowdPostActive = startsWith("/vitae/crowd-post") || isCurrent("/vitae/referrals");
+
+  /** For collapsible: auto open when a child is active */
+  const isSectionOpen = (sectionUrl: string, items?: { url: string }[]) => {
+    if (startsWith(sectionUrl)) return true;
+    return (items || []).some((i) => startsWith(i.url));
   };
-  const findJobsActive = checkIsActive("/vitae/jobs/all");
-  const savedJobsActive = checkIsActive("/vitae/favorites");
-  const appliedJobsActive = checkIsActive("vitae/applied-jobs");
-  const careerPlanActive = checkIsActive("/vitae/career-plan");
-  const updateResumeActive = checkIsActive("/vitae/update");
-  const crowdPostActive = checkIsActive("vitae/crowd-post/update/new");
 
   return (
     <SidebarProvider>
@@ -221,118 +137,87 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <Link className="flex items-center mr-2 mt-2" href="/">
+              <Link className="flex items-center mr-2 mt-2" href="/" aria-label="Go to Kinscare Home">
                 <SidebarMenuButton
                   size="lg"
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
-                  <div className="flex  items-center justify-center ">
+                  <div className="flex items-center justify-center">
                     <Image
                       width={40}
                       height={40}
                       className="h-6 pr-1 sm:h-8"
                       src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
-                      alt="logo"
+                      alt="Kinscare logo"
                     />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">Kinscare</span>
                   </div>
-                  {/* <ChevronsUpDown className="ml-auto" /> */}
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
+
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupLabel>Your Dashboard</SidebarGroupLabel>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-1">
+              {/* Find Jobs */}
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className={`
-                    font-semibold antialiased py-5
-                    [&>svg]:w-6 [&>svg]:h-4
-                    ${
-                      findJobsActive
-                        ? "bg-blue-100 text-blue-600"
-                        : " text-gray-700"
-                    } 
-                    ${
-                      findJobsActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    ${
-                      findJobsActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    transition-all duration-200
-                  `}
-                  tooltip="Dashboard"
+                  asChild
+                  className={itemClasses(findJobsActive)}
+                  aria-current={findJobsActive ? "page" : undefined}
+                  tooltip="Find Jobs"
                 >
-                  <SearchCheck />
                   <Link href="/vitae/jobs/all">
-                    <span className="text-md">Find Jobs</span>
+                    <SearchCheck aria-hidden="true" />
+                    <span className="text-sm">Find Jobs</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
-
+              {/* Refer + Make $. (collapsible) */}
               {data.navMain.map((item, idx) => {
-                const isActive =
-                  pathname === item.url || pathname?.startsWith(`${item.url}/`);
-                // console.log(isActive);
-                // console.log(item.url, isActive);
+                const open = isSectionOpen(item.url, item.items);
                 return (
                   <div key={idx}>
                     {item.items ? (
-                      <Collapsible
-                        
-                        asChild
-                        defaultOpen={item.isActive}
-                        className="group/collapsible"
-                      >
+                      <Collapsible asChild defaultOpen={open} className="group/collapsible">
                         <SidebarMenuItem>
                           <CollapsibleTrigger asChild>
                             <SidebarMenuButton
-                              className={`
-                                font-semibold antialiased py-6 my-0.5 
-                                [&>svg]:w-6 [&>svg]:h-4
-                                ${
-                                  crowdPostActive
-                                    ? "bg-blue-100 text-blue-600"
-                                    : " text-gray-700"
-                                } 
-                                ${
-                                  crowdPostActive
-                                    ? "hover:bg-blue-200 hover:text-blue-700"
-                                    : " hover:text-gray-800"
-                                }
-                                transition-all duration-200
-                              `}
+                              className={itemClasses(crowdPostActive)}
+                              aria-current={crowdPostActive ? "true" : undefined}
                               tooltip={item.title}
                             >
-                              {item.icon && <item.icon />}
-                              <span>{item.title}</span>
-                              <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                              {item.icon && <item.icon aria-hidden="true" />}
+                              <span className="text-sm">{item.title}</span>
+                              <ChevronRight
+                                className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+                                aria-hidden="true"
+                              />
                             </SidebarMenuButton>
                           </CollapsibleTrigger>
                           <CollapsibleContent>
-                            <SidebarMenuSub>
-                              {item.items?.map((subItem, idx) => (
-                                <SidebarMenuSubItem key={idx}>
-                                  <SidebarMenuSubButton
-                                    className="py-4"
-                                    asChild
-                                  >
-                                    <Link href={subItem.url}>
-                                      <span className="font-medium">{subItem.title}</span>
-                                    </Link>
-                                  </SidebarMenuSubButton>
-                                </SidebarMenuSubItem>
-                              ))}
+                            <SidebarMenuSub className="space-y-1">
+                              {item.items?.map((sub, sidx) => {
+                                const active = isCurrent(sub.url);
+                                return (
+                                  <SidebarMenuSubItem key={sidx}>
+                                    <SidebarMenuSubButton asChild className={subItemClasses(active)}>
+                                      <Link
+                                        href={sub.url}
+                                        aria-current={active ? "page" : undefined}
+                                      >
+                                        <span className="font-medium text-sm">{sub.title}</span>
+                                      </Link>
+                                    </SidebarMenuSubButton>
+                                  </SidebarMenuSubItem>
+                                );
+                              })}
                             </SidebarMenuSub>
                           </CollapsibleContent>
                         </SidebarMenuItem>
@@ -340,13 +225,14 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                     ) : (
                       <SidebarMenuItem key={item.title}>
                         <SidebarMenuButton
-                          isActive={crowdPostActive}
-                          className="py-6 my-0.5 [&>svg]:size-5"
+                          asChild
+                          className={itemClasses(startsWith(item.url))}
+                          aria-current={startsWith(item.url) ? "true" : undefined}
                           tooltip={item.title}
                         >
-                          {item.icon && <item.icon />}
                           <Link href={item.url}>
-                            <span>{item.title}</span>
+                            {item.icon && <item.icon aria-hidden="true" />}
+                            <span className="text-sm">{item.title}</span>
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -355,193 +241,126 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                 );
               })}
 
-
-
+              {/* Saved Jobs */}
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className={`
-                    font-semibold antialiased py-5
-                    [&>svg]:w-6 [&>svg]:h-4
-                    ${
-                      savedJobsActive
-                        ? "bg-blue-100 text-blue-600"
-                        : " text-gray-700"
-                    } 
-                    ${
-                      savedJobsActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    ${
-                      savedJobsActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    transition-all duration-200
-                  `}
-                  tooltip="Dashboard"
+                  asChild
+                  className={itemClasses(savedJobsActive)}
+                  aria-current={savedJobsActive ? "page" : undefined}
+                  tooltip="Saved Jobs"
                 >
-                  <BookmarkCheck />
                   <Link href="/vitae/favorites">
-                    <span className="text-md">Saved Jobs</span>
+                    <PieChart aria-hidden="true" />
+                    <span className="text-sm">Saved Jobs</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
+              {/* Applied Jobs */}
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className={`
-                    font-semibold antialiased py-5
-                    [&>svg]:w-6 [&>svg]:h-4
-                    ${
-                      appliedJobsActive
-                        ? "bg-blue-100 text-blue-600"
-                        : " text-gray-700"
-                    } 
-                    ${
-                      appliedJobsActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    ${
-                      appliedJobsActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    transition-all duration-200
-                  `}
-                  tooltip="Dashboard"
+                  asChild
+                  className={itemClasses(appliedJobsActive)}
+                  aria-current={appliedJobsActive ? "page" : undefined}
+                  tooltip="Applied Jobs"
                 >
-                  <BriefcaseMedical />
                   <Link href="/vitae/applied-jobs">
-                    <span className="text-md">Applied Job</span>
+                    <BriefcaseMedical aria-hidden="true" />
+                    <span className="text-sm text">Applied Jobs</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
+              {/* Career Plan */}
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className={`
-                    font-semibold antialiased py-5
-                    [&>svg]:w-6 [&>svg]:h-4
-                    ${
-                      careerPlanActive
-                        ? "bg-blue-100 text-blue-600"
-                        : " text-gray-700"
-                    } 
-                    ${
-                      careerPlanActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    ${
-                      careerPlanActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    transition-all duration-200
-                  `}
-                  tooltip="Dashboard"
+                  asChild
+                  className={itemClasses(careerPlanActive)}
+                  aria-current={careerPlanActive ? "page" : undefined}
+                  tooltip="Career Plan"
                 >
-                  <BookOpen />
                   <Link href="/vitae/career-plan">
-                    <span className="text-md">Career Plan</span>
+                    <BookOpen aria-hidden="true" />
+                    <span className="text-sm">Career Plan</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
+              {/* Update Resume */}
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className={`
-                    font-semibold antialiased py-5
-                    [&>svg]:w-6 [&>svg]:h-4
-                    ${
-                      updateResumeActive
-                        ? "bg-blue-100 text-blue-600"
-                        : " text-gray-700"
-                    } 
-                    ${
-                      updateResumeActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    ${
-                      updateResumeActive
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    transition-all duration-200
-                  `}
-                  tooltip="Dashboard"
+                  asChild
+                  className={itemClasses(updateResumeActive)}
+                  aria-current={updateResumeActive ? "page" : undefined}
+                  tooltip="Update resume"
                 >
-                  <User2Icon />
                   <Link href="/vitae/update">
-                    <span className="text-md">Update resume</span>
+                    <User2Icon aria-hidden="true" />
+                    <span className="text-sm">Update resume</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
+              {/* Community */}
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className={`
-                    font-semibold antialiased py-5
-                    [&>svg]:w-6 [&>svg]:h-4
-                    ${false ? "bg-blue-100 text-blue-600" : " text-gray-700"} 
-                    ${
-                      false
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    ${
-                      false
-                        ? "hover:bg-blue-200 hover:text-blue-700"
-                        : " hover:text-gray-800"
-                    }
-                    transition-all duration-200
-                  `}
-                  tooltip="Dashboard"
+                  asChild
+                  className={itemClasses(false)}
+                  tooltip="Community"
                 >
-                  <Speech />
                   <Link href="/community">
-                    <span className="text-md">Community</span>
+                    <Speech aria-hidden="true" />
+                    <span className="text-sm">Community</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>
+
         <SidebarRail />
       </Sidebar>
+
       <SidebarInset>
-        <div className="flex items-center  h-16 shrink-0 my-1 px-2 gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 mx-auto w-full xl:max-w-screen-xl">
-          <SidebarTrigger className="-ml-1" />
-          {/* Navigation Links */}
+        <div className="flex items-center h-16 shrink-0 my-1 px-2 gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 mx-auto w-full xl:max-w-screen-xl">
+          <SidebarTrigger className="-ml-1" aria-label="Toggle sidebar" />
+
+          {/* Top nav: use asChild to avoid nested anchors; add active state */}
           <NavigationMenu className="hidden md:block">
             <NavigationMenuList>
               <NavigationMenuItem>
-                
-                  <NavigationMenuLink  href="/vitae/jobs/all" className={navigationMenuTriggerStyle()}>
+                <Link href="/vitae/jobs/all" legacyBehavior passHref>
+                  <NavigationMenuLink
+                    className={navigationMenuTriggerStyle()}
+                    aria-current={findJobsActive ? "page" : undefined}
+                  >
                     Find Jobs
                   </NavigationMenuLink>
-                
+                </Link>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
+
           <NavigationMenu className="hidden md:block">
             <NavigationMenuList>
               <NavigationMenuItem>
-                
-                  <NavigationMenuLink href="/vitae/career-plan" className={navigationMenuTriggerStyle()}>
+                <Link href="/vitae/career-plan" legacyBehavior passHref>
+                  <NavigationMenuLink
+                    className={navigationMenuTriggerStyle()}
+                    aria-current={careerPlanActive ? "page" : undefined}
+                  >
                     Career Plan
                   </NavigationMenuLink>
-                
+                </Link>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
-          
+
           <div className="flex items-center ml-auto">
             <CaregiverNavbarRight />
           </div>
         </div>
+
         <main>{children}</main>
       </SidebarInset>
     </SidebarProvider>

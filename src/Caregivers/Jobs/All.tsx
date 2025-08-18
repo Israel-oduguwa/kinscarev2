@@ -10,90 +10,103 @@ import JobSearchHeader from "./JobSearchHeader";
 import { JobCardSkeleton } from "./JobCardSkelenton";
 import ApplyNow from "./JobsUI/ApplyNow";
 import TagManager from "react-gtm-module";
+import JobListingLogo from "@/components/JobListingLogo";
+import { BadgeCheck, Clock, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-const JobPostCard: React.FC<{ job: Job }> = ({ job }) => {
+const Chip: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-700">
+    {children}
+  </span>
+);
+
+const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
   // console.log(job);
+  const locationLine = [
+    job?.contacts?.address ?? "",
+    job?.contacts?.city ?? "",
+    job?.contacts?.zipcode ?? "",
+  ]
+    .filter(Boolean)
+    .join(", ");
   return (
-    <div className="bg-white shadow-md border border-gray-100 rounded-lg p-6 my-4 w-full mx-auto">
-      <div className="flex flex-col lg:flex-row items-center lg:items-start lg:justify-between gap-6">
-        {/* Job Content */}
-        <Link href={`/vitae/jobs/${job._id}`} className="flex-1">
-          <div>
-            {/* Job Header */}
-            <div className="flex items-center gap-4 mb-4">
-              {job.profileImage && (
-                <img
-                  className="h-12 w-12 rounded-full object-cover"
-                  src={
-                    job.profileImage ||
-                    "https://lh3.googleusercontent.com/-g8IwNe70-kE/AAAAAAAAAAI/AAAAAAAAAAA/ALKGfkl1tpVAKXAezzCNWmKH5JWvlgr_xw/photo.jpg?sz=46"
-                  }
-                  alt="company logo"
-                />
-              )}
-              <div>
-                <h2 className="font-bold tracking-tight text-gray-800">
-                  {job.title}
+    <>
+      <div
+        className="group relative w-full mb-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:shadow-md focus-within:shadow-md"
+        role="article"
+      >
+        <div className="absolute inset-0 -z-10 rounded-2xl opacity-0 ring-2 ring-blue-500/0 transition group-hover:opacity-100 group-hover:ring-blue-500/10" />
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <Link
+            href={`/jobs/${job._id}`}
+            className="flex flex-1 items-start gap-2 outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-xl"
+          >
+            <JobListingLogo
+              src={job?.profileImage || undefined} // pass ONLY the real URL; no random fallback
+              alt={job?.title || job?.employer_name || "Job"}
+              seed={job?.employer_name || job?.title || job?._id} // deterministic gradient
+              size={40}
+              rounded="full" // use "full" for a perfect circle like Vercel
+            />
+
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-lg font-semibold tracking-tight text-gray-900">
+                  {job?.title}
                 </h2>
-                <p className="text-sm text-gray-600">
-                  {job.contacts.address}, {job.contacts.city},{" "}
-                  {job.contacts.zipcode}
-                </p>
+                {Array.isArray(job?.licenses) && job.licenses.length > 0 && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-blue-100">
+                    <BadgeCheck className="h-3.5 w-3.5" />
+                    {job.licenses[0]}
+                  </span>
+                )}
+              </div>
+
+              <div className="mt-1 flex items-center gap-2 text-sm text-gray-600">
+                <MapPin className="h-4 w-4 shrink-0" />
+                <span className="truncate">{locationLine || "—"}</span>
+              </div>
+
+              {job.certifications && job.certifications.length > 0 && (
+                <div className="mt-3 text-sm text-gray-700 line-clamp-2">
+                  <Interweave content={job?.certifications ?? ""} />
+                </div>
+              )}
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {Array.isArray(job?.licenses) &&
+                  job.licenses.map((license: string, i: number) => (
+                    <Chip key={`lic-${i}`}>{license}</Chip>
+                  ))}
+                {Array.isArray(job?.schedule) &&
+                  job.schedule.map((sch: string, i: number) => (
+                    <Chip key={`sch-${i}`}>
+                      <Clock className="h-3.5 w-3.5" />
+                      {sch}
+                    </Chip>
+                  ))}
+                <Chip>
+                  Min Hours:{" "}
+                  <span className="ml-1 font-semibold">
+                    {job?.minHours ?? "—"} / wk
+                  </span>
+                </Chip>
               </div>
             </div>
+          </Link>
 
-            {/* Certifications */}
-            {/* <div className="mb-4">
-              <p className="text-sm text-gray-600 line-clamp-2">
-                <Interweave content={job.certifications} />
-              </p>
-            </div> */}
-
-            {/* Licenses and Schedule */}
-            <div className="flex flex-wrap gap-2 mb-4">
-              {job.licenses &&
-                job?.licenses.map((license, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg"
-                  >
-                    {license}
-                  </span>
-                ))}
-              {job.schedule &&
-                job?.schedule.map((sch, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg"
-                  >
-                    {sch}
-                  </span>
-                ))}
-            </div>
-
-            {/* Min Hours */}
-            <div>
-              <p className="text-sm text-gray-500">
-                Min Hours:{" "}
-                <span className="text-gray-700 font-medium">
-                  {job.minHours} hours/week
-                </span>
-              </p>
-            </div>
+          {/* Apply Button */}
+          <div className="flex-shrink-0 w-full lg:w-auto ">
+            <ApplyNow
+              providerName={job.provider}
+              job={job}
+              jobID={job._id}
+              className="w-full lg:w-auto px-6 py-3 bg-blue-600 text-white text-sm rounded-lg shadow-md hover:bg-blue-700 transition-all"
+            />
           </div>
-        </Link>
-
-        {/* Apply Button */}
-        <div className="flex-shrink-0 w-full lg:w-auto ">
-          <ApplyNow
-            providerName={job.provider}
-            job={job}
-            jobID={job._id}
-            className="w-full lg:w-auto px-6 py-3 bg-blue-600 text-white text-sm rounded-lg shadow-md hover:bg-blue-700 transition-all"
-          />
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -262,13 +275,13 @@ function All() {
             jobs.map((job: any) => <JobPostCard key={job._id} job={job} />)}
           <div className="flex justify-center mt-4">
             {!loading && page < totalPages && (
-              <button
+              <Button
                 onClick={() => setPage((prevPage) => prevPage + 1)}
-                className="bg-blue-500 text-white rounded px-4 py-2"
+                
                 disabled={loading}
               >
                 Load More
-              </button>
+              </Button>
             )}
             {page >= totalPages && !loading && <p>No more jobs available</p>}
           </div>
