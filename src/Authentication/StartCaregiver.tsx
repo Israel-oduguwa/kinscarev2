@@ -395,17 +395,17 @@ function StartCaregiver() {
               </p>
               <div className="mt-8 pt-6 border-t border-gray-100">
                 <ul className="space-y-3">
-                  <li className="flex items-start">
+                  {/* <li className="flex items-start">
                     <BadgeCheck className="h-5 w-5 text-emerald-500 mt-0.5 mr-2 flex-shrink-0" />
                     <span className="text-gray-600">Personalized job recommendations</span>
+                  </li> */}
+                  <li className="flex items-start">
+                    <BadgeCheck className="h-5 w-5 text-emerald-500 mt-0.5 mr-2 flex-shrink-0" />
+                    <span className="text-gray-600">Get offers from top employers in hospitals, assisted living homes, and private residences.</span>
                   </li>
                   <li className="flex items-start">
                     <BadgeCheck className="h-5 w-5 text-emerald-500 mt-0.5 mr-2 flex-shrink-0" />
-                    <span className="text-gray-600">Direct employer invitations</span>
-                  </li>
-                  <li className="flex items-start">
-                    <BadgeCheck className="h-5 w-5 text-emerald-500 mt-0.5 mr-2 flex-shrink-0" />
-                    <span className="text-gray-600">Priority access to new listings</span>
+                    <span className="text-gray-600">Access to new listings in your area</span>
                   </li>
                 </ul>
               </div>
@@ -424,16 +424,16 @@ function StartCaregiver() {
                 <ul className="space-y-3">
                   <li className="flex items-start">
                     <BadgeCheck className="h-5 w-5 text-emerald-500 mt-0.5 mr-2 flex-shrink-0" />
-                    <span className="text-gray-600">Secure in-app messaging</span>
+                    <span className="text-gray-600">Easily communicate with hiring managers and caregivers who match your profile.</span>
                   </li>
                   <li className="flex items-start">
                     <BadgeCheck className="h-5 w-5 text-emerald-500 mt-0.5 mr-2 flex-shrink-0" />
                     <span className="text-gray-600">Schedule interviews directly</span>
                   </li>
-                  <li className="flex items-start">
+                  {/* <li className="flex items-start">
                     <BadgeCheck className="h-5 w-5 text-emerald-500 mt-0.5 mr-2 flex-shrink-0" />
                     <span className="text-gray-600">Real-time notifications</span>
-                  </li>
+                  </li> */}
                 </ul>
               </div>
             </div>
@@ -451,12 +451,12 @@ function StartCaregiver() {
                 <ul className="space-y-3">
                   <li className="flex items-start">
                     <BadgeCheck className="h-5 w-5 text-emerald-500 mt-0.5 mr-2 flex-shrink-0" />
-                    <span className="text-gray-600">Map-based job browsing</span>
+                    <span className="text-gray-600">Browse thousands of jobs in different industries and apply instantly.</span>
                   </li>
-                  <li className="flex items-start">
+                  {/* <li className="flex items-start">
                     <BadgeCheck className="h-5 w-5 text-emerald-500 mt-0.5 mr-2 flex-shrink-0" />
                     <span className="text-gray-600">Commute time calculator</span>
-                  </li>
+                  </li> */}
                   <li className="flex items-start">
                     <BadgeCheck className="h-5 w-5 text-emerald-500 mt-0.5 mr-2 flex-shrink-0" />
                     <span className="text-gray-600">One-click applications</span>
@@ -466,7 +466,7 @@ function StartCaregiver() {
             </div>
           </div>
 
-          <div className="mt-16 bg-gradient-to-r from-indigo-600 to-purple-700 rounded-2xl p-0.5 max-w-4xl mx-auto">
+          <div className="mt-16 bg-gradient-to-r from-indigo-600 to-purple-700 rounded-2xl p-0.5 max-w-6xl mx-auto">
             <div className="bg-white rounded-xl p-8 md:p-10">
               <div className="flex flex-col md:flex-row items-center">
                 <div className="md:w-2/3 mb-8 md:mb-0">
