@@ -578,10 +578,7 @@ function StartCaregiver() {
                 </span>
               </summary>
               <p className="mt-3 text-gray-600">
-                Not all jobs require a license. Some employers provide training
-                and support for licensing based on the role and state rules.
-                Positions like companions or home health aides may not require
-                certification, while CNAs typically need state certification.
+              Not all jobs require a license. Some employers offer in-house training and support for licensing.
               </p>
             </details>
 
@@ -595,10 +592,7 @@ function StartCaregiver() {
                 </span>
               </summary>
               <p className="mt-3 text-gray-600">
-                Yes. CNA roles in hospitals or nursing homes typically satisfy
-                clinical experience requirements for nursing programs. We recommend
-                verifying with your specific educational institution, as
-                requirements may vary.
+                Yes, working as a CNA in hospitals or nursing homes can fulfill clinical work experience requirements.
               </p>
             </details>
 
