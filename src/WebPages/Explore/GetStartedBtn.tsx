@@ -25,6 +25,7 @@ import * as yup from "yup";
 import Link from "next/link";
 import TagManager from "react-gtm-module";
 import { useCioId, updateCustomerioUser } from "@/lib/customerio"; // ← NEW
+import { OrSeparator } from "@/components/OrSeperator";
 
 // Validation schema for the email signup form
 const schema = yup.object().shape({
@@ -432,7 +433,7 @@ function GetStartedBtn({ children }: any) {
                   <Loader2Icon size={30} className="animate-spin" />
                 </div>
               )}
-
+              <OrSeparator />
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="flex gap-4">
                   <div className="w-1/2">

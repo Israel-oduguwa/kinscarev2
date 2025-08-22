@@ -26,6 +26,7 @@ import ApplyNow from "@/Caregivers/Jobs/JobsUI/ApplyNow";
 import TagManager from "react-gtm-module";
 import { CustomerSignupParams, sendCustomerSignupEmail } from "@/lib/Email";
 import { sendSignupDripSMS } from "@/Utils/sendSmsSignup";
+import { OrSeparator } from "@/components/OrSeperator";
 
 interface OauthApplyProps {
   jobID?: string;
@@ -416,7 +417,7 @@ const OauthApply: React.FC<OauthApplyProps> = ({
                       />
                     </div>
                   )}
-
+          <OrSeparator />
                   {/* Email signup form */}
                   <form
                     onSubmit={handleSubmit(onSubmit)}
