@@ -278,7 +278,7 @@ export default async function Caregivers({ availability, page, licenses }: Careg
     });
 
     const res = await fetch(
-      `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/find-caregivers/filter?${params.toString()}`,
+      `https://kinscare-backend.onrender.com/api/v1/providers/find-caregivers/filter?${params.toString()}`,
       { cache: "no-cache" }
     );
 
