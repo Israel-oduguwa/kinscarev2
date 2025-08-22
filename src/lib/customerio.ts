@@ -111,7 +111,7 @@ export function usePrefill() {
 
 /**
  * Call your API to sync the Customer.io person to your internal user.
- * - Endpoint: https://kinscare-backend.onrender.com/api/v1/auth/update_customerio_user
+ * - Endpoint: https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/update_customerio_user
  * - Payload: { personId, userID }
  * - Safe to call multiple times; this function dedupes repeat calls per userID+personId.
  */
@@ -128,7 +128,7 @@ export async function updateCustomerioUser(
       return { ok: true };
     }
 
-    await axios.post("https://kinscare-backend.onrender.com/api/v1/auth/update_customerio_user", {
+    await axios.post("https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/update_customerio_user", {
       personId,
       userID,
     });

@@ -56,7 +56,7 @@ interface SignupFormInputs {
   terms: boolean;
 }
 
-const TRACK_BASE = "https://kinscare-backend.onrender.com";
+const TRACK_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com";
 
 const identifyUserCustomerIO = async (args: {
   userID: string;
@@ -163,7 +163,7 @@ const OauthApply: React.FC<OauthApplyProps> = ({
       });
 
       await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/auth/create_user",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/create_user",
         payload
       );
       setAuthenticated(true);

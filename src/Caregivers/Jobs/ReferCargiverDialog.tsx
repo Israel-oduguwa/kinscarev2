@@ -66,7 +66,7 @@ export function ReferCaregiverDialog({
         title,
       };
       const res = await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/email/referred-customer-signup",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/email/referred-customer-signup",
         payload
       );
       if (res.status === 200 || res.status === 201) {

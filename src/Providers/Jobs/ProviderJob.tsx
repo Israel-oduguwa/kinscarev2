@@ -16,7 +16,7 @@ interface JobProps {
 
 async function CaregiverJob({ jobID }: JobProps) {
   const data = await fetch(
-    `https://kinscare-backend.onrender.com/api/v1/caregivers/job/${jobID}`,
+    `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/job/${jobID}`,
     { cache: "no-cache" }
   );
   const response = await data.json();

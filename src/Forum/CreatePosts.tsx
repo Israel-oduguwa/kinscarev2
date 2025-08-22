@@ -28,7 +28,7 @@ function CreatePosts({ threadId }: any) {
       };
       console.log(payload);
       const { data } = await axios.post(
-        `https://kinscare-backend.onrender.com/api/v1/forum/threads/posts/reply`,
+        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/threads/posts/reply`,
         payload
       );
       //   console.log(data)

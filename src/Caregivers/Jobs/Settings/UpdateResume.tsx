@@ -227,7 +227,7 @@ const CaregiverProfileForm = () => {
       const formData = new FormData();
       formData.append("file", file[0]);
       const { data } = await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/upload-file",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/upload-file",
         formData
       );
       const url = data?.url ?? "";
@@ -252,7 +252,7 @@ const CaregiverProfileForm = () => {
       const formData = new FormData();
       formData.append("file", file[0]);
       const { data } = await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/upload-file",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/upload-file",
         formData
       );
       const url = data?.url ?? "";
@@ -279,7 +279,7 @@ const CaregiverProfileForm = () => {
 
       const payload = { fileUrl: url };
       const { data } = await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/delete-file",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/delete-file",
         payload
       );
       if (data?.success) {
@@ -332,7 +332,7 @@ const CaregiverProfileForm = () => {
       }
 
       await axios.post(
-        `https://kinscare-backend.onrender.com/api/v1/caregivers/resume/update/${userData?.userID}`,
+        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/resume/update/${userData?.userID}`,
         payload,
         {
           headers: { Authorization: `Bearer ${accessToken}` },

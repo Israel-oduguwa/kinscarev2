@@ -51,7 +51,7 @@ export default function WelcomeDialog() {
         },
       };
       const readWelcome = await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/crud-operation",
         payload,
         {
           headers: { "Content-Type": "application/json" },

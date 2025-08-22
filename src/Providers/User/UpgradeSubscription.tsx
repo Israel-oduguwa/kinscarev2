@@ -74,7 +74,7 @@ const UpgradeSubscription: React.FC<UpgradeSubscriptionProps> = ({
   const fetchSubscriptionData = useCallback(async () => {
     try {
       const response = await axios.get(
-        `https://kinscare-backend.onrender.com/api/v1/providers/subscription/${customData.customer_id}`
+        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/subscription/${customData.customer_id}`
       );
       setSubscriptionData(response.data.subscription);
 
@@ -96,7 +96,7 @@ const UpgradeSubscription: React.FC<UpgradeSubscriptionProps> = ({
     try {
       setFetchingSavedCard(true);
       const response = await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/providers/payment-methods",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/payment-methods",
         {
           customerId: customData.customer_id,
         }
@@ -134,7 +134,7 @@ const UpgradeSubscription: React.FC<UpgradeSubscriptionProps> = ({
     setLoading(true);
     try {
       await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/providers/subscription/upgrade",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/subscription/upgrade",
         {
           subscriptionId: subscriptionData.id,
           priceId: selectedPlan.stripePriceId,
@@ -156,7 +156,7 @@ const UpgradeSubscription: React.FC<UpgradeSubscriptionProps> = ({
       };
 
       await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/crud-operation",
         payload,
         { headers: { "Content-Type": "application/json" } }
       );
@@ -186,7 +186,7 @@ const UpgradeSubscription: React.FC<UpgradeSubscriptionProps> = ({
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/providers/create-setup-intent",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/create-setup-intent",
         {
           customerId: customData?.customer_id,
         }
@@ -423,7 +423,7 @@ const PaymentWithCard = ({
 
         // Send the paymentMethodId to the backend to upgrade the subscription
         const send = await axios.post(
-          "https://kinscare-backend.onrender.com/api/v1/providers/subscription/upgrade",
+          "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/subscription/upgrade",
           {
             subscriptionId: subscriptionData.id,
             priceId: selectedPlan.stripePriceId,
@@ -443,7 +443,7 @@ const PaymentWithCard = ({
         };
 
         await axios.post(
-          "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
+          "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/crud-operation",
           payload,
           { headers: { "Content-Type": "application/json" } }
         );

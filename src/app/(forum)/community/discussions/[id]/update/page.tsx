@@ -46,7 +46,7 @@ const Page = (props: { params: Promise<{ id: string }> }) => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `https://kinscare-backend.onrender.com/api/v1/forum/threads/${id}`
+          `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/threads/${id}`
         );
         const { thread }: any = response.data;
         // console.log(thread);
@@ -76,7 +76,7 @@ const Page = (props: { params: Promise<{ id: string }> }) => {
       };
       // console.log("jo");
       const { data } = await axios.put(
-        `https://kinscare-backend.onrender.com/api/v1/forum/threads/${id}`,
+        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/threads/${id}`,
         payload
       );
       return data as string;

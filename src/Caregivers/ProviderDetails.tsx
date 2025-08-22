@@ -27,7 +27,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 
 // --- Config
-const API_BASE = "https://kinscare-backend.onrender.com/api/v1";
+const API_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1";
 const PAGE_SIZE = 12;
 
 // --- Types

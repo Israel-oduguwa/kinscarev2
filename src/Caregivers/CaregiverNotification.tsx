@@ -28,7 +28,7 @@ function CaregiverNotification() {
     setLoading(true);
     try {
       const { data } = await axios.get(
-        `https://kinscare-backend.onrender.com/api/v1/notifications/fetch`,
+        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/notifications/fetch`,
         {
           params: { userId: userData.userID }, // Pass the user ID in params
         }
@@ -55,7 +55,7 @@ function CaregiverNotification() {
     try {
       console.log("jos");
       await axios.post(
-        `https://kinscare-backend.onrender.com/api/v1/notifications/mark-as-read`,
+        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/notifications/mark-as-read`,
         { notificationId }
       );
       setNotifications((prev) =>

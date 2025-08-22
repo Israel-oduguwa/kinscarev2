@@ -97,7 +97,7 @@ function VerifyAccount({ openModal, setOpenModal }: { openModal: boolean, setOpe
       const formData = new FormData();
       formData.append("file", file[0]);
       const { data } = await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/upload-file",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/upload-file",
         formData
       );
       if (data.url) {
@@ -125,7 +125,7 @@ function VerifyAccount({ openModal, setOpenModal }: { openModal: boolean, setOpe
       const formData = new FormData();
       formData.append("file", file[0]);
       const { data } = await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/upload-file",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/upload-file",
         formData
       );
       if (data.url) {
@@ -154,7 +154,7 @@ function VerifyAccount({ openModal, setOpenModal }: { openModal: boolean, setOpe
         if (!governmentID) return;
         const payload = { fileUrl: governmentID };
         const { data } = await axios.post(
-          "https://kinscare-backend.onrender.com/api/v1/delete-file",
+          "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/delete-file",
           payload
         );
         if (data.success) {
@@ -165,7 +165,7 @@ function VerifyAccount({ openModal, setOpenModal }: { openModal: boolean, setOpe
         if (!attestationPreview) return;
         const payload = { fileUrl: attestationPreview };
         const { data } = await axios.post(
-          "https://kinscare-backend.onrender.com/api/v1/delete-file",
+          "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/delete-file",
           payload
         );
         if (data.success) {
@@ -188,7 +188,7 @@ function VerifyAccount({ openModal, setOpenModal }: { openModal: boolean, setOpe
   const getSecrete = async () => {
     try {
       const response = await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/providers/create-setup-intent",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/create-setup-intent",
         {
           customerId: user?.customData?.customer_id,
         }
@@ -279,7 +279,7 @@ function VerifyAccount({ openModal, setOpenModal }: { openModal: boolean, setOpe
           },
         };
         await axios.post(
-          "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
+          "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/crud-operation",
           payload,
           { headers: { "Content-Type": "application/json" } }
         );

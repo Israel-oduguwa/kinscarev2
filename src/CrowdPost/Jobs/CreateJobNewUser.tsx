@@ -18,7 +18,7 @@ import MongoContext from "@/app/MongoContext";
 import SignupDialog from "@/Authentication/SignupDialog";
 import { WhatsappIcon, WhatsappShareButton } from "next-share";
 
-const CROWDPOST_URL = "https://kinscare-backend.onrender.com/api/v1/providers/crowd-post";
+const CROWDPOST_URL = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/crowd-post";
 
 const groupLicenses = [
   { label: "CNA", value: "CNA or NAC" },
@@ -196,7 +196,7 @@ const CreateJobNewUser: React.FC<CrowdPostProps> = ({
           };
           // console.log("sening sms payload", smsPayload)
           const send = await axios.post(
-            "https://kinscare-backend.onrender.com/api/v1/twilio/send-referrred-provider-sms",
+            "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio/send-referrred-provider-sms",
             smsPayload
           );
           // console.log(send)

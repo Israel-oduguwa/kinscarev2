@@ -27,7 +27,7 @@ interface JobProps {
 
 export default async function CrowdPostJob({ jobID, isProvider }: JobProps) {
   const res = await fetch(
-    `https://kinscare-backend.onrender.com/api/v1/providers/crowd-post/${jobID}`,
+    `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/crowd-post/${jobID}`,
     { cache: "no-cache" }
   );
   const { job, similarJobs } = await res.json();

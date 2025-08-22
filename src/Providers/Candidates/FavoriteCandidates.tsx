@@ -184,7 +184,7 @@ function FavoriteCandidates() {
       setError(null);
       try {
         const response = await axios.get(
-          `https://kinscare-backend.onrender.com/api/v1/providers/favorite-caregivers/${user.customData.userID}`
+          `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/favorite-caregivers/${user.customData.userID}`
         );
         if (response.status === 200) {
           setCandidates(response.data.data);

@@ -51,7 +51,7 @@ interface CrowdPost {
   applicantCount: number;
 }
 
-const API_URL = "https://kinscare-backend.onrender.com/api/v1/caregivers/referrer-rewards";
+const API_URL = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/referrer-rewards";
 
 export const ReferralTracking: React.FC = () => {
   const { userData }: any = useContext(MongoContext);

@@ -17,7 +17,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { trackEvent } from "@/lib/mixpanelUtils";
 
 // Hard-coded API URL for posting jobs (to be moved to environment variables for production)
-const CROWDPOST_URL = "https://kinscare-backend.onrender.com/api/v1/providers/crowd-post";
+const CROWDPOST_URL = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/crowd-post";
 
 // Define available license options for the job form
 const groupLicenses = [

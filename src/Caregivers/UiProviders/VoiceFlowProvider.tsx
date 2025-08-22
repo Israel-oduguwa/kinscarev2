@@ -279,7 +279,7 @@ const VoiceFlowProvider: React.FC<VoiceFlowProviderProps> = ({ children }) => {
           const recommendation = payload?.recommendation ?? payload?.program ?? "";
           if (recommendation) {
             const { data: collegeRecommendation } = await axios.post(
-              `https://kinscare-backend.onrender.com/api/v1/ai/college-recommendation/`,
+              `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/ai/college-recommendation/`,
               { program: recommendation }
             );
             const aiRecommendation = {

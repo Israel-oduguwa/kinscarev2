@@ -92,7 +92,7 @@ function AccountSettings() {
       if (!customData?.customer_id) return;
 
       const getSubData = await axios.get(
-        `https://kinscare-backend.onrender.com/api/v1/providers/subscription/${customData.customer_id}`
+        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/subscription/${customData.customer_id}`
       );
       setSubscriptionData(getSubData.data.subscription);
     } catch (error) {

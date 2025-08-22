@@ -63,7 +63,7 @@ function ApplyNow({ jobID, job }: any) {
           providerName,
         };
         const { data } = await axios.post(
-          " https://kinscare-backend.onrender.com/api/v1/caregivers/job/apply",
+          " https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/job/apply",
           payload
         );
         return data;
@@ -76,7 +76,7 @@ function ApplyNow({ jobID, job }: any) {
 
         // Send an SMS to the provider
         const sendSMS = await axios.post(
-          "https://kinscare-backend.onrender.com/api/v1/twilio/sms/send",
+          "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio/sms/send",
           {
             body: `New Application for ${job.title} by ${userData.fname} ${userData.lname}
             click the link below to see the application: https://www.kinscare.org/provider/job/${jobID}`,
@@ -154,7 +154,7 @@ function ApplyNow({ jobID, job }: any) {
         action,
       };
       const { data } = await axios.post(
-        " https://kinscare-backend.onrender.com/api/v1/caregivers/job/favorite",
+        " https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/job/favorite",
         payload
       );
       return data;

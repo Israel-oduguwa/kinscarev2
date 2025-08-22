@@ -64,7 +64,7 @@ function RecommendedJobs() {
         }
 
         const response = await fetch(
-          "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
+          "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/crud-operation",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

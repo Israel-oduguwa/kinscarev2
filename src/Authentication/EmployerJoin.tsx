@@ -125,7 +125,7 @@ const EmployerJoin: React.FC = () => {
           returning: false,
         });
         const createUser = await axios.post(
-          "https://kinscare-backend.onrender.com/api/v1/auth/create_user",
+          "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/create_user",
           payload
         );
         console.log(createUser);
@@ -144,7 +144,7 @@ const EmployerJoin: React.FC = () => {
         referal_code_: payload.referal_code_,
       });
       const emailID = await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/email/invited-employer-email",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/email/invited-employer-email",
         payload
       );
       setEmailEmployer(emailID.data.data.referral_email);

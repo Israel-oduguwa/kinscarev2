@@ -30,7 +30,7 @@ function ProfessionProfile({ userData }: any) {
 
       // Check if job summary exists in the database
       const dbResponse = await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/crud-operation",
         {
           collectionName: "users",
           operation: "findOne",
@@ -73,7 +73,7 @@ function ProfessionProfile({ userData }: any) {
         institution: userData?.recommendation[0].institution,
       };
       const response = await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/ai/recommendation",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/ai/recommendation",
         payload
       );
       // console.log(response)
@@ -88,7 +88,7 @@ function ProfessionProfile({ userData }: any) {
   // Save new job summary to the database
   const saveToDatabase = async (jobSummary: any) => {
     try {
-      await axios.post("https://kinscare-backend.onrender.com/api/v1/auth/crud-operation", {
+      await axios.post("https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/crud-operation", {
         collectionName: "users",
         operation: "updateOne",
         filter: { userID: userData.userID },

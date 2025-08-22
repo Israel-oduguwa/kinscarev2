@@ -146,7 +146,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
         };
         // console.log(payload);
         const response = await axios.post(
-          "https://kinscare-backend.onrender.com/api/v1/providers/post-job",
+          "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/post-job",
           payload
         );
         const tagManagerArgs = {
@@ -170,7 +170,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
         };
         // console.log(payload);
         await axios.post(
-          "https://kinscare-backend.onrender.com/api/v1/providers/post-job",
+          "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/post-job",
           payload
         );
         const tagManagerArgs = {
@@ -246,7 +246,7 @@ function CreateJobUI({ jobID, user, userData, job, type }: any) {
     if (type !== "repost") {
       try {
         const save = await axios.post(
-          "https://kinscare-backend.onrender.com/api/v1/providers/post-job",
+          "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/post-job",
           formData
         );
         // console.log(save);

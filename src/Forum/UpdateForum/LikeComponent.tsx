@@ -30,7 +30,7 @@ function LikeComponent({
     try {
       setLoading(true);
       const res = await axios.get(
-        `https://kinscare-backend.onrender.com/api/v1/forum/like/${type}/${threadID}/${user.customData.userID}`
+        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/like/${type}/${threadID}/${user.customData.userID}`
       );
       setLiked(res.data.liked); // Set liked status
       setLoading(false);
@@ -52,7 +52,7 @@ function LikeComponent({
         userID: user.customData.userID,
       };
       const { data } = await axios.post(
-        `https://kinscare-backend.onrender.com/api/v1/forum/like/${type}/${threadID}`,
+        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/like/${type}/${threadID}`,
         payload
       );
       return data;
@@ -89,7 +89,7 @@ function LikeComponent({
         userID: user.customData.userID,
       };
       const { data } = await axios.post(
-        `https://kinscare-backend.onrender.com/api/v1/forum/like/${type}/${threadID}/remove`,
+        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/like/${type}/${threadID}/remove`,
         payload
       );
       return data;

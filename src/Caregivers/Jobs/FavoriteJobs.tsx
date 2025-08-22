@@ -124,7 +124,7 @@ function FavoriteJobs() {
     try {
       setLoading(true);
       const { data }: any = await axios.get(
-        `https://kinscare-backend.onrender.com/api/v1/caregivers/jobs/favorite/${user.customData.userID}`
+        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/jobs/favorite/${user.customData.userID}`
       );
       setJobs(data.jobs);
       setTotalJobs(data.totalJobs);

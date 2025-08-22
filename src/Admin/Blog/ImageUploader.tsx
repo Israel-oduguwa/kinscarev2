@@ -25,7 +25,7 @@ export default function ImageUploader({
       formData.append("file", file);
 
       const { data } = await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/upload-file",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/upload-file",
         formData,
         {
           headers: {
@@ -67,7 +67,7 @@ export default function ImageUploader({
 
   const handleDelete = async () => {
     try {
-      await axios.post("https://kinscare-backend.onrender.com/api/v1/delete-file", { 
+      await axios.post("https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/delete-file", { 
         fileUrl: value 
       });
       onDelete();

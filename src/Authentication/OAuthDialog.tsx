@@ -38,8 +38,8 @@ import { sendSignupDripSMS } from "@/Utils/sendSmsSignup";
 
 // ---------- ENV + CONSTANTS ----------
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_APP_ID; // keep as you set it
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "https://kinscare-backend.onrender.com";
-const TRACK_BASE = "https://kinscare-backend.onrender.com"; // your local tracking base
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "https://jrp7pe2xhj.us-east-1.awsapprunner.com";
+const TRACK_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com"; // your local tracking base
 
 // ---------- TYPES ----------
 interface OAuthDialogProps {

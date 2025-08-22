@@ -62,7 +62,7 @@ interface CandidatesApiResponse {
 const fetchCandidates = async (userID: string, page: number) => {
   try {
     const response = await axios.get(
-      `https://kinscare-backend.onrender.com/api/v1/providers/caregivers/match/${userID}?page=${page}&limit=10`
+      `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/caregivers/match/${userID}?page=${page}&limit=10`
     );
     return response.data;
   } catch (error) {

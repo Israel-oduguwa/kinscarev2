@@ -117,7 +117,7 @@ export default function ProviderTracking() {
   const fetchDetails = async () => {
     try {
       const { data } = await axios.get(
-        `https://kinscare-backend.onrender.com/api/v1/providers/jumpstart/request?userID=${userID}`
+        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/jumpstart/request?userID=${userID}`
       );
       setOrder(data.order || null);
       console.log(data);

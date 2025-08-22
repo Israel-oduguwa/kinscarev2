@@ -20,7 +20,7 @@ import MongoContext from "@/app/MongoContext";
 const AGENT_NAME = "Agent Name";
 const AGENT_ID = "AGENT_USER_ID"; // fetch from context/auth in production
 
-const BASE_URL = "https://kinscare-backend.onrender.com/api/v1/providers/";
+const BASE_URL = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/";
 
 function AgentQueue() {
   const [apps, setApps] = useState([]);

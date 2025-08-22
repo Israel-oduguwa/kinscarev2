@@ -20,7 +20,7 @@ interface RewardReferrerRequest {
       const payload: RewardReferrerRequest = { providerUserID, milestone };
 
       const response: AxiosResponse<RewardReferrerResponse> = await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/providers/reward-referrer", // Or your full API URL
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/reward-referrer", // Or your full API URL
         payload
       );
 

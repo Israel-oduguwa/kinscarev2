@@ -40,7 +40,7 @@ export default function DeletePost({
       const postEndPoint = `v1/forum/posts/${postID}`;
       const replyEndPoint = `v1/forum/replies/${postID}`;
       const { data } = await axios.post(
-        `https://kinscare-backend.onrender.com/api/${usage === "comments" ? replyEndPoint : postEndPoint}`,
+        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/${usage === "comments" ? replyEndPoint : postEndPoint}`,
         payload
       );
       //   console.log(data)

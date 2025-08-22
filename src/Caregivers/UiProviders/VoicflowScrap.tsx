@@ -249,7 +249,7 @@
 //             if (program === "AlliedHealthcare" || career_path !== "known") {
 //               // Save to localStorage
 //               const { data: collegeRecommendation } = await axios.post(
-//                 `https://kinscare-backend.onrender.com/api/v1/ai/college-recommendation/`,
+//                 `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/ai/college-recommendation/`,
 //                 { program: recommendation }
 //               );
 

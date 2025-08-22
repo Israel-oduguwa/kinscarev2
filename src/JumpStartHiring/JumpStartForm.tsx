@@ -289,7 +289,7 @@ function JumpStartForm() {
     const { first, last } = parseFirstLast(formData.fullName);
     try {
       await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/auth/track-provider-signup",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/track-provider-signup",
         {
           cio_id: attribution.cio_id,
           email: formData.email,
@@ -309,7 +309,7 @@ function JumpStartForm() {
     try {
       // Create Stripe subscription
       const response = await axios.post<CreateSubscriptionResponse>(
-        "https://kinscare-backend.onrender.com/api/v1/providers/jumpstart/make-payment",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/jumpstart/make-payment",
         {
           userID,
           customerEmail: formData.email,
@@ -329,7 +329,7 @@ function JumpStartForm() {
         },
       };
       await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/auth/crud-operation",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/crud-operation",
         payload,
         { headers: { "Content-Type": "application/json" } }
       );
@@ -380,7 +380,7 @@ function JumpStartForm() {
     };
     try {
       await axios.post(
-        `https://kinscare-backend.onrender.com/api/v1/providers/jumpstart/submit-applcation`,
+        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/jumpstart/submit-applcation`,
         payload
       );
 

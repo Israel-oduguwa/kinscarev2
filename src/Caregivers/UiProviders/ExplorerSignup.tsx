@@ -125,7 +125,7 @@ const ExplorerSignup = ({ setDialog }: any) => {
       });
 
       await axios.post(
-        "https://kinscare-backend.onrender.com/api/v1/auth/create_user",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/create_user",
         payload
       );
       setAuthenticated(true);
@@ -219,7 +219,7 @@ const ExplorerSignup = ({ setDialog }: any) => {
           };
 
           fetch(
-            "https://kinscare-backend.onrender.com/api/v1/caregivers/save-recommendation",
+            "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/save-recommendation",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -250,7 +250,7 @@ const ExplorerSignup = ({ setDialog }: any) => {
           };
 
           fetch(
-            "https://kinscare-backend.onrender.com/api/v1/caregivers/save-recommendation",
+            "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/save-recommendation",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -317,7 +317,7 @@ const ExplorerSignup = ({ setDialog }: any) => {
           };
 
           fetch(
-            "https://kinscare-backend.onrender.com/api/v1/caregivers/save-recommendation",
+            "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/save-recommendation",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
