@@ -6,6 +6,7 @@ import {
   ChevronRight,
   Command,
   Frame,
+  FrameIcon,
   GalleryVerticalEnd,
   Map,
   PieChart,
@@ -74,21 +75,17 @@ export function EmployerAppSidebar({
         icon: BookmarkCheck,
         isActive: false,
       },
-      {
-        title: "Jobs",
-        url: "/provider/job",
+       {
+        title: "Post Job",
+        url: "/provider/job/update/new",
         icon: BriefcaseBusiness,
-        isActive: true,
-        items: [
-          {
-            title: "Post Job",
-            url: "/provider/job/update/new",
-          },
-          {
-            title: "Your Job Postings",
-            url: "/provider/job/all",
-          },
-        ],
+        isActive: false,
+      },
+        {
+        title: "Your Job Postings",
+        url: "/provider/job/all",
+        icon: FrameIcon,
+        isActive: false,
       },
       {
         title: "Update Profile",
