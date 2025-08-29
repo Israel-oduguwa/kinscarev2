@@ -4,7 +4,10 @@ import CaregiverNavbarRight from "@/Caregivers/CaregiverNavbarRight";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
+  SheetHeader,
+  SheetTitle,
   SheetTrigger
 } from "@/components/ui/sheet";
 import ProviderNavbarRight from "@/Providers/ProviderNavbarRight";
@@ -15,60 +18,90 @@ import { usePathname } from "next/navigation";
 import { useContext } from "react";
 import NavbarLink from "./NavbarLink";
 
+const menuItems = [
+  { label: "Jobs", href: "/find-jobs" },
+  { label: "Find Caregivers", href: "/find-caregivers" },
+  { label: "Jump Start Hiring", href: "/jumpstart-hiring" },
+  { label: "Explore", href: "/explore" },
+  { label: "Plans & Pricing", href: "/pricing" },
+  { label: "Blog", href: "/blog" },
+  { label: "Community", href: "/community" },
+];
+
+
 function MobileMenu() {
   const pathname = usePathname();
+
+  const isActive = (href: string) => {
+    if (!pathname) return false;
+    // exact match OR nested route startsWith (keeps highlight on subpages)
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <button className="inline-flex items-center justify-center p-3 text-gray-500 rounded-md lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <button
+          aria-label="Open menu"
+          className="inline-flex items-center justify-center p-3 text-gray-600 rounded-md lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-gray-300 dark:hover:bg-gray-800"
+        >
           <Menu size={24} />
         </button>
       </SheetTrigger>
+
       <SheetContent
         side="left"
-        className="bg-white dark:bg-gray-900 shadow-xl w-80 px-6 py-12"
+        className="bg-white dark:bg-gray-950 shadow-xl w-80 px-6 py-6 sm:px-7 sm:py-8"
       >
-        <div className="flex flex-col">
+        <SheetHeader className="mb-4">
+          <SheetTitle className="text-base font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+            Menu
+          </SheetTitle>
+        </SheetHeader>
+
+        <div className="flex h-full flex-col">
           {/* Navigation Links */}
-          <nav className="space-y-4">
-            {[
-              { href: "/find-jobs", label: "Jobs" },
-              { href: "/find-caregivers", label: "Find Caregivers" },
-              { href: "/explore", label: "Explore" },
-            ].map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`block px-4 py-3  font-medium rounded-md transition-colors ${
-                  pathname === link.href
-                    ? "text-white bg-blue-500"
-                    : "text-gray-800 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+          <nav className="space-y-1">
+            {menuItems.map((link) => {
+              const active = isActive(link.href);
+              return (
+                <SheetClose asChild key={link.href}>
+                  <Link
+                    href={link.href}
+                    className={[
+                      "block rounded-lg px-4 py-3 text-sm font-medium transition-colors",
+                      active
+                        ? "bg-blue-600 text-white"
+                        : "text-gray-800 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800",
+                    ].join(" ")}
+                    aria-current={active ? "page" : undefined}
+                  >
+                    {link.label}
+                  </Link>
+                </SheetClose>
+              );
+            })}
           </nav>
 
+          {/* Divider */}
+          <div className="my-6 h-px w-full bg-gray-200 dark:bg-gray-800" />
+
           {/* Actions */}
-          <div className="mt-8 space-y-3">
-            <Link href="/signin">
-              <Button variant="outline" className="w-full mb-6">
-                Sign In
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button className="w-full">Get Started</Button>
-            </Link>
+          <div className="mt-auto space-y-3">
+            <SheetClose asChild>
+              <Link href="/signin">
+                <Button variant="outline" className="w-full">
+                  Sign In
+                </Button>
+              </Link>
+            </SheetClose>
+            <SheetClose asChild>
+              <Link href="/signup">
+                <Button className="w-full">Get Started</Button>
+              </Link>
+            </SheetClose>
           </div>
         </div>
-
-        {/* Close Button */}
-        {/* <SheetClose asChild>
-          <button className="mt-10 w-full px-4 py-3 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 focus:ring-2 focus:ring-gray-400 focus:outline-none">
-            Close Menu
-          </button>
-        </SheetClose> */}
       </SheetContent>
     </Sheet>
   );

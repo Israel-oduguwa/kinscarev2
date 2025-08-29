@@ -1,23 +1,5 @@
 "use client";
 import {
-  AudioWaveform,
-  BookmarkCheck,
-  BriefcaseBusiness,
-  ChevronRight,
-  Command,
-  Frame,
-  FrameIcon,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Search,
-  Settings,
-  Sparkles,
-  Speech,
-  UserPen,
-} from "lucide-react";
-import * as React from "react";
-import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
@@ -46,11 +28,23 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import CaregiverSearch from "@/Providers/Candidates/CaregiverSearch";
 import ProviderNavbarRight from "@/Providers/ProviderNavbarRight";
+import {
+  BookmarkCheck,
+  BriefcaseBusiness,
+  ChevronRight,
+  FrameIcon,
+  Search,
+  Settings,
+  Sparkles,
+  Speech,
+  UserPen
+} from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import CaregiverSearch from "@/Providers/Candidates/CaregiverSearch";
-import Image from "next/image";
+import * as React from "react";
 
 export function EmployerAppSidebar({
   children,
@@ -165,7 +159,7 @@ export function EmployerAppSidebar({
           <SidebarGroup>
             <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
             <SidebarMenu>
-              {data.navMain.map((item) => {
+              {data.navMain.map((item:any) => {
                 const isActive = isActiveLink(item.url, !!item.items);
 
                 return item.items ? (
@@ -189,7 +183,7 @@ export function EmployerAppSidebar({
                       </CollapsibleTrigger>
                       <CollapsibleContent>
                         <SidebarMenuSub>
-                          {item.items?.map((subItem) => (
+                          {item.items?.map((subItem:any) => (
                             <SidebarMenuSubItem key={subItem.title}>
                               <SidebarMenuSubButton
                                 asChild
@@ -262,12 +256,6 @@ export function EmployerAppSidebar({
             <ProviderNavbarRight />
           </div>
         </div>
-
-        {/* <header className="flex h-16 shrink-0 items-center justify-between w-full  gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-          </div>
-        </header> */}
         <main>{children}</main>
       </SidebarInset>
     </SidebarProvider>
