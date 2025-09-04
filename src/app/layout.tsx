@@ -15,6 +15,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import CookieConsentBanner from "@/Utils/CookieConsentBanner";
 import MixpanelProvider from "@/lib/MixpanelProvider";
+import ChatWidgetUI from "@/ChatWidgets/ChatWidgetUI";
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
@@ -112,14 +113,15 @@ export default function RootLayout({
 
             <ContextProviders>
               {" "}
-              <VoiceFlowProvider>
+              {/* <VoiceFlowProvider> */}
               <IntercomProvider  />
               {/* Run the cookie consent  */}
               <CookieConsentBanner/>
                 {/* Layout UI */}
         {/* <JumpstartBannerTop ctaHref="/jumpstart" /> */}
+        <ChatWidgetUI/>
               {children}
-              </VoiceFlowProvider>
+              {/* </VoiceFlowProvider> */}
             </ContextProviders>
           </MongoProvider>
         </ThemeProvider>
