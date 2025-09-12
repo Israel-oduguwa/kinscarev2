@@ -139,7 +139,7 @@ export async function generateMetadata({
         replyCount: post.replies,
       })),
     };
-    console.log(thread.title);
+    // console.log(thread.title);
     return {
       title: thread.title,
       description: sanitizedDescription,

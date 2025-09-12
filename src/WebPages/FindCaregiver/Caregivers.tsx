@@ -6,7 +6,7 @@ import ToastPortal, { type ToastMsg } from "@/components/ToastPortal";
 import { Button } from "@/components/ui/button";
 import { Interweave } from "interweave";
 import { polyfill } from "interweave-ssr";
-import { MapPin, User } from "lucide-react";
+import { Award, BadgeCheck, Calendar, Info, Mail, MapPin, Phone, User } from "lucide-react";
 import Link from "next/link";
 import ConciergeSidebarCard from "./ConciergeSidebarCard";
 import SearchBar from "./SearchBar";
@@ -116,127 +116,162 @@ function CandidatesCard({
   candidate: Caregiver;
   isAuthenticated: boolean;
 }) {
-  const availabilityPulse = false; // wire to realtime if you have it
+  const availabilityPulse = false;
   const displayName = isAuthenticated ? candidate.name : obfuscateName(candidate.name);
-
   const sanitizedContent = sanitizeContent(candidate.certifications);
   const encryptedTel = obfuscateText(formatPhoneNumberToDigitsWithPlus(candidate?.auth?.tel));
   const encryptedEmail = obfuscateText(candidate?.auth?.email);
-
-  const locationLine = [candidate.city ?? "", candidate.zipcode ?? ""]
-    .filter(Boolean)
-    .join(", ");
+  const locationLine = [candidate.city ?? "", candidate.zipcode ?? ""].filter(Boolean).join(", ");
 
   return (
     <div className="w-full">
-      <div
-        className="group relative flex flex-col lg:flex-row items-start justify-between rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md focus-within:shadow-md"
-        role="article"
-      >
+      {/* single-column card; button floats on desktop */}
+      <div className="group isolate relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 lg:pr-6 shadow-sm transition-all duration-300 hover:shadow-lg focus-within:shadow-lg">
+        {/* decorative top bar */}
+        {/* <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-400 to-indigo-500" /> */}
+
+        {/* CLICKABLE CONTENT spans full width */}
         <Link
           href={`caregivers/${encodeURIComponent(candidate.userID)}`}
-          className="flex-1 outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-xl"
+          className="block outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-xl"
           aria-label={`Open caregiver ${candidate.name}`}
         >
-          <div className="mb-3 flex flex-col lg:flex-row lg:items-center gap-4">
-            <div className="flex items-center gap-3">
-              <ProfileAvatar
-                size="w-14 h-14"
-                name={candidate.name}
-                profileImage={candidate?.profileImage}
-              />
-              <div className="min-w-0">
-                <p className="flex items-center text-base font-semibold text-gray-900">
-                  <span className="truncate">{displayName}</span>
+          {/* === your existing inner content starts === */}
+          <div className="mb-4 flex flex-col lg:flex-row lg:items-center gap-4">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <ProfileAvatar
+                  size="w-20 h-20"
+                  name={candidate.name}
+                  profileImage={candidate?.profileImage}
+                  className="ring-2 ring-white shadow-md"
+                />
+                {availabilityPulse && (
+                  <span className="absolute -bottom-1 -right-1 flex h-5 w-5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-5 w-5 bg-green-500 border-2 border-white" />
+                  </span>
+                )}
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between">
+                  <p className="text-lg font-bold text-gray-900 truncate">{displayName}</p>
                   {availabilityPulse && (
-                    <span className="ml-2 relative flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                    <span className="hidden md:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Available now
                     </span>
                   )}
+                </div>
+
+                <p className="mt-1 text-sm text-gray-600 flex items-center gap-1.5">
+                  <MapPin className="h-4 w-4 text-gray-400" />
+                  <span className="truncate">{locationLine || "Location not specified"}</span>
                 </p>
-                <p className="mt-1 text-sm text-gray-600 flex items-center gap-1">
-                  <MapPin className="h-4 w-4" />
-                  <span className="truncate">{locationLine || "—"}</span>
-                  {availabilityPulse && (
-                    <span className="ml-2 text-xs font-medium text-green-600">Available now</span>
-                  )}
-                </p>
+
+                {availabilityPulse && (
+                  <span className="md:hidden mt-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    Available now
+                  </span>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Meta chips */}
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-1">
-                Licences
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {/* Licenses */}
+            <div className="bg-gray-50 rounded-lg p-3">
+              <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2 flex items-center gap-1.5">
+                <BadgeCheck className="h-4 w-4" />
+                Licenses
               </h4>
               {(candidate.licenses ?? []).length ? (
-                <div className="flex flex-wrap gap-2">
-                  {(candidate.licenses ?? []).map((license, idx) => (
-                    <Chip key={`${license}-${idx}`} title={license}>
+                <div className="flex flex-wrap gap-1.5">
+                  {(candidate.licenses ?? []).slice(0, 3).map((license, idx) => (
+                    <Chip key={`${license}-${idx}`} title={license} variant="primary">
                       {license}
                     </Chip>
                   ))}
+                  {(candidate.licenses ?? []).length > 3 && (
+                    <Chip title={`+${(candidate.licenses ?? []).length - 3} more`} variant="outline">
+                      +{(candidate.licenses ?? []).length - 3}
+                    </Chip>
+                  )}
                 </div>
               ) : (
-                <p className="text-sm text-gray-500">Not provided</p>
+                <p className="text-sm text-gray-400">Not provided</p>
               )}
             </div>
 
-            <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-1">
+            {/* Availability */}
+            <div className="bg-gray-50 rounded-lg p-3">
+              <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2 flex items-center gap-1.5">
+                <Calendar className="h-4 w-4" />
                 Availability
               </h4>
               {(candidate.availability ?? []).length ? (
-                <div className="flex flex-wrap gap-2">
-                  {(candidate.availability ?? []).map((sch, idx) => (
-                    <Chip key={`${sch}-${idx}`} title={sch}>
+                <div className="flex flex-wrap gap-1.5">
+                  {(candidate.availability ?? []).slice(0, 2).map((sch, idx) => (
+                    <Chip key={`${sch}-${idx}`} title={sch} variant="secondary">
                       {sch}
                     </Chip>
                   ))}
+                  {(candidate.availability ?? []).length > 2 && (
+                    <Chip title={`+${(candidate.availability ?? []).length - 2} more`} variant="outline">
+                      +{(candidate.availability ?? []).length - 2}
+                    </Chip>
+                  )}
                 </div>
               ) : (
-                <p className="text-sm text-gray-500">Not provided</p>
+                <p className="text-sm text-gray-400">Not provided</p>
               )}
             </div>
           </div>
 
-          {/* Certifications (sanitized) */}
-          <div className="mt-4">
-            <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-1">
+          {/* Certifications */}
+          <div className="mb-4">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2 flex items-center gap-1.5">
+              <Award className="h-4 w-4" />
               Certifications
             </h4>
-            <div className="text-sm text-gray-700 line-clamp-2">
-              <Interweave content={sanitizedContent} />
+            <div className="text-sm text-gray-700 line-clamp-2 bg-gray-50 rounded-lg p-3">
+              {sanitizedContent ? <Interweave content={sanitizedContent} /> : <p className="text-gray-400">No certifications provided</p>}
             </div>
           </div>
 
-          {/* Contact Details (obfuscated) */}
-          <div className="mt-4">
-            <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-1">
+          {/* Contact */}
+          <div className="mb-4">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2 flex items-center gap-1.5">
+              <Phone className="h-4 w-4" />
               Contact Details
             </h4>
-            <div className="text-sm text-gray-700 space-y-0.5">
-              <p>Phone: {encryptedTel || "Hidden"}</p>
-              <p>Email: {encryptedEmail || "Hidden"}</p>
+            <div className="text-sm text-gray-700 space-y-1.5 bg-gray-50 rounded-lg p-3">
+              <div className="flex items-center gap-2">
+                <span>{encryptedTel || "Not provided"}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span>{encryptedEmail || "Not provided"}</span>
+              </div>
             </div>
           </div>
 
           {/* Info banner */}
-          <div className="mt-4">
-            <p className="text-sm px-3 py-2 max-w-[460px] rounded-md bg-blue-50 text-blue-900 font-medium">
-              Contact details are hidden. Click <span className="font-semibold">“View Caregiver”</span> to see full info and hire.
+          <div className="bg-blue-50 border border-blue-100 rounded-lg p-3">
+            <p className="text-sm text-blue-700 flex items-start gap-2">
+              <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+              <span>
+                Contact details are hidden. Click <span className="font-semibold">"View Caregiver"</span> to see full information and hire.
+              </span>
             </p>
           </div>
+          {/* === your existing inner content ends === */}
         </Link>
 
-        {/* CTA */}
-        <div className="mt-6 w-full lg:w-auto lg:mt-0 lg:ml-4 flex-shrink-0">
+        {/* CTA: static on mobile; floats top-right on lg+; NOT inside the Link */}
+        <div className="mt-6 lg:mt-0 lg:absolute lg:right-6 lg:top-6 lg:z-10">
           <OAuthDialog caregiver={candidate} userID={candidate.userID} message="caregiver">
-            <Button className="w-full lg:w-auto rounded-xl px-6 py-3 shadow-[0_8px_20px_-8px_rgba(59,130,246,0.6)] transition hover:shadow-[0_12px_28px_-10px_rgba(59,130,246,0.65)]">
-              <span className="flex items-center gap-2">
+            <Button className="w-full lg:w-auto rounded-xl px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-300">
+              <span className="flex items-center gap-2 font-medium">
                 <User className="h-4 w-4" /> View Caregiver
               </span>
             </Button>
@@ -336,7 +371,7 @@ export default async function Caregivers({ availability, page, licenses }: Careg
       {/* Header with search + summary */}
       <div className="relative border-b border-gray-200/70 bg-[radial-gradient(60%_80%_at_50%_-20%,rgba(59,130,246,0.10),transparent)]">
         <div className="mx-auto max-w-7xl px-4 py-8">
-          <div className="flex flex-col py-6 gap-4">
+          <div className="flex flex-col py-2 xl:py-6 gap-4">
             <SearchBar availability={availabilityArray} licenses={licensesArray} />
 
             <div className="flex flex-wrap items-center justify-between gap-3">

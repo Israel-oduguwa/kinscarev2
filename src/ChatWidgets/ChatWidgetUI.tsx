@@ -6,6 +6,8 @@ import {
   handleText as flowHandleText,
 } from "./kinscareFlow";
 import Image from "next/image";
+import axios from "axios";
+import ExplorerSignup from "@/Caregivers/UiProviders/ExplorerSignup";
 
 /**
  * KinsCare Chat Widget UI (Responsive + Smooth)
@@ -13,7 +15,7 @@ import Image from "next/image";
  * • Full-screen on small screens; compact floating card on md+
  * • Bottom-right anchored on desktop; never reaches the top
  * • Smooth "thinking" experience: typing indicator + staggered pop-in
- * • Pretty pill buttons; optional href support opens in new tab
+ * • Pretty pill buttons; optional href support opens in new tab .
  */
 
 export type ChatMsg = {
@@ -117,6 +119,9 @@ export default function ChatWidgetUI() {
   const [inputText, setInputText] = useState("");
   const [allowFreeText, setAllowFreeText] = useState(false);
 
+  // NEW: Signup modal state
+  const [showSignup, setShowSignup] = useState(false);
+
   const flowStateRef = useRef<ReturnType<typeof createFlow>["state"] | null>(
     null
   );
@@ -129,7 +134,7 @@ export default function ChatWidgetUI() {
       top: scrollerRef.current.scrollHeight,
       behavior: "smooth",
     });
-  }, [messages, showTyping, open, minimized]);
+  }, [messages, showTyping, open, minimized, showSignup]);
 
   // Initialize flow when widget opens
   useEffect(() => {
@@ -186,6 +191,49 @@ export default function ChatWidgetUI() {
   ) {
     const id = idMaybe ?? label;
 
+    // Intercept: SIGN UP — call college API, store, open ExplorerSignup
+    if (id === "trigger_signup") {
+      const programOrReco =
+        flowStateRef.current?.session?.recommendation ||
+        flowStateRef.current?.session?.program;
+
+      try {
+        if (programOrReco) {
+          const { data: collegeRecommendation } = await axios.post(
+            "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/ai/college-recommendation/",
+            { program: programOrReco },
+            { headers: { "Content-Type": "application/json" } }
+          );
+          const aiRecommendation = {
+            recommendationPhrase: programOrReco,
+            ...collegeRecommendation,
+            saved_at: new Date().toISOString(),
+          };
+          if (typeof window !== "undefined") {
+            localStorage.setItem(
+              "ai_recommendation",
+              JSON.stringify(aiRecommendation)
+            );
+          }
+        }
+      } catch {
+        // non-fatal; proceed to open signup anyway
+      }
+
+      setShowSignup(true);
+      // small feedback bubble
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `b_${Date.now()}`,
+          from: "bot",
+          text: "Launching signup…",
+          time: "now",
+        },
+      ]);
+      return; // don't forward to flow; UI owns this action
+    }
+
     // Handle hard UI controls locally
     if (id === "exit") {
       // Close and reset conversation
@@ -195,6 +243,7 @@ export default function ChatWidgetUI() {
       setInputText("");
       setAllowFreeText(false);
       setShowTyping(false);
+      setShowSignup(false);
       return;
     }
     if (id === "restart") {
@@ -204,6 +253,7 @@ export default function ChatWidgetUI() {
       setInputText("");
       setAllowFreeText(false);
       setShowTyping(false);
+      setShowSignup(false);
       const { state, ui } = createFlow({ userSignedIn: false });
       flowStateRef.current = state;
       enqueueFrame(ui);
@@ -262,38 +312,37 @@ export default function ChatWidgetUI() {
   @supports (height: 100svh) { .cw-hs { height: 85svh; } }
 `}</style>
 
-   {/* Floating Launcher */}
-<button
-  onClick={() => {
-    setOpen((v) => !v);
-    setMinimized(false);
-  }}
-  className="fixed z-[60] bottom-6 right-6 w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 text-white shadow-2xl shadow-blue-500/50 hover:shadow-blue-600/70 focus:outline-none transition-all duration-300 hover:scale-110 group"
-  aria-expanded={open}
-  aria-label={open ? "Close chat" : "Open KinsCare AI chat"}
->
-  {/* Background shimmer effect */}
-  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-  
-  {/* Main icon with animation */}
-  <div className="relative z-10">
-    <IconMessage 
-      width={28} 
-      height={28} 
-      fill="#ffff"
-      className="transition-transform duration-300 group-hover:scale-110" 
-    />
-    
-    {/* Pulsing ring effect */}
-    <span className="absolute inset-0 -m-2 rounded-full bg-blue-400 animate-ping opacity-15 group-hover:opacity-100 duration-300 -z-10"></span>
-  </div>
-  
+      {/* Floating Launcher */}
+      <button
+        onClick={() => {
+          setOpen((v) => !v);
+          setMinimized(false);
+        }}
+        className="fixed z-[60] bottom-6 right-6 w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 text-white shadow-2xl shadow-blue-500/50 hover:shadow-blue-600/70 focus:outline-none transition-all duration-300 hover:scale-110 group"
+        aria-expanded={open}
+        aria-label={open ? "Close chat" : "Open KinsCare AI chat"}
+      >
+        {/* Background shimmer effect */}
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
 
-  {/* Optional status indicator when open */}
-  {open && (
-    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
-  )}
-</button>
+        {/* Main icon with animation */}
+        <div className="relative z-10">
+          <IconMessage
+            width={28}
+            height={28}
+            fill="#ffff"
+            className="transition-transform duration-300 group-hover:scale-110"
+          />
+
+          {/* Pulsing ring effect */}
+          <span className="absolute inset-0 -m-2 rounded-full bg-blue-400 animate-ping opacity-15 group-hover:opacity-100 duration-300 -z-10"></span>
+        </div>
+
+        {/* Optional status indicator when open */}
+        {open && (
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
+        )}
+      </button>
       {/* Panel */}
       {open && (
         <>
@@ -301,7 +350,6 @@ export default function ChatWidgetUI() {
           <div
             className={[
               "fixed inset-0 z-[65] pointer-events-none",
-              // nice glassy blur + subtle dim; slightly lighter on desktop
               "backdrop-blur-sm bg-neutral-900/20 md:bg-neutral-900/20",
               "transition-opacity duration-300 opacity-100",
             ].join(" ")}
@@ -312,11 +360,9 @@ export default function ChatWidgetUI() {
             aria-modal="true"
             className={[
               "fixed z-[700] sha  overflow-hidden flex flex-col min-h-0 bg-white dark:bg-neutral-900",
-              // Small screens: full screen sheet
               "bg-white/85 dark:bg-neutral-900/80 backdrop-blur-md",
               "inset-0 w-screen h-[100dvh] cw-hs max-w-none rounded-none border-0",
-              // md+: compact floating card (fixed height; bottom-right; never reaches top)
-              "md:inset-auto md:top-auto md:right-5 md:bottom-20 md:w-full md:max-w-[27rem] md:h-[560px] md:rounded-2xl md:border md:border-neutral-200 md:dark:border-neutral-800 md:shadow-2xl md:shadow-blue-50",
+              "md:inset-auto md:top-auto md:right-5 md:bottom-20 md:w-full md:max-w-[27.5rem] md:h-[560px] md:rounded-2xl md:border md:border-neutral-200 md:dark:border-neutral-800 md:shadow-2xl md:shadow-blue-50",
               "md:rounded-3xl md:shadow-[0_20px_60px_rgba(0,0,0,0.35)] md:ring-1 md:ring-black/10 md:dark:ring-white/10",
             ].join(" ")}
             style={{ animation: "cwIn .24s cubic-bezier(.2,.8,.2,1) both" }}
@@ -418,6 +464,27 @@ export default function ChatWidgetUI() {
               </form>
             </div>
           </aside>
+
+          {/* Signup Modal */}
+          {showSignup && (
+            <div className="fixed inset-0 z-[800] flex items-center justify-center">
+              <div
+                className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                onClick={() => setShowSignup(false)}
+              />
+              <div className="relative z-[801] max-w-lg max-h-[85vh] overflow-auto rounded-2xl bg-white dark:bg-neutral-900 shadow-2xl ring-1 ring-black/10 dark:ring-white/10 p-6">
+                {/* Close button */}
+                <button
+                  onClick={() => setShowSignup(false)}
+                  className="absolute top-2 right-3 inline-flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700"
+                  aria-label="Close signup"
+                >
+                  <IconX width={16} height={16} />
+                </button>
+                <ExplorerSignup setChat={setOpen} setDialog={setShowSignup} />
+              </div>
+            </div>
+          )}
         </>
       )}
     </>

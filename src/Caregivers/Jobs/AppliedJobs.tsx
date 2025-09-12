@@ -218,7 +218,7 @@ function AppliedJobs() {
       fetchJob();
     }
   }, [user]);
-  console.log(jobs);
+  // console.log(jobs);
   return (
     <div className=" px-2 bg-gray-50 md:px-4 min-h-[100vh]">
       <div className="max-w-6xl pt-10 mx-auto">

@@ -329,3 +329,4 @@ async function CaregiverDetails({ candidateID }: { candidateID: string }) {
 }
 
 export default CaregiverDetails;
+ 

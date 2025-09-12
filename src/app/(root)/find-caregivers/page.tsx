@@ -70,16 +70,20 @@ function page() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Suspense fallback={ <div className="max-w-6xl mx-auto">
+      <Suspense
+        fallback={
+          <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 py-10 mt-10  gap-6">
               <Skeleton className="w-full h-40 " />
               {Array.from({ length: 6 }).map((_, idx) => (
                 <CaregiverCardSkeleton key={idx} />
               ))}
             </div>
-          </div>}>
-      <FindCaregiverLandingPage />
-      {/* Footer */}
+          </div>
+        }
+      >
+        <FindCaregiverLandingPage />
+        {/* Footer */}
       </Suspense>
     </>
   );

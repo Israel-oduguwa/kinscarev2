@@ -32,7 +32,7 @@ interface OauthApplyProps {
   jobID?: string;
   children: React.ReactNode;
   job: any;
-  publicPage: any;
+  // publicPage: any;
 }
 
 // Validation schema for the email signup form
@@ -84,7 +84,7 @@ const OauthApply: React.FC<OauthApplyProps> = ({
   jobID,
   job,
   children,
-  publicPage,
+  // publicPage,
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
@@ -378,7 +378,7 @@ const OauthApply: React.FC<OauthApplyProps> = ({
   return (
     <>
       {/* If already a signed-in caregiver, show ApplyNow */}
-      {userData && userData.role === "caregiver" && !publicPage ? (
+      {userData && userData.role === "caregiver" ? (
         <ApplyNow providerName={job.provider} job={job} jobID={jobID} />
       ) : (
         <>
@@ -386,7 +386,7 @@ const OauthApply: React.FC<OauthApplyProps> = ({
             <GoogleOAuthProvider clientId={`${process.env.GOOGLE_APP_ID}`}>
               {/* Social/Login + Email Signup Dialog */}
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>{children}</DialogTrigger>
+                <DialogTrigger>{children}</DialogTrigger>
                 <DialogContent className="rounded-lg shadow-xl p-6 bg-white max-w-lg">
                   <div>
                     <DialogTitle className="text-3xl font-bold tracking-tight text-center">
@@ -417,7 +417,7 @@ const OauthApply: React.FC<OauthApplyProps> = ({
                       />
                     </div>
                   )}
-          <OrSeparator />
+                  <OrSeparator />
                   {/* Email signup form */}
                   <form
                     onSubmit={handleSubmit(onSubmit)}

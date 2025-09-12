@@ -441,7 +441,7 @@ export default function EditBlog() {
     try {
       const response = await axios.get(`${BASEURL}/api/post/cms/${id}`);
       const postData = response.data;
-      console.log(postData);
+      // console.log(postData);
       const isCategoriesWithLabelAndSlug =
         postData.categories && typeof postData.categories[0] === "object";
       if (isCategoriesWithLabelAndSlug) {

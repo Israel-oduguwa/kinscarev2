@@ -20,6 +20,7 @@ function NavbarLink() {
     { label: "Find Caregivers", href: "/find-caregivers" },
     { label: "Jump Start Hiring", href: "/jumpstart-hiring" },
     { label: "Explore", href: "/explore" },
+    { label: "Post Job", href: "/post-job" },
     { label: "Plans & Pricing", href: "/pricing" },
     { label: "Blog", href: "/blog" },
     { label: "Community", href: "/community" },

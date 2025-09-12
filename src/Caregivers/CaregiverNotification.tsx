@@ -24,7 +24,7 @@ function CaregiverNotification() {
 
   // Fetch notifications from API
   const fetchNotifications = async () => {
-    console.log("start");
+    // console.log("start");
     setLoading(true);
     try {
       const { data } = await axios.get(
@@ -53,7 +53,7 @@ function CaregiverNotification() {
   // Mark a notification as read
   const markNotificationAsRead = async (notificationId: string) => {
     try {
-      console.log("jos");
+      // console.log("jos");
       await axios.post(
         `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/notifications/mark-as-read`,
         { notificationId }

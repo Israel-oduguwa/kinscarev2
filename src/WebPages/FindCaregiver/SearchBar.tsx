@@ -266,9 +266,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ availability, licenses }) => {
                 selectedShifts.length === 0 ||
                 selectedLicenses.length === 0
               }
-              className="flex items-center justify-center gap-2 w-full md:w-auto
-                bg-blue-600 text-white hover:bg-blue-700 active:scale-95 shadow-md
-                transition-all rounded-xl px-7 py-3 text-base font-semibold"
+             className="w-full lg:w-auto rounded-xl px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
               aria-label="Search caregivers"
             >
               {loading ? (
@@ -305,7 +303,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ availability, licenses }) => {
 
         {/* Concierge Blurb (low-key, for those exploring) */}
         <div className="mt-5 flex items-center justify-center">
-          <span className="text-xs text-gray-600 text-center font-medium">
+          <span className="text-sm lg:text-sm text-gray-600 text-center font-medium">
             Want help finding caregivers?{" "}
             <Link href="/jumpstart-hiring/apply">
               <span className="text-blue-600 font-semibold">Our team</span>

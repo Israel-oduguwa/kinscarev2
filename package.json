@@ -101,7 +101,7 @@
     "mixpanel": "^0.18.1",
     "mixpanel-browser": "^2.67.0",
     "mongodb": "^6.14.2",
-    "next": "15.3.3",
+    "next": "^15.5.2",
     "next-share": "^0.27.0",
     "next-themes": "^0.3.0",
     "nextjs-toploader": "^3.7.15",

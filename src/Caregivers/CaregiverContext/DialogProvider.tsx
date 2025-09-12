@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
@@ -9,7 +9,6 @@ type DialogContextType = {
 
 const DialogContext = createContext<DialogContextType | undefined>(undefined);
 
-// Dialog Provider
 export const DialogProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dialogContent, setDialogContent] = useState<ReactNode>(null);
@@ -27,10 +26,17 @@ export const DialogProvider = ({ children }: { children: ReactNode }) => {
   return (
     <DialogContext.Provider value={{ openDialog, closeDialog }}>
       {children}
-      <Dialog open={isOpen} onOpenChange={closeDialog}>
+      <Dialog
+        open={isOpen}
+        // Only close when shadcn asks to close (not when it tries to open)
+        onOpenChange={(open) => {
+          if (!open) closeDialog();
+        }}
+      >
         <DialogContent
-          className="max-w-3xl p-0 bg-gray-50 [&>button]:hidden"
+          className="p-0 sm:max-w-[900px] max-h-[90dvh] [&>button]:hidden overflow-hidden bg-transparent border-0 shadow-none rounded-2xl"
           aria-label="Global Dialog"
+          onOpenAutoFocus={(e) => e.preventDefault()}
         >
           {dialogContent}
         </DialogContent>
@@ -39,11 +45,8 @@ export const DialogProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// Custom hook to use Dialog Context
 export const useDialog = () => {
   const context = useContext(DialogContext);
-  if (!context) {
-    throw new Error("useDialog must be used within a DialogProvider");
-  }
+  if (!context) throw new Error("useDialog must be used within a DialogProvider");
   return context;
 };

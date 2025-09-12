@@ -244,7 +244,7 @@ const PricingButton: React.FC<PricingButtonProps> = ({ children, plan }) => {
       });
       return;
     }
-    console.log(response);
+    // console.log(response);
   };
 
   const onSubmit = async (data: any) => {

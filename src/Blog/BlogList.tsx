@@ -80,7 +80,7 @@ const BlogList: React.FC<BlogListProps> = ({ initialBlogs, totalPages }) => {
       setLoading(false);
     }
   };
-console.log("This is blog", blogs)
+// console.log("This is blog", blogs)
   return (
     <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
       {/* Header Section */}

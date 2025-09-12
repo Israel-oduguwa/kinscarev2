@@ -336,7 +336,7 @@ export default function ProviderDetailsClient({ providerId }: { providerId: stri
 
   // --- UI Pieces
   const provider = data?.provider || null;
-  console.log(provider, "provider details");
+  // console.log(provider, "provider details");
   const jobs = data?.jobs || [];
   const pagination = data?.pagination;
 

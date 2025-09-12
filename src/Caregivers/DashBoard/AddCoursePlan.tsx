@@ -4,14 +4,14 @@ import MongoContext from "@/app/MongoContext";
 import AutosuggestMultiSelect from "@/components/multi-select-auto-suggest";
 import { useCareer } from "../CaregiverContext/CareerContext";
 import { Skeleton } from "@/components/ui/skeleton";
-import { X, CheckCircle, AlertCircle } from "lucide-react";
+import { X, CheckCircle, AlertCircle, ShieldCheck, Layers, ClipboardCheck, Gauge } from "lucide-react";
 import axios from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { fetchUserData } from "@/lib/utils";
 import { useDialog } from "../CaregiverContext/DialogProvider";
 import TagManager from "react-gtm-module";
 
-// Helper functions
+// Helper functions (unchanged)
 const handleFetchLicenses = async (query: string) => {
   return new Promise<string[]>((resolve) => {
     setTimeout(() => {
@@ -39,15 +39,13 @@ const calculatePoints = (
 export default function AddCoursePlan() {
   const { userData, setUserData }: any = useContext(MongoContext);
   const { closeDialog } = useDialog();
+
   const [licenses, setLicenses] = useState<string[]>([]);
   const [prerequisites, setPrerequisites] = useState<string[]>([]);
   const [requirements, setRequirements] = useState<string[]>([]);
   const [points, setPoints] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [feedback, setFeedback] = useState<{
-    success?: boolean;
-    message?: string;
-  }>({});
+  const [feedback, setFeedback] = useState<{ success?: boolean; message?: string }>({});
 
   useEffect(() => {
     if (userData) {
@@ -62,27 +60,26 @@ export default function AddCoursePlan() {
     setIsLoading(true);
     setFeedback({});
     try {
-      await axios.post("https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/crud-operation", {
-        collectionName: "users",
-        operation: "updateOne",
-        filter: { userID: userData.userID },
-        update: { $set: plan },
-        options: { upsert: true },
-      });
-      // setFeedback({ success: true, message: "Updated successfully!" });
+      await axios.post(
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/crud-operation",
+        {
+          collectionName: "users",
+          operation: "updateOne",
+          filter: { userID: userData.userID },
+          update: { $set: plan },
+          options: { upsert: true },
+        }
+      );
+
       toast({
         title: "Updated successfully!",
         description: "Your course plan has been successfully saved.",
       });
-      const fetchedData: any = await fetchUserData(
-        userData.userID,
-        userData.email
-      );
-      // console.log(fetchedData);
+
+      const fetchedData: any = await fetchUserData(userData.userID, userData.email);
       setUserData(fetchedData.result);
     } catch (error) {
       console.error(error);
-
       setFeedback({
         success: false,
         message: "Failed to update. Please try again.",
@@ -96,10 +93,11 @@ export default function AddCoursePlan() {
     setLicenses(values);
     const updatedPoints = calculatePoints(values, prerequisites, requirements);
     setPoints(updatedPoints);
+
     const tagManagerArgs = {
       dataLayer: {
         event: `create_course_plan`,
-        step:"add_licences",
+        step: "add_licences",
         settings: userData?.settings,
         lname: userData?.lname,
         fname: userData?.fname,
@@ -107,6 +105,7 @@ export default function AddCoursePlan() {
       },
     };
     TagManager.dataLayer(tagManagerArgs);
+
     updateDatabase({
       "careerProfile.coursePlan.licenses": values,
       "careerProfile.coursePlan.points": updatedPoints,
@@ -117,10 +116,11 @@ export default function AddCoursePlan() {
     setPrerequisites(values);
     const updatedPoints = calculatePoints(licenses, values, requirements);
     setPoints(updatedPoints);
+
     const tagManagerArgs = {
       dataLayer: {
         event: `create_course_plan`,
-        step:"add_course_prerequisites",
+        step: "add_course_prerequisites",
         settings: userData?.settings,
         lname: userData?.lname,
         fname: userData?.fname,
@@ -128,6 +128,7 @@ export default function AddCoursePlan() {
       },
     };
     TagManager.dataLayer(tagManagerArgs);
+
     updateDatabase({
       "careerProfile.coursePlan.prerequisite": values,
       "careerProfile.coursePlan.points": updatedPoints,
@@ -138,10 +139,11 @@ export default function AddCoursePlan() {
     setRequirements(values);
     const updatedPoints = calculatePoints(licenses, prerequisites, values);
     setPoints(updatedPoints);
+
     const tagManagerArgs = {
       dataLayer: {
         event: `create_course_plan`,
-        step:"add_course_requirements",
+        step: "add_course_requirements",
         settings: userData?.settings,
         lname: userData?.lname,
         fname: userData?.fname,
@@ -149,97 +151,183 @@ export default function AddCoursePlan() {
       },
     };
     TagManager.dataLayer(tagManagerArgs);
+
     updateDatabase({
       "careerProfile.coursePlan.requirement": values,
       "careerProfile.coursePlan.points": updatedPoints,
     });
   };
 
+  // ------- UI only from here: no new logic added -------
+  const progressWidth = (points/65 *100)
+
   return (
-    <div className=" flex items-center justify-center ">
-      <div className=" w-full p-6 md:p-8 space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-800">
-            Create Course Plan
-          </h2>
-          <button
-            onClick={closeDialog}
-            className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
-          >
-            <X size={20} className="text-gray-600" />
-          </button>
-        </div>
-
-        {/* Feedback */}
-        {/* {feedback.message && (
-          <div
-            className={`p-2 rounded-md text-sm ${
-              feedback.success
-                ? "text-green-600 bg-green-100"
-                : "text-red-600 bg-red-100"
-            } flex items-center space-x-2`}
-          >
-            {feedback.success ? (
-              <CheckCircle size={16} />
-            ) : (
-              <AlertCircle size={16} />
-            )}
-            <span>{feedback.message}</span>
-          </div>
-        )} */}
-
-        {/* Licenses */}
-        <div>
-          <h3 className="font-semibold text-sm text-gray-800 mb-2">
-            Add Licenses
-          </h3>
-          <AutosuggestMultiSelect
-            placeholder="Add License"
-            options={["CNA", "HCA", "NA", "None"]}
-            initialValues={licenses}
-            fetchOptions={handleFetchLicenses}
-            onSelectionChange={handleAddLicense}
-          />
-        </div>
-
-        {/* Prerequisites */}
-        <div>
-          <h3 className="font-semibold text-sm text-gray-800 mb-2">
-            Add Course Prerequisites
-          </h3>
-          <AutosuggestMultiSelect
-            placeholder="Add Prerequisites"
-            options={["Nursing", "Medicine", "None"]}
-            initialValues={prerequisites}
-            fetchOptions={handleFetchLicenses}
-            onSelectionChange={handleAddPrerequisite}
-          />
-        </div>
-
-        {/* Requirements */}
-        <div>
-          <h3 className="font-semibold text-sm text-gray-800 mb-2">
-            Add Requirements
-          </h3>
-          <AutosuggestMultiSelect
-            placeholder="Add Requirements"
-            options={["ELSA exam", "EXAM"]}
-            initialValues={requirements}
-            fetchOptions={handleFetchLicenses}
-            onSelectionChange={handleAddRequirement}
-          />
-        </div>
-
-        {/* Points Display */}
-        <div className="flex justify-end items-center space-x-2">
-          {isLoading ? (
-            <div className="text-sm text-gray-500">Updating...</div>
-          ) : (
-            <div className="text-sm font-medium text-gray-800">
-              Total Points: <span className="font-bold">{points}</span>
+    <div className="flex items-center justify-center">
+      <div className="w-full max-w-3xl p-0 md:p-2">
+        {/* Shell Card: make it a column with internal scroll */}
+        <div className="relative flex max-h-[85vh] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+          {/* Gradient header (no overlap) */}
+          <div className="relative shrink-0 h-24 bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700">
+            <div className="absolute inset-0 opacity-20 bg-[radial-gradient(700px_200px_at_0%_-10%,white,transparent)]" />
+            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(700px_200px_at_100%_120%,white,transparent)]" />
+            <div className="flex h-full items-center justify-between px-6">
+              <div>
+                <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight">
+                  Create Course Plan
+                </h2>
+                <p className="mt-0.5 text-xs md:text-[13px] text-indigo-100">
+                  Licenses, prerequisites, and requirements for your path.
+                </p>
+              </div>
+              <button
+                onClick={closeDialog}
+                className="group rounded-full p-2 z-50 text-white/90 hover:text-white hover:bg-white/10 transition"
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
             </div>
-          )}
+          </div>
+
+          {/* Scrollable body (no negative margins) */}
+          <div className="flex-1 overflow-y-auto px-6 pb-6 pt-5">
+            {/* Points card (normal flow) */}
+            <div className="mx-auto mb-6 w-full rounded-2xl border border-indigo-100 bg-white p-4 shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+                    <Gauge className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-600">Progress</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      Total Points
+                    </p>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  {isLoading ? (
+                    <div className="inline-flex items-center gap-2 text-xs text-gray-500">
+                      <span className="h-3 w-3 animate-spin rounded-full border-[2px] border-gray-300 border-t-transparent" />
+                      Updating…
+                    </div>
+                  ) : (
+                    <div className="text-lg font-semibold text-gray-900">
+                      {points}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Progress bar */}
+              <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-gray-100">
+                <div
+                  className={[
+                    "h-full rounded-full transition-all duration-500",
+                    points >= 50 ? "bg-indigo-500" : "bg-indigo-400",
+                  ].join(" ")}
+                  style={{ width: `${progressWidth}%` }}
+                />
+              </div>
+              <p className="mt-2 text-[11px] text-gray-500">
+                Points update automatically as you add items below.
+              </p>
+            </div>
+
+            {/* Grid Sections */}
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+              {/* Licenses */}
+              <section className="rounded-2xl border border-gray-100 bg-white p-4 md:p-5 shadow-sm hover:shadow-md transition-shadow">
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+                    <ShieldCheck className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900">Add Licenses</h3>
+                    <p className="text-xs text-gray-500">
+                      Select certifications you currently have or plan to obtain.
+                    </p>
+                  </div>
+                </div>
+
+                <AutosuggestMultiSelect
+                  placeholder="Add License"
+                  options={["CNA", "HCA", "NA", "None"]}
+                  initialValues={licenses}
+                  fetchOptions={handleFetchLicenses}
+                  onSelectionChange={handleAddLicense}
+                />
+
+                {/* Helper line */}
+                <p className="mt-2 text-[11px] text-gray-500">
+                  Examples: <span className="text-gray-700">CNA</span>,{" "}
+                  <span className="text-gray-700">HCA</span>, or{" "}
+                  <span className="text-gray-700">None</span> if not applicable.
+                </p>
+              </section>
+
+              {/* Prerequisites */}
+              <section className="rounded-2xl border border-gray-100 bg-white p-4 md:p-5 shadow-sm hover:shadow-md transition-shadow">
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+                    <Layers className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900">Add Course Prerequisites</h3>
+                    <p className="text-xs text-gray-500">
+                      Foundation subjects or background required for your program.
+                    </p>
+                  </div>
+                </div>
+
+                <AutosuggestMultiSelect
+                  placeholder="Add Prerequisites"
+                  options={["Nursing", "Medicine", "None"]}
+                  initialValues={prerequisites}
+                  fetchOptions={handleFetchLicenses}
+                  onSelectionChange={handleAddPrerequisite}
+                />
+
+                <p className="mt-2 text-[11px] text-gray-500">
+                  Tip: If no prerequisite applies, choose{" "}
+                  <span className="text-gray-700">None</span>.
+                </p>
+              </section>
+
+              {/* Requirements */}
+              <section className="md:col-span-2 rounded-2xl border border-gray-100 bg-white p-4 md:p-5 shadow-sm hover:shadow-md transition-shadow">
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+                    <ClipboardCheck className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900">Add Requirements</h3>
+                    <p className="text-xs text-gray-500">
+                      Exams or other mandatory checks you’ll need to complete.
+                    </p>
+                  </div>
+                </div>
+
+                <AutosuggestMultiSelect
+                  placeholder="Add Requirements"
+                  options={["ELSA exam", "EXAM"]}
+                  initialValues={requirements}
+                  fetchOptions={handleFetchLicenses}
+                  onSelectionChange={handleAddRequirement}
+                />
+
+                <p className="mt-2 text-[11px] text-gray-500">
+                  Example: <span className="text-gray-700">EXAM</span> for licensing.
+                </p>
+              </section>
+            </div>
+
+            {/* Footer note */}
+            <div className="mt-6 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-xs text-gray-600">
+              Your selections are saved automatically. You can update them anytime.
+            </div>
+          </div>
         </div>
       </div>
     </div>

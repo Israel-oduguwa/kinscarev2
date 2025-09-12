@@ -79,7 +79,7 @@ const Avatar: React.FC<AvatarProps> = ({
 
   return (
     <div
-      className={`relative overflow-hidden ring-1 ring-black/5 ${shapeClass(
+      className={`relative shrink-0 rounded-full ring-1 ring-black/5 ${shapeClass(
         rounded
       )} ${className}`}
       style={{ width: size, height: size }}
@@ -92,12 +92,12 @@ const Avatar: React.FC<AvatarProps> = ({
           alt={alt}
           fill
           sizes={`${size}px`}
-          className="object-cover"
+          className="object-cover rounded-full"
           priority={false}
         />
       ) : (
         <div
-          className="flex h-full w-full items-center justify-center"
+          className="flex h-full w-full rounded-full items-center justify-center"
           style={{ background: bg }}
         >
           <span
@@ -115,6 +115,8 @@ const Avatar: React.FC<AvatarProps> = ({
     </div>
   );
 };
+
+
 
 /** ------------------------------
  *  Small Chip
@@ -162,14 +164,14 @@ const SimilarJobs: React.FC<{ similarJobs: any[] }> = ({
               href={`/jobs/${job._id}`}
               className="block rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             >
-              <div className="flex items-start gap-3">
-                {/* <Avatar
+              <div className="flex items-start gap-2">
+                <Avatar
                   src={job?.profileImage || undefined}
                   alt={job?.title || "Job"}
                   seed={job?.provider || job?.title || job?._id}
-                  size={32}
-                  rounded="xl"
-                /> */}
+                  size={30}
+                  rounded="full"
+                />
                 <div className="min-w-0">
                   <p className="mb-1 truncate text-sm font-semibold text-gray-900">
                     {job?.title}
@@ -221,7 +223,7 @@ async function JobDetails({ jobID }: { jobID: string }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <div className="mx-auto max-w-7xl px-4 py-8">
+      <div className="mx-auto max-w-screen-xl px-4 py-8">
         {/* Back & Title Row */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <JobBackLink/>
@@ -243,7 +245,7 @@ async function JobDetails({ jobID }: { jobID: string }) {
                 src={job?.profileImage || undefined}
                 alt={job?.title || "Job"}
                 seed={job?.provider || job?.title || jobID}
-                size={56}
+                size={70}
                 rounded="2xl"
               />
               <div className="min-w-0">
@@ -295,9 +297,9 @@ async function JobDetails({ jobID }: { jobID: string }) {
             </div>
 
             {/* Secondary Apply (desktop visible here too) */}
-            <div className="hidden lg:block">
-              <OauthApply job={job} jobID={job._id}>
-                <Button className="rounded-xl px-5 py-2.5">Apply Now</Button>
+            <div>
+              <OauthApply  job={job} jobID={job._id}>
+                <Button className="w-full rounded-xl px-6 py-3 shadow-[0_8px_20px_-8px_rgba(59,130,246,0.6)] transition hover:shadow-[0_12px_28px_-10px_rgba(59,130,246,0.65)]">Join to apply</Button>
               </OauthApply>
             </div>
           </div>

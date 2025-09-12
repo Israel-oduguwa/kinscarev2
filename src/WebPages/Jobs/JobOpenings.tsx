@@ -8,6 +8,7 @@ import Image from "next/image";
 import SigninModal from "@/Authentication/SiginModal";
 import { MapPin, Clock, BadgeCheck } from "lucide-react";
 import JobListingLogo from "@/components/JobListingLogo";
+import SearchInfo from "./SearchInfo";
 
 /** Safe query builder to avoid "undefined" in URLs */
 const buildQuery = (
@@ -74,7 +75,6 @@ const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
             size={40}
             rounded="full" // use "full" for a perfect circle like Vercel
           />
-
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-lg font-semibold tracking-tight text-gray-900">
@@ -122,9 +122,9 @@ const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
         </Link>
 
         <div className="w-full lg:w-auto">
-          <OauthApply job={job} jobID={job?._id}>
+          <OauthApply  publicPage={true} job={job} jobID={job?._id}>
             <Button className="w-full rounded-xl px-6 py-3 shadow-[0_8px_20px_-8px_rgba(59,130,246,0.6)] transition hover:shadow-[0_12px_28px_-10px_rgba(59,130,246,0.65)]">
-              Apply Now
+              Join to apply
             </Button>
           </OauthApply>
         </div>
@@ -158,7 +158,7 @@ async function All({
   const response = await res.json();
 
   const jobs: any[] = Array.isArray(response?.jobs) ? response.jobs : [];
-  console.log(jobs);
+  // console.log(jobs);
   const pagination = response?.pagination ?? {};
   const {
     mode = "stream",
@@ -198,53 +198,7 @@ async function All({
         <div className="mx-auto max-w-6xl px-4 py-4">
           <div className="flex flex-col gap-6">
             <SearchBar />
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <h1 className=" font-semibold tracking-tight text-gray-800">
-                <span className="text-gray-600">There are</span>{" "}
-                <span className="text-blue-600">{totalJobs}</span>{" "}
-                <span className="text-gray-600">jobs near you.</span>
-                {jobs.length > 0 ? (
-                  <>
-                    {" "}
-                    <OauthApply
-                      publicPage={true}
-                      job={jobs[0]}
-                      jobID={jobs[0]?._id}
-                    >
-                      <span className="cursor-pointer font-semibold text-blue-600 underline-offset-4 hover:underline">
-                        Register
-                      </span>
-                    </OauthApply>{" "}
-                    <span className="text-gray-600">or</span>{" "}
-                    <SigninModal role="caregiver">
-                      <span className="cursor-pointer text-blue-600 underline-offset-4 hover:underline">
-                        sign in
-                      </span>
-                    </SigninModal>{" "}
-                    <span className="text-gray-600">
-                      to view details and apply instantly.
-                    </span>
-                  </>
-                ) : (
-                  <span className="text-gray-600">
-                    Adjust your filters to discover more opportunities.
-                  </span>
-                )}
-              </h1>
-
-              {/* Active filters (visual summary) */}
-              <div className="flex flex-wrap items-center gap-2">
-                {filters?.schedule ? (
-                  <Chip>Schedule: {filters.schedule}</Chip>
-                ) : null}
-                {filters?.licenses ? (
-                  <Chip>License: {filters.licenses}</Chip>
-                ) : null}
-                {filters?.minHours ? (
-                  <Chip>Min Hours: {filters.minHours}</Chip>
-                ) : null}
-              </div>
-            </div>
+       <SearchInfo jobs={jobs} filters={filters} totalJobs={totalJobs} />
           </div>
         </div>
       </div>

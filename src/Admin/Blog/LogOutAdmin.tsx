@@ -46,7 +46,7 @@ function LogOutAdmin() {
 
       await app?.currentUser?.logOut();
       // localStorage.clear();
-      console.log("logout");
+      // console.log("logout");
       const anonymousUser = await app?.logIn(Realm.Credentials.anonymous());
       setUser(anonymousUser);
       router.push("/admin-login");

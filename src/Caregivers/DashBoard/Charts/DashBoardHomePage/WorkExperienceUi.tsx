@@ -1,82 +1,109 @@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CheckCheck, PencilLine } from "lucide-react";
-import React, { useState } from "react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"; // Assuming you use a Dialog component
-import AddWorkExperience from "../../AddWorkExperience"; // Placeholder for the dialog's content
+import { Briefcase, CheckCircle2, Loader2, Gauge } from "lucide-react";
+import React from "react";
+import AddWorkExperience from "../../AddWorkExperience";
 import { useDialog } from "@/Caregivers/CaregiverContext/DialogProvider";
 
 function WorkExperienceUi({ userData }: any) {
   const { openDialog } = useDialog();
-  
-    const handleOpenDialog = () => {
-      openDialog(<AddWorkExperience/>);
-    };
-  // Before the userData loads
+
+  const handleOpenDialog = () => {
+    openDialog(<AddWorkExperience />);
+  };
+
+  // Loading skeleton (unchanged behavior)
   if (!userData) {
     return (
-      <div className="shadow-sm border min-h-[249px] p-6 bg-white border-zinc-50 relative rounded-xl">
-        <p className="antialiased font-semibold mb-2 text-gray-300">
-          Add Your Work Experience
-        </p>
-        <Skeleton className="h-[150px] w-full bg-slate-200 rounded-xl mb-3" />
-        <Skeleton className="h-[30px] w-full rounded-xl" />
+      <div className="relative min-h-[249px] rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-300">Add Your Work Experience</p>
+        <Skeleton className="mb-3 h-[150px] w-full rounded-xl bg-slate-200" />
+        <Skeleton className="h-[36px] w-full rounded-xl" />
       </div>
     );
   }
 
+  // UI-only derived values
+  const exp = userData?.careerProfile?.experience || {};
+  const entries = Array.isArray(exp.workExperiences) ? exp.workExperiences.length : 0;
+  const points = exp.points ?? 0;
+  const maxPoints = 40; // visual reference only (25 + 10 + 5)
+  const progress = Math.min(100, Math.round((points / maxPoints) * 100));
+
+  // Status pill (pure display)
+  const status: { label: string; className: string; icon?: React.ReactNode } = exp.hasCompleted
+    ? {
+        label: "Completed",
+        className:
+          "inline-flex items-center gap-1 rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700",
+        icon: <CheckCircle2 className="h-4 w-4" />,
+      }
+    : entries > 0
+    ? {
+        label: "In progress",
+        className:
+          "inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700",
+        icon: <Loader2 className="h-4 w-4 animate-spin" />,
+      }
+    : {
+        label: "Not started",
+        className:
+          "inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600",
+      };
+
+  const ctaLabel = exp?.draft
+    ? "Edit Work Experience"
+    : exp?.hasCompleted
+    ? "Edit Work Experience"
+    : "Add Work Experience";
+
   return (
-    <>
-      {/* Main UI */}
-      <div className="shadow-md border min-h-[249px] bg-white border-zinc-50 relative rounded-xl">
-      
-        <div className="p-6 flex flex-col space-y-6">
-          <div>
-            <p className="text-xl tracking-tight font-bold antialiased mb-1 text-gray-900">
-              Add work experience
-            </p>
-            <div className="mb-2">
-              <p className="text-sm text-slate-600 antialiased">
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                Ducimus explicabo qui dolorem ratione laboriosam quos
-                praesentium culpa. Cumque,
-              </p>
-            </div>
-            <div className="flex justify-between text-sm items-center">
-              {/* Placeholder for any points or extra info */}
-            </div>
-          </div>
-          <Button variant="outline" onClick={handleOpenDialog}>
-            {userData?.careerProfile?.experience?.draft ? (
-              "Edit Work Experience"
-            ) : (
-              <>
-                {userData?.careerProfile?.experience?.hasCompleted
-                  ? "Edit Work Experience"
-                  : "Add Work Experience"}
-              </>
-            )}
-          </Button>
+    <div className="relative min-h-[249px] rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+      {/* Header row */}
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xl font-bold tracking-tight text-gray-900">Add work experience</p>
+          <p className="mt-1 text-sm font-normal text-slate-600">
+            Document relevant roles or volunteering to strengthen your application.
+          </p>
         </div>
+        {/* <span className={status.className}>
+          {status.icon}
+          {status.label}
+        </span> */}
       </div>
-    </>
+
+      {/* Stat chips */}
+      {/* <div className="mb-4 flex flex-wrap items-center gap-2">
+        <span className="inline-flex items-center gap-2 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2 text-sm text-gray-700">
+          <Briefcase className="h-4 w-4 text-indigo-600" />
+          Entries <span className="font-medium text-gray-900">{entries}</span>
+        </span>
+        <span className="inline-flex items-center gap-2 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2 text-sm text-gray-700">
+          <Gauge className="h-4 w-4 text-indigo-600" />
+          Points <span className="font-medium text-gray-900">{points}</span>
+        </span>
+      </div> */}
+
+      {/* Progress bar (visual only) */}
+      <div className="mb-5">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
+          <div
+            className="h-full rounded-full bg-indigo-500 transition-all"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <p className="mt-1 text-[11px] text-gray-500">
+          {points} / {maxPoints} points
+        </p>
+      </div>
+
+      {/* CTA */}
+      <Button variant="outline" onClick={handleOpenDialog} className="w-full sm:w-auto">
+        {ctaLabel}
+      </Button>
+    </div>
   );
 }
 
 export default WorkExperienceUi;
-
-
-// {userData?.careerProfile?.experience?.hasCompleted ? (
-//   <span className="bg-green-100 p-2 text-xs shadow-lg shadow-green-50 text-green-700 font-semibold rounded-md absolute -top-4 -right-2 flex space-x-1 items-center">
-//     <CheckCheck size={18} className="mr-1" color="#008a35" />
-//   </span>
-// ) : (
-//   <>
-//     {userData?.careerProfile?.experience?.draft && (
-//       <span className="bg-green-100 p-3 text-xs shadow-lg shadow-green-50 text-green-700 font-semibold rounded-md absolute -top-4 -right-2 flex space-x-1 items-center">
-//         <PencilLine size={18} className="mr-2" color="#c4ad17" />
-//         Editing
-//       </span>
-//     )}
-//   </>
-// )}

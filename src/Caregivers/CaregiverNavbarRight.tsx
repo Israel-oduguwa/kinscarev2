@@ -209,7 +209,7 @@ function CaregiverNavbarRight() {
     customData,
   } = mongodb;
   const router = useRouter();
-  console.log(user);
+  // console.log(user);
   const LogOutUser = async () => {
     try {
       if (!user || !app?.currentUser) return;
@@ -235,7 +235,7 @@ function CaregiverNavbarRight() {
       TagManager.dataLayer(tagManagerArgs);
       await app?.currentUser?.logOut();
       // localStorage.clear();
-      console.log("logout");
+      // console.log("logout");
       const anonymousUser = await app?.logIn(Realm.Credentials.anonymous());
       setUser(anonymousUser);
       router.push("/signin");
@@ -248,7 +248,7 @@ function CaregiverNavbarRight() {
     }
   };
   // User Avatar and Dropdown
-  console.log(userData);
+  // console.log(userData);
   return (
     <div className="flex items-center px-2">
       {user && userData && customData && customData.userID ? (

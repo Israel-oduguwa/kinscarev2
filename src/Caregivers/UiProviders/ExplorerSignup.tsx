@@ -35,7 +35,7 @@ import { CustomerSignupParams, sendCustomerSignupEmail } from "@/lib/Email";
 import { OrSeparator } from "@/components/OrSeperator";
 
 // Validation schema for the email signup form
-const schema = yup.object().shape({
+const schema: any = yup.object().shape({
   fname: yup.string().required("First name is required"),
   lname: yup.string().required("Last name is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -56,7 +56,7 @@ interface SignupFormInputs {
   terms: boolean;
 }
 
-const ExplorerSignup = ({ setDialog }: any) => {
+const ExplorerSignup = ({ setDialog, setChat }: any) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -236,7 +236,8 @@ const ExplorerSignup = ({ setDialog }: any) => {
         setUser(userObj);
         setAuthenticated(true);
         await userObj.refreshCustomData();
-        router.push(`/vitae/explore/program-recommendations`);
+        router.push(`/vitae/career-plan`);
+        setChat(false);
         setDialog(false);
       } else {
         // save the recommended colleges to the database
@@ -267,7 +268,8 @@ const ExplorerSignup = ({ setDialog }: any) => {
         setUser(userObj);
         setAuthenticated(true);
         await userObj.refreshCustomData();
-        router.push(`/vitae/explore/program-recommendations`);
+        router.push(`/vitae/career-plan`);
+        setChat(false);
         setDialog(false);
       }
     } catch (error) {
@@ -329,7 +331,8 @@ const ExplorerSignup = ({ setDialog }: any) => {
         const fetchedData: any = await fetchUserData(userObj.id, email);
         setUserData(fetchedData.result);
         await userObj.refreshCustomData();
-        router.push(`/vitae/explore/program-recommendations`);
+        router.push(`/vitae/career-plan`);
+        setChat(false);
         setDialog(false);
       }
     } catch (error) {

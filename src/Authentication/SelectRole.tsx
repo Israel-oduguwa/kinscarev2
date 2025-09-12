@@ -126,7 +126,7 @@ function SelectRole({ selectRoleModal, closeSelectModal }: any) {
         tel: data.tel,
         hash: user?.customData?.hash,
       };
-      console.log(payload);
+      // console.log(payload);
       const response = await axios.post(
         "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/update-role-tel",
         payload

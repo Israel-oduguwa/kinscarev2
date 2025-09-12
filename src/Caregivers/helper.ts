@@ -1,5 +1,5 @@
 export const renderProgramDetails = (global_element: HTMLElement, institution: string, programName: string, contact_person: string) => {
-    console.log(programName)
+    // console.log(programName)
     global_element.innerHTML = `
       <div style="padding: 20px; background: #f9f9f9; border-radius: 8px;">
         <h2 style="text-align: center; margin-bottom: 20px;">${institution}</h2>

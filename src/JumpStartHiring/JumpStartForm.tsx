@@ -724,30 +724,31 @@ function JumpStartForm() {
           </div>
 
           {/* Navigation Buttons */}
-          <div className="mt-8 pt-6 border-t flex justify-between">
+          <div className="mt-8 pt-6 border-t flex items-center justify-between">
             {step > 0 ? (
-              <button
-                type="button"
+              <Button
+               variant="outline"
                 onClick={onBack}
-                className="px-5 py-2.5 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors flex items-center"
+                className="px-6 py-2 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors flex items-center"
               >
                 <ChevronLeft className="w-5 h-5 mr-2" />
                 Back
-              </button>
+              </Button>
             ) : (
               <div />
             )}
 
             {step < fieldsPerStep.length - 1 ? (
-              <Button onClick={onNext}>
-                Continue
-                <ChevronRight className="w-5 h-5 ml-2" />
+              <Button className="w-full lg:w-auto rounded-xl px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-300" onClick={onNext}>
+                
+                <ChevronRight className="w-5 h-5 ml-2" /> Continue
+                
               </Button>
             ) : (
               <Button
                 type="button"
                 onClick={handleFinalContinue}
-                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg hover:opacity-90 transition-opacity flex items-center shadow-md"
+                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg hover:opacity-90 transition-opacity flex items-center shadow-md"
                 disabled={isFetchingSecret}
               >
                 <CheckCircle className="w-5 h-5 mr-2" />
