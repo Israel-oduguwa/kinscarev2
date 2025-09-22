@@ -1,6 +1,16 @@
 "use client";
+
+import { useContext } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Menu } from "lucide-react";
+
 import MongoContext from "@/app/MongoContext";
 import CaregiverNavbarRight from "@/Caregivers/CaregiverNavbarRight";
+import ProviderNavbarRight from "@/Providers/ProviderNavbarRight";
+import NavbarLink from "./NavbarLink";
+
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -8,34 +18,25 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger
+  SheetTrigger,
 } from "@/components/ui/sheet";
-import ProviderNavbarRight from "@/Providers/ProviderNavbarRight";
-import { Menu } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useContext } from "react";
-import NavbarLink from "./NavbarLink";
 
 const menuItems = [
   { label: "Jobs", href: "/find-jobs" },
   { label: "Find Caregivers", href: "/find-caregivers" },
   { label: "Jump Start Hiring", href: "/jumpstart-hiring" },
   { label: "Explore", href: "/explore" },
-   { label: "Post Job", href: "/post-job" },
+  { label: "Post Job", href: "/post-job" },
   { label: "Plans & Pricing", href: "/pricing" },
   { label: "Blog", href: "/blog" },
   { label: "Community", href: "/community" },
 ];
-
 
 function MobileMenu() {
   const pathname = usePathname();
 
   const isActive = (href: string) => {
     if (!pathname) return false;
-    // exact match OR nested route startsWith (keeps highlight on subpages)
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 
@@ -87,24 +88,40 @@ function MobileMenu() {
           {/* Divider */}
           <div className="my-6 h-px w-full bg-gray-200 dark:bg-gray-800" />
 
-          {/* Actions */}
-          <div className="mt-auto space-y-3">
-            <SheetClose asChild>
-              <Link href="/signin">
-                <Button variant="outline" className="w-full">
-                  Sign In
-                </Button>
-              </Link>
-            </SheetClose>
-            <SheetClose asChild>
-              <Link href="/signup">
-                <Button className="w-full">Get Started</Button>
-              </Link>
-            </SheetClose>
-          </div>
+          {/* Actions (only show when user is not authenticated) */}
+          <MobileAuthActions />
         </div>
       </SheetContent>
     </Sheet>
+  );
+}
+
+/**
+ * Separate component to decide if Sign In / Get Started should be shown inside the Sheet.
+ * If user is logged in (caregiver/provider), we hide these to avoid redundancy.
+ */
+function MobileAuthActions() {
+  const { userData }: any = useContext(MongoContext);
+
+  if (userData?.role === "caregiver" || userData?.role === "provider") {
+    return null;
+  }
+
+  return (
+    <div className="gap-3 flex flex-col">
+      <SheetClose asChild>
+        <Link href="/signin">
+          <Button variant="outline" className="w-full">
+            Sign In
+          </Button>
+        </Link>
+      </SheetClose>
+      <SheetClose asChild>
+        <Link href="/signup">
+          <Button className="w-full">Get Started</Button>
+        </Link>
+      </SheetClose>
+    </div>
   );
 }
 
@@ -127,48 +144,45 @@ function Navbar() {
             />
             <p className="text-sm font-medium">KinsCare</p>
           </Link>
-          {/* Right Section */}
+
+          {/* Right Section (desktop) */}
           <div className="hidden lg:flex items-center lg:order-2">
             {userData && userData.role === "caregiver" ? (
-              <>
-                <CaregiverNavbarRight />
-              </>
+              <CaregiverNavbarRight />
+            ) : userData && userData.role === "provider" ? (
+              <ProviderNavbarRight />
             ) : (
               <>
-                {userData && userData.role === "provider" ? (
-                  <>
-                    <ProviderNavbarRight />
-                  </>
-                ) : (
-                  <>
-                    {" "}
-                    <Link href="/signin">
-                      <Button
-                        variant="ghost"
-                        className={`mr-2 py-2 px-4 font-semibold text-sm ${
-                          pathname === "/signin"
-                            ? "bg-blue-100 text-blue-600"
-                            : ""
-                        }`}
-                      >
-                        Sign in
-                      </Button>
-                    </Link>
-                    <Link
-                      className="inline-flex items-center justify-center px-6 py-2 text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:from-indigo-700 hover:to-violet-800 hover:-translate-y-1"
-                      href="/signup"
-                    >
-                      Get started
-                    </Link>
-                  </>
-                )}
+                <Link href="/signin">
+                  <Button
+                    variant="ghost"
+                    className={`mr-2 py-2 px-4 font-semibold text-sm ${
+                      pathname === "/signin" ? "bg-blue-100 text-blue-600" : ""
+                    }`}
+                  >
+                    Sign in
+                  </Button>
+                </Link>
+                <Link
+                  className="inline-flex items-center justify-center px-6 py-2 text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:from-indigo-700 hover:to-violet-800 hover:-translate-y-1"
+                  href="/signup"
+                >
+                  Get started
+                </Link>
               </>
             )}
           </div>
-          {/* Mobile Menu */}
-          <div className="lg:hidden flex items-center">
+
+          {/* Mobile top bar: role actions + hamburger */}
+          <div className="lg:hidden flex items-center gap-2">
+            {userData && userData.role === "caregiver" ? (
+              <CaregiverNavbarRight />
+            ) : userData && userData.role === "provider" ? (
+              <ProviderNavbarRight />
+            ) : null}
             <MobileMenu />
           </div>
+
           {/* Navbar Links for Desktop */}
           <div className="hidden justify-between items-center w-full lg:flex lg:w-auto lg:order-1">
             <NavbarLink />
