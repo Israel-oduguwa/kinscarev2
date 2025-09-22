@@ -227,7 +227,7 @@ function ProfessionProfile({ userData, user }: any) {
   /** ---------- IO (unchanged contract) ---------- */
   const saveToDatabase = async (summary: JobSummary) => {
     try {
-      await axios.post("http://localhost:8081/api/v1/auth/crud-operation", {
+      await axios.post("https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/crud-operation", {
         collectionName: "users",
         operation: "updateOne",
         filter: { userID: userData.userID },
@@ -249,7 +249,7 @@ function ProfessionProfile({ userData, user }: any) {
 
       // 1) DB check
       const dbResp = await axios.post(
-        "http://localhost:8081/api/v1/auth/crud-operation",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/crud-operation",
         {
           collectionName: "users",
           operation: "findOne",
@@ -279,7 +279,7 @@ function ProfessionProfile({ userData, user }: any) {
         institution: seed.institution || "",
       };
       const aiResp = await axios.post(
-        "http://localhost:8081/api/v1/ai/recommendation",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/ai/recommendation",
         payload
       );
 

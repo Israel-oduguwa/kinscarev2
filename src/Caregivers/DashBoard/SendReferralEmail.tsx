@@ -71,7 +71,7 @@ function SendReferralEmail() {
     };
     try {
       await axios.post(
-        "http://localhost:8081/api/v1/auth/crud-operation",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/crud-operation",
         payload
       );
       const fetchedData: any = await fetchUserData(
@@ -102,7 +102,7 @@ function SendReferralEmail() {
       };
 
       const sendReferEmail = await axios.post(
-        "http://localhost:8081/api/v1/email/refer-employer",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/email/refer-employer",
         payload
       );
 

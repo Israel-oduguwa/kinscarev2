@@ -66,7 +66,7 @@ const InviteFriends: React.FC = () => {
     };
     try {
       await axios.post(
-        "http://localhost:8081/api/v1/auth/crud-operation",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/crud-operation",
         payload
       );
       const fetchedData: any = await fetchUserData(
@@ -91,7 +91,7 @@ const InviteFriends: React.FC = () => {
       setLastInvitee(data.name);
 
       await axios.post(
-        "http://localhost:8081/api/v1/email/invite-friend",
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/email/invite-friend",
         {
           to: data.email,
           senderName: `${userData.fname} ${userData.lname}`,
