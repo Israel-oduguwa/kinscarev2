@@ -22,6 +22,7 @@ import Editor from "@/components/Editor";
 import TagManager from "react-gtm-module";
 import SignupDialog from "@/Authentication/SignupDialog";
 import { useRouter } from "next/navigation";
+import { trackEvents } from "@/lib/utils";
 
 // Job form validation schema
 const jobSchema = Yup.object().shape({
@@ -518,9 +519,11 @@ const PublicJobPostPage = () => {
       const jobs = await axios.post(
         "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/post-job",
         payload
-      );
+      ); 
+         trackEvents(userData.hash, "Post Job", payload);
       console.log(jobs)
       toast({ title: "Job Posted Successfully", variant: "default" });
+
       TagManager.dataLayer({
         dataLayer: {
           event: "post_job",
