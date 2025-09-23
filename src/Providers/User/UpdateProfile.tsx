@@ -11,7 +11,6 @@ import { useContext, useEffect, useState } from "react";
 import Dropzone from "react-dropzone";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-// import MuiTailwindCheckbox from "@/components/muiTailwindcssCheckbox";
 import MongoContext from "@/app/MongoContext";
 import MultiSelectField from "@/components/MultiSelect";
 
@@ -23,23 +22,69 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchContactsData } from "@/lib/utils";
-import { Camera, LoaderCircle, ShieldAlert, X } from "lucide-react";
+import {
+  Camera,
+  Cloud,
+  Loader,
+  LoaderCircle,
+  ShieldAlert,
+  UserRound,
+  X,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import TagManager from "react-gtm-module";
 import VerifyAccount from "../Candidates/VerifyAccount";
-// Form Validation Schema with Yup
-const schema = yup.object().shape({
-  address: yup.string().required("Please enter provider's street address"), //.max(2, 'Full name can only be 6 characters long.'),
+
+const isHostedStorageUrl = (url?: string | null) => {
+  if (!url) return false;
+  try {
+    const u = new URL(url);
+    const host = u.hostname.toLowerCase();
+    // adjust to your exact bucket/CF domain(s)
+    const OUR_HOSTS = [
+      "kinscare-storage.s3.amazonaws.com",
+      // "cdn.kinscare.com", // if you serve via CloudFront, add it here
+    ];
+    // also allow generic s3 path patterns for your bucket (optional)
+    const isS3Pattern =
+      (host.endsWith(".amazonaws.com") || host.includes("s3")) &&
+      u.pathname.startsWith("/kinscare-storage");
+
+    return OUR_HOSTS.includes(host) || isS3Pattern;
+  } catch {
+    return false;
+  }
+};
+
+// fire-and-forget deletion for *hosted* files only
+const safeDeleteHostedFile = async (fileUrl?: string | null) => {
+  if (!fileUrl || !isHostedStorageUrl(fileUrl)) return;
+  try {
+    await axios.post(
+      "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/delete-file",
+      { fileUrl }
+    );
+  } catch {
+    // silent: don't block the UX if cleanup fails
+  }
+};
+
+// ---------- Helpers ----------
+const emptyToNull = (v: unknown) =>
+  typeof v === "string" ? (v.trim() === "" ? null : v) : v;
+
+// ---------- Validation ----------
+const schema = yup.object({
+  address: yup.string().required("Please enter provider's street address"),
   fname: yup.string().required("First name is required"),
   name: yup.string().required("KinsCare or provider name is required"),
   lname: yup.string().required("Last name is required"),
-  // email: yup.string().email("Invalid email").required("Email is required"),
   city: yup.string().required("City is required"),
   zipcode: yup.string().required("Zipcode is required"),
   trainer: yup
     .string()
     .required("Please select whether you offer training or not"),
-  settings: yup.object().shape({
+  settings: yup.object({
     alert_preferences: yup
       .array()
       .min(1, "Select at least one way to be contacted.")
@@ -54,30 +99,30 @@ const schema = yup.object().shape({
   type_of_setting: yup
     .array()
     .min(1, "Please select provider type of care setting(s).")
-    .required("Must at least select one type of setting."), //.min(1, "at least 1")
-  profileImage: yup.string().required("image url is required"),
+    .required("Must at least select one type of setting."),
+  // OPTIONAL profile image
+  profileImage: yup
+    .mixed()
+    .transform(emptyToNull)
+    .nullable()
+    .test(
+      "is-url-or-null",
+      "Invalid image URL",
+      (val) => val === null || typeof val === "string"
+    ),
 });
 
-// the fields
+// ---------- Options ----------
 const groupProvider = [
   {
     label: "Assisted Living/Nursing Home",
     value: "Assisted Living/Nursing Home",
   },
-  {
-    label: "Adult Family/Boarding Home",
-    value: "Adult Family/Boarding Home",
-  },
+  { label: "Adult Family/Boarding Home", value: "Adult Family/Boarding Home" },
   { label: "Hospital/Clinic", value: "Hospital/Clinic" },
   { label: "Home Care Agency", value: "Home Care Agency" },
   { label: "Other", value: "Other" },
 ];
-
-const verifyPaymentMethod = () => {
-  // Your verification logic here
-  // For now, just close the dialog
-  setIsVerificationDialogOpen(false);
-};
 
 const groupCall = [
   { label: "Phone Call", value: "Phone_call" },
@@ -91,14 +136,13 @@ interface IFormInput {
 
 const UpdateProfile = () => {
   const mongodb: any = useContext(MongoContext);
-  const { user, userData, setCustomData } = mongodb;
-  // Add for verification dialog
-
-  // Inside your component (UpdateProfile)
-  const [isVerificationDialogOpen, setIsVerificationDialogOpen] =
-    useState(false); // Add for verification dialog
-
+  const { user, userData, setCustomData } = mongodb || {};
   const router = useRouter();
+
+  const [isVerificationDialogOpen, setIsVerificationDialogOpen] =
+    useState(false);
+  const [openModal, setOpenModal] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -111,90 +155,107 @@ const UpdateProfile = () => {
     defaultValues: {
       fname: "",
       lname: "",
+      name: "",
+      address: "",
       settings: {
-        alert_preferences: [],
+        alert_preferences: [] as string[],
         tel: "",
         email: "",
       },
+      trainer: "",
+      type_of_setting: [] as string[],
       city: "",
       zipcode: "",
-      profileImage: "",
+      profileImage: null as string | null,
     },
+    mode: "onSubmit",
   });
 
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(
     null
   );
-  const [resumePreview, setResumePreview] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false); // General loading state
-  const [openModal, setOpenModal] = useState(false);
-  const [imageLoading, setImageLoading] = useState(false); // Image upload loading state
-  const [documentLoading, setDocumentLoading] = useState(false); // Document upload loading state
-  console.log(errors);
-  // Handle Profile Image Upload
-  // console.log(userData, "update this is why did");
+  const [loading, setLoading] = useState(false);
+  const [imageLoading, setImageLoading] = useState(false);
+  const [documentLoading] = useState(false); // kept for parity; not used here
+
+  // ---------- Prefill ----------
   useEffect(() => {
-    if (userData && user) {
-      reset({
-        fname: userData.complete || userData.fname !== "" ? userData.fname : "",
-        name: userData.name || userData.name !== "" ? userData.name : "",
-        lname: userData.complete || userData.lname !== "" ? userData.lname : "",
-        address:
-          userData.complete || userData.address !== "" ? userData.address : "",
-        settings: {
-          alert_preferences: userData.complete
-            ? userData?.settings?.alert_preferences
-            : [],
-          tel: userData.complete ? userData.settings.tel : userData?.auth.tel,
-          email: userData.complete
-            ? userData.settings.email
-            : userData.auth.email,
-        },
-        trainer: userData.complete ? userData.trainer : "",
-        type_of_setting: userData.type_of_setting
-          ? userData.type_of_setting
-          : [],
-        city:
-          userData.complete || userData?.city !== ""
-            ? userData.city
-              ? userData?.city
-              : ""
-            : "",
-        zipcode:
-          userData.complete || userData?.zipcode
-            ? userData?.zipcode
-              ? userData?.zipcode
-              : ""
-            : "",
-        profileImage:
-          userData.complete || userData.profileImage !== ""
-            ? userData.profileImage
-              ? userData.profileImage
-              : ""
-            : "",
-      });
-      setProfileImagePreview(userData.profileImage);
-    }
-  }, [userData, reset, user]);
-  const handleProfileImageUpload = async (file: File[]) => {
+    if (!userData || !user) return;
+
+    reset({
+      fname: userData?.fname ?? "",
+      lname: userData?.lname ?? "",
+      name: userData?.name ?? "",
+      address: userData?.address ?? "",
+      settings: {
+        alert_preferences: userData?.settings?.alert_preferences ?? [],
+        tel: userData?.settings?.tel ?? userData?.auth?.tel ?? "",
+        email: userData?.settings?.email ?? userData?.auth?.email ?? "",
+      },
+      trainer: userData?.trainer ?? "",
+      type_of_setting: userData?.type_of_setting ?? [],
+      city: userData?.city ?? "",
+      zipcode: userData?.zipcode ?? "",
+      profileImage: userData?.profileImage ?? null,
+    });
+
+    setProfileImagePreview(userData?.profileImage ?? null);
+  }, [userData, user, reset]);
+
+  // ---------- Uploads ----------
+  const IMG_MAX_BYTES = 1 * 1024 * 1024; // 1MB
+
+const handleProfileImageUpload = async (files: File[]) => {
+  const file = files?.[0];
+  if (!file) return;
+
+  const previousUrl = profileImagePreview;
+
+  try {
+    setImageLoading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    const { data } = await axios.post(
+      "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/upload-file",
+      formData
+    );
+    const url = data?.url ?? "";
+    setValue("profileImage", url, { shouldDirty: true });
+    setProfileImagePreview(url);
+    toast({ title: "Profile image uploaded successfully" });
+    // background cleanup of old hosted image
+    safeDeleteHostedFile(previousUrl);
+  } catch (error: any) {
+    toast({
+      title: "Error uploading profile image",
+      description: error?.response?.data?.message || error?.message || "Upload failed",
+      variant: "destructive",
+    });
+  } finally {
+    setImageLoading(false);
+  }
+};
+
+
+  const deleteFile = async (url: string | null, type: "image") => {
+    if (!url) return;
+    const hosted = isHostedStorageUrl(url);
+
     try {
       setImageLoading(true);
-      const formData = new FormData();
-      formData.append("file", file[0]);
-      const { data } = await axios.post(
-        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/upload-file",
-        formData
-      );
-      setValue("profileImage", data.url);
-      setProfileImagePreview(data.url);
-      toast({
-        title: "Profile image uploaded successfully",
-        variant: "default",
-      });
+      if (hosted) {
+        await axios.post(
+          "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/delete-file",
+          { fileUrl: url }
+        );
+      }
+      setProfileImagePreview(null);
+      setValue("profileImage", null, { shouldDirty: true });
+      toast({ title: "Profile image removed" });
     } catch (error: any) {
       toast({
-        title: "Error uploading profile image",
-        description: error.message,
+        title: "Error removing image",
+        description: error?.response?.data?.message || error?.message,
         variant: "destructive",
       });
     } finally {
@@ -202,114 +263,62 @@ const UpdateProfile = () => {
     }
   };
 
-  // Delete Profile Image
-  const deleteFile = async (url: string, type: string) => {
-    try {
-      if (type === "image") {
-        setImageLoading(true);
-      } else {
-        setImageLoading(true);
-      }
-      const payload = { fileUrl: url };
-      const { data } = await axios.post(
-        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/delete-file",
-        payload
-      );
-      if (data.success) {
-        if (type === "image") {
-          setProfileImagePreview(null);
-          setImageLoading(false);
-        } else {
-          setResumePreview(null);
-          setDocumentLoading(false);
-        }
-      }
-    } catch (error: any) {
-      toast({
-        title: "Error deleting file",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setImageLoading(false);
-    }
-  };
-  // console.log(userData);
-  // Handle form submission
+  // ---------- Submit ----------
   const onSubmit = async (data: any) => {
     setLoading(true);
     try {
       const payload = {
         ...data,
         complete: true,
-        hash: user.customData.hash,
+        hash: user?.customData?.hash, // keep existing contract
       };
-      console.log(payload);
+
       await axios.post(
         `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/settings/update/${userData.userID}`,
         payload
       );
 
-      toast({ title: "Profile updated successfully", variant: "default" });
-      //  This are the data that was passed as ...data
-      // {
-      //   "address": "Please enter provider's street address",
-      //   "fname": "First name is required",
-      //   "name": "KinsCare or provider name is required",
-      //   "lname": "Last name is required",
-      //   "city": "City is required",
-      //   "zipcode": "Zipcode is required",
-      //   "trainer": "Please select whether you offer training or not",
-      //   "settings": {
-      //     "alert_preferences": "Select at least one way to be contacted.",
-      //     "email": "Must be a valid email",
-      //     "tel": "Please enter your phone number"
-      //   },
-      //   "type_of_setting": "Please select provider type of care setting(s).",
-      //   "profileImage": "image url is required"
-      // }
+      toast({ title: "Profile updated successfully" });
 
-      const tagManagerArgs = {
+      TagManager.dataLayer({
         dataLayer: {
-          event: `update_profile`,
+          event: "update_profile",
           ...data,
         },
-      };
-      TagManager.dataLayer(tagManagerArgs);
+      });
 
       const updatedData = await fetchContactsData(
-        user.customData.userID,
-        user.customData.email
+        user?.customData?.userID,
+        user?.customData?.email
       );
-      if (updatedData) {
+      if (updatedData?.result) {
         await setCustomData(updatedData.result);
         router.push("/provider/candidates/all");
-        // Wait for webhook processing (e.g., 2 seconds)
         setTimeout(() => {
-          window.location.reload(); // Reload after the delay
-          close();
-          setLoading(false); // Ensure loading state is turned off
-        }, 3000); // 3-second delay
+          if (typeof window !== "undefined") window.location.reload();
+        }, 1200);
       }
     } catch (error: any) {
       toast({
         title: "Error updating profile",
-        description: error.message,
+        description:
+          error?.response?.data?.message || error?.message || "Update failed",
         variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
   };
-  // console.log(userData?.availability);
- const verifyPaymentMethod = () => {
+
+  // ---------- Verify ----------
+  const verifyPaymentMethod = () => {
     setOpenModal(true);
     setIsVerificationDialogOpen(false);
   };
 
   return (
     <div className="bg-gray-100 py-10">
-      <div className="max-w-6xl mx-auto ">
+      <div className="max-w-6xl mx-auto">
         {!user?.customData?.verified && (
           <div className="flex items-center gap-2 mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
             <ShieldAlert className="w-5 text-red-700 h-5" />
@@ -324,133 +333,134 @@ const UpdateProfile = () => {
             </span>
           </div>
         )}
+
         <Dialog
           open={isVerificationDialogOpen}
           onOpenChange={setIsVerificationDialogOpen}
         >
           <DialogContent
             closePosition="left"
-            className="mx-auto bg-white rounded-lg shadow-lg overflow-hidden"
+            className="mx-auto bg-white rounded-lg shadow-lg"
           >
             <DialogTitle className="pt-4">
               Get Verified & Connect To More Caregivers
             </DialogTitle>
-            <DialogDescription className="">
+            <DialogDescription>
               You probably hate being solicited by scammers and so do our
               caregivers. To prevent exploitation, we now require all employers
               to complete a quick, FREE one-time identity verification. This
               ensures trust, safety, and shows caregivers your interest is
               genuine. Verify now to help maintain a secure community!
             </DialogDescription>
-            <Button
-              className="mt-4 bg-blue-500 hover:bg-blue-700"
-              onClick={verifyPaymentMethod}
-            >
+            <Button className="mt-4" onClick={verifyPaymentMethod}>
               Verify Now
             </Button>
           </DialogContent>
         </Dialog>
-        <div className="mx-4 xl:mx-0 px-4 py-10 md:px-10 rounded-lg shadow-lg bg-white">
+
+        <div className="mx-4 xl:mx-0 px-4 py-8 md:px-8 rounded-lg shadow-lg bg-white">
           {userData ? (
             <>
               <div className="mb-5">
-                <h2 className="font-bold text-xl  text-gray-900">
+                <h2 className="font-bold text-xl text-gray-900">
                   {!user?.customData?.complete
                     ? "Add your company or provider information to find the best match"
                     : "Update your account"}
                 </h2>
-                <p className="text-sm antialiased">
-                  Update your resume for caregivers to be able to recognize you
-                  and get connected faster
+                <p className="text-sm antialiased text-gray-700">
+                  Update your profile so caregivers can recognize you and get
+                  connected faster.
                 </p>
               </div>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-20">
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-16">
                 {/* Form Section */}
                 <div className="lg:col-span-2 w-full">
                   <form
                     autoComplete="off"
-                    className="space-y-5 lg:col-span-8  md:col-span-8"
+                    className="space-y-5"
+                    onSubmit={handleSubmit(onSubmit)}
                   >
-                    {/* Contact Information Section */}
+                    {/* Contact Information */}
                     <div className="mb-4">
                       <div className="mb-2">
                         <h3 className="font-semibold text-gray-700">
                           Contact information
                         </h3>
-                        {/* <p className="text-sm font-normal text-gray-00 antialiased">
-                  Enter your first and last name
-                </p> */}
                       </div>
-                      <div className="grid grid-cols-2 gap-4 mb-4">
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div className="mb-0">
                           <label
-                            htmlFor="email"
-                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            htmlFor="first-name"
+                            className="block mb-2 text-sm font-medium text-gray-900"
                           >
                             First name
                           </label>
                           <input
                             type="text"
                             id="first-name"
-                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             required
-                            {...register("fname")} // To connect with react-hook-form
+                            {...register("fname")}
                           />
                           {errors.fname && (
-                            <p className="text-red-500">
-                              {errors.fname.message}
+                            <p className="text-red-500 text-xs">
+                              {String(errors.fname.message)}
                             </p>
                           )}
                         </div>
 
                         <div>
                           <label
-                            htmlFor="text"
-                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            htmlFor="last-name"
+                            className="block mb-2 text-sm font-medium text-gray-900"
                           >
                             Last name
                           </label>
                           <input
                             type="text"
                             id="last-name"
-                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             required
-                            {...register("lname")} // To connect with react-hook-form
+                            {...register("lname")}
                           />
                           {errors.lname && (
-                            <p className="text-red-500">
-                              {errors.lname.message}
+                            <p className="text-red-500 text-xs">
+                              {String(errors.lname.message)}
                             </p>
                           )}
                         </div>
                       </div>
+
                       <div className="w-full">
                         <div className="mb-0">
                           <label
-                            htmlFor="email"
-                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            htmlFor="provider-name"
+                            className="block mb-2 text-sm font-medium text-gray-900"
                           >
                             Name of care provider
                           </label>
                           <input
                             type="text"
-                            id="first-name"
-                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            id="provider-name"
+                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             required
-                            {...register("name")} // To connect with react-hook-form
+                            {...register("name")}
                           />
                           {errors.name && (
-                            <p className="text-red-500">
-                              {errors.name.message}
+                            <p className="text-red-500 text-xs">
+                              {String(errors.name.message)}
                             </p>
                           )}
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-4 mt-4 mb-4">
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 mb-4">
                         <div>
                           <label
                             htmlFor="email"
-                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            className="block mb-2 text-sm font-medium text-gray-900"
                           >
                             Email
                           </label>
@@ -458,13 +468,13 @@ const UpdateProfile = () => {
                             type="email"
                             autoComplete="new-password"
                             id="email"
-                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             required
-                            {...register("settings.email")} // To connect with react-hook-form
+                            {...register("settings.email")}
                           />
                           {errors.settings?.email && (
-                            <p className="text-red-500">
-                              {errors.settings.email.message}
+                            <p className="text-red-500 text-xs">
+                              {String(errors.settings.email.message)}
                             </p>
                           )}
                         </div>
@@ -472,7 +482,7 @@ const UpdateProfile = () => {
                         <div>
                           <label
                             htmlFor="tel"
-                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            className="block mb-2 text-sm font-medium text-gray-900"
                           >
                             Telephone
                           </label>
@@ -480,86 +490,88 @@ const UpdateProfile = () => {
                             type="tel"
                             id="tel"
                             autoComplete="new-password"
-                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             required
-                            {...register("settings.tel")} // To connect with react-hook-form
+                            {...register("settings.tel")}
                           />
                           {errors.settings?.tel && (
                             <p className="text-red-500 text-xs">
-                              {errors.settings.tel.message}
+                              {String(errors.settings.tel.message)}
                             </p>
                           )}
                         </div>
                       </div>
+
                       <p className="font-semibold text-gray-700 mb-2">
                         To find caregivers close to you
                       </p>
                       <div>
                         <label
-                          htmlFor="city"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                          htmlFor="address"
+                          className="block mb-2 text-sm font-medium text-gray-900"
                         >
                           Street address
                         </label>
                         <input
                           type="text"
-                          id="last-name"
-                          className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          id="address"
+                          className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                           required
-                          {...register("address")} // To connect with react-hook-form
+                          {...register("address")}
                         />
                         {errors.address && (
                           <p className="text-red-500 text-xs">
-                            {errors.address.message}
+                            {String(errors.address.message)}
                           </p>
                         )}
                       </div>
-                      <div className="grid grid-cols-2 gap-4 mt-4">
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                         <div>
                           <label
                             htmlFor="city"
-                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            className="block mb-2 text-sm font-medium text-gray-900"
                           >
                             City
                           </label>
                           <input
                             type="text"
-                            id="last-name"
-                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            id="city"
+                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             required
-                            {...register("city")} // To connect with react-hook-form
+                            {...register("city")}
                           />
                           {errors.city && (
                             <p className="text-red-500 text-xs">
-                              {errors.city.message}
+                              {String(errors.city.message)}
                             </p>
                           )}
                         </div>
 
                         <div>
                           <label
-                            htmlFor="city"
-                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            htmlFor="zipcode"
+                            className="block mb-2 text-sm font-medium text-gray-900"
                           >
                             Zipcode
                           </label>
                           <input
                             type="text"
-                            id="last-name"
-                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            id="zipcode"
+                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             required
-                            {...register("zipcode")} // To connect with react-hook-form
+                            {...register("zipcode")}
                           />
                           {errors.zipcode && (
                             <p className="text-red-500 text-xs">
-                              {errors.zipcode.message}
+                              {String(errors.zipcode.message)}
                             </p>
                           )}
                         </div>
                       </div>
                     </div>
 
-                    {/* Licenses */}
+                    {/* Type of provider */}
                     <div>
                       <h3 className="font-semibold text-gray-700 antialiased mb-2">
                         What kind of care provider are you?
@@ -567,43 +579,41 @@ const UpdateProfile = () => {
                       <MultiSelectField
                         name="type_of_setting"
                         control={control}
-                        isAnimation={true}
+                        isAnimation
                         options={groupProvider}
                         placeholder="Kind of provider"
-                        maxCount={4} // You can limit the number of selections
-                        rules={{ required: true }} // Additional rules can be passed here
+                        maxCount={4}
+                        rules={{ required: true }}
                       />
-
                       {errors.type_of_setting && (
                         <p className="text-red-500 text-xs">
-                          {errors.type_of_setting.message}
+                          {String(errors.type_of_setting.message)}
                         </p>
                       )}
                     </div>
-                    {/* Mobility */}
+
+                    {/* In-house training */}
                     <div>
-                      <h3 className="font-semibold text-gray-700  mb-2">
-                        Do you offer in house training or sponsor training? In
-                        house training helps with caregiver onboarding.
+                      <h3 className="font-semibold text-gray-700 mb-2">
+                        Do you offer in-house training or sponsor training?
                       </h3>
                       <Controller
                         name="trainer"
                         control={control}
-                        // rules={{ required: "This field is required" }}
                         render={({ field }) => (
                           <RadioGroup
-                            value={field.value} // Bind value to the field
-                            onValueChange={(value) => field.onChange(value)} // Ensure onChange updates the form
-                            className="flex gap-4"
+                            value={field.value}
+                            onValueChange={(value) => field.onChange(value)}
+                            className="flex gap-6"
                           >
-                            <div className="flex gap-1 items-center">
+                            <div className="flex gap-2 items-center">
                               <RadioGroupItem
                                 value="yes"
                                 className="border-gray-600"
                               />
                               <Label>Yes</Label>
                             </div>
-                            <div className="flex gap-1 items-center">
+                            <div className="flex gap-2 items-center">
                               <RadioGroupItem
                                 value="no"
                                 className="border-gray-600"
@@ -615,123 +625,198 @@ const UpdateProfile = () => {
                       />
                       {errors.trainer && (
                         <p className="text-red-500 text-xs">
-                          {errors.trainer.message}
+                          {String(errors.trainer.message)}
                         </p>
                       )}
                     </div>
+
+                    {/* Alerts */}
                     <div>
                       <h3 className="font-semibold text-gray-700 antialiased mb-2">
                         How do you want caregivers to contact you? [Must choose
-                        one - your contact details would not be shared]:
+                        one - your contact details won’t be shared]
                       </h3>
                       <MultiSelectField
                         name="settings.alert_preferences"
                         control={control}
-                        isAnimation={true}
+                        isAnimation
                         options={groupCall}
-                        placeholder="your alert preferences for employers to contact you"
-                        maxCount={4} // You can limit the number of selections
-                        rules={{ required: true }} // Additional rules can be passed here
+                        placeholder="Your alert preferences"
+                        maxCount={3}
+                        rules={{ required: true }}
                       />
                       {errors.settings?.alert_preferences && (
                         <p className="text-red-500 text-xs">
-                          {errors.settings.alert_preferences.message}
+                          {String(errors.settings.alert_preferences.message)}
                         </p>
                       )}
                     </div>
 
-                    {/* Submit Button */}
+                    {/* Submit (desktop) */}
                     <Button
+                      type="submit"
                       disabled={loading || isSubmitting}
-                      onClick={handleSubmit(onSubmit)}
                       className="w-full hidden gap-2 lg:flex"
                     >
-                      {loading && <LoaderCircle className="animate-spin" />}{" "}
+                      {(loading || isSubmitting) && (
+                        <LoaderCircle className="animate-spin" />
+                      )}{" "}
                       {loading || isSubmitting
                         ? "Updating..."
-                        : `${
-                            !user?.customData?.complete
-                              ? "Add Details"
-                              : "Update Settings"
-                          }`}
+                        : !user?.customData?.complete
+                          ? "Add Details"
+                          : "Update Settings"}
                     </Button>
                   </form>
                 </div>
 
-                {/* Profile Image & Resume Section */}
-                <div className="sticky top-10">
-                  {/* Profile Image Upload */}
+                {/* Profile Image Section */}
+                <div className="lg:sticky lg:top-10">
                   <div className="mb-6">
-                    <h3 className="font-semibold ">Profile Image</h3>
-                    <p className="text-sm antialiased mb-4">
-                      Set your profile image to build trust with employers Drag
-                      and drop profile image or click to select
+                    <h3 className="font-semibold">
+                      Profile Image{" "}
+                      <span className="text-gray-500 font-normal">
+                        (optional)
+                      </span>
+                    </h3>
+                    <p className="text-sm antialiased mb-3 text-gray-700">
+                      Add a clear logo/photo to build trust. Drag & drop or
+                      click to upload.
                     </p>
+
                     {profileImagePreview ? (
                       <div className="w-full">
-                        <div className="border-4 p-2 border-gray-200  rounded-full w-40 h-40 relative">
+                        <div className="border-4 p-2 border-gray-200 rounded-full w-36 h-36 sm:w-40 sm:h-40 relative mx-auto">
                           <Avatar className="rounded-full w-full h-full">
                             <AvatarImage
                               src={profileImagePreview || "/default-avatar.png"}
-                              alt={"profile-image"}
+                              alt="profile-image"
                             />
-                            <AvatarFallback>
-                              {user?.customData?.name?.charAt(0).toUpperCase()}
+                            <AvatarFallback className="bg-gray-100">
+                              <UserRound className="w-8 h-8 text-gray-500" />
                             </AvatarFallback>
                           </Avatar>
+
                           <Button
-                            onClick={() => {
-                              deleteFile(profileImagePreview, "image");
-                            }}
-                            className="absolute top-0 right-0 bg-gray-800 text-white rounded-full"
+                            onClick={() =>
+                              deleteFile(profileImagePreview, "image")
+                            }
+                            className="absolute -top-2 -right-2 bg-gray-800 text-white rounded-full"
                             size="icon"
+                            type="button"
                             variant="ghost"
+                            aria-label="Remove profile image"
                           >
                             <X
-                              className={`${documentLoading && "animate-spin"}`}
-                              size={20}
+                              className={`${imageLoading ? "animate-spin" : ""}`}
+                              size={18}
                             />
                           </Button>
                         </div>
                       </div>
                     ) : (
-                      <Dropzone
-                        onDrop={(acceptedFiles: any) => {
-                          handleProfileImageUpload(acceptedFiles);
-                        }}
-                        disabled={imageLoading}
-                        accept={{ "image/*": [".jpeg", ".jpg", ".png"] }}
-                        maxSize={1048576} // 1 MB limit
-                      >
-                        {({ getRootProps, getInputProps }: any) => (
-                          <div
-                            {...getRootProps()}
-                            className="p-2 border-4 border-gray-100 rounded-full w-40 h-40 text-center cursor-pointer flex justify-center items-center"
-                          >
-                            {!imageLoading && <input {...getInputProps()} />}
-                            <Avatar className="w-full h-full">
-                              <AvatarImage
-                                src="https://kinscare-storage.s3.amazonaws.com/Firefly_Generate_a_place_holder_profile_image_cartoony_avatar_Caucasian_man_for_job_application_1309_(1)-transformed.jpeg"
-                                alt="placeholder"
-                              />
-                            </Avatar>
-                            <div className="absolute bg-gray-50 p-2 rounded-full">
-                              {" "}
-                              <Camera
-                                className={`${imageLoading && "animate-spin"}`}
-                              />
+                      <>
+                        {/* Encouraging tip */}
+                        <div className="mb-2 rounded-md bg-blue-50 text-blue-800 text-xs px-3 py-2 border border-blue-100">
+                          Providers with a photo/logo get more responses from
+                          caregivers. You can add one now or later.
+                        </div>
+
+                        <Dropzone
+                          onDrop={(acceptedFiles) =>
+                            handleProfileImageUpload(acceptedFiles)
+                          }
+                          onDropRejected={(rejections) => {
+                            const r = rejections?.[0];
+                            if (r?.errors?.[0]?.code === "file-too-large") {
+                              toast({
+                                title: "Image too large (max 1MB).",
+                                variant: "destructive",
+                              });
+                            } else if (
+                              r?.errors?.[0]?.code === "file-invalid-type"
+                            ) {
+                              toast({
+                                title: "Unsupported type. Use JPG/PNG.",
+                                variant: "destructive",
+                              });
+                            } else {
+                              toast({
+                                title:
+                                  "Could not add image. Try a different file.",
+                                variant: "destructive",
+                              });
+                            }
+                          }}
+                          disabled={imageLoading}
+                          accept={{ "image/*": [".jpeg", ".jpg", ".png"] }}
+                          maxSize={IMG_MAX_BYTES}
+                          multiple={false}
+                        >
+                          {({ getRootProps, getInputProps, isDragActive }) => (
+                            <div
+                              {...getRootProps()}
+                              className={`p-2 border-4 rounded-full w-36 h-36 sm:w-40 sm:h-40 mx-auto text-center cursor-pointer flex justify-center items-center relative transition
+                              ${isDragActive ? "border-blue-300 bg-blue-50" : "border-gray-100 bg-white"}`}
+                            >
+                              {!imageLoading && (
+                                <input
+                                  {...getInputProps()}
+                                  aria-label="Upload profile image"
+                                />
+                              )}
+                              <div className="w-full h-full rounded-full flex items-center justify-center bg-gray-50">
+                                <UserRound className="w-12 h-12 text-gray-400" />
+                              </div>
+                              <div className="absolute bg-gray-50 border border-gray-200 p-2 rounded-full shadow-sm">
+                                {imageLoading ? (
+                                  <Loader className="animate-spin w-4 h-4" />
+                                ) : (
+                                  <Camera className="w-4 h-4" />
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        )}
-                      </Dropzone>
+                          )}
+                        </Dropzone>
+                      </>
                     )}
+                  </div>
+
+                  {/* Submit (mobile) */}
+                  <div className="mt-4">
+                    <Button
+                      type="button"
+                      disabled={loading || isSubmitting}
+                      onClick={(e) => {
+                        e.currentTarget
+                          .closest("div.grid")
+                          ?.querySelector("form")
+                          ?.dispatchEvent(
+                            new Event("submit", {
+                              cancelable: true,
+                              bubbles: true,
+                            })
+                          );
+                      }}
+                      className="w-full flex gap-2 lg:hidden"
+                    >
+                      {(loading || isSubmitting) && (
+                        <LoaderCircle className="animate-spin" />
+                      )}{" "}
+                      {loading || isSubmitting
+                        ? "Updating..."
+                        : !user?.customData?.complete
+                          ? "Add Details"
+                          : "Update Settings"}
+                    </Button>
                   </div>
                 </div>
               </div>
             </>
           ) : (
+            // Skeleton state
             <>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-20">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
                 <div className="lg:col-span-2 w-full">
                   <div className="flex flex-col space-y-4">
                     <Skeleton className="h-10 max-w-[850px] bg-slate-200" />
