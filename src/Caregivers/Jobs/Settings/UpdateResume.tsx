@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -15,9 +15,10 @@ import MongoContext from "@/app/MongoContext";
 import {
   AlertCircle,
   Camera,
-  Cloudy,
+  Cloud,
   Loader,
   LoaderCircle,
+  UserRound,
   X,
 } from "lucide-react";
 import {
@@ -27,27 +28,27 @@ import {
 } from "@/lib/utils";
 import TagManager from "react-gtm-module";
 import { useRouter } from "next/navigation";
-// Use SONNER for info/warning/error UX
+// SONNER for UX
 import { toast as notify } from "sonner";
-import DeleteAccount from "@/Providers/User/DeleteAccount";
+// import DeleteAccount from "@/Providers/User/DeleteAccount";
 
 // ----------------- Validation -----------------
-const schema = yup.object().shape({
+// Helper: turn "" -> null for optional strings
+const emptyToNull = (v: unknown) =>
+  typeof v === "string" ? (v.trim() === "" ? null : v) : v;
+
+const schema = yup.object({
   fname: yup.string().required("First name is required"),
   lname: yup.string().required("Last name is required"),
   city: yup.string().required("City is required"),
   zipcode: yup.string().required("Zipcode is required"),
   mobility: yup.string().required("Mobility option is required"),
-  settings: yup.object().shape({
+  settings: yup.object({
     alert_preferences: yup
       .array()
       .min(1, "Select at least one way to be contacted.")
       .required("required"),
-    email: yup
-      .string()
-      .email("Must be a valid email")
-      .max(255)
-      .required("Email is required"),
+    email: yup.string().email("Must be a valid email").max(255).required("Email is required"),
     tel: yup.string().required("Please enter your phone number"),
     role: yup.string(),
   }),
@@ -66,8 +67,13 @@ const schema = yup.object().shape({
     .of(yup.string())
     .min(1, "Select at least one availability option")
     .required("Availability is required."),
-  profileImage: yup.string().required("Image URL is required"),
-  resumeDocument: yup.string().optional(),
+  // Make profile image OPTIONAL; if present, validate as URL
+  profileImage: yup
+    .mixed()
+    .transform(emptyToNull)
+    .nullable()
+    .test("is-url-or-null", "Invalid image URL", (val) => val === null || typeof val === "string"),
+  resumeDocument: yup.mixed().transform(emptyToNull).nullable(),
   smsConsent: yup
     .boolean()
     .required()
@@ -129,15 +135,14 @@ const CaregiverProfileForm = () => {
       mobility: "has_car",
       zipcode: "",
       availability: [],
-      profileImage: "",
-      resumeDocument: "",
+      profileImage: null as string | null,
+      resumeDocument: null as string | null,
       smsConsent: false,
     },
+    mode: "onSubmit",
   });
 
-  const [profileImagePreview, setProfileImagePreview] = useState<string | null>(
-    null
-  );
+  const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
   const [resumePreview, setResumePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
@@ -145,10 +150,9 @@ const CaregiverProfileForm = () => {
 
   // --------- Guard: if signed out, show info + redirect safely ----------
   useEffect(() => {
-    // If auth is missing, don't touch nested fields; just inform + redirect.
     if (!user || !userData) {
       if (!hasShownSignedOutNotice.current) {
-        notify("You’re signed out. Redirecting to sign up…");
+        notify.info("You’re signed out. Redirecting to sign up…");
         hasShownSignedOutNotice.current = true;
       }
       const t = setTimeout(() => router.replace("/signup"), 900);
@@ -162,50 +166,27 @@ const CaregiverProfileForm = () => {
 
     try {
       reset({
-        fname:
-          userData?.complete || userData?.fname ? userData?.fname ?? "" : "",
-        lname:
-          userData?.complete || userData?.lname ? userData?.lname ?? "" : "",
+        fname: userData?.complete || userData?.fname ? userData?.fname ?? "" : "",
+        lname: userData?.complete || userData?.lname ? userData?.lname ?? "" : "",
         settings: {
-          alert_preferences: userData?.complete
-            ? userData?.settings?.alert_preferences ?? []
-            : [],
+          alert_preferences: userData?.complete ? userData?.settings?.alert_preferences ?? [] : [],
           role: "caregiver",
-          tel: userData?.complete
-            ? userData?.settings?.tel ?? ""
-            : userData?.auth?.tel ?? "",
+          tel: userData?.complete ? userData?.settings?.tel ?? "" : userData?.auth?.tel ?? "",
           email: userData?.complete
             ? userData?.settings?.email ?? ""
             : userData?.auth?.email ?? "",
         },
         certifications:
-          userData?.complete || userData?.certifications
-            ? userData?.certifications ?? ""
-            : "",
-        city:
-          userData?.complete || userData?.city ? userData?.city ?? "" : "",
-        licenses:
-          userData?.complete || userData?.licenses
-            ? userData?.licenses ?? []
-            : [],
-        mobility: userData?.complete
-          ? userData?.mobility ?? "has_car"
-          : "has_car",
-        zipcode:
-          (userData?.complete || userData?.zipcode
-            ? userData?.zipcode
-            : "") ?? "",
-        availability: userData?.complete
-          ? userData?.availability ?? []
-          : [],
+          userData?.complete || userData?.certifications ? userData?.certifications ?? "" : "",
+        city: userData?.complete || userData?.city ? userData?.city ?? "" : "",
+        licenses: userData?.complete || userData?.licenses ? userData?.licenses ?? [] : [],
+        mobility: userData?.complete ? userData?.mobility ?? "has_car" : "has_car",
+        zipcode: (userData?.complete || userData?.zipcode ? userData?.zipcode : "") ?? "",
+        availability: userData?.complete ? userData?.availability ?? [] : [],
         profileImage:
-          (userData?.complete || userData?.profileImage
-            ? userData?.profileImage
-            : "") ?? "",
+          (userData?.complete || userData?.profileImage ? userData?.profileImage : null) ?? null,
         resumeDocument:
-          userData?.complete && userData?.resumeDocument
-            ? userData?.resumeDocument
-            : "",
+          userData?.complete && userData?.resumeDocument ? userData?.resumeDocument : null,
         smsConsent: Boolean(userData?.smsConsent ?? false),
       });
 
@@ -220,18 +201,20 @@ const CaregiverProfileForm = () => {
   }, [userData, reset, user]);
 
   // ----------------- Upload Handlers -----------------
-  const handleProfileImageUpload = async (file: File[]) => {
-    if (!file?.[0]) return;
+  const handleProfileImageUpload = async (files: File[]) => {
+    const file = files?.[0];
+    if (!file) return;
+
     try {
       setImageLoading(true);
       const formData = new FormData();
-      formData.append("file", file[0]);
+      formData.append("file", file);
       const { data } = await axios.post(
         "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/upload-file",
         formData
       );
       const url = data?.url ?? "";
-      setValue("profileImage", url);
+      setValue("profileImage", url, { shouldDirty: true });
       setProfileImagePreview(url);
       notify.success("Profile image uploaded successfully.");
     } catch (error: any) {
@@ -245,18 +228,20 @@ const CaregiverProfileForm = () => {
     }
   };
 
-  const handleResumeUpload = async (file: File[]) => {
-    if (!file?.[0]) return;
+  const handleResumeUpload = async (files: File[]) => {
+    const file = files?.[0];
+    if (!file) return;
+
     try {
       setDocumentLoading(true);
       const formData = new FormData();
-      formData.append("file", file[0]);
+      formData.append("file", file);
       const { data } = await axios.post(
         "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/upload-file",
         formData
       );
       const url = data?.url ?? "";
-      setValue("resumeDocument", url);
+      setValue("resumeDocument", url, { shouldDirty: true });
       setResumePreview(url);
       notify.success("Resume uploaded successfully.");
     } catch (error: any) {
@@ -271,7 +256,7 @@ const CaregiverProfileForm = () => {
   };
 
   // ----------------- Delete File -----------------
-  const deleteFile = async (url: string, type: "image" | "resume") => {
+  const deleteFile = async (url: string | null, type: "image" | "resume") => {
     if (!url) return;
     try {
       if (type === "image") setImageLoading(true);
@@ -285,12 +270,12 @@ const CaregiverProfileForm = () => {
       if (data?.success) {
         if (type === "image") {
           setProfileImagePreview(null);
-          setValue("profileImage", "");
-          notify("Profile image removed.");
+          setValue("profileImage", null);
+          notify.info("Profile image removed.");
         } else {
           setResumePreview(null);
-          setValue("resumeDocument", "");
-          notify("Resume removed.");
+          setValue("resumeDocument", null);
+          notify.info("Resume removed.");
         }
       } else {
         notify("Could not remove file. You can try again.");
@@ -308,7 +293,7 @@ const CaregiverProfileForm = () => {
   // ----------------- Submit -----------------
   const onSubmit = async (data: any) => {
     if (!user || !userData) {
-      notify("You’re signed out. Redirecting to sign up…");
+      notify.info("You’re signed out. Redirecting to sign up…");
       router.replace("/signup");
       return;
     }
@@ -322,11 +307,9 @@ const CaregiverProfileForm = () => {
         hash: user?.customData?.hash ?? undefined,
       };
 
-      const accessToken = await getValidAccessTokenFromContext(user).catch(
-        () => null
-      );
+      const accessToken = await getValidAccessTokenFromContext(user).catch(() => null);
       if (!accessToken) {
-        notify("Your session expired. Please sign in again.");
+        notify.info("Your session expired. Please sign in again.");
         router.replace("/signup");
         return;
       }
@@ -334,14 +317,12 @@ const CaregiverProfileForm = () => {
       await axios.post(
         `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/resume/update/${userData?.userID}`,
         payload,
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
+        { headers: { Authorization: `Bearer ${accessToken}` } }
       );
 
       notify.success("Profile updated successfully.");
 
-      // Fire GTM only if we had an existing complete profile (to avoid double-firing on first save)
+      // Fire GTM only if profile was already complete (avoid double fire on first save)
       if (userData?.complete) {
         TagManager.dataLayer({
           dataLayer: {
@@ -362,31 +343,22 @@ const CaregiverProfileForm = () => {
         userData?.userID,
         userData?.email ?? userData?.auth?.email ?? ""
       ).catch(() => null);
-
-      if (fetchedData?.result) {
-        setUserData(fetchedData.result);
-      }
+      if (fetchedData?.result) setUserData(fetchedData.result);
 
       const updatedData = await fetchContactsData(
         user?.customData?.userID,
         user?.customData?.email
       ).catch(() => null);
+      if (updatedData?.result) await setCustomData(updatedData.result);
 
-      if (updatedData?.result) {
-        await setCustomData(updatedData.result);
-      }
-
-      // Navigate to jobs
+      // Navigate to jobs (soft reload follows)
       router.push("/vitae/jobs/all");
       setTimeout(() => {
-        // Full reload to ensure all widgets pick up the latest profile
         if (typeof window !== "undefined") window.location.reload();
       }, 1200);
     } catch (error: any) {
       notify.error(
-        error?.response?.data?.message ||
-          error?.message ||
-          "Error updating profile."
+        error?.response?.data?.message || error?.message || "Error updating profile."
       );
     } finally {
       setLoading(false);
@@ -394,11 +366,10 @@ const CaregiverProfileForm = () => {
   };
 
   // --------------- Render ---------------
-  // Hold UI until we know if user/userData exist (prevents flashing errors)
   if (!user || !userData) {
     return (
       <div className="flex items-center justify-center py-24">
-        <div className="text-center">
+        <div className="text-center px-6">
           <Loader className="mx-auto mb-3 animate-spin" />
           <p className="text-sm text-gray-600">
             Checking your session… If you’re signed out, we’ll take you to sign up.
@@ -408,28 +379,32 @@ const CaregiverProfileForm = () => {
     );
   }
 
+  // Limits / types for Dropzone
+  const IMG_MAX_BYTES = 1 * 1024 * 1024; // 1MB
+  const DOC_MAX_BYTES = 3 * 1024 * 1024; // 3MB
+
   return (
     <div className="bg-gray-100 px-2 md:px-4">
       <div className="py-6 lg:py-10">
-        <div className="max-w-6xl mx-auto py-8 px-4 md:px-10 rounded-lg shadow-lg bg-white">
+        <div className="max-w-6xl mx-auto py-6 sm:py-8 px-3 sm:px-5 md:px-8 rounded-lg shadow-lg bg-white">
           <div className="mb-5">
             <h2 className="font-bold text-xl text-gray-900">Update your resume</h2>
-            <p className="text-sm antialiased">
-              Update your resume for providers to recognize you and get connected faster.
+            <p className="text-sm antialiased text-gray-700">
+              Update your profile so providers can match with you faster.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-20">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16">
             {/* Form Section */}
             <div className="lg:col-span-2 w-full">
-              <form autoComplete="off" className="space-y-5">
+              <form autoComplete="off" className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
                 {/* Contact Information */}
-                <div className="mb-4">
+                <div className="mb-2">
                   <div className="mb-2">
                     <h3 className="font-semibold text-gray-900">Contact information</h3>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="mb-0">
                       <label htmlFor="first-name" className="block mb-2 text-sm font-medium text-gray-900">
                         First name
@@ -441,7 +416,7 @@ const CaregiverProfileForm = () => {
                         required
                         {...register("fname")}
                       />
-                      {errors.fname && <p className="text-red-500">{String(errors.fname.message)}</p>}
+                      {errors.fname && <p className="text-red-500 text-xs">{String(errors.fname.message)}</p>}
                     </div>
 
                     <div>
@@ -455,11 +430,11 @@ const CaregiverProfileForm = () => {
                         required
                         {...register("lname")}
                       />
-                      {errors.lname && <p className="text-red-500">{String(errors.lname.message)}</p>}
+                      {errors.lname && <p className="text-red-500 text-xs">{String(errors.lname.message)}</p>}
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                     <div>
                       <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">
                         Email
@@ -473,7 +448,7 @@ const CaregiverProfileForm = () => {
                         {...register("settings.email")}
                       />
                       {errors.settings?.email && (
-                        <p className="text-red-500">{String(errors.settings.email.message)}</p>
+                        <p className="text-red-500 text-xs">{String(errors.settings.email.message)}</p>
                       )}
                     </div>
 
@@ -495,7 +470,7 @@ const CaregiverProfileForm = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                     <div>
                       <label htmlFor="city" className="block mb-2 text-sm font-medium text-gray-900">
                         City
@@ -550,7 +525,7 @@ const CaregiverProfileForm = () => {
                 {/* Certifications */}
                 <div>
                   <h3 className="font-semibold text-md">Bio/Certifications</h3>
-                  <p className="text-sm antialiased mb-2">
+                  <p className="text-sm antialiased mb-2 text-gray-700">
                     Give employers your experience, certifications, study overview and what you want.
                   </p>
                   <Controller
@@ -619,13 +594,13 @@ const CaregiverProfileForm = () => {
                       <RadioGroup
                         value={field.value}
                         onValueChange={(value) => field.onChange(value)}
-                        className="flex gap-4"
+                        className="flex gap-6"
                       >
-                        <div className="flex gap-1 items-center">
+                        <div className="flex gap-2 items-center">
                           <RadioGroupItem value="has_car" className="border-gray-600" />
                           <Label>Yes</Label>
                         </div>
-                        <div className="flex gap-1 items-center">
+                        <div className="flex gap-2 items-center">
                           <RadioGroupItem value="no_car" className="border-gray-600" />
                           <Label>No</Label>
                         </div>
@@ -643,7 +618,7 @@ const CaregiverProfileForm = () => {
                     name="smsConsent"
                     control={control}
                     render={({ field }) => (
-                      <label className="flex items-center space-x-3">
+                      <label className="flex items-start space-x-3">
                         <input
                           type="checkbox"
                           name={field.name}
@@ -651,7 +626,7 @@ const CaregiverProfileForm = () => {
                           checked={Boolean(field.value)}
                           onChange={field.onChange}
                           onBlur={field.onBlur}
-                          className="form-checkbox h-10 w-10 text-blue-600"
+                          className="form-checkbox h-5 w-5 text-blue-600 mt-0.5"
                         />
                         <span className="text-sm text-gray-700">
                           I agree to receive text messages from KinsCare with updates about my
@@ -672,8 +647,8 @@ const CaregiverProfileForm = () => {
 
                 {/* Submit (desktop) */}
                 <Button
+                  type="submit"
                   disabled={loading || isSubmitting}
-                  onClick={handleSubmit(onSubmit)}
                   className="w-full hidden gap-2 lg:flex"
                 >
                   {(loading || isSubmitting) && <LoaderCircle className="animate-spin" />}{" "}
@@ -683,84 +658,121 @@ const CaregiverProfileForm = () => {
             </div>
 
             {/* Profile Image & Resume Section */}
-            <div className="sticky top-10">
+            <div className="lg:sticky lg:top-10">
               {/* Profile Image Upload */}
               <div className="mb-6">
-                <h3 className="font-semibold">Profile Image</h3>
-                <p className="text-sm antialiased mb-4">
-                  Set your profile image to build trust with employers. Drag and drop or click to select.
-                </p>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 className="font-semibold">Profile Image </h3>
+                    <p className="text-sm antialiased mb-2 text-gray-700">
+                      Add a clear photo to build trust and get noticed faster.
+                    </p>
+                  </div>
+                </div>
+
                 {profileImagePreview ? (
                   <div className="w-full">
-                    <div className="border-4 p-2 border-gray-200 rounded-full w-40 h-40 relative">
+                    <div className="border-4 p-2 border-gray-200 rounded-full w-36 h-36 sm:w-40 sm:h-40 relative mx-auto">
                       <Avatar className="rounded-full w-full h-full">
                         <AvatarImage
                           src={profileImagePreview || "/default-avatar.png"}
                           alt={"profile-image"}
                         />
-                        <AvatarFallback>
-                          {(user?.customData?.name?.charAt(0) || "U").toUpperCase()}
+                        <AvatarFallback className="bg-gray-100">
+                          <UserRound className="w-8 h-8 text-gray-500" />
                         </AvatarFallback>
                       </Avatar>
                       <Button
                         onClick={() => deleteFile(profileImagePreview, "image")}
-                        className="absolute top-0 right-0 bg-gray-800 text-white rounded-full"
+                        className="absolute -top-2 -right-2 bg-gray-800 text-white rounded-full"
                         size="icon"
+                        type="button"
                         variant="ghost"
+                        aria-label="Remove profile image"
                       >
-                        <X className={`${imageLoading ? "animate-spin" : ""}`} size={20} />
+                        <X className={`${imageLoading ? "animate-spin" : ""}`} size={18} />
                       </Button>
                     </div>
                   </div>
                 ) : (
-                  <Dropzone
-                    onDrop={(acceptedFiles: any) => handleProfileImageUpload(acceptedFiles)}
-                    disabled={imageLoading}
-                    accept={{ "image/*": [".jpeg", ".jpg", ".png"] }}
-                    maxSize={1048576} // 1 MB
-                  >
-                    {({ getRootProps, getInputProps }: any) => (
-                      <div
-                        {...getRootProps()}
-                        className="p-2 border-4 border-gray-100 rounded-full w-40 h-40 text-center cursor-pointer flex justify-center items-center relative"
-                      >
-                        {!imageLoading && <input {...getInputProps()} />}
-                        <Avatar className="w-full h-full">
-                          <AvatarImage
-                            src="https://kinscare-storage.s3.amazonaws.com/Firefly_Generate_a_place_holder_profile_image_cartoony_avatar_Caucasian_man_for_job_application_1309_(1)-transformed.jpeg"
-                            alt="placeholder"
-                          />
-                        </Avatar>
-                        <div className="absolute bg-gray-50 p-2 rounded-full">
-                          <Camera className={`${imageLoading ? "animate-spin" : ""}`} />
+                  <>
+                    {/* Encouraging tip when no image is set */}
+                    <div className="mb-2 rounded-md bg-blue-50 text-blue-800 text-xs px-3 py-2 border border-blue-100">
+                      Profiles with photos get more views from providers. You can add one now or later.
+                    </div>
+
+                    <Dropzone
+                      onDrop={(acceptedFiles) => handleProfileImageUpload(acceptedFiles)}
+                      onDropRejected={(rejections) => {
+                        const r = rejections?.[0];
+                        if (r?.errors?.[0]?.code === "file-too-large") {
+                          notify.error("Image too large. Max size is 1 MB.");
+                        } else if (r?.errors?.[0]?.code === "file-invalid-type") {
+                          notify.error("Unsupported image type. Use JPG/PNG.");
+                        } else {
+                          notify.error("Could not add image. Try a different file.");
+                        }
+                      }}
+                      disabled={imageLoading}
+                      accept={{ "image/*": [".jpeg", ".jpg", ".png"] }}
+                      maxSize={IMG_MAX_BYTES}
+                      multiple={false}
+                    >
+                      {({ getRootProps, getInputProps, isDragActive }) => (
+                        <div
+                          {...getRootProps()}
+                          className={`p-2 border-4 rounded-full w-36 h-36 sm:w-40 sm:h-40 mx-auto text-center cursor-pointer flex justify-center items-center relative transition
+                          ${isDragActive ? "border-blue-300 bg-blue-50" : "border-gray-100 bg-white"}`}
+                        >
+                          {!imageLoading && <input {...getInputProps()} aria-label="Upload profile image" />}
+                          <div className="w-full h-full rounded-full flex items-center justify-center bg-gray-50">
+                            {/* Neutral, non-gender/race icon */}
+                            <UserRound className="w-20 h-20 text-gray-500" />
+                          </div>
+                          <div className="absolute bg-gray-50 border border-gray-200 p-2 rounded-full shadow-sm">
+                            {imageLoading ? <Loader className="animate-spin w-4 h-4" /> : <Camera className="w-4 h-4" />}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </Dropzone>
+                      )}
+                    </Dropzone>
+                  </>
                 )}
               </div>
 
               {/* Resume Upload */}
               <div>
                 <h3 className="font-semibold text-md mb-2">Resume</h3>
-                <p className="text-sm antialiased mb-4">
+                <p className="text-sm antialiased mb-3 text-gray-700">
                   Attach your resume to boost your chances of getting connected faster.
                 </p>
+
                 {resumePreview ? (
                   <div className="relative">
-                    <iframe src={resumePreview} className="w-full h-[500px]" />
+                    <iframe src={resumePreview} className="w-full h-[420px] rounded-md border" />
                     <Button
                       onClick={() => deleteFile(resumePreview, "resume")}
                       className="absolute -top-4 right-0 bg-gray-800 text-white rounded-full"
                       size="icon"
+                      type="button"
                       variant="ghost"
+                      aria-label="Remove resume"
                     >
-                      <X className={`${documentLoading ? "animate-spin" : ""}`} size={20} />
+                      <X className={`${documentLoading ? "animate-spin" : ""}`} size={18} />
                     </Button>
                   </div>
                 ) : (
                   <Dropzone
-                    onDrop={(acceptedFiles: any) => handleResumeUpload(acceptedFiles)}
+                    onDrop={(acceptedFiles) => handleResumeUpload(acceptedFiles)}
+                    onDropRejected={(rejections) => {
+                      const r = rejections?.[0];
+                      if (r?.errors?.[0]?.code === "file-too-large") {
+                        notify.error("File too large. Max size is 3 MB.");
+                      } else if (r?.errors?.[0]?.code === "file-invalid-type") {
+                        notify.error("Unsupported file type. Use PDF/DOC/DOCX.");
+                      } else {
+                        notify.error("Could not add resume. Try a different file.");
+                      }
+                    }}
                     disabled={documentLoading}
                     accept={{
                       "application/pdf": [".pdf"],
@@ -769,21 +781,23 @@ const CaregiverProfileForm = () => {
                         ".docx",
                       ],
                     }}
-                    maxSize={3145728} // 3 MB
+                    maxSize={DOC_MAX_BYTES}
+                    multiple={false}
                   >
-                    {({ getRootProps, getInputProps }: any) => (
+                    {({ getRootProps, getInputProps, isDragActive }) => (
                       <div
                         {...getRootProps()}
-                        className="p-4 border-2 border-dashed rounded-lg text-center cursor-pointer"
+                        className={`p-4 border-2 border-dashed rounded-lg text-center cursor-pointer transition
+                        ${isDragActive ? "border-blue-300 bg-blue-50" : "border-gray-300 bg-white"}`}
                       >
                         {documentLoading ? (
-                          <Loader className="animate-spin" />
+                          <Loader className="animate-spin mx-auto" />
                         ) : (
                           <>
-                            <input {...getInputProps()} />
-                            <div className="flex flex-col items-center gap-4">
-                              <Cloudy />
-                              <p className="text-xs antialiased">
+                            <input {...getInputProps()} aria-label="Upload resume" />
+                            <div className="flex flex-col items-center gap-3">
+                              <Cloud className="w-5 h-5 text-gray-500" />
+                              <p className="text-xs antialiased text-gray-700">
                                 Drag and drop resume here (PDF/DOCX) or click to select
                               </p>
                             </div>
@@ -795,10 +809,16 @@ const CaregiverProfileForm = () => {
                 )}
 
                 {/* Submit (mobile) */}
-                <div className="mt-10">
+                <div className="mt-6">
                   <Button
+                    type="submit"
                     disabled={loading || isSubmitting}
-                    onClick={handleSubmit(onSubmit)}
+                    onClick={(e) => {
+                      // Ensure form submit on mobile button
+                      e.currentTarget.closest("form")?.dispatchEvent(
+                        new Event("submit", { cancelable: true, bubbles: true })
+                      );
+                    }}
                     className="w-full flex gap-2 lg:hidden"
                   >
                     {(loading || isSubmitting) && <LoaderCircle className="animate-spin" />}{" "}
@@ -806,11 +826,12 @@ const CaregiverProfileForm = () => {
                   </Button>
                 </div>
               </div>
+              {/* End sidebar */}
             </div>
-            {/* End sidebar */}
           </div>
         </div>
       </div>
+
       {/* <div className="bg-white shadow-sm my-10 rounded-lg p-8">
         <DeleteAccount />
       </div> */}

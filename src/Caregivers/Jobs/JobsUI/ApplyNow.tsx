@@ -22,7 +22,7 @@ function ApplyNow({ jobID, job }: any) {
   const providerName = `${job?.provider?.fname} ${job?.provider?.lname}`;
   // Check if the job is already favorite when the page loads
   // console.log(userData)
-  console.log(applicants);
+  // console.log(applicants);
   useEffect(() => {
     if (userData?.favorite_jobs) {
       // console.log("check");
