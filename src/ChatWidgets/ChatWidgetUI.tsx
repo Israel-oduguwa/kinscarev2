@@ -318,7 +318,7 @@ export default function ChatWidgetUI() {
           setOpen((v) => !v);
           setMinimized(false);
         }}
-        className="fixed z-[60] bottom-2 md:bottom-6 right-6 w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 text-white shadow-2xl shadow-blue-500/50 hover:shadow-blue-600/70 focus:outline-none transition-all duration-300 hover:scale-110 group"
+        className="fixed z-[60] bottom-1.5 md:bottom-6 right-6 w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 text-white shadow-2xl shadow-blue-500/50 hover:shadow-blue-600/70 focus:outline-none transition-all duration-300 hover:scale-110 group"
         aria-expanded={open}
         aria-label={open ? "Close chat" : "Open KinsCare AI chat"}
       >
