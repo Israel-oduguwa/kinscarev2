@@ -519,7 +519,7 @@ const PublicJobPostPage = () => {
         "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/post-job",
         payload
       );
-      // console.log(jobs)
+      console.log(jobs)
       toast({ title: "Job Posted Successfully", variant: "default" });
       TagManager.dataLayer({
         dataLayer: {
@@ -528,7 +528,7 @@ const PublicJobPostPage = () => {
           ...payload,
         },
       });
-      router.push(`/provider/job/${jobs.data.id}`)
+      router.push(`/provider/job/${jobs.data.jobId}`)
     } catch (error: any) {
       console.error("Error posting job:", error);
       toast({

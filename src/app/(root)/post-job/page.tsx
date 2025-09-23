@@ -1,7 +1,9 @@
 // app/postjob/page.tsx
 import type { Metadata } from "next";
-import React from "react";
+import React, { Suspense } from "react";
 import PublicJobPostForm from "@/Providers/Jobs/PublicJobPostForm";
+import { Skeleton } from "@/components/ui/skeleton";
+import { CaregiverCardSkeleton } from "@/Providers/Candidates/CandidateSkelenton";
 
 export const metadata: Metadata = {
   title: "Hire a Caregiver Near You – Post a Caregiver Job | KinsCare",
@@ -73,6 +75,18 @@ export default function PostJobPage() {
 
   return (
     <>
+       <Suspense
+            fallback={
+              <div className="max-w-6xl mx-auto">
+                <div className="grid grid-cols-1 py-10 mt-10  gap-6">
+                  <Skeleton className="w-full h-40 " />
+                  {Array.from({ length: 6 }).map((_, idx) => (
+                    <CaregiverCardSkeleton key={idx} />
+                  ))}
+                </div>
+              </div>
+            }
+          >
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -263,6 +277,7 @@ export default function PostJobPage() {
           </div>
         </div>
       </main>
+      </Suspense>
     </>
   );
 }
