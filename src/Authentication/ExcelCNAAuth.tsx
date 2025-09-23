@@ -310,45 +310,43 @@ const ExcelCNASignupPage: React.FC = () => {
   // -- Render --
   return (
     <>
-      {" "}
-      {/* Header */}
-      <div className="min-h-screen flex flex-col justify-center bg-gray-50">
-        <div className=" max-w-xl mx-auto ">
-          <header className="py-2 px-6 sm:py-2">
-            <div className="flex justify-between items-center">
+      {/* Header + Page Shell */}
+      <div className="min-h-screen flex flex-col justify-center bg-gray-50 dark:bg-gray-950 px-4 sm:px-6 py-8 sm:py-10 lg:py-12">
+        <div className="mx-auto w-full max-w-[28rem] sm:max-w-xl">
+          {/* Top header */}
+          <header className="py-1 sm:py-2">
+            <div className="flex items-center justify-between">
               <Link
                 href="/"
-                className="flex items-center text-lg font-semibold text-gray-900 dark:text-white"
+                className="flex items-center gap-2 text-base sm:text-lg font-semibold text-gray-900 dark:text-white"
               >
                 <Image
-                  width={12}
-                  height={12}
-                  className="w-12 mr-2"
+                  width={48}
+                  height={48}
+                  className="w-10 h-10 sm:w-12 sm:h-12"
                   src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
-                  alt="logo"
+                  alt="KinsCare logo"
                 />
-                <p className="font-bold text-sm text-slate-900 tracking-tight">
+                <span className="text-slate-900 dark:text-slate-100 tracking-tight">
                   Kinscare
-                </p>
+                </span>
               </Link>
             </div>
           </header>
-          <div className="bg-white p-8 rounded-2xl shadow-xl max-w-lg w-full border border-gray-100 relative overflow-hidden">
-            {/* Decorative elements */}
-            <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-indigo-100 opacity-70"></div>
-            <div className="absolute -bottom-16 -left-16 w-32 h-32 rounded-full bg-blue-100 opacity-60"></div>
 
-            <div className="relative z-10">
-              <div className="text-center mb-6">
-                {/* <div className="mx-auto bg-gradient-to-r from-blue-500 to-indigo-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-          </div> */}
-                <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
+          {/* Card */}
+          <div className="relative overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-lg sm:shadow-xl">
+            {/* Decorative blobs (subtle on mobile) */}
+            <div className="pointer-events-none absolute -top-24 -right-24 h-40 w-40 rounded-full bg-indigo-100/70 dark:bg-indigo-900/20 blur-xl" />
+            <div className="pointer-events-none absolute -bottom-20 -left-20 h-36 w-36 rounded-full bg-blue-100/60 dark:bg-blue-900/20 blur-xl" />
+
+            <div className="relative z-10 p-5 sm:p-8">
+              {/* Title */}
+              <div className="mb-6 text-center">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
                   Welcome to Kinscare
                 </h1>
-                <p className="text-gray-600 mt-2 text-sm max-w-md mx-auto">
+                <p className="mt-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300 max-w-md mx-auto">
                   {Object.keys(prefillData).length > 0
                     ? "Grow your caregiving career—finish signing up to access KinsCare."
                     : "Sign up to join the Kinscare community."}
@@ -356,35 +354,39 @@ const ExcelCNASignupPage: React.FC = () => {
               </div>
 
               {loading ? (
-                <div className="flex justify-center w-full items-center py-12">
+                <div className="flex justify-center items-center py-16">
                   <Loader2 size={40} className="animate-spin text-indigo-600" />
                 </div>
               ) : (
-                <div className="flex flex-col gap-2">
-                  <GoogleOAuthProvider
-                    clientId={`${process.env.GOOGLE_APP_ID}`}
-                  >
-                    <div className="flex justify-center gap-4 w-full">
-                      <GoogleLogin
-                        size="large"
-                        onSuccess={handleGoogleSuccess}
-                        onError={handleGoogleError}
-                        theme="filled_blue"
-                        text="continue_with"
-                        width="100%"
-                        shape="pill"
-                      />
+                <div className="flex flex-col gap-3">
+                  {/* Google */}
+                  <GoogleOAuthProvider clientId={`${process.env.GOOGLE_APP_ID}`}>
+                    <div className="flex w-full">
+                      <div className="w-full">
+                        <GoogleLogin
+                          size="large"
+                          onSuccess={handleGoogleSuccess}
+                          onError={handleGoogleError}
+                          theme="filled_blue"
+                          text="continue_with"
+                          width="100%"
+                          shape="pill"
+                        />
+                      </div>
                     </div>
                   </GoogleOAuthProvider>
 
-                  <OrSeparator />
+                  <div className="px-2">
+                    <OrSeparator />
+                  </div>
 
+                  {/* Form */}
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                      <div className="space-y-1.5">
                         <label
                           htmlFor="fname"
-                          className="block text-sm font-medium text-gray-700"
+                          className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200"
                         >
                           First Name
                         </label>
@@ -396,9 +398,10 @@ const ExcelCNASignupPage: React.FC = () => {
                               {...field}
                               id="fname"
                               placeholder="First Name"
-                              className={` ${
+                              className={cn(
+                                "h-11 sm:h-11 rounded-lg",
                                 errors.fname ? "border-red-500" : ""
-                              }`}
+                              )}
                             />
                           )}
                         />
@@ -409,10 +412,10 @@ const ExcelCNASignupPage: React.FC = () => {
                         )}
                       </div>
 
-                      <div className="space-y-2">
+                      <div className="space-y-1.5">
                         <label
                           htmlFor="lname"
-                          className="block text-sm font-medium text-gray-700"
+                          className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200"
                         >
                           Last Name
                         </label>
@@ -424,9 +427,10 @@ const ExcelCNASignupPage: React.FC = () => {
                               {...field}
                               id="lname"
                               placeholder="Last Name"
-                              className={` ${
+                              className={cn(
+                                "h-11 sm:h-11 rounded-lg",
                                 errors.lname ? "border-red-500" : ""
-                              }`}
+                              )}
                             />
                           )}
                         />
@@ -438,10 +442,10 @@ const ExcelCNASignupPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <label
                         htmlFor="email"
-                        className="block text-sm font-medium text-gray-700"
+                        className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200"
                       >
                         Email Address
                       </label>
@@ -453,9 +457,10 @@ const ExcelCNASignupPage: React.FC = () => {
                             {...field}
                             id="email"
                             placeholder="Email Address"
-                            className={` ${
+                            className={cn(
+                              "h-11 sm:h-11 rounded-lg",
                               errors.email ? "border-red-500" : ""
-                            }`}
+                            )}
                           />
                         )}
                       />
@@ -466,10 +471,10 @@ const ExcelCNASignupPage: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <label
                         htmlFor="tel"
-                        className="block text-sm font-medium text-gray-700"
+                        className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200"
                       >
                         Phone Number
                       </label>
@@ -481,7 +486,10 @@ const ExcelCNASignupPage: React.FC = () => {
                             {...field}
                             id="tel"
                             placeholder="123-456-7890"
-                            className={` ${errors.tel ? "border-red-500" : ""}`}
+                            className={cn(
+                              "h-11 sm:h-11 rounded-lg",
+                              errors.tel ? "border-red-500" : ""
+                            )}
                           />
                         )}
                       />
@@ -492,10 +500,10 @@ const ExcelCNASignupPage: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <label
                         htmlFor="password"
-                        className="block text-sm font-medium text-gray-700"
+                        className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200"
                       >
                         Password
                       </label>
@@ -508,9 +516,10 @@ const ExcelCNASignupPage: React.FC = () => {
                             id="password"
                             type="password"
                             placeholder="Create a password"
-                            className={` ${
+                            className={cn(
+                              "h-11 sm:h-11 rounded-lg",
                               errors.password ? "border-red-500" : ""
-                            }`}
+                            )}
                           />
                         )}
                       />
@@ -521,7 +530,7 @@ const ExcelCNASignupPage: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="flex items-start space-x-3 pt-2">
+                    <div className="flex items-start gap-3 pt-1.5">
                       <Controller
                         name="terms"
                         control={control}
@@ -532,21 +541,22 @@ const ExcelCNASignupPage: React.FC = () => {
                               type="checkbox"
                               checked={field.value}
                               onChange={(e) => field.onChange(e.target.checked)}
-                              className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                              className="h-4 w-4 sm:h-4 sm:w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                              aria-label="Agree to Terms and Conditions"
                             />
                           </div>
                         )}
                       />
-                      <div className="text-sm">
+                      <div className="text-xs sm:text-sm">
                         <label
                           htmlFor="terms"
-                          className="font-medium text-gray-700"
+                          className="font-medium text-gray-700 dark:text-gray-200"
                         >
                           I agree to the{" "}
                           <a
                             href="/terms"
                             target="_blank"
-                            className="text-indigo-600 hover:text-indigo-500 font-medium"
+                            className="text-indigo-600 hover:text-indigo-500 font-medium underline-offset-2 hover:underline"
                           >
                             Terms and Conditions
                           </a>
@@ -561,7 +571,7 @@ const ExcelCNASignupPage: React.FC = () => {
 
                     <Button
                       type="submit"
-                      className="w-full  bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-700 hover:to-blue-600 transition-all shadow-md hover:shadow-lg"
+                      className="w-full h-11 sm:h-11 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-700 hover:to-blue-600 transition-all shadow-md hover:shadow-lg active:scale-[0.99]"
                       disabled={loading}
                     >
                       {loading ? (
@@ -574,12 +584,12 @@ const ExcelCNASignupPage: React.FC = () => {
                     </Button>
                   </form>
 
-                  <div className="text-center pt-4">
-                    <p className="text-sm text-gray-600">
+                  <div className="text-center pt-3 sm:pt-4">
+                    <p className="text-sm sm:text-sm text-gray-600 dark:text-gray-300">
                       Already have an account?{" "}
                       <a
-                        href="/login"
-                        className="font-medium text-indigo-600 hover:text-indigo-500"
+                        href="/signin"
+                        className="font-medium text-indigo-600 hover:text-indigo-500 underline-offset-2 hover:underline"
                       >
                         Sign in
                       </a>
@@ -589,6 +599,9 @@ const ExcelCNASignupPage: React.FC = () => {
               )}
             </div>
           </div>
+
+          {/* Safe area bottom padding for mobile */}
+          <div className="h-6 sm:h-8" />
         </div>
       </div>
     </>

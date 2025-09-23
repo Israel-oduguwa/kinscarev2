@@ -329,7 +329,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
           <NavigationMenu className="hidden md:block">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link href="/vitae/jobs/all" legacyBehavior passHref>
+                <Link href="/vitae/jobs/all"  passHref>
                   <NavigationMenuLink
                     className={navigationMenuTriggerStyle()}
                     aria-current={findJobsActive ? "page" : undefined}
@@ -344,7 +344,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
           <NavigationMenu className="hidden md:block">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link href="/vitae/career-plan" legacyBehavior passHref>
+                <Link href="/vitae/career-plan"  passHref>
                   <NavigationMenuLink
                     className={navigationMenuTriggerStyle()}
                     aria-current={careerPlanActive ? "page" : undefined}
