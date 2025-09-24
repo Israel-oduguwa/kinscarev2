@@ -183,12 +183,13 @@ const CaregiverProfileForm = () => {
         mobility: userData?.complete ? userData?.mobility ?? "has_car" : "has_car",
         zipcode: (userData?.complete || userData?.zipcode ? userData?.zipcode : "") ?? "",
         availability: userData?.complete ? userData?.availability ?? [] : [],
-        profileImage:userData?.profileImage ? userData?.profileImage : null,
+        profileImage:
+          (userData?.complete || userData?.profileImage ? userData?.profileImage : null) ?? null,
         resumeDocument:
           userData?.complete && userData?.resumeDocument ? userData?.resumeDocument : null,
         smsConsent: Boolean(userData?.smsConsent ?? false),
       });
-      
+
       setResumePreview(userData?.resumeDocument ?? null);
       setProfileImagePreview(userData?.profileImage ?? null);
     } catch (e: any) {
