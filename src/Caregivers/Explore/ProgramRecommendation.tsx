@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import MongoContext from "@/app/MongoContext";
+import RecommendProgram from "./RecommendProgram";
 
 type ProgramUrl = { program_name: string; url: string };
 type ScrapedContent = { url: string; bodyText: string };
@@ -21,7 +22,7 @@ const CACHE_DURATION_MS = 48 * 60 * 60 * 1000; // 48 hours
 function getUrlsFromLocalStorage(): ProgramUrl[] | null {
   try {
     const ls = localStorage.getItem("ai_recommendation");
-    if (!ls) return null;
+    if (!ls) return null; // <- no key in LS
     const parsed = JSON.parse(ls);
     if (
       parsed.collegePrograms &&
@@ -58,6 +59,7 @@ const ProgramRecommendation: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<ParsedResult[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showRecUI, setShowRecUI] = useState(false); // <-- NEW: flag to show <ReccommendProgram/>
 
   // Util: Get cached results if not expired
   function getCachedResults(): ParsedResult[] | null {
@@ -81,7 +83,7 @@ const ProgramRecommendation: React.FC = () => {
   }
 
   useEffect(() => {
-    // Check for fresh cache first
+    // 1) Check cache first
     const cached = getCachedResults();
     if (cached && cached.length > 0) {
       setResults(cached);
@@ -90,25 +92,24 @@ const ProgramRecommendation: React.FC = () => {
       return;
     }
 
-    // Get URLs: from localStorage, else from context fallback
+    // 2) Source URLs: localStorage first, then context fallback
     let urls: ProgramUrl[] | null = getUrlsFromLocalStorage();
+
     if ((!urls || urls.length === 0) && user?.customData?.recommendations) {
       const collegePrograms = user.customData.recommendations.collegePrograms;
-      if (
-        collegePrograms &&
-        Array.isArray(collegePrograms) &&
-        collegePrograms.length > 0
-      ) {
+      if (Array.isArray(collegePrograms) && collegePrograms.length > 0) {
         urls = collegePrograms;
       }
     }
+
+    // 3) If still no URLs, show the ReccommendProgram UI (not an error)
     if (!urls || urls.length === 0) {
-      setError("No recommended programs found.");
+      setShowRecUI(true);
       setIsLoading(false);
       return;
     }
 
-    // Pick 3 random URLs for this round
+    // 4) We have URLs → proceed
     const selectedUrls = pickRandomUrls(urls, 6);
 
     const fetchData = async () => {
@@ -152,7 +153,7 @@ const ProgramRecommendation: React.FC = () => {
     fetchData();
   }, []);
 
-  // Modern progress indicator with animations
+  // Progress UI
   const renderProgress = () => (
     <div className="flex flex-col items-center gap-6 p-8 max-w-md mx-auto">
       <div className="relative w-full">
@@ -207,9 +208,18 @@ const ProgramRecommendation: React.FC = () => {
     </div>
   );
 
+  // ------------- Render branches -------------
+
+  // A) If no LS key/context URLs → show your recommendation UI
+  if (showRecUI) {
+    return <RecommendProgram/>;
+  }
+
+  // B) Error branch (only for real errors during scrape/parse)
   if (error)
     return (
       <div className="flex flex-col items-center justify-center min-h-[300px] p-6">
+          <h3 className="py-2 font-semibold text-gray-800">Recommended Programs</h3>
         <div className="bg-red-50 p-4 rounded-xl max-w-md w-full border border-red-100">
           <div className="flex items-center justify-center mb-3">
             <svg
@@ -240,6 +250,7 @@ const ProgramRecommendation: React.FC = () => {
       </div>
     );
 
+  // C) Loading
   if (isLoading || !results)
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px]">
@@ -270,19 +281,16 @@ const ProgramRecommendation: React.FC = () => {
       </div>
     );
 
+  // D) Results
   return (
     <div className="grid gap-6">
       {results.map((program, i) => (
         <div
           key={program.url}
-          className={`
-              bg-white rounded-2xl p-6 border border-gray-100 shadow-sm
-              transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg
-              ${i === 0 ? "ring-2 ring-blue-100 ring-opacity-50" : ""}
-              relative overflow-hidden
-            `}
+          className={`bg-white rounded-2xl p-6 border border-gray-100 shadow-sm transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${
+            i === 0 ? "ring-2 ring-blue-100 ring-opacity-50" : ""
+          } relative overflow-hidden`}
         >
-          {/* Decorative elements */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
 
           <div className="flex flex-col gap-3">
@@ -294,7 +302,7 @@ const ProgramRecommendation: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                   {program.data.institution}
+                  {program.data.institution}
                   <svg
                     className="w-4 h-4 ml-1.5 inline-block text-indigo-500 group-hover:translate-x-1 transition-transform"
                     fill="none"
@@ -324,7 +332,7 @@ const ProgramRecommendation: React.FC = () => {
                         d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
                       />
                     </svg>
-                   {program.data.program_name}
+                    {program.data.program_name}
                   </div>
                 )}
               </div>
@@ -350,14 +358,14 @@ const ProgramRecommendation: React.FC = () => {
             </div>
 
             {program.data.description && (
-              <div className=" text-gray-600  text-sm truncate leading-relaxed">
+              <div className="text-gray-600 text-sm truncate leading-relaxed">
                 {program.data.description}
               </div>
             )}
 
             <div className="mt-1 flex flex-wrap gap-2">
               {program.data.location && (
-                <div className="flex items-center  bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-xs">
+                <div className="flex items-center bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-xs">
                   <svg
                     className="w-4 h-4 mr-1.5 text-gray-500"
                     fill="none"
@@ -380,9 +388,8 @@ const ProgramRecommendation: React.FC = () => {
                   {program.data.location}
                 </div>
               )}
-
               {program.data.duration && (
-                <div className="flex items-center  bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-xs">
+                <div className="flex items-center bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-xs">
                   <svg
                     className="w-4 h-4 mr-1.5 text-gray-500"
                     fill="none"
@@ -399,7 +406,6 @@ const ProgramRecommendation: React.FC = () => {
                   {program.data.duration}
                 </div>
               )}
-
               {program.data.tuition && (
                 <div className="flex items-center bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-xs">
                   <svg
@@ -413,12 +419,11 @@ const ProgramRecommendation: React.FC = () => {
                       strokeLinejoin="round"
                       strokeWidth={2}
                       d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
+                  />
                   </svg>
                   {program.data.tuition}
                 </div>
               )}
-
               {program.data.accreditation && (
                 <div className="flex items-center bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-xs">
                   <svg
@@ -459,14 +464,12 @@ const ProgramRecommendation: React.FC = () => {
                   </svg>
                   Contact Information
                 </h3>
-
                 <div className="flex flex-wrap gap-3 text-sm">
                   {program.data.contact_name && (
                     <div className="flex items-center text-gray-600">
                       {program.data.contact_name}
                     </div>
                   )}
-
                   {program.data.contact_email && (
                     <a
                       href={`mailto:${program.data.contact_email}`}
@@ -488,7 +491,6 @@ const ProgramRecommendation: React.FC = () => {
                       {program.data.contact_email}
                     </a>
                   )}
-
                   {program.data.contact_phone && (
                     <a
                       href={`tel:${program.data.contact_phone}`}

@@ -221,7 +221,7 @@ function AppliedJobs() {
   // console.log(jobs);
   return (
     <div className=" px-2 bg-gray-50 md:px-4 min-h-[100vh]">
-      <div className="max-w-6xl pt-10 mx-auto">
+      <div className="max-w-6xl pt-2 md:pt-8 mx-auto">
         <div className="div">
           <Link href="/vitae/jobs/all">
             <Button variant="ghost">

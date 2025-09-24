@@ -123,7 +123,8 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
   const appliedJobsActive = isCurrent("/vitae/applied-jobs");
   const careerPlanActive = isCurrent("/vitae/career-plan");
   const updateResumeActive = isCurrent("/vitae/update");
-  const crowdPostActive = startsWith("/vitae/crowd-post") || isCurrent("/vitae/referrals");
+  const crowdPostActive =
+    startsWith("/vitae/crowd-post") || isCurrent("/vitae/referrals");
 
   /** For collapsible: auto open when a child is active */
   const isSectionOpen = (sectionUrl: string, items?: { url: string }[]) => {
@@ -137,7 +138,11 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <Link className="flex items-center mr-2 mt-2" href="/" aria-label="Go to Kinscare Home">
+              <Link
+                className="flex items-center mr-2 mt-2"
+                href="/"
+                aria-label="Go to Kinscare Home"
+              >
                 <SidebarMenuButton
                   size="lg"
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
@@ -185,12 +190,18 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                 return (
                   <div key={idx}>
                     {item.items ? (
-                      <Collapsible asChild defaultOpen={open} className="group/collapsible">
+                      <Collapsible
+                        asChild
+                        defaultOpen={open}
+                        className="group/collapsible"
+                      >
                         <SidebarMenuItem>
                           <CollapsibleTrigger asChild>
                             <SidebarMenuButton
                               className={itemClasses(crowdPostActive)}
-                              aria-current={crowdPostActive ? "true" : undefined}
+                              aria-current={
+                                crowdPostActive ? "true" : undefined
+                              }
                               tooltip={item.title}
                             >
                               {item.icon && <item.icon aria-hidden="true" />}
@@ -207,12 +218,19 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                 const active = isCurrent(sub.url);
                                 return (
                                   <SidebarMenuSubItem key={sidx}>
-                                    <SidebarMenuSubButton asChild className={subItemClasses(active)}>
+                                    <SidebarMenuSubButton
+                                      asChild
+                                      className={subItemClasses(active)}
+                                    >
                                       <Link
                                         href={sub.url}
-                                        aria-current={active ? "page" : undefined}
+                                        aria-current={
+                                          active ? "page" : undefined
+                                        }
                                       >
-                                        <span className="font-medium text-sm">{sub.title}</span>
+                                        <span className="font-medium text-sm">
+                                          {sub.title}
+                                        </span>
                                       </Link>
                                     </SidebarMenuSubButton>
                                   </SidebarMenuSubItem>
@@ -227,7 +245,9 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                         <SidebarMenuButton
                           asChild
                           className={itemClasses(startsWith(item.url))}
-                          aria-current={startsWith(item.url) ? "true" : undefined}
+                          aria-current={
+                            startsWith(item.url) ? "true" : undefined
+                          }
                           tooltip={item.title}
                         >
                           <Link href={item.url}>
@@ -324,12 +344,18 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
       <SidebarInset>
         <div className="flex items-center h-16 shrink-0 my-1 px-2 gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 mx-auto w-full xl:max-w-screen-xl">
           <SidebarTrigger className="-ml-1" aria-label="Toggle sidebar" />
-
+          <Image
+            width={40}
+            height={40}
+            className="h-6 md:hidden  pr-1 sm:h-8"
+            src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
+            alt="Kinscare logo"
+          />
           {/* Top nav: use asChild to avoid nested anchors; add active state */}
           <NavigationMenu className="hidden md:block">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link href="/vitae/jobs/all"  passHref>
+                <Link href="/vitae/jobs/all" passHref>
                   <NavigationMenuLink
                     className={navigationMenuTriggerStyle()}
                     aria-current={findJobsActive ? "page" : undefined}
@@ -344,7 +370,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
           <NavigationMenu className="hidden md:block">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link href="/vitae/career-plan"  passHref>
+                <Link href="/vitae/career-plan" passHref>
                   <NavigationMenuLink
                     className={navigationMenuTriggerStyle()}
                     aria-current={careerPlanActive ? "page" : undefined}

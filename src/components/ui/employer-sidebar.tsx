@@ -39,7 +39,7 @@ import {
   Settings,
   Sparkles,
   Speech,
-  UserPen
+  UserPen,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -69,13 +69,13 @@ export function EmployerAppSidebar({
         icon: BookmarkCheck,
         isActive: false,
       },
-       {
+      {
         title: "Post Job",
         url: "/provider/job/update/new",
         icon: BriefcaseBusiness,
         isActive: false,
       },
-        {
+      {
         title: "Your Job Postings",
         url: "/provider/job/all",
         icon: FrameIcon,
@@ -159,7 +159,7 @@ export function EmployerAppSidebar({
           <SidebarGroup>
             <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
             <SidebarMenu>
-              {data.navMain.map((item:any) => {
+              {data.navMain.map((item: any) => {
                 const isActive = isActiveLink(item.url, !!item.items);
 
                 return item.items ? (
@@ -171,7 +171,8 @@ export function EmployerAppSidebar({
                   >
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
-                        <SidebarMenuButton className=" font-semibold antialiased py-6 my-0.5 
+                        <SidebarMenuButton
+                          className=" font-semibold antialiased py-6 my-0.5 
                                 [&>svg]:w-6 [&>svg]:h-4"
                           tooltip={item.title}
                           isActive={isActive}
@@ -183,7 +184,7 @@ export function EmployerAppSidebar({
                       </CollapsibleTrigger>
                       <CollapsibleContent>
                         <SidebarMenuSub>
-                          {item.items?.map((subItem:any) => (
+                          {item.items?.map((subItem: any) => (
                             <SidebarMenuSubItem key={subItem.title}>
                               <SidebarMenuSubButton
                                 asChild
@@ -224,38 +225,74 @@ export function EmployerAppSidebar({
         <SidebarRail />
       </Sidebar>
       <SidebarInset>
-        <div className="flex items-center m  h-16 xl:h-14 shrink-0 my-1 px-2 gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 ">
-          {/* Sidebar Trigger */}
-          <SidebarTrigger className="-ml-1" />
-          {/* Navigation Links */}
-          <NavigationMenu className="hidden z-0 md:block">
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <Link href="/provider/candidates/all"  passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Find Caregivers
-                  </NavigationMenuLink>
+        {/* Header / Top Bar */}
+        <header className="sticky  top-0 z-30 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex  h-16 xl:h-14 items-center shrink-0 px-2 gap-2 transition-[height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+            {/* Sidebar Trigger (always visible) */}
+            <SidebarTrigger className="-ml-1" />
+
+            {/* Desktop Nav (hidden on small) */}
+            <nav className="hidden md:flex items-center gap-2">
+              <NavigationMenu className="z-0">
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <Link href="/provider/candidates/all" passHref>
+                      <NavigationMenuLink
+                        className={navigationMenuTriggerStyle()}
+                      >
+                        Find Caregivers
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+
+              <NavigationMenu className="z-0">
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <Link href="/provider/job/update/new" passHref>
+                      <NavigationMenuLink
+                        className={navigationMenuTriggerStyle()}
+                      >
+                        Post Job
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+            </nav>
+
+            {/* Mobile Quick Links (hidden on md+) */}
+            <nav className="hidden flex-1 min-w-0">
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+                <Link
+                  href="/provider/candidates/all"
+                  className="shrink-0 inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-medium hover:bg-muted"
+                >
+                  Find Caregivers
                 </Link>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-          <NavigationMenu className="hidden z-0 md:block">
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <Link href="/provider/job/update/new"  passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Post Job
-                  </NavigationMenuLink>
+                <Link
+                  href="/provider/job/update/new"
+                  className="shrink-0 inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-medium hover:bg-muted"
+                >
+                  Post Job
                 </Link>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-          {/* Right Section */}
-          <CaregiverSearch />
-          <div className="flex items-center ml-auto">
-            <ProviderNavbarRight />
+              </div>
+            </nav>
+
+            {/* Search (take remaining space on md+, hide on mobile or swap for icon if you want) */}
+            <div className=" md:flex flex-1 min-w-0">
+              <CaregiverSearch />
+            </div>
+
+            {/* Right Section */}
+            <div className="flex items-center ml-auto">
+              <ProviderNavbarRight />
+            </div>
           </div>
-        </div>
+        </header>
+
+        {/* Page content */}
         <main>{children}</main>
       </SidebarInset>
     </SidebarProvider>

@@ -24,12 +24,12 @@ function CaregiverDash() {
   const { userData, user } = mongodb;
 
   return (
-    <div className="py-10 px-2 bg-gray-50 md:px-4 min-h-[100vh]">
+    <div className="py-10 px-3 bg-gray-50 md:px-4 min-h-[100vh]">
       <div className="mx-auto max-w-6xl">
         {/* Header */}
         <div className="mb-6 w-full">
           <div className="mb-0.5 flex items-center space-x-2">
-            <h2 className="flex items-center space-x-2 text-3xl font-semibold antialiased text-gray-900">
+            <h2 className="flex items-center space-x-2 text-2xl md:text-3xl font-bold md:font-semibold antialiased text-gray-900">
               Hi,{" "}
               {userData ? (
                 `${userData.fname} ${userData.lname}`
@@ -72,7 +72,7 @@ function CaregiverDash() {
            {/* NEW: Career Map (full-width hero section) */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
             <div className="col-span-12 py-6">
-              <h3 className="py-2">Recommended Programs</h3>
+            
               {/* Inline embed of your full CareerMap experience */}
              <ProgramRecommendation />
             </div>

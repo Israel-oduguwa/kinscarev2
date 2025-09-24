@@ -1,7 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useContext } from "react";
 import MongoContext from "@/app/MongoContext";
-import { useContext } from "react";
 import { useRouter } from "next/navigation";
 import { Interweave } from "interweave";
 import Link from "next/link";
@@ -21,7 +21,6 @@ const Chip: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 );
 
 const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
-  // console.log(job);
   const locationLine = [
     job?.contacts?.address ?? "",
     job?.contacts?.city ?? "",
@@ -29,84 +28,82 @@ const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
   ]
     .filter(Boolean)
     .join(", ");
+
   return (
-    <>
-      <div
-        className="group relative w-full mb-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:shadow-md focus-within:shadow-md"
-        role="article"
-      >
-        <div className="absolute inset-0 -z-10 rounded-2xl opacity-0 ring-2 ring-blue-500/0 transition group-hover:opacity-100 group-hover:ring-blue-500/10" />
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-          <Link
-            href={`/jobs/${job._id}`}
-            className="flex flex-1 items-start gap-2 outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-xl"
-          >
-            <JobListingLogo
-              src={job?.profileImage || undefined} // pass ONLY the real URL; no random fallback
-              alt={job?.title || job?.employer_name || "Job"}
-              seed={job?.employer_name || job?.title || job?._id} // deterministic gradient
-              size={40}
-              rounded="full" // use "full" for a perfect circle like Vercel
-            />
+    <div
+      className="group relative w-full mb-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:shadow-md focus-within:shadow-md"
+      role="article"
+    >
+      <div className="absolute inset-0 -z-10 rounded-2xl opacity-0 ring-2 ring-blue-500/0 transition group-hover:opacity-100 group-hover:ring-blue-500/10" />
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+        <Link
+          href={`/jobs/${job._id}`}
+          className="flex flex-1 items-start gap-2 outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-xl"
+        >
+          <JobListingLogo
+            src={job?.profileImage || undefined}
+            alt={job?.title || job?.employer_name || "Job"}
+            seed={job?.employer_name || job?.title || job?._id}
+            size={40}
+            rounded="full"
+          />
 
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-lg font-semibold tracking-tight text-gray-900">
-                  {job?.title}
-                </h2>
-                {Array.isArray(job?.licenses) && job.licenses.length > 0 && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-blue-100">
-                    <BadgeCheck className="h-3.5 w-3.5" />
-                    {job.licenses[0]}
-                  </span>
-                )}
-              </div>
-
-              <div className="mt-1 flex items-center gap-2 text-sm text-gray-600">
-                <MapPin className="h-4 w-4 shrink-0" />
-                <span className="truncate">{locationLine || "—"}</span>
-              </div>
-
-              {job.certifications && job.certifications.length > 0 && (
-                <div className="mt-3 text-sm text-gray-700 line-clamp-2">
-                  <Interweave content={job?.certifications ?? ""} />
-                </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-lg font-semibold tracking-tight text-gray-900">
+                {job?.title}
+              </h2>
+              {Array.isArray(job?.licenses) && job.licenses.length > 0 && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-blue-100">
+                  <BadgeCheck className="h-3.5 w-3.5" />
+                  {job.licenses[0]}
+                </span>
               )}
-
-              <div className="mt-4 flex flex-wrap gap-2">
-                {Array.isArray(job?.licenses) &&
-                  job.licenses.map((license: string, i: number) => (
-                    <Chip key={`lic-${i}`}>{license}</Chip>
-                  ))}
-                {Array.isArray(job?.schedule) &&
-                  job.schedule.map((sch: string, i: number) => (
-                    <Chip key={`sch-${i}`}>
-                      <Clock className="h-3.5 w-3.5" />
-                      {sch}
-                    </Chip>
-                  ))}
-                <Chip>
-                  Min Hours:{" "}
-                  <span className="ml-1 font-semibold">
-                    {job?.minHours ?? "—"} / wk
-                  </span>
-                </Chip>
-              </div>
             </div>
-          </Link>
 
-          {/* Apply Button */}
-          <div className="flex-shrink-0 w-full lg:w-auto ">
-            <ApplyNow
-              providerName={job.provider}
-              job={job}
-              jobID={job._id}
-              className="w-full lg:w-auto px-6 py-3 bg-blue-600 text-white text-sm rounded-lg shadow-md hover:bg-blue-700 transition-all"
-            />
+            <div className="mt-1 flex items-center gap-2 text-sm text-gray-600">
+              <MapPin className="h-4 w-4 shrink-0" />
+              <span className="truncate">{locationLine || "—"}</span>
+            </div>
+
+            {job.certifications && job.certifications.length > 0 && (
+              <div className="mt-3 text-sm text-gray-700 line-clamp-2">
+                <Interweave content={job?.certifications ?? ""} />
+              </div>
+            )}
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              {Array.isArray(job?.licenses) &&
+                job.licenses.map((license: string, i: number) => (
+                  <Chip key={`lic-${i}`}>{license}</Chip>
+                ))}
+              {Array.isArray(job?.schedule) &&
+                job.schedule.map((sch: string, i: number) => (
+                  <Chip key={`sch-${i}`}>
+                    <Clock className="h-3.5 w-3.5" />
+                    {sch}
+                  </Chip>
+                ))}
+              <Chip>
+                Min Hours:{" "}
+                <span className="ml-1 font-semibold">
+                  {job?.minHours ?? "—"} / wk
+                </span>
+              </Chip>
+            </div>
           </div>
+        </Link>
+
+        <div className="flex-shrink-0 w-full lg:w-auto">
+          <ApplyNow
+            providerName={job.provider}
+            job={job}
+            jobID={job._id}
+            className="w-full lg:w-auto px-6 py-3 bg-blue-600 text-white text-sm rounded-lg shadow-md hover:bg-blue-700 transition-all"
+          />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
@@ -118,7 +115,7 @@ interface Contact {
 
 interface Job {
   provider: any;
-  profileImage: string; // image url
+  profileImage: string;
   _id: any;
   title: string;
   contacts: Contact;
@@ -130,10 +127,15 @@ interface Job {
 }
 
 interface JobsApiResponse {
-  pagination: any;
-  totalJobs: number;
-  totalPages: number;
-  currentPage: number;
+  pagination?: {
+    totalJobs: number;
+    totalPages: number;
+    currentPage: number;
+    limit: number;
+  };
+  totalJobs?: number; // some endpoints might return these top-level
+  totalPages?: number;
+  currentPage?: number;
   jobs: Job[];
 }
 
@@ -144,9 +146,7 @@ const fetchJobs = async (
   const response = await fetch(
     `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/jobs/${userId}?page=${page}`
   );
-  if (!response.ok) {
-    throw new Error("Error fetching jobs");
-  }
+  if (!response.ok) throw new Error("Error fetching jobs");
   return response.json();
 };
 
@@ -158,23 +158,18 @@ const fetchFilteredJobs = async (
 ): Promise<JobsApiResponse> => {
   const response = await axios.post(
     "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/jobs/filter",
-    {
-      userID: userId,
-      page,
-      geoCode,
-      filters,
-    }
+    { userID: userId, page, geoCode, filters }
   );
-  console.log(response.data);
   return response.data;
 };
 
 function All() {
   const mongodb = useContext(MongoContext);
-  const { userData }: any = mongodb;
+  const { userData }: any = mongodb || {};
   const { userID } = userData || {};
   const { push } = useRouter();
 
+  // Data
   const [jobs, setJobs] = useState<Job[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -182,66 +177,120 @@ function All() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Filter states
+  // UI filter form state
   const [filters, setFilters] = useState({
     schedule: [] as string[],
     licenses: [] as string[],
-    minHours: 8,
+    minHours: 8, // not used by backend now, but kept for UI
   });
-  // console.log(userData);
-  const loadJobs = async (applyFilters = false) => {
-    setLoading(true);
-    //  console.log("loading, stems")
-    try {
-      const data = await fetchJobs(userID, page);
-      console.log(data, "s");
 
-      setJobs((prevJobs) =>
-        page === 1 ? data.jobs : [...prevJobs, ...data.jobs]
-      );
-      setTotalPages(data.totalPages);
-      setTotalJobs(data.totalJobs);
-    } catch (err) {
-      setError((err as Error).message);
+  // Applied filter state (what the backend actually uses)
+  const [mode, setMode] = useState<"all" | "filtered">("all");
+  const [appliedFilters, setAppliedFilters] = useState<typeof filters | null>(
+    null
+  );
+  const [appliedGeo, setAppliedGeo] = useState<any>(null);
+
+  // prevent race conditions when page/mode changes quickly
+  const reqIdRef = useRef(0);
+
+  const normalizePagination = (data: JobsApiResponse) => {
+    // Support both shapes: with pagination or top-level fields
+    const p = data.pagination;
+    return {
+      totalPages: p ? p.totalPages : (data.totalPages ?? 1),
+      totalJobs: p ? p.totalJobs : (data.totalJobs ?? data.jobs?.length ?? 0),
+      currentPage: p ? p.currentPage : (data.currentPage ?? 1),
+    };
+  };
+
+  const load = async () => {
+    if (!userID) return;
+
+    setLoading(true);
+    setError(null);
+    const rid = ++reqIdRef.current;
+
+    try {
+      let data: JobsApiResponse;
+
+      if (mode === "filtered" && appliedFilters) {
+        const geoCode = appliedGeo ?? userData?.geocode_address ?? null;
+        data = await fetchFilteredJobs(userID, page, appliedFilters, geoCode);
+      } else {
+        data = await fetchJobs(userID, page);
+      }
+
+      // stale request guard
+      if (rid !== reqIdRef.current) return;
+
+      const { totalPages: tp, totalJobs: tj } = normalizePagination(data);
+
+      setTotalPages(tp);
+      setTotalJobs(tj);
+
+      setJobs((prev) => (page === 1 ? data.jobs : [...prev, ...data.jobs]));
+    } catch (err: any) {
+      if (rid !== reqIdRef.current) return;
+      setError(err?.message || "Failed to load jobs");
     } finally {
-      setLoading(false);
+      if (rid === reqIdRef.current) setLoading(false);
     }
   };
 
-  // Initial load
+  // Load whenever page, mode, or applied filters/geo change
   useEffect(() => {
-    loadJobs();
-  }, [page]);
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    page,
+    mode,
+    JSON.stringify(appliedFilters),
+    JSON.stringify(appliedGeo),
+    userID,
+  ]);
+
+  // Initial load (all jobs, page 1)
+  useEffect(() => {
+    setMode("all");
+    setAppliedFilters(null);
+    setAppliedGeo(null);
+    setPage(1);
+  }, [userID]);
 
   const applyFilters = async () => {
-    try {
-      setLoading(true);
-      const geoCode = userData.geocode_address;
-      const job = await fetchFilteredJobs(userID, page, filters, geoCode);
-      const tagManagerArgs = {
-        dataLayer: {
-          event: `search_jobs`,
-          settings: userData?.settings,
-          filters,
-          lname: userData?.lname,
-          fname: userData?.fname,
-          tel: userData?.auth?.tel,
-          zipcode: userData?.zipcode,
-          city: userData?.city,
-          email: userData?.auth?.email,
-        },
-      };
-      TagManager.dataLayer(tagManagerArgs);
-      setTotalPages(job.pagination.totalPages);
-      setTotalJobs(job.pagination.totalJobs);
-      setJobs(job.jobs);
-    } catch (error) {
-      setLoading(false);
-    } finally {
-      setLoading(false);
-    }
+    // Set applied filters and reset paging
+    const geoCode = userData?.geocode_address ?? null;
+
+    // Fire analytics
+    TagManager.dataLayer({
+      dataLayer: {
+        event: "search_jobs",
+        settings: userData?.settings,
+        filters,
+        lname: userData?.lname,
+        fname: userData?.fname,
+        tel: userData?.auth?.tel,
+        zipcode: userData?.zipcode,
+        city: userData?.city,
+        email: userData?.auth?.email,
+      },
+    });
+
+    setMode("filtered");
+    setAppliedFilters(filters);
+    setAppliedGeo(geoCode);
+    setPage(1); // crucial: reset to page 1 so we don’t ask for “last page” of a new query
   };
-  // console.log(totalJobs);
+
+  const loadMore = () => {
+    if (loading) return;
+    if (page >= totalPages) return;
+    setPage((p) => p + 1);
+  };
+
+  const hasMore = page < totalPages;
+
   return (
     <div className="py-6 px-2 bg-gray-100 md:px-4 min-h-[100vh]">
       <div className="max-w-6xl mx-auto">
@@ -255,35 +304,42 @@ function All() {
 
         {/* Job Listings */}
         <div>
-          {loading && (
+          {loading && jobs.length === 0 && (
             <div className="max-w-6xl mx-auto">
-              <div className="grid grid-cols-1  gap-6">
+              <div className="grid grid-cols-1 gap-6">
                 {Array.from({ length: 6 }).map((_, idx) => (
                   <JobCardSkeleton key={idx} />
                 ))}
               </div>
             </div>
           )}
+
           {!loading && totalJobs > 0 && (
             <div className="mb-4">
               <p className="font-medium text-gray-800">
-                Found {totalJobs} job(s) matching your criteria.
+                Found {totalJobs} job(s)
+                {mode === "filtered" ? " for your search" : ""}.
               </p>
             </div>
           )}
-          {!loading &&
-            jobs.map((job: any) => <JobPostCard key={job._id} job={job} />)}
+
+          {!loading && jobs.length === 0 && (
+            <p className="text-sm text-gray-600">No jobs found.</p>
+          )}
+
+          {jobs.map((job: any) => (
+            <JobPostCard key={job._id} job={job} />
+          ))}
+
           <div className="flex justify-center mt-4">
-            {!loading && page < totalPages && (
-              <Button
-                onClick={() => setPage((prevPage) => prevPage + 1)}
-                
-                disabled={loading}
-              >
-                Load More
+            {hasMore && (
+              <Button onClick={loadMore} disabled={loading}>
+                {loading ? "Loading…" : "Load More"}
               </Button>
             )}
-            {page >= totalPages && !loading && <p>No more jobs available</p>}
+            {!hasMore && jobs.length > 0 && (
+              <p className="text-sm text-gray-600">No more jobs available</p>
+            )}
           </div>
         </div>
       </div>
