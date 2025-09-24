@@ -205,37 +205,37 @@ const UpdateProfile = () => {
   // ---------- Uploads ----------
   const IMG_MAX_BYTES = 1 * 1024 * 1024; // 1MB
 
-const handleProfileImageUpload = async (files: File[]) => {
-  const file = files?.[0];
-  if (!file) return;
+  const handleProfileImageUpload = async (files: File[]) => {
+    const file = files?.[0];
+    if (!file) return;
 
-  const previousUrl = profileImagePreview;
+    const previousUrl = profileImagePreview;
 
-  try {
-    setImageLoading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-    const { data } = await axios.post(
-      "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/upload-file",
-      formData
-    );
-    const url = data?.url ?? "";
-    setValue("profileImage", url, { shouldDirty: true });
-    setProfileImagePreview(url);
-    toast({ title: "Profile image uploaded successfully" });
-    // background cleanup of old hosted image
-    safeDeleteHostedFile(previousUrl);
-  } catch (error: any) {
-    toast({
-      title: "Error uploading profile image",
-      description: error?.response?.data?.message || error?.message || "Upload failed",
-      variant: "destructive",
-    });
-  } finally {
-    setImageLoading(false);
-  }
-};
-
+    try {
+      setImageLoading(true);
+      const formData = new FormData();
+      formData.append("file", file);
+      const { data } = await axios.post(
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/upload-file",
+        formData
+      );
+      const url = data?.url ?? "";
+      setValue("profileImage", url, { shouldDirty: true });
+      setProfileImagePreview(url);
+      toast({ title: "Profile image uploaded successfully" });
+      // background cleanup of old hosted image
+      safeDeleteHostedFile(previousUrl);
+    } catch (error: any) {
+      toast({
+        title: "Error uploading profile image",
+        description:
+          error?.response?.data?.message || error?.message || "Upload failed",
+        variant: "destructive",
+      });
+    } finally {
+      setImageLoading(false);
+    }
+  };
 
   const deleteFile = async (url: string | null, type: "image") => {
     if (!url) return;
@@ -787,17 +787,7 @@ const handleProfileImageUpload = async (files: File[]) => {
                     <Button
                       type="button"
                       disabled={loading || isSubmitting}
-                      onClick={(e) => {
-                        e.currentTarget
-                          .closest("div.grid")
-                          ?.querySelector("form")
-                          ?.dispatchEvent(
-                            new Event("submit", {
-                              cancelable: true,
-                              bubbles: true,
-                            })
-                          );
-                      }}
+                      onClick={handleSubmit(onSubmit)}
                       className="w-full flex gap-2 lg:hidden"
                     >
                       {(loading || isSubmitting) && (
