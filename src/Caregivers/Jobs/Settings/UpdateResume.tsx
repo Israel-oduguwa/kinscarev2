@@ -183,13 +183,12 @@ const CaregiverProfileForm = () => {
         mobility: userData?.complete ? userData?.mobility ?? "has_car" : "has_car",
         zipcode: (userData?.complete || userData?.zipcode ? userData?.zipcode : "") ?? "",
         availability: userData?.complete ? userData?.availability ?? [] : [],
-        profileImage:
-          (userData?.complete || userData?.profileImage ? userData?.profileImage : null) ?? null,
+        profileImage:userData?.profileImage ? userData?.profileImage : null,
         resumeDocument:
           userData?.complete && userData?.resumeDocument ? userData?.resumeDocument : null,
         smsConsent: Boolean(userData?.smsConsent ?? false),
       });
-
+      
       setResumePreview(userData?.resumeDocument ?? null);
       setProfileImagePreview(userData?.profileImage ?? null);
     } catch (e: any) {
@@ -811,14 +810,9 @@ const CaregiverProfileForm = () => {
                 {/* Submit (mobile) */}
                 <div className="mt-6">
                   <Button
-                    type="submit"
+                    
                     disabled={loading || isSubmitting}
-                    onClick={(e) => {
-                      // Ensure form submit on mobile button
-                      e.currentTarget.closest("form")?.dispatchEvent(
-                        new Event("submit", { cancelable: true, bubbles: true })
-                      );
-                    }}
+                   onClick={handleSubmit(onSubmit)}
                     className="w-full flex gap-2 lg:hidden"
                   >
                     {(loading || isSubmitting) && <LoaderCircle className="animate-spin" />}{" "}

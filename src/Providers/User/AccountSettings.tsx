@@ -205,9 +205,9 @@ function AccountSettings() {
                 animate={{ opacity: 1 }}
                 className="bg-white rounded-xl shadow-sm border border-gray-200"
               >
-                <div className="p-6 border-b border-gray-200">
+                <div className="p-4 border-b border-gray-200">
                   <h2 className="text-xl font-bold text-gray-800 flex items-center">
-                    <User className="w-5 h-5 mr-2 text-blue-500" />
+                    <User className="w-4 h-4 mr-2 text-blue-500" />
                     Account Information
                   </h2>
                 </div>
@@ -304,7 +304,7 @@ function AccountSettings() {
                           </div>
                         </div>
                         <Link href="/provider/account/settings/profile">
-                          <Button className="mt-6 w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-all">
+                          <Button variant="outline" className="mt-6 w-full ">
                             Update Profile
                           </Button>
                         </Link>
