@@ -178,7 +178,7 @@ const CaregiverProfileForm = () => {
   const [loading, setLoading] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
   const [documentLoading, setDocumentLoading] = useState(false);
-  console.log(profileImagePreview);
+  // console.log(profileImagePreview);
   // --------- Guard: if signed out, show info + redirect safely ----------
   useEffect(() => {
     if (!user || !userData) {
@@ -314,7 +314,7 @@ const CaregiverProfileForm = () => {
       if (type === "image") setImageLoading(true);
       else setDocumentLoading(true);
       if (hosted) {
-        console.log(hosted)
+        // console.log(hosted)
         await axios.post(
           "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/delete-file",
           { fileUrl: url }
@@ -440,8 +440,8 @@ const CaregiverProfileForm = () => {
   const DOC_MAX_BYTES = 3 * 1024 * 1024; // 3MB
 
   return (
-    <div className="bg-gray-100 px-2 md:px-4">
-      <div className="py-6 lg:py-10">
+    <div className="bg-gray-100 px-0 md:px-4">
+      <div className="py-3 md:py-6 lg:py-10">
         <div className="max-w-6xl mx-auto py-6 sm:py-8 px-3 sm:px-5 md:px-8 rounded-lg shadow-lg bg-white">
           <div className="mb-5">
             <h2 className="font-bold text-xl text-gray-900">

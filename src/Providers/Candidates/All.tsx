@@ -141,7 +141,7 @@ const CandidatesCard = ({ candidate }: any) => {
           </div>
           <div className="w-full">
             <div className="w-full flex-wrap gap-4 flex">
-              {candidate.licenses.map((license: any, index: any) => (
+              {candidate?.licenses?.map((license: any, index: any) => (
                 <div
                   key={index}
                   className="relative  text-sm bg-gray-100 text-gray-800 rounded-lg py-1.5 px-3"
@@ -149,7 +149,7 @@ const CandidatesCard = ({ candidate }: any) => {
                   <span className="text-sm text-gray-600">{license}</span>
                 </div>
               ))}
-              {candidate.availability.map(
+              {candidate?.availability?.map(
                 (sch: any, index: React.Key | null | undefined) => (
                   <div
                     key={index}
@@ -270,7 +270,7 @@ function All() {
     { label: "NAR", value: "NAR" },
     { label: "Companion", value: "None" },
   ];
-  // console.log(totalPages, "total pages");
+  // console.log(candidates, "total pages");
   return (
     <div className="w-full">
       <div className="bg-slate-100 min-h-[100vh] p-3">
