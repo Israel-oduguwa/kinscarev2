@@ -28,7 +28,7 @@ function NavbarLink() {
 
   return (
     <NavigationMenu>
-      <NavigationMenuList className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-3 lg:mt-0">
+      <NavigationMenuList className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-2 lg:mt-0">
         {menuItems.map((item) => {
           const isActive = pathname === item.href;
 

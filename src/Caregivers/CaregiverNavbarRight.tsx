@@ -28,6 +28,9 @@ import {
   Settings,
   MessageCircle,
   Bookmark,
+  SearchIcon,
+  BookCopy,
+  BriefcaseBusiness,
 } from "lucide-react";
 import Link from "next/link";
 import MongoContext from "@/app/MongoContext";
@@ -146,6 +149,12 @@ const UserAvatar = ({ userData, customData, user, LogOutUser }: any) => {
         <DropdownMenuSeparator />
 
         {/* Menu Links */}
+         <DropdownMenuItem className="p-3 border border-gray-50" asChild>
+          <Link href="/vitae/jobs/all">
+            <SearchIcon className="mr-2 h-4 w-4" />
+            Find Jobs
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem className="p-3 border border-gray-50" asChild>
           <Link href="/vitae/applied-jobs">
             <User className="mr-2 h-4 w-4" />
@@ -159,11 +168,24 @@ const UserAvatar = ({ userData, customData, user, LogOutUser }: any) => {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="p-3 border border-gray-50" asChild>
+          <Link href="/vitae/career-plan">
+            <BookCopy/>
+            Career Plan
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem className="p-3 border border-gray-50" asChild>
+          <Link href="/vitae/crowd-post/update/new">
+            <BriefcaseBusiness className="mr-2 h-4 w-4" />
+            Refer + Make $
+          </Link>
+        </DropdownMenuItem> 
+        <DropdownMenuItem className="p-3 border border-gray-50" asChild>
           <Link href="/vitae/update">
             <FileText className="mr-2 h-4 w-4" />
             Update Resume
           </Link>
         </DropdownMenuItem>
+        
         <DropdownMenuItem className="p-3 border border-gray-50" asChild>
           <Link href="/community">
             <MessageCircle className="mr-2 h-4 w-4" />

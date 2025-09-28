@@ -30,6 +30,7 @@ import {
   Bookmark,
   BadgeHelp,
   BookmarkCheck,
+  SearchIcon,
 } from "lucide-react";
 import Link from "next/link";
 import MongoContext from "@/app/MongoContext";
@@ -134,6 +135,12 @@ const UserAvatar = ({ userData, user, LogOutUser }: any) => {
           <Link href="/provider/job/update/new">
             <FileText className="mr-2 h-4 w-4 text-sm text-zinc-900 " />
             <p className="text-sm  text-zinc-900"> Post a job</p>
+          </Link>
+        </DropdownMenuItem>
+         <DropdownMenuItem className="p-3 border border-gray-50" asChild>
+          <Link href="/provider/candidates/all">
+            <SearchIcon className="mr-2 h-4 w-4 text-sm text-zinc-900 " />
+            <p className="text-sm  text-zinc-900"> Find caregivers</p>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="p-3 border border-gray-50" asChild>
