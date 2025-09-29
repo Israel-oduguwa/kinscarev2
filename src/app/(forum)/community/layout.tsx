@@ -10,7 +10,7 @@ export default function DashboardLayout({
   return (
     <section>
       <Toaster /> <ForumDynamicNavbar />
-      <div className="pb-10">{children}</div>
+      <div className="">{children}</div>
       <Footer />
     </section>
   );

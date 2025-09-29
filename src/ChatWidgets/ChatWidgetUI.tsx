@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   createFlow,
   handleQuickReply as flowHandleQuickReply,
@@ -8,6 +8,9 @@ import {
 import Image from "next/image";
 import axios from "axios";
 import ExplorerSignup from "@/Caregivers/UiProviders/ExplorerSignup";
+import MongoContext from "@/app/MongoContext";
+// NEW: bring in your auth/user context
+
 
 /**
  * KinsCare Chat Widget UI (Responsive + Smooth)
@@ -112,6 +115,10 @@ function IconSparkles(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export default function ChatWidgetUI() {
+  // NEW: read sign-in state from your app
+  const { userData }: any = useContext(MongoContext);
+  const isSignedIn = !!userData;
+
   const [open, setOpen] = useState(false);
   const [minimized, setMinimized] = useState(false);
   const [messages, setMessages] = useState<ChatMsg[]>([]);
@@ -136,17 +143,41 @@ export default function ChatWidgetUI() {
     });
   }, [messages, showTyping, open, minimized, showSignup]);
 
-  // Initialize flow when widget opens
+  // Initialize flow when widget opens — using current signed-in status
   useEffect(() => {
     if (open && !flowStateRef.current) {
-      const { state, ui } = createFlow({ userSignedIn: false });
+      const { state, ui } = createFlow({ userSignedIn: isSignedIn }); // NEW
       flowStateRef.current = state;
       enqueueFrame(ui);
     }
     if (!open) {
       setShowTyping(false);
     }
-  }, [open]);
+  }, [open, isSignedIn]); // NEW: re-evaluate when sign-in changes and panel (re)opens
+
+  // Keep FSM in sync when user signs in/out mid-conversation (no transcript loss)
+  useEffect(() => {
+    if (!flowStateRef.current) return;
+    // update the flag inside the FSM session
+    if (flowStateRef.current.session.user_signed_in !== isSignedIn) {
+      flowStateRef.current.session.user_signed_in = isSignedIn;
+
+      // optional: gently inform the user without restarting
+      enqueueFrame({
+        messages: [
+          {
+            id: `b_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+            from: "bot",
+            text: isSignedIn
+              ? "You're signed in. Ready to proceed?"
+              : "You're signed out.",
+            time: "now",
+          },
+        ],
+        allowFreeText: allowFreeText, // keep current input mode
+      });
+    }
+  }, [isSignedIn]); // NEW
 
   // —— UI enqueue helpers for smooth "thinking" feel ——
   const baseThink = 950; // ms before first bot message
@@ -254,7 +285,7 @@ export default function ChatWidgetUI() {
       setAllowFreeText(false);
       setShowTyping(false);
       setShowSignup(false);
-      const { state, ui } = createFlow({ userSignedIn: false });
+      const { state, ui } = createFlow({ userSignedIn: isSignedIn }); // NEW: preserve current sign-in
       flowStateRef.current = state;
       enqueueFrame(ui);
       return;
@@ -334,7 +365,7 @@ export default function ChatWidgetUI() {
             className="transition-transform duration-300 group-hover:scale-110"
           />
 
-          {/* Pulsing ring effect */}
+        {/* Pulsing ring effect */}
           <span className="absolute inset-0 -m-2 rounded-full bg-blue-400 animate-ping opacity-15 group-hover:opacity-100 duration-300 -z-10"></span>
         </div>
 
@@ -534,7 +565,7 @@ function Bubble({
 function TypingBubble() {
   return (
     <div className="flex justify-start cw-pop">
-      <div className="bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 border border-neutral-200/70 dark:border-neutral-800/70 max-w-[82%] rounded-2xl px-3 py-2 text-[13px] leading-relaxed shadow-sm">
+      <div className="bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 border border-neutral-200/70 dark:border-neutral-800/70 max-w-[82%] rounded-2xl px-3 py-2 text=[13px] leading-relaxed shadow-sm">
         <div className="inline-flex items-center gap-2">
           <span className="text-neutral-500 text-xs">Assistant is typing</span>
           <span className="inline-flex items-center gap-1 text-neutral-500">

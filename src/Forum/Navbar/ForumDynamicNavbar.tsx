@@ -1,12 +1,14 @@
 "use client";
-import MongoContext from "@/app/MongoContext";
-import React, { useContext } from "react";
-import ForumNavbar from "./ForumNavbar";
-import CaregiverNavbar from "@/Caregivers/CaregiverNavbar";
-import ProviderNavbar from "@/Providers/ProviderNavbar";
-import CaregiverNavbarRight from "@/Caregivers/CaregiverNavbarRight";
+
+import React, { useContext, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import MongoContext from "@/app/MongoContext";
+
+import CaregiverNavbarRight from "@/Caregivers/CaregiverNavbarRight";
 import ProviderNavbarRight from "@/Providers/ProviderNavbarRight";
+
+import { Menu, X } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -14,93 +16,89 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetClose,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 function ForumDynamicNavbar() {
   const { userData }: any = useContext(MongoContext);
 
-  return (
-    <>
-      {userData?.role === "caregiver" ? (
-        <header>
-          <nav className=" py-3 px-4 lg:px-6 shadow-md">
-            <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-2xl">
-              {/* Logo */}
-              <Link className="flex items-center" href="/">
-                <img
-                  className="h-8 sm:h-10 mr-2"
-                  src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
-                  alt="Kinscare Logo"
-                />
-                <p className="text-sm font-medium">Kinscare</p>
-              </Link>
-              <div className="hidden lg:flex items-center space-x-6">
-                <NavigationMenu>
-                  <NavigationMenuList>
-                    <NavigationMenuItem>
-                      <Link
-                        href="/community"
-                        
-                        passHref
-                      >
-                        <NavigationMenuLink
-                          className={navigationMenuTriggerStyle()}
-                        >
-                         Discussions
-                        </NavigationMenuLink>
-                      </Link>
-                    </NavigationMenuItem>
-                  </NavigationMenuList>
-                </NavigationMenu>
-                <NavigationMenu>
-                  <NavigationMenuList>
-                    <NavigationMenuItem>
-                      <Link
-                        href="/community/create"
-                        
-                        passHref
-                      >
-                        <NavigationMenuLink
-                          className={navigationMenuTriggerStyle()}
-                        >
-                          Create Discussion
-                        </NavigationMenuLink>
-                      </Link>
-                    </NavigationMenuItem>
-                  </NavigationMenuList>
-                </NavigationMenu>
-              </div>
-              {/* Right Section for Caregiver */}
-              <div className="flex items-center space-x-3">
-                <CaregiverNavbarRight />
-              </div>
-            </div>
-          </nav>
-        </header>
-      ) : (
-        <header>
-          <nav className="py-3 px-4 lg:px-6 shadow-md">
-            <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-2xl">
-              {/* Logo */}
-              <Link className="flex items-center" href="/">
-                <img
-                  className="h-8 sm:h-10 mr-2"
-                  src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
-                  alt="Kinscare Logo"
-                />
-                <p className="text-sm font-medium">Kinscare</p>
-              </Link>
+  const role: "caregiver" | "provider" | "guest" = useMemo(() => {
+    if (userData?.role === "caregiver") return "caregiver";
+    if (userData?.role === "provider") return "provider";
+    return "guest";
+  }, [userData]);
 
-              {/* Navigation Links */}
-              {userData && userData.role === "provider" && (
-                <div className="hidden lg:flex items-center space-x-6">
+  return (
+    <header className="w-full">
+      <nav className="py-3 px-4 lg:px-6 shadow-md bg-white">
+        <div className="mx-auto max-w-screen-2xl">
+          {/* Row */}
+          <div className="flex items-center justify-between">
+            {/* LEFT cluster (mobile: hamburger + logo) */}
+            <div className="flex items-center gap-2">
+              {/* Hamburger: visible on <lg */}
+              <div className="lg:hidden">
+                <MobileMenu role={role} />
+              </div>
+
+              {/* Logo */}
+              <Link className="flex items-center" href="/">
+                <Image
+                  src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
+                  alt="Kinscare Logo"
+                  width={40}
+                  height={40}
+                  className="h-8 w-8 sm:h-10 sm:w-10 mr-2"
+                  priority
+                />
+                <p className="text-sm font-medium">Kinscare</p>
+              </Link>
+            </div>
+
+            {/* CENTER (desktop nav links) */}
+            <div className="hidden lg:flex items-center gap-6">
+              {role === "caregiver" && (
+                <>
                   <NavigationMenu>
                     <NavigationMenuList>
                       <NavigationMenuItem>
-                        <Link
-                          href="/provider/candidates/all"
-                          
-                          passHref
-                        >
+                        <Link href="/community">
+                          <NavigationMenuLink
+                            className={navigationMenuTriggerStyle()}
+                          >
+                            Discussions
+                          </NavigationMenuLink>
+                        </Link>
+                      </NavigationMenuItem>
+                    </NavigationMenuList>
+                  </NavigationMenu>
+                  <NavigationMenu>
+                    <NavigationMenuList>
+                      <NavigationMenuItem>
+                        <Link href="/community/create">
+                          <NavigationMenuLink
+                            className={navigationMenuTriggerStyle()}
+                          >
+                            Create Discussion
+                          </NavigationMenuLink>
+                        </Link>
+                      </NavigationMenuItem>
+                    </NavigationMenuList>
+                  </NavigationMenu>
+                </>
+              )}
+
+              {role === "provider" && (
+                <>
+                  <NavigationMenu>
+                    <NavigationMenuList>
+                      <NavigationMenuItem>
+                        <Link href="/provider/candidates/all">
                           <NavigationMenuLink
                             className={navigationMenuTriggerStyle()}
                           >
@@ -110,14 +108,11 @@ function ForumDynamicNavbar() {
                       </NavigationMenuItem>
                     </NavigationMenuList>
                   </NavigationMenu>
+
                   <NavigationMenu>
                     <NavigationMenuList>
                       <NavigationMenuItem>
-                        <Link
-                          href="/provider/job/update/new"
-                          
-                          passHref
-                        >
+                        <Link href="/provider/job/update/new">
                           <NavigationMenuLink
                             className={navigationMenuTriggerStyle()}
                           >
@@ -127,21 +122,150 @@ function ForumDynamicNavbar() {
                       </NavigationMenuItem>
                     </NavigationMenuList>
                   </NavigationMenu>
-                </div>
+                </>
               )}
-
-              {/* Right Section for Providers */}
-              <div className="flex items-center space-x-4">
-                <ProviderNavbarRight />
-              </div>
-
-              {/* Hamburger Menu for Small Screens */}
-              <div className="lg:hidden">{/* <MobileMenu /> */}</div>
             </div>
-          </nav>
-        </header>
-      )}
-    </>
+
+            {/* RIGHT (role widgets) */}
+            <div className="flex items-center gap-3">
+              {role === "caregiver" && <CaregiverNavbarRight />}
+              {role === "provider" && <ProviderNavbarRight />}
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+  );
+}
+
+/* ---------------------------------------------
+ * Mobile menu (shadcn Sheet) – mirrors desktop links
+ * --------------------------------------------- */
+function MobileMenu({ role }: { role: "caregiver" | "provider" | "guest" }) {
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <button
+          aria-label="Open menu"
+          className="inline-flex items-center justify-center rounded-xl p-2.5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+          <Menu size={22} />
+        </button>
+      </SheetTrigger>
+
+      <SheetContent
+        side="left"
+        className="w-[18.5rem] p-0 border-0 bg-white shadow-2xl flex flex-col"
+      >
+        {/* Header */}
+        <div className="sticky top-0 z-10 flex items-center justify-between px-5 pt-5 pb-3 border-b border-gray-200 bg-white">
+          <div className="flex items-center gap-3">
+            <Image
+              src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
+              alt="Kinscare Logo"
+              width={28}
+              height={28}
+              className="h-7 w-7"
+              priority
+            />
+            <span className="text-base font-semibold tracking-tight">Menu</span>
+          </div>
+          <SheetClose asChild>
+            <button
+              aria-label="Close menu"
+              className="rounded-md p-2 text-gray-500 hover:bg-gray-100"
+            >
+              <X size={18} />
+            </button>
+          </SheetClose>
+        </div>
+
+        {/* Body (scrollable) */}
+        <div className="flex-1 overflow-y-auto px-3 py-4">
+          {/* Caregiver links */}
+          {role === "caregiver" && (
+            <div className="space-y-1">
+              <SheetClose asChild>
+                <Link
+                  href="/community"
+                  className="block rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 hover:bg-gray-100"
+                >
+                  Discussions
+                </Link>
+              </SheetClose>
+              <SheetClose asChild>
+                <Link
+                  href="/community/create"
+                  className="block rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 hover:bg-gray-100"
+                >
+                  Create Discussion
+                </Link>
+              </SheetClose>
+            </div>
+          )}
+
+          {/* Provider links */}
+          {role === "provider" && (
+            <div className="space-y-1">
+              <SheetClose asChild>
+                <Link
+                  href="/provider/candidates/all"
+                  className="block rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 hover:bg-gray-100"
+                >
+                  Find Caregivers
+                </Link>
+              </SheetClose>
+              <SheetClose asChild>
+                <Link
+                  href="/provider/job/update/new"
+                  className="block rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 hover:bg-gray-100"
+                >
+                  Post Job
+                </Link>
+              </SheetClose>
+            </div>
+          )}
+
+          {/* Guest (optional minimal) */}
+          {role === "guest" && (
+            <div className="space-y-1">
+              <SheetClose asChild>
+                <Link
+                  href="/community"
+                  className="block rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 hover:bg-gray-100"
+                >
+                  Discussions
+                </Link>
+              </SheetClose>
+            </div>
+          )}
+        </div>
+
+        {/* Footer actions (optional) */}
+        <div className="border-t border-gray-200 px-3 py-4">
+          {role === "guest" ? (
+            <div className="flex gap-2">
+              <SheetClose asChild>
+                <Link href="/signin" className="w-1/2">
+                  <Button variant="outline" className="w-full rounded-xl">
+                    Sign In
+                  </Button>
+                </Link>
+              </SheetClose>
+              <SheetClose asChild>
+                <Link href="/signup" className="w-1/2">
+                  <Button className="w-full rounded-xl">Get Started</Button>
+                </Link>
+              </SheetClose>
+            </div>
+          ) : (
+            <div className="text-xs text-gray-500 px-1">
+              You’re signed in as <span className="font-medium">{role}</span>.
+            </div>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }
 

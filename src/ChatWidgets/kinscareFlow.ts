@@ -978,8 +978,8 @@ function say(
 function signupGate(state: FlowState): ChatMsg {
   if (state.session.user_signed_in) {
     return botWithButtons("You're signed in. Ready to proceed?", [
-      restartBtn(),
-      // exitBtn(),
+      // restartBtn(),
+      exitBtn(),
     ]);
   }
   return botWithButtons(
