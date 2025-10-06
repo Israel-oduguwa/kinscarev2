@@ -36,7 +36,7 @@ const schema = yup
   })
   .required();
 
-function SelectRole({ selectRoleModal, closeSelectModal }: any) {
+function SelectRole({ selectRoleModal,  setSelectRoleModal, closeSelectModal }: any) {
   const mongoContext: any = useContext(MongoContext);
   const { user, setUserData } = mongoContext;
   const [loading, setLoading] = useState(false);
@@ -190,7 +190,7 @@ function SelectRole({ selectRoleModal, closeSelectModal }: any) {
   };
 
   return (
-    <Dialog open={selectRoleModal}>
+    <Dialog onOpenChange={setSelectRoleModal} open={selectRoleModal}>
       <DialogContent className="md:max-w-xl">
         <DialogHeader>
           <DialogTitle>Select Role</DialogTitle>

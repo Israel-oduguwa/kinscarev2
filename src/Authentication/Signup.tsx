@@ -448,6 +448,7 @@ const Signup: React.FC = () => {
     <div className="w-full min-h-[100vh] bg-gray-100 dark:bg-inherit">
       {/* Role selection modal (shown after Google signup if role missing) */}
       <SelectRole
+      setSelectRoleModal={setSelectRoleModal}
         selectRoleModal={selectRoleModal}
         closeSelectModal={closeSelectModal}
       />
