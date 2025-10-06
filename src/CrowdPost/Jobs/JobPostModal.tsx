@@ -349,7 +349,7 @@ const JobPostModal = ({ caregiver }: any) => {
                           {...field}
                           id="tel"
                           placeholder="Enter phone number"
-                          defaultCountry="NG"
+                          defaultCountry="US"
                           label
                           international
                           className={`pr-10 input input-bordered w-full ${
