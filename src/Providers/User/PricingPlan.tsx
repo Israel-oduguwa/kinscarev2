@@ -118,7 +118,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
       id: "daily",
       title: "Daily Plan",
       price: "$23.99",
-      stripePriceId: "price_1QXcozAoahxG9SLGGelfYlKJ",
+      stripePriceId: "price_1SG0IIAoahxG9SLGjs1ME0zJ",
       description:
         "Perfect for short-term projects or temporary needs. Get access for 24 hours.",
       features: ["24-hour access", "Full feature set", "24/7 premium support"],
@@ -127,7 +127,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
       id: "weekly",
       title: "Weekly Plan",
       price: "$63.99",
-      stripePriceId: "price_1QSCneAoahxG9SLGCHhFdN4C",
+      stripePriceId: "price_1SG0IIAoahxG9SLGW3iCYQpb",
       description:
         "Ideal for weekly usage. Enjoy full access for 7 days at a discounted rate.",
       features: ["7-day access", "Full feature set", "24/7 premium support"],
@@ -136,7 +136,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
       id: "monthly",
       title: "Monthly Plan",
       price: "$93.99",
-      stripePriceId: "price_1QXcpZAoahxG9SLGjWJp4KfP",
+      stripePriceId: "price_1SG0FJAoahxG9SLG2zl4tRUp",
       description:
         "Best value! Get 30 days of unlimited access to all features.",
       features: ["30-day access", "Full feature set", "24/7 premium support"],
@@ -190,6 +190,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
         setIsCardDialogOpen(true);
         void fetchSavedCards();
       } catch (error) {
+        console.log(error)
         console.error("Error creating subscription client secret:", error);
       } finally {
         setIsFetchingSecret(false);

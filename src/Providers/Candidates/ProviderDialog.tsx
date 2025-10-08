@@ -263,7 +263,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
   const getPriceIdByPlan = (plan: "daily" | "weekly" | "monthly"): string => {
     const priceIds = {
       daily: "price_1QSCmtAoahxG9SLG2kga6E01",
-      weekly: "price_1QSCneAoahxG9SLGCHhFdN4C",
+      weekly: "price_1SG0IIAoahxG9SLGW3iCYQpb",
       monthly: "price_1QP2OuAoahxG9SLGNoc37Lxo",
     };
     if (!priceIds[plan]) {

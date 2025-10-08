@@ -49,7 +49,7 @@ const pricingPlans = [
     id: "daily",
     title: "Daily Plan",
     price: "$23.99",
-    stripePriceId: "price_1QXcozAoahxG9SLGGelfYlKJ",
+    stripePriceId: "price_1SG0IIAoahxG9SLGjs1ME0zJ",
     highlight: "Try risk-free",
     best: "Exploring caregivers before committing",
     description: `Best for exploring caregivers before committing or temporary needs. Get access for 24 hours.`,
@@ -64,7 +64,7 @@ const pricingPlans = [
     title: "Weekly Plan",
     best: "",
     price: "$63.99",
-    stripePriceId: "price_1QSCneAoahxG9SLGCHhFdN4C",
+    stripePriceId: "price_1SG0IIAoahxG9SLGW3iCYQpb",
     highlight: "Most Popular",
     description:
       "Ideal for weekly usage. Enjoy full access for 7 days at a discounted rate.",
@@ -80,7 +80,7 @@ const pricingPlans = [
     best: "",
     highlight: "Best Value",
     price: "$93.99",
-    stripePriceId: "price_1QXcpZAoahxG9SLGjWJp4KfP",
+    stripePriceId: "price_1SG0FJAoahxG9SLG2zl4tRUp",
     description:
       "Best value! Get 30 days of unlimited access to all features. for Ongoing hiring & workforce planning",
     features: [

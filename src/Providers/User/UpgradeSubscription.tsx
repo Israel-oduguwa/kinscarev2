@@ -23,7 +23,7 @@ const pricingPlans = [
     id: "weekly",
     title: "Weekly Plan",
     price: "$63.99",
-    stripePriceId: "price_1QSCneAoahxG9SLGCHhFdN4C",
+    stripePriceId: "price_1SG0IIAoahxG9SLGW3iCYQpb",
     description:
       "Ideal for weekly usage. Enjoy full access for 7 days at a discounted rate.",
     features: ["7-day access", "Full feature set", "24/7 premium support"],
@@ -32,7 +32,7 @@ const pricingPlans = [
     id: "monthly",
     title: "Monthly Plan",
     price: "$93.99",
-    stripePriceId: "price_1QXcpZAoahxG9SLGjWJp4KfP",
+    stripePriceId: "price_1SG0FJAoahxG9SLG2zl4tRUp",
     description: "Best value! Get 30 days of unlimited access to all features.",
     features: ["30-day access", "Full feature set", "24/7 premium support"],
   },
