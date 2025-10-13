@@ -25,7 +25,7 @@ function CaregiverDash() {
 
   return (
     <div className="py-10 px-3 bg-gray-50 md:px-4 min-h-[100vh]">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-6 w-full">
           <div className="mb-0.5 flex items-center space-x-2">

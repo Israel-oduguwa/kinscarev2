@@ -383,7 +383,7 @@ function AccountSettings() {
                             >
                               {trialActive
                                 ? "Upgrade Plan"
-                                : "Veiw Plans"}
+                                : "View Plans"}
                             </Button>
                           </div>
                         </div>

@@ -7,7 +7,7 @@ import Footer from "@/WebPages/Footer";
 // Skeleton Component
 const CandidateDetailsSkeleton = () => {
   return (
-    <div className="bg-gray-100 p-6 space-y-4">
+    <div className="bg-gray-100 p-6 max-w-6xl mx-auto space-y-4">
       {/* Profile Section Skeleton */}
       <div className="relative shadow-sm border bg-white border-gray-200 rounded-lg p-6 space-y-4">
         <div className="flex items-center space-x-4">

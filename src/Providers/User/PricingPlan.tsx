@@ -90,8 +90,6 @@ const stripePromise = loadStripe(STRIPE_PUBLIC_KEY);
 /*                             Main Component                                 */
 /* -------------------------------------------------------------------------- */
 
-
-
 function PricingPlan({ closePricingDialog }: PricingPlanProps) {
   const { user, customData, setCustomData } = useContext(
     MongoContext
@@ -111,7 +109,6 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
   const [renewingPlan, setRenewingPlan] = useState<boolean>(false);
 
   const router = useRouter();
-
 
   const pricingPlans: PricingPlanItem[] = [
     {
@@ -190,7 +187,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
         setIsCardDialogOpen(true);
         void fetchSavedCards();
       } catch (error) {
-        console.log(error)
+        console.log(error);
         console.error("Error creating subscription client secret:", error);
       } finally {
         setIsFetchingSecret(false);
@@ -739,17 +736,44 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                       </Button>
                     </div>
                   ) : (
-                    <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                      No saved cards available. Use a new card to proceed.
-                    </p>
+                    <>
+                      {/* When the user does not have a saved card, we show the user the form  */}
+                      <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                        No saved cards available. Use a new card to proceed.
+                      </p>
+                      {clientSecret && (
+                        <Elements
+                          stripe={stripePromise}
+                          options={{ clientSecret }}
+                        >
+                          <FrequentPaymentForm
+                            clientSecret={clientSecret}
+                            userID={user.customData.userID}
+                            subscription={subscription}
+                            plan={currentPlan?.id}
+                            priceId={currentPlan?.stripePriceId ?? ""}
+                            subscriptionID={subscriptionID}
+                            onSuccess={(result) =>
+                              console.log("Payment success:")
+                            }
+                            onError={(error) =>
+                              console.log("Payment error:", error)
+                            }
+                            customerId={""}
+                            intentType={""}
+                            close={handleCloseDialog}
+                          />
+                        </Elements>
+                      )}
+                    </>
                   )}
-                  <Button
+                  {/* <Button
                     onClick={handleOpenPaymentForm}
                     variant={savedCards.length === 0 ? "default" : "outline"}
                     className="w-full mt-4 px-6 py-3 text-sm bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] rounded-lg shadow hover:shadow-lg transition"
                   >
                     Use another card
-                  </Button>
+                  </Button> */}
                 </>
               )}
             </div>

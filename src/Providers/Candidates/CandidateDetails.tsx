@@ -36,7 +36,7 @@ const CandidatesCard = ({ similarCaregivers }: any) => {
                   alt="profile-image"
                 /> */}
                 <ProfileAvatar
-                  size="w-12 h-12"
+                  size="w-14 h-14"
                   name={`${similarCaregivers?.name}`}
                   profileImage={similarCaregivers?.profileImage}
                 />
@@ -166,7 +166,7 @@ async function CandidateDetails({ candidateID }: { candidateID: string }) {
             <div className="flex items-center space-x-4">
               <div className="relative">
                 <ProfileAvatar
-                  size="w-20 h-20"
+                  size="w-24 h-24"
                   name={`${caregiver?.fname} ${caregiver?.lname}`}
                   profileImage={caregiver?.profileImage}
                 />

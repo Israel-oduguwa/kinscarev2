@@ -681,7 +681,7 @@ function ProtectedCandidatesDetails({
       <Dialog open={isTrialDialogOpen} onOpenChange={setIsTrialDialogOpen}>
         <DialogContent
           closePosition="left"
-          className="max-w-3xl p-0 m-0 space-y-0 overflow-y-auto h-[90vh]"
+          className="max-w-4xl p-0 m-0 space-y-0 overflow-y-auto h-[90vh]"
         >
           <div className="px-6">
             <div className="relative pb-3  pt-6">
