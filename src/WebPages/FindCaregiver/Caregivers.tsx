@@ -6,7 +6,15 @@ import ToastPortal, { type ToastMsg } from "@/components/ToastPortal";
 import { Button } from "@/components/ui/button";
 import { Interweave } from "interweave";
 import { polyfill } from "interweave-ssr";
-import { Award, BadgeCheck, Calendar, Info, Mail, MapPin, Phone, User } from "lucide-react";
+import {
+  Award,
+  BadgeCheck,
+  Calendar,
+  Info,
+  MapPin,
+  Phone,
+  User
+} from "lucide-react";
 import Link from "next/link";
 import ConciergeSidebarCard from "./ConciergeSidebarCard";
 import SearchBar from "./SearchBar";
@@ -35,10 +43,12 @@ interface Pagination {
   limit: number;
 }
 
+// Add to CaregiversProps
 interface CaregiversProps {
-  availability: string; // comma-separated
+  availability: string;
   page: number;
-  licenses: string; // comma-separated
+  licenses: string;
+  zipcode?: string; // <-- add
 }
 
 /* =========================
@@ -97,7 +107,10 @@ function formatPhoneNumberToDigitsWithPlus(phone?: string) {
 /* =========================
    Small UI helpers
    ========================= */
-const Chip: React.FC<{ children: React.ReactNode; title?: string }> = ({ children, title }) => (
+const Chip: React.FC<{ children: React.ReactNode; title?: string }> = ({
+  children,
+  title,
+}) => (
   <span
     title={title}
     className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-700"
@@ -117,11 +130,17 @@ function CandidatesCard({
   isAuthenticated: boolean;
 }) {
   const availabilityPulse = false;
-  const displayName = isAuthenticated ? candidate.name : obfuscateName(candidate.name);
+  const displayName = isAuthenticated
+    ? candidate.name
+    : obfuscateName(candidate.name);
   const sanitizedContent = sanitizeContent(candidate.certifications);
-  const encryptedTel = obfuscateText(formatPhoneNumberToDigitsWithPlus(candidate?.auth?.tel));
+  const encryptedTel = obfuscateText(
+    formatPhoneNumberToDigitsWithPlus(candidate?.auth?.tel)
+  );
   const encryptedEmail = obfuscateText(candidate?.auth?.email);
-  const locationLine = [candidate.city ?? "", candidate.zipcode ?? ""].filter(Boolean).join(", ");
+  const locationLine = [candidate.city ?? "", candidate.zipcode ?? ""]
+    .filter(Boolean)
+    .join(", ");
 
   return (
     <div className="w-full">
@@ -144,7 +163,7 @@ function CandidatesCard({
                   size="w-20 h-20"
                   name={candidate.name}
                   profileImage={candidate?.profileImage}
-                  className="ring-2 ring-white shadow-md"
+                  // className="ring-2 ring-white shadow-md"
                 />
                 {availabilityPulse && (
                   <span className="absolute -bottom-1 -right-1 flex h-5 w-5">
@@ -156,7 +175,9 @@ function CandidatesCard({
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between">
-                  <p className="text-lg font-bold text-gray-900 truncate">{displayName}</p>
+                  <p className="text-lg font-bold text-gray-900 truncate">
+                    {displayName}
+                  </p>
                   {availabilityPulse && (
                     <span className="hidden md:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                       Available now
@@ -166,7 +187,9 @@ function CandidatesCard({
 
                 <p className="mt-1 text-sm text-gray-600 flex items-center gap-1.5">
                   <MapPin className="h-4 w-4 text-gray-400" />
-                  <span className="truncate">{locationLine || "Location not specified"}</span>
+                  <span className="truncate">
+                    {locationLine || "Location not specified"}
+                  </span>
                 </p>
 
                 {availabilityPulse && (
@@ -187,13 +210,17 @@ function CandidatesCard({
               </h4>
               {(candidate.licenses ?? []).length ? (
                 <div className="flex flex-wrap gap-1.5">
-                  {(candidate.licenses ?? []).slice(0, 3).map((license, idx) => (
-                    <Chip key={`${license}-${idx}`} title={license} variant="primary">
-                      {license}
-                    </Chip>
-                  ))}
+                  {(candidate.licenses ?? [])
+                    .slice(0, 3)
+                    .map((license, idx) => (
+                      <Chip key={`${license}-${idx}`} title={license}>
+                        {license}
+                      </Chip>
+                    ))}
                   {(candidate.licenses ?? []).length > 3 && (
-                    <Chip title={`+${(candidate.licenses ?? []).length - 3} more`} variant="outline">
+                    <Chip
+                      title={`+${(candidate.licenses ?? []).length - 3} more`}
+                    >
                       +{(candidate.licenses ?? []).length - 3}
                     </Chip>
                   )}
@@ -211,13 +238,19 @@ function CandidatesCard({
               </h4>
               {(candidate.availability ?? []).length ? (
                 <div className="flex flex-wrap gap-1.5">
-                  {(candidate.availability ?? []).slice(0, 2).map((sch, idx) => (
-                    <Chip key={`${sch}-${idx}`} title={sch} variant="secondary">
-                      {sch}
-                    </Chip>
-                  ))}
+                  {(candidate.availability ?? [])
+                    .slice(0, 2)
+                    .map((sch, idx) => (
+                      <Chip key={`${sch}-${idx}`} title={sch}>
+                        {sch}
+                      </Chip>
+                    ))}
                   {(candidate.availability ?? []).length > 2 && (
-                    <Chip title={`+${(candidate.availability ?? []).length - 2} more`} variant="outline">
+                    <Chip
+                      title={`+${
+                        (candidate.availability ?? []).length - 2
+                      } more`}
+                    >
                       +{(candidate.availability ?? []).length - 2}
                     </Chip>
                   )}
@@ -235,7 +268,11 @@ function CandidatesCard({
               Certifications
             </h4>
             <div className="text-sm text-gray-700 line-clamp-2 bg-gray-50 rounded-lg p-3">
-              {sanitizedContent ? <Interweave content={sanitizedContent} /> : <p className="text-gray-400">No certifications provided</p>}
+              {sanitizedContent ? (
+                <Interweave content={sanitizedContent} />
+              ) : (
+                <p className="text-gray-400">No certifications provided</p>
+              )}
             </div>
           </div>
 
@@ -260,7 +297,11 @@ function CandidatesCard({
             <p className="text-sm text-blue-700 flex items-start gap-2">
               <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
               <span>
-                Contact details are hidden. Click <span className="font-semibold">"View Caregiver"</span> to see full information and hire.
+                Contact details are hidden. Click{" "}
+                <span className="font-semibold">
+                  &quot;View Caregiver&quot;
+                </span>{" "}
+                to see full information and hire.
               </span>
             </p>
           </div>
@@ -269,7 +310,11 @@ function CandidatesCard({
 
         {/* CTA: static on mobile; floats top-right on lg+; NOT inside the Link */}
         <div className="mt-6 lg:mt-0 lg:absolute lg:right-6 lg:top-6 lg:z-10">
-          <OAuthDialog caregiver={candidate} userID={candidate.userID} message="caregiver">
+          <OAuthDialog
+            caregiver={candidate}
+            userID={candidate.userID}
+            message="caregiver"
+          >
             <Button className="w-full lg:w-auto rounded-xl px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-300">
               <span className="flex items-center gap-2 font-medium">
                 <User className="h-4 w-4" /> View Caregiver
@@ -285,7 +330,12 @@ function CandidatesCard({
 /* =========================
    Page
    ========================= */
-export default async function Caregivers({ availability, page, licenses }: CaregiversProps) {
+export default async function Caregivers({
+  availability,
+  page,
+  licenses,
+  zipcode,
+}: CaregiversProps) {
   const availabilityArray = availability
     .split(",")
     .map((s) => s.trim())
@@ -311,9 +361,10 @@ export default async function Caregivers({ availability, page, licenses }: Careg
       page: String(page),
       limit: "10",
     });
+    if (zipcode) params.set("zipcode", zipcode); // <-- add
 
     const res = await fetch(
-      `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/find-caregivers/filter?${params.toString()}`,
+      `http://localhost:8081/api/v1/providers/find-caregivers/filter?${params.toString()}`,
       { cache: "no-cache" }
     );
 
@@ -325,10 +376,13 @@ export default async function Caregivers({ availability, page, licenses }: Careg
       });
     } else {
       const json = await res.json().catch(() => ({}));
-      caregivers = Array.isArray(json.caregivers) ? (json.caregivers as Caregiver[]) : [];
+      caregivers = Array.isArray(json.caregivers)
+        ? (json.caregivers as Caregiver[])
+        : [];
       if (json?.pagination) {
         pagination = {
-          totalCaregivers: Number(json.pagination.totalCaregivers ?? caregivers.length) || 0,
+          totalCaregivers:
+            Number(json.pagination.totalCaregivers ?? caregivers.length) || 0,
           totalPages: Number(json.pagination.totalPages ?? 1) || 1,
           currentPage: Number(json.pagination.currentPage ?? page) || page,
           limit: Number(json.pagination.limit ?? 10) || 10,
@@ -338,7 +392,8 @@ export default async function Caregivers({ availability, page, licenses }: Careg
       if (!caregivers.length) {
         toasts.push({
           type: "info",
-          message: "No caregivers matched your filters. Try adjusting licenses or availability.",
+          message:
+            "No caregivers matched your filters. Try adjusting licenses or availability.",
         });
       }
     }
@@ -358,9 +413,9 @@ export default async function Caregivers({ availability, page, licenses }: Careg
       ? pagination.currentPage + 1
       : null;
   const loadMoreHref = nextPage
-    ? `?availability=${encodeURIComponent(availability)}&licenses=${encodeURIComponent(
-        licenses
-      )}&page=${nextPage}`
+    ? `?availability=${encodeURIComponent(
+        availability
+      )}&licenses=${encodeURIComponent(licenses)}&page=${nextPage}`
     : "#";
 
   return (
@@ -372,17 +427,28 @@ export default async function Caregivers({ availability, page, licenses }: Careg
       <div className="relative border-b border-gray-200/70 bg-[radial-gradient(60%_80%_at_50%_-20%,rgba(59,130,246,0.10),transparent)]">
         <div className="mx-auto max-w-7xl px-4 py-8">
           <div className="flex flex-col py-2 xl:py-6 gap-4">
-            <SearchBar availability={availabilityArray} licenses={licensesArray} />
+            <SearchBar
+              availability={availabilityArray}
+              zipcode={zipcode}
+              licenses={licensesArray}
+            />
 
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h1 className="text-base font-semibold tracking-tight text-gray-800">
                 {`There ${pagination.totalCaregivers === 1 ? "is" : "are"} `}
-                <span className="text-blue-600">{pagination.totalCaregivers}</span>{" "}
-                {`caregiver${pagination.totalCaregivers === 1 ? "" : "s"} near you`}
-                {licenses ? ` with ${licenses}` : ""}.
-                {" "}
+                <span className="text-blue-600">
+                  {pagination.totalCaregivers}
+                </span>{" "}
+                {`caregiver${
+                  pagination.totalCaregivers === 1 ? "" : "s"
+                } near you`}
+                {licenses ? ` with ${licenses}` : ""}.{" "}
                 {firstCandidate ? (
-                  <OAuthDialog caregiver={firstCandidate} userID={firstCandidate.userID} message="caregiver">
+                  <OAuthDialog
+                    caregiver={firstCandidate}
+                    userID={firstCandidate.userID}
+                    message="caregiver"
+                  >
                     <span className="cursor-pointer font-semibold text-blue-600 underline-offset-4 hover:underline">
                       Register
                     </span>
@@ -425,7 +491,11 @@ export default async function Caregivers({ availability, page, licenses }: Careg
             {caregivers.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center">
                 <div className="mx-auto mb-4 h-16 w-16 text-gray-300">
-                  <svg viewBox="0 0 24 24" fill="none" className="h-full w-full">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className="h-full w-full"
+                  >
                     <path
                       d="M7 4h10a2 2 0 0 1 2 2v11l-4-2-4 2-4-2-4 2V6a2 2 0 0 1 2-2Z"
                       stroke="currentColor"

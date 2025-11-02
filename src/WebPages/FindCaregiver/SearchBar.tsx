@@ -1,22 +1,30 @@
 "use client";
 
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+  useContext,
+} from "react";
 import { MultiSelect } from "@/components/multi-select";
 import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Toaster, toast } from "sonner";
 import { Search, Sparkles } from "lucide-react"; // Sparkles = ai-wand
 import Link from "next/link";
+import MongoContext from "@/app/MongoContext";
 
 /**
  * Props interface for SearchBar component.
  */
+// add zipcode to props
 interface SearchBarProps {
   availability?: string[];
   licenses?: string[];
+  zipcode?: string; // <-- add
   onConcierge?: () => void;
 }
-
 /** LocalStorage key */
 const STORAGE_KEY = "kc_search_prefs";
 
@@ -57,23 +65,35 @@ const safeSet = (key: string, value: unknown) => {
 /**
  * SearchBar component for filtering caregivers.
  */
-const SearchBar: React.FC<SearchBarProps> = ({ availability, licenses }) => {
+
+const SearchBar: React.FC<SearchBarProps> = ({
+  availability,
+  licenses,
+  zipcode,
+}) => {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { userData }: any = useContext(MongoContext);
 
   // Initial fallbacks
   const defaultShifts = availability ?? ["Full time"];
   const defaultLicenses = licenses ?? ["HCA"];
 
   // State for selected shifts and licenses
-  const [selectedShifts, setSelectedShifts] = useState<string[]>(
-    defaultShifts
-  );
-  const [selectedLicenses, setSelectedLicenses] = useState<string[]>(
-    defaultLicenses
-  );
+  const [selectedShifts, setSelectedShifts] = useState<string[]>(defaultShifts);
+  const [selectedLicenses, setSelectedLicenses] =
+    useState<string[]>(defaultLicenses);
   const [loading, setLoading] = useState(false);
 
+  const isSignedIn = Boolean(userData?.userID || userData?._id);
+
+  const userZip = (
+    userData?.zipcode ??
+    userData?.contacts?.zipcode ??
+    ""
+  ).trim();
+
+  const effectiveZipcode = isSignedIn ? userZip : (zipcode ?? "").trim();
   /**
    * Load any previous prefs from LS on mount, otherwise save initial snapshot
    * Also capture URL params (cio_id, email, name) for attribution/prefill
@@ -104,8 +124,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ availability, licenses }) => {
         cio_id: cio_id ?? existing.cio_id ?? null,
         email: email ?? existing.email ?? null,
         name: name ?? existing.name ?? null,
-        path: typeof window !== "undefined" ? window.location.pathname : existing.path,
-        href: typeof window !== "undefined" ? window.location.href : existing.href,
+        path:
+          typeof window !== "undefined"
+            ? window.location.pathname
+            : existing.path,
+        href:
+          typeof window !== "undefined" ? window.location.href : existing.href,
         updatedAt: new Date().toISOString(),
       };
       safeSet(STORAGE_KEY, merged);
@@ -117,7 +141,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ availability, licenses }) => {
         cio_id,
         email,
         name,
-        path: typeof window !== "undefined" ? window.location.pathname : undefined,
+        path:
+          typeof window !== "undefined" ? window.location.pathname : undefined,
         href: typeof window !== "undefined" ? window.location.href : undefined,
         updatedAt: new Date().toISOString(),
       };
@@ -189,14 +214,13 @@ const SearchBar: React.FC<SearchBarProps> = ({ availability, licenses }) => {
   const handleSearch = useCallback(async () => {
     if (selectedShifts.length === 0 && selectedLicenses.length === 0) {
       toast.warning(
-        "Please select at least one shift type and caregivers licence to find good caregivers near you."
+        "Please select at least one shift type and caregivers license to find good caregivers near you."
       );
       return;
     }
 
     setLoading(true);
     try {
-      // persist intent & timestamp
       const prev = safeGet<StoredPrefs>(STORAGE_KEY) ?? {};
       safeSet(STORAGE_KEY, {
         ...prev,
@@ -206,18 +230,22 @@ const SearchBar: React.FC<SearchBarProps> = ({ availability, licenses }) => {
         lastSearchAt: new Date().toISOString(),
       } as StoredPrefs);
 
-      const queryParams = new URLSearchParams({
+      const qs = new URLSearchParams({
         shifts: selectedShifts.join(","),
         licenses: selectedLicenses.join(","),
-      }).toString();
-      router.push(`/caregivers?${queryParams}`);
+      });
+      if (effectiveZipcode) {
+        qs.set("zipcode", effectiveZipcode); // only add when we have one
+      }
+
+      router.push(`/caregivers?${qs.toString()}`);
     } catch (error) {
       toast.error("An error occurred. Please try again.");
       console.error("Navigation error: ", error);
     } finally {
       setLoading(false);
     }
-  }, [router, selectedShifts, selectedLicenses]);
+  }, [router, selectedShifts, selectedLicenses, effectiveZipcode]); // <-- include zipcode in deps
 
   return (
     <>
@@ -266,7 +294,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ availability, licenses }) => {
                 selectedShifts.length === 0 ||
                 selectedLicenses.length === 0
               }
-             className="w-full lg:w-auto rounded-xl px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
+              className="w-full lg:w-auto rounded-xl px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
               aria-label="Search caregivers"
             >
               {loading ? (
@@ -308,7 +336,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ availability, licenses }) => {
             <Link href="/jumpstart-hiring/apply">
               <span className="text-blue-600 font-semibold">Our team</span>
             </Link>{" "}
-            will match you with 3 qualified candidates and schedule interviews—while you keep full access to browse on your own.
+            will match you with 3 qualified candidates and schedule
+            interviews—while you keep full access to browse on your own.
           </span>
         </div>
       </div>

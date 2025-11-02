@@ -14,6 +14,11 @@ import JobListingLogo from "@/components/JobListingLogo";
 import { BadgeCheck, Clock, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+// ⬇️ NEW: bring in your Saved & Applied tab components
+import FavoriteJobs from "./FavoriteJobs";
+import AppliedJobs from "./AppliedJobs";
+
+/** ---------- Small UI bits (unchanged) ---------- **/
 const Chip: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-700">
     {children}
@@ -107,6 +112,7 @@ const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
   );
 };
 
+/** ---------- Types (unchanged) ---------- **/
 interface Contact {
   address: string;
   city: string;
@@ -133,12 +139,13 @@ interface JobsApiResponse {
     currentPage: number;
     limit: number;
   };
-  totalJobs?: number; // some endpoints might return these top-level
+  totalJobs?: number;
   totalPages?: number;
   currentPage?: number;
   jobs: Job[];
 }
 
+/** ---------- API fns (unchanged) ---------- **/
 const fetchJobs = async (
   userId: string,
   page: number
@@ -163,11 +170,82 @@ const fetchFilteredJobs = async (
   return response.data;
 };
 
+/** ---------- NEW: Simple Tabs UI (no logic changes elsewhere) ---------- **/
+type TabKey = "all" | "saved" | "applied";
+
+const TabsBar: React.FC<{
+  value: TabKey;
+  onChange: (t: TabKey) => void;
+}> = ({ value, onChange }) => {
+  const item = (key: TabKey, label: string) => {
+    const active = value === key;
+    return (
+      <button
+        type="button"
+        onClick={() => onChange(key)}
+        aria-current={active ? "page" : undefined}
+        className={[
+          "px-4 py-2 rounded-lg text-sm font-medium transition",
+          active
+            ? "bg-gray-900 text-white shadow-sm"
+            : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50",
+        ].join(" ")}
+      >
+        {label}
+      </button>
+    );
+  };
+
+  return (
+    <div className="sticky top-0 z-20 bg-gray-100/80 backdrop-blur supports-[backdrop-filter]:bg-gray-100/60">
+      <div className="max-w-6xl mx-auto px-2 md:px-4 py-3">
+        <div className="flex items-center gap-2">
+          {item("all", "All")}
+          {item("saved", "Saved")}
+          {item("applied", "Applied")}
+        </div>
+      </div>
+      <div className="h-px my-2 bg-gray-200" />
+    </div>
+  );
+};
+
+/** ---------- NEW: CTA (placed AFTER Load More) ---------- **/
+const CompareProgramsCTA: React.FC = () => {
+  return (
+    <div className="max-w-6xl mx-auto mt-6">
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div>
+            <h3 className="text-base md:text-lg font-semibold text-gray-900">
+              Compare Programs
+            </h3>
+            <p className="mt-1 text-sm text-gray-700">
+              Compare colleges and universities offering programs that lead to
+              nursing and other healthcare careers.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button className="px-5">Start comparing</Button>
+            {/* Optional secondary link:
+            <Button variant="outline">Learn more</Button>
+            */}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/** ---------- Main Component (original logic preserved) ---------- **/
 function All() {
   const mongodb = useContext(MongoContext);
   const { userData }: any = mongodb || {};
   const { userID } = userData || {};
   const { push } = useRouter();
+
+  // NEW: local tab (UI-only)
+  const [tab, setTab] = useState<TabKey>("all");
 
   // Data
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -294,7 +372,7 @@ function All() {
   return (
     <div className="py-6 px-2 bg-gray-100 md:px-4 min-h-[100vh]">
       <div className="max-w-6xl mx-auto">
-        {/* Job Search Header */}
+        {/* Job Search Header (always on top, shared across tabs) */}
         <JobSearchHeader
           filters={filters}
           setFilters={setFilters}
@@ -302,46 +380,75 @@ function All() {
           loading={loading}
         />
 
-        {/* Job Listings */}
-        <div>
-          {loading && jobs.length === 0 && (
-            <div className="max-w-6xl mx-auto">
-              <div className="grid grid-cols-1 gap-6">
-                {Array.from({ length: 6 }).map((_, idx) => (
-                  <JobCardSkeleton key={idx} />
-                ))}
+        {/* NEW: Tabs bar (sticky under the header) */}
+        <TabsBar value={tab} onChange={setTab} />
+
+        {/* Tab content */}
+        {tab === "all" && (
+          <div>
+            {/* --- ORIGINAL All Jobs block (unchanged) --- */}
+            <div>
+              {loading && jobs.length === 0 && (
+                <div className="max-w-6xl mx-auto">
+                  <div className="grid grid-cols-1 gap-6">
+                    {Array.from({ length: 6 }).map((_, idx) => (
+                      <JobCardSkeleton key={idx} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {!loading && totalJobs > 0 && (
+                <div className="mb-4">
+                  <p className="font-medium text-gray-800">
+                    Found {totalJobs} job(s)
+                    {mode === "filtered" ? " for your search" : ""}.
+                  </p>
+                </div>
+              )}
+
+              {!loading && jobs.length === 0 && (
+                <p className="text-sm text-gray-600">No jobs found.</p>
+              )}
+
+              {jobs.map((job: any) => (
+                <JobPostCard key={job._id} job={job} />
+              ))}
+
+              <div className="flex justify-center mt-4">
+                {hasMore && (
+                  <Button onClick={loadMore} disabled={loading}>
+                    {loading ? "Loading…" : "Load More"}
+                  </Button>
+                )}
+                {!hasMore && jobs.length > 0 && (
+                  <p className="text-sm text-gray-600">
+                    No more jobs available
+                  </p>
+                )}
               </div>
             </div>
-          )}
 
-          {!loading && totalJobs > 0 && (
-            <div className="mb-4">
-              <p className="font-medium text-gray-800">
-                Found {totalJobs} job(s)
-                {mode === "filtered" ? " for your search" : ""}.
-              </p>
-            </div>
-          )}
-
-          {!loading && jobs.length === 0 && (
-            <p className="text-sm text-gray-600">No jobs found.</p>
-          )}
-
-          {jobs.map((job: any) => (
-            <JobPostCard key={job._id} job={job} />
-          ))}
-
-          <div className="flex justify-center mt-4">
-            {hasMore && (
-              <Button onClick={loadMore} disabled={loading}>
-                {loading ? "Loading…" : "Load More"}
-              </Button>
-            )}
-            {!hasMore && jobs.length > 0 && (
-              <p className="text-sm text-gray-600">No more jobs available</p>
-            )}
+            {/* NEW: CTA strictly AFTER Load More */}
+            <CompareProgramsCTA />
           </div>
-        </div>
+        )}
+
+        {tab === "saved" && (
+          <div>
+            <FavoriteJobs />
+            {/* CTA AFTER Saved list */}
+            <CompareProgramsCTA />
+          </div>
+        )}
+
+        {tab === "applied" && (
+          <div>
+            <AppliedJobs />
+            {/* CTA AFTER Applied list */}
+            <CompareProgramsCTA />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -86,14 +86,14 @@ export const CandidatesProvider: React.FC<Props> = ({ children }) => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/caregivers/match/${userID}?page=${page}&limit=10`
+        `http://localhost:8081/api/v1/providers/caregivers/match/${userID}?page=${page}&limit=10`
       );
       const data: CandidatesApiResponse = response.data;
       setCandidates(data.candidates);
       setTotalPages(data.totalPages);
       setIsFilteredSearch(false);
     } catch (err) {
-      console.log(err)
+      console.log(err);
       setError((err as Error).message);
     } finally {
       setLoading(false);
@@ -106,9 +106,13 @@ export const CandidatesProvider: React.FC<Props> = ({ children }) => {
       setLoading(true);
       const availabilityParam = selectedShifts.join(",");
       const licensesParam = selectedLicenses.join(",");
+      const zipcode = userData?.zipcode;
       const response = await axios.get(
-        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/find-caregivers/filter?availability=${availabilityParam}&licenses=${licensesParam}&page=1&limit=40`
+        `http://localhost:8081/api/v1/providers/find-caregivers/filter?availability=${availabilityParam}&licenses=${licensesParam}&page=1&limit=40${
+          zipcode ? `&zipcode=${encodeURIComponent(zipcode)}` : ""
+        }`
       );
+
       const data: CaregiverApiResponse = response.data;
       setCandidates(data.caregivers);
       setTotalPages(data.pagination.totalPages);
@@ -135,7 +139,7 @@ export const CandidatesProvider: React.FC<Props> = ({ children }) => {
         `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/find-caregivers/filter?availability=${availabilityParam}&licenses=${licensesParam}&page=1&limit=40`
       );
       const data: CaregiverApiResponse = response.data;
-      console.log(data)
+      console.log(data);
       setCandidates(data.caregivers);
       setTotalPages(data.pagination.totalPages);
       const tagManagerArgs = {

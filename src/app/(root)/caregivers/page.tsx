@@ -7,11 +7,16 @@ import Footer from "@/WebPages/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CaregiverCardSkeleton } from "@/Providers/Candidates/CandidateSkelenton";
 import Caregivers from "@/WebPages/FindCaregiver/Caregivers";
+import { redirect } from "next/navigation";
+import StoreLeadParams from "@/Utils/StoreLeadParams";
 
 /**
  * Prevent Next.js from caching this route so data and metadata remain fresh.
  */
 export const dynamic = "force-dynamic";
+
+const DEFAULT_SHIFTS = "Full time";
+const DEFAULT_LICENSES = "HCA";
 
 /**
  * Generate dynamic metadata based on query parameters.
@@ -20,23 +25,34 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: { shifts?: string; licenses?: string; page?: string };
+  searchParams: {
+    shifts?: string;
+    licenses?: string;
+    page?: string;
+    zipcode?: string;
+    email?: string;
+    phone?: string;
+  };
 }): Promise<Metadata> {
-  const { shifts, licenses, page } = searchParams;
+  // Apply the same defaults here to avoid failing fetch on first SMS click.
+  const shifts = searchParams.shifts ?? DEFAULT_SHIFTS;
+  const licenses = searchParams.licenses ?? DEFAULT_LICENSES;
+  const page = searchParams.page ?? "1";
 
   try {
     const response = await fetch(
-      `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/find-caregivers/filter?availability=${encodeURIComponent(
-        shifts || ""
-      )}&licenses=${encodeURIComponent(licenses || "")}&page=${encodeURIComponent(
-        page || "1"
+      `http://localhost:8081/api/v1/providers/find-caregivers/filter?availability=${encodeURIComponent(
+        shifts
+      )}&licenses=${encodeURIComponent(licenses)}&page=${encodeURIComponent(
+        page
       )}&limit=10`,
       { cache: "no-cache" }
     );
+
     const { caregivers } = await response.json();
 
     const truncatedDescription = (caregivers as any[])
-      .map(
+      ?.map(
         (caregiver: any) =>
           `${caregiver.fname} ${caregiver.lname} - ${caregiver.certifications}`
       )
@@ -72,6 +88,9 @@ interface PageProps {
     shifts?: string;
     licenses?: string;
     page?: string;
+    zipcode?: string;
+    email?: string;
+    phone?: string;
   };
 }
 
@@ -81,10 +100,35 @@ interface PageProps {
  * Any runtime errors within <Caregivers> will be caught by app/caregivers/error.tsx.
  */
 export default function Page({ searchParams }: PageProps) {
-  const { shifts, licenses, page } = searchParams;
+  const {
+    shifts,
+    licenses,
+    page,
+    zipcode = "",
+    email = "",
+    phone = "",
+  } = searchParams;
+
+  // If coming from Twilio with only zipcode/email/phone, add defaults and preserve all params.
+  if (!shifts || !licenses) {
+    const params = new URLSearchParams();
+
+    // Preserve incoming params
+    if (zipcode) params.set("zipcode", zipcode);
+    if (email) params.set("email", email);
+    if (phone) params.set("phone", phone);
+    if (page) params.set("page", page);
+
+    // Ensure required existing filters
+    params.set("shifts", shifts || DEFAULT_SHIFTS);
+    params.set("licenses", licenses || DEFAULT_LICENSES);
+
+    redirect(`/caregivers?${params.toString()}`);
+  }
 
   return (
     <div className="mt-10">
+      <StoreLeadParams zipcode={zipcode} email={email} phone={phone} />
       <Suspense
         fallback={
           <div className="max-w-6xl mx-auto">
@@ -99,8 +143,9 @@ export default function Page({ searchParams }: PageProps) {
       >
         <Caregivers
           page={Number(page || 1)}
-          availability={shifts || ""}
-          licenses={licenses || ""}
+          availability={shifts || DEFAULT_SHIFTS}
+          licenses={licenses || DEFAULT_LICENSES}
+          zipcode={searchParams.zipcode} // <-- add
         />
       </Suspense>
     </div>
