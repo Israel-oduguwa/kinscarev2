@@ -86,7 +86,7 @@ export const CandidatesProvider: React.FC<Props> = ({ children }) => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://localhost:8081/api/v1/providers/caregivers/match/${userID}?page=${page}&limit=10`
+        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/caregivers/match/${userID}?page=${page}&limit=10`
       );
       const data: CandidatesApiResponse = response.data;
       setCandidates(data.candidates);
@@ -108,7 +108,7 @@ export const CandidatesProvider: React.FC<Props> = ({ children }) => {
       const licensesParam = selectedLicenses.join(",");
       const zipcode = userData?.zipcode;
       const response = await axios.get(
-        `http://localhost:8081/api/v1/providers/find-caregivers/filter?availability=${availabilityParam}&licenses=${licensesParam}&page=1&limit=40${
+        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/find-caregivers/filter?availability=${availabilityParam}&licenses=${licensesParam}&page=1&limit=40${
           zipcode ? `&zipcode=${encodeURIComponent(zipcode)}` : ""
         }`
       );
