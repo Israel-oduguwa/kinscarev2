@@ -18,9 +18,11 @@ import {
   Building2,
   Calendar,
   CheckCircle2,
+  Loader2,
   Mail,
   MapPin,
   MessageCircle,
+  MessageSquareText,
   Phone,
   Send,
   User,
@@ -39,6 +41,8 @@ import {
 } from "@/components/ui/dialog";
 import { Trash2 } from "lucide-react";
 
+const TWILIO_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio";
+
 function formatTel(raw?: string | null) {
   if (!raw) return "—";
   const s = raw.startsWith("+") ? raw : `+${raw}`;
@@ -52,6 +56,14 @@ function fmtDate(d?: string | Date | null) {
   } catch {
     return String(d);
   }
+}
+
+function getInitials(emailOrName: string) {
+  if (!emailOrName) return "?";
+  const base = emailOrName.includes("@")
+    ? emailOrName.split("@")[0]
+    : emailOrName;
+  return base.slice(0, 1).toUpperCase();
 }
 
 // Safely get string id from ObjectId-like shapes
@@ -90,7 +102,15 @@ export default function TwilioApplicantsDetails() {
   const [savingContacted, setSavingContacted] = useState(false);
   const [savingAccount, setSavingAccount] = useState(false);
 
-  const API_BASE = "http://localhost:8081/api/v1/providers";
+  // SMS dialog states
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [smsMessage, setSmsMessage] = useState("");
+  const [smsCountry, setSmsCountry] = useState("US"); // default; adjust if you want
+  const [isSending, setIsSending] = useState(false);
+  const [smsError, setSmsError] = useState<string | null>(null);
+  const [smsOk, setSmsOk] = useState<string | null>(null);
+
+  const API_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [targetJob, setTargetJob] = useState<any>(null);
@@ -180,6 +200,46 @@ export default function TwilioApplicantsDetails() {
     } finally {
       setSavingAccount(false);
       fetchApplicant();
+    }
+  };
+
+  const handleOpenSMS = () => {
+    setSmsMessage("");
+    setSmsCountry("US");
+    setSmsError(null);
+    setSmsOk(null);
+    setIsDialogOpen(true);
+  };
+
+  const sendSMS = async () => {
+    setSmsError(null);
+    setSmsOk(null);
+    if (!tel) {
+      setSmsError("No phone number available for this applicant.");
+      return;
+    }
+    if (!smsMessage.trim()) {
+      setSmsError("Message cannot be empty.");
+      return;
+    }
+    try {
+      setIsSending(true);
+      await axios.post(`${TWILIO_BASE}/sms/send`, {
+        body: smsMessage.trim(),
+        to: tel, // should already be in E.164 e.g. +1206...
+        country: smsCountry || "US",
+      });
+      setSmsOk("Message sent successfully.");
+      setSmsMessage("");
+    } catch (e: any) {
+      setSmsError(
+        e?.response?.data?.error ||
+          e?.response?.data?.message ||
+          e?.message ||
+          "Failed to send message."
+      );
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -294,7 +354,14 @@ export default function TwilioApplicantsDetails() {
             </p>
           </div>
         </div>
-
+        <Button
+          variant="outline"
+          onClick={() => setIsDialogOpen(true)}
+          className="flex items-center gap-2"
+        >
+          <MessageSquareText className="h-4 w-4" />
+          Send SMS
+        </Button>
         <div className="flex gap-2">
           <Link href={`/agent/twilio/provider/${id}/post`}>
             <Button className="flex items-center gap-2">
@@ -553,7 +620,105 @@ export default function TwilioApplicantsDetails() {
           </div>
         </CardContent>
       </Card>
+      {/* --- SMS Dialog --- */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="lg:max-w-2xl max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
+          <DialogHeader>
+            <DialogTitle className="flex flex-col items-center justify-center text-center">
+              <div className="mb-3">
+                <div className="h-12 w-12 rounded-full bg-indigo-600 text-white flex items-center justify-center text-lg font-semibold">
+                  {getInitials(applicant?.email || "A")}
+                </div>
+              </div>
+              <p className="font-bold text-2xl text-gray-800">
+                {applicant?.email || "Applicant"}
+              </p>
+              <div className="flex items-center space-x-2 mt-2 text-gray-700">
+                <Phone size={16} />
+                <p className="text-sm font-medium">
+                  Send a text to {formatTel(tel)}
+                </p>
+              </div>
+            </DialogTitle>
+          </DialogHeader>
 
+          {/* Alerts */}
+          {smsError && (
+            <Alert variant="destructive" className="mb-3">
+              <AlertDescription>{smsError}</AlertDescription>
+            </Alert>
+          )}
+          {smsOk && (
+            <Alert className="mb-3 border-green-200 bg-green-50">
+              <AlertDescription className="text-green-700">
+                {smsOk}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          <div className="space-y-3">
+            <div className="grid gap-3 md:grid-cols-6">
+              <div className="md:col-span-4">
+                <label
+                  htmlFor="message"
+                  className="block text-xs font-semibold text-gray-700 mb-1"
+                >
+                  Your Message
+                </label>
+                <textarea
+                  id="message"
+                  value={smsMessage}
+                  onChange={(e) => setSmsMessage(e.target.value)}
+                  rows={8}
+                  placeholder="Type your SMS to the applicant…"
+                  className="block p-2.5 w-full text-sm focus-visible:outline-blue-500 text-gray-900 bg-gray-50 rounded-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label
+                  htmlFor="country"
+                  className="block text-xs font-semibold text-gray-700 mb-1"
+                >
+                  Country (ISO)
+                </label>
+                <input
+                  id="country"
+                  value={smsCountry}
+                  onChange={(e) => setSmsCountry(e.target.value.toUpperCase())}
+                  placeholder="US"
+                  className="block p-2.5 w-full text-sm focus-visible:outline-blue-500 text-gray-900 bg-gray-50 rounded-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                />
+                <div className="text-xs text-gray-500 mt-2">
+                  Default is <b>US</b>. Use ISO code, e.g., <b>NG</b>, <b>CA</b>
+                  .
+                </div>
+              </div>
+            </div>
+
+            <Button
+              onClick={sendSMS}
+              className="w-full flex items-center justify-center gap-2"
+              disabled={isSending || !smsMessage.trim() || !tel}
+            >
+              {isSending ? (
+                <>
+                  <Loader2 className="animate-spin w-5 h-5" />
+                  Sending…
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4" />
+                  Send Message
+                </>
+              )}
+            </Button>
+            <div className="text-xs text-slate-500 text-center">
+              Messages will be sent via Twilio. Standard carrier rates may
+              apply.
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
       {/* Jobs Posted for this Applicant */}
       <Card className="bg-white/50 backdrop-blur-sm">
         <CardHeader className="pb-4">

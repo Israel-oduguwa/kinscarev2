@@ -92,7 +92,7 @@ export default function TwilioApplicantsPage() {
 
       try {
         const res = await axios.get(
-          "http://localhost:8081/api/v1/providers/jumpstart/get-twilio-applicants",
+          "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/jumpstart/get-twilio-applicants",
           { signal: controller.signal }
         );
 

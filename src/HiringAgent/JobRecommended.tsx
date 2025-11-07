@@ -10,8 +10,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle, User, X, Filter, MapPin, Calendar, Award, Star, Search, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
-const API_BASE = "http://localhost:8081/api/v1/providers";
+const API_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
 
 const groupLicenses = [
   { label: "CNA", value: "CNA or NAC" },
@@ -461,9 +462,10 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
 
                         {/* Action Button */}
                         <div className="flex justify-end mt-4 pt-4 border-t border-slate-100">
+                         <Link href={`/agent/caregiver/${u?.userID}`}>
                           <Button size="sm" variant="outline" className="text-xs">
                             View Profile
-                          </Button>
+                          </Button></Link>
                         </div>
                       </CardContent>
                     </Card>
