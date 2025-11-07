@@ -1,5 +1,3 @@
-// app/caregivers/page.tsx
-
 import React, { Suspense } from "react";
 import { Metadata } from "next";
 import Navbar from "@/WebPages/Navbar";
@@ -9,6 +7,7 @@ import { CaregiverCardSkeleton } from "@/Providers/Candidates/CandidateSkelenton
 import Caregivers from "@/WebPages/FindCaregiver/Caregivers";
 import { redirect } from "next/navigation";
 import StoreLeadParams from "@/Utils/StoreLeadParams";
+import JumpstartHiringModal from "@/WebPages/FindCaregiver/JumpstartHiringModal";
 
 /**
  * Prevent Next.js from caching this route so data and metadata remain fresh.
@@ -25,19 +24,19 @@ const DEFAULT_LICENSES = "HCA";
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: {
+  searchParams: Promise<{
     shifts?: string;
     licenses?: string;
     page?: string;
     zipcode?: string;
     email?: string;
     phone?: string;
-  };
+  }>;
 }): Promise<Metadata> {
-  // Apply the same defaults here to avoid failing fetch on first SMS click.
-  const shifts = searchParams.shifts ?? DEFAULT_SHIFTS;
-  const licenses = searchParams.licenses ?? DEFAULT_LICENSES;
-  const page = searchParams.page ?? "1";
+  const params = await searchParams; // ✅ required in Next.js 16
+  const shifts = params.shifts ?? DEFAULT_SHIFTS;
+  const licenses = params.licenses ?? DEFAULT_LICENSES;
+  const page = params.page ?? "1";
 
   try {
     const response = await fetch(
@@ -84,14 +83,14 @@ export async function generateMetadata({
 }
 
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     shifts?: string;
     licenses?: string;
     page?: string;
     zipcode?: string;
     email?: string;
     phone?: string;
-  };
+  }>;
 }
 
 /**
@@ -99,7 +98,8 @@ interface PageProps {
  * Uses Suspense for a loading skeleton while <Caregivers> loads.
  * Any runtime errors within <Caregivers> will be caught by app/caregivers/error.tsx.
  */
-export default function Page({ searchParams }: PageProps) {
+export default async function Page({ searchParams }: PageProps) {
+  const params = await searchParams; // ✅ unwrap Promise
   const {
     shifts,
     licenses,
@@ -107,23 +107,21 @@ export default function Page({ searchParams }: PageProps) {
     zipcode = "",
     email = "",
     phone = "",
-  } = searchParams;
+  } = params;
 
   // If coming from Twilio with only zipcode/email/phone, add defaults and preserve all params.
   if (!shifts || !licenses) {
-    const params = new URLSearchParams();
+    const qp = new URLSearchParams();
 
-    // Preserve incoming params
-    if (zipcode) params.set("zipcode", zipcode);
-    if (email) params.set("email", email);
-    if (phone) params.set("phone", phone);
-    if (page) params.set("page", page);
+    if (zipcode) qp.set("zipcode", zipcode);
+    if (email) qp.set("email", email);
+    if (phone) qp.set("phone", phone);
+    if (page) qp.set("page", page);
 
-    // Ensure required existing filters
-    params.set("shifts", shifts || DEFAULT_SHIFTS);
-    params.set("licenses", licenses || DEFAULT_LICENSES);
+    qp.set("shifts", shifts || DEFAULT_SHIFTS);
+    qp.set("licenses", licenses || DEFAULT_LICENSES);
 
-    redirect(`/caregivers?${params.toString()}`);
+    redirect(`/caregivers?${qp.toString()}`);
   }
 
   return (
@@ -131,7 +129,7 @@ export default function Page({ searchParams }: PageProps) {
       <StoreLeadParams zipcode={zipcode} email={email} phone={phone} />
       <Suspense
         fallback={
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 py-10 mt-10 px-4 lg:px-0 gap-6">
               <Skeleton className="w-full h-40" />
               {Array.from({ length: 6 }).map((_, idx) => (
@@ -145,8 +143,9 @@ export default function Page({ searchParams }: PageProps) {
           page={Number(page || 1)}
           availability={shifts || DEFAULT_SHIFTS}
           licenses={licenses || DEFAULT_LICENSES}
-          zipcode={searchParams.zipcode} // <-- add
+          zipcode={zipcode}
         />
+        <JumpstartHiringModal source="twilio" email={email} phone={phone} />
       </Suspense>
     </div>
   );

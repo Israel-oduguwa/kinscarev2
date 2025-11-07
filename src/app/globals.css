@@ -4,11 +4,12 @@
 * {
   padding: 0;
   margin: 0;
-  scroll-behavior:smooth;
+  scroll-behavior: smooth;
 }
 
 @layer base {
   :root {
+    --clerk-spacing: 1rem; /* default */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -45,6 +46,7 @@
   }
 
   .dark {
+    --clerk-spacing: 1rem; /* default */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
@@ -89,13 +91,20 @@
   }
 }
 
+.cl-internal-1od8zdn {
+  box-shadow: none !important;
+}
+
+/* Override Clerk's internal spacing multiplier */
+.cl-internal-ht35d7 {
+  gap: calc(var(--clerk-spacing) * 1); /* or just gap: 1.5rem; */
+}
+
 .loader {
   width: 40px;
   height: 20px;
   --c: no-repeat radial-gradient(farthest-side, #000 93%, #0000);
-  background:
-    var(--c) 0 0,
-    var(--c) 50% 0;
+  background: var(--c) 0 0, var(--c) 50% 0;
   background-size: 8px 8px;
   position: relative;
   clip-path: inset(-200% -100% 0 0);
@@ -109,8 +118,7 @@
   background: #000;
   left: -16px;
   top: 0;
-  animation:
-    l6-1 1.5s linear infinite,
+  animation: l6-1 1.5s linear infinite,
     l6-2 0.5s cubic-bezier(0, 200, 0.8, 200) infinite;
 }
 .loader:after {
@@ -126,31 +134,21 @@
 @keyframes l6-0 {
   0%,
   30% {
-    background-position:
-      0 0,
-      50% 0;
+    background-position: 0 0, 50% 0;
   }
   33% {
-    background-position:
-      0 100%,
-      50% 0;
+    background-position: 0 100%, 50% 0;
   }
   41%,
   63% {
-    background-position:
-      0 0,
-      50% 0;
+    background-position: 0 0, 50% 0;
   }
   66% {
-    background-position:
-      0 0,
-      50% 100%;
+    background-position: 0 0, 50% 100%;
   }
   74%,
   100% {
-    background-position:
-      0 0,
-      50% 0;
+    background-position: 0 0, 50% 0;
   }
 }
 @keyframes l6-1 {
@@ -330,7 +328,7 @@
 }
 .embla__viewport {
   overflow: hidden;
-  padding:10px 2px
+  padding: 10px 2px;
 }
 .embla__container {
   backface-visibility: hidden;
@@ -451,7 +449,7 @@
   border-radius: 50%;
   display: flex;
   align-items: center;
-  content: '';
+  content: "";
 }
 .embla__dot--selected:after {
   box-shadow: inset 0 0 0 0.2rem var(--text-body);
@@ -461,11 +459,10 @@
   & li > p {
     margin: 0;
   }
-  
 }
 
 p:empty::before {
-  content: '';
+  content: "";
   display: inline-block;
 }
 
@@ -481,9 +478,6 @@ p:empty::before {
 .animate-fade-in {
   animation: fadeIn 0.2s ease-in-out;
 }
-
-
-
 
 /* Style for the phone input field */
 .PhoneInputInput {
@@ -530,8 +524,6 @@ p:empty::before {
   width: 100%;
 }
 
-
-
 .editor {
   box-shadow: 0px 0px 20px 0px rgba(76, 87, 125, 0.02);
   background: #fff;
@@ -539,7 +531,6 @@ p:empty::before {
   width: 60%;
   margin: 50px auto;
 }
-
 
 #editorjs-container {
   background-color: #f9f9f9;
@@ -605,12 +596,10 @@ dialog {
   margin: 0;
 }
 .editor button {
-    border: none;
-    padding: 10px 10px;
-    background:#fff;
-    color: #333333;
-    font-weight: bold;
-    cursor: pointer;
+  border: none;
+  padding: 10px 10px;
+  background: #fff;
+  color: #333333;
+  font-weight: bold;
+  cursor: pointer;
 }
-
-
