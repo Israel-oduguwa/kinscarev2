@@ -44,22 +44,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider
-      localization={{
-        signUp: {
-          start: {
-            title: "Create Your Account to join Kinscare",
-            subtitle: "",
-          },
-        },
-        signIn: {
-          start: {
-            title: "Welcome back to KinsCare",
-            subtitle: "Sign in to continue your journey.",
-          },
-        },
-      }}
-    >
+    
       <html suppressHydrationWarning lang="en">
         <head>
           <Script
@@ -117,6 +102,6 @@ export default function RootLayout({
           </ThemeProvider>
         </body>
       </html>
-    </ClerkProvider>
+   
   );
 }
