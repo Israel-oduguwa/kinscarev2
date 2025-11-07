@@ -1,18 +1,17 @@
 "use client";
 
-import * as React from "react";
+import MongoContext from "@/app/MongoContext";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { useUser } from "@clerk/nextjs";
-import Link from "next/link";
 import { Zap } from "lucide-react";
+import Link from "next/link";
+import * as React from "react";
 
 type Ms = number;
 
@@ -95,11 +94,12 @@ export default function JumpstartHiringModal({
   phone?: string;
 }) {
   const [open, setOpen] = React.useState(false);
-  const { isSignedIn } = useUser();
+  const {userData}:any = React.useContext(MongoContext)
+  const { isSignedIn } = userData
 
   // Plan: decide eligibility once on mount.
   React.useEffect(() => {
-    // Hard stop if they converted
+    // Hard stop if they convertedØ
     if (typeof window === "undefined") return;
     if (localStorage.getItem(CONVERTED_KEY) === "true") return;
 
