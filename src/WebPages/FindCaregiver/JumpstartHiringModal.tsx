@@ -95,7 +95,7 @@ export default function JumpstartHiringModal({
 }) {
   const [open, setOpen] = React.useState(false);
   const {userData}:any = React.useContext(MongoContext)
-  const { isSignedIn } = userData
+  const isSignedIn  = userData
 
   // Plan: decide eligibility once on mount.
   React.useEffect(() => {
