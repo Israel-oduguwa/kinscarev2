@@ -1,18 +1,48 @@
 "use client";
-
-import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import Link from "next/link";
 import { Interweave } from "interweave";
-import { MapPin } from "lucide-react";
+import { Loader2, MapPin, MessageSquareText, Phone, Send } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
 import ProfileAvatar from "@/components/ProfileAvatar";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import ProtectedCandidatesDetails from "@/Providers/Candidates/ProtectedCandidatesDetails";
-import ProviderDialog from "@/Providers/Candidates/ProviderDialog";
 import { useParams } from "next/navigation";
+
+const TWILIO_BASE =
+  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio";
+
+function formatTel(raw?: string | null) {
+  if (!raw) return "—";
+  const s = raw.startsWith("+") ? raw : `+${raw}`;
+  return s;
+}
+
+function fmtDate(d?: string | Date | null) {
+  if (!d) return "—";
+  try {
+    return new Date(d).toLocaleString();
+  } catch {
+    return String(d);
+  }
+}
+
+function getInitials(emailOrName: string) {
+  if (!emailOrName) return "?";
+  const base = emailOrName.includes("@")
+    ? emailOrName.split("@")[0]
+    : emailOrName;
+  return base.slice(0, 1).toUpperCase();
+}
 
 // -----------------------------
 // Skeleton (unchanged)
@@ -142,7 +172,6 @@ function CandidatesCard({ similarCaregivers }: any) {
               </div>
             </div>
           </div>
-
         </div>
       </Link>
     </div>
@@ -166,6 +195,13 @@ export default function CaregiverDetails() {
       `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/caregivers/${candidateID}`,
     [candidateID]
   );
+  // SMS dialog states
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [smsMessage, setSmsMessage] = useState("");
+  const [smsCountry, setSmsCountry] = useState("US"); // default; adjust if you want
+  const [isSending, setIsSending] = useState(false);
+  const [smsError, setSmsError] = useState<string | null>(null);
+  const [smsOk, setSmsOk] = useState<string | null>(null);
 
   useEffect(() => {
     if (!candidateID) return;
@@ -203,6 +239,40 @@ export default function CaregiverDetails() {
     return () => controller.abort();
   }, [API_URL, candidateID]);
 
+  const tel = caregiver?.settings?.tel;
+
+  const sendSMS = async () => {
+    setSmsError(null);
+    setSmsOk(null);
+    if (!tel) {
+      setSmsError("No phone number available for this applicant.");
+      return;
+    }
+    if (!smsMessage.trim()) {
+      setSmsError("Message cannot be empty.");
+      return;
+    }
+    try {
+      setIsSending(true);
+      await axios.post(`${TWILIO_BASE}/sms/send`, {
+        body: smsMessage.trim(),
+        to: tel, // should already be in E.164 e.g. +1206...
+        country: smsCountry || "US",
+      });
+      setSmsOk("Message sent successfully.");
+      setSmsMessage("");
+    } catch (e: any) {
+      setSmsError(
+        e?.response?.data?.error ||
+          e?.response?.data?.message ||
+          e?.message ||
+          "Failed to send message."
+      );
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   const availability = false;
 
   if (loading) return <CandidateDetailsSkeleton />;
@@ -218,7 +288,7 @@ export default function CaregiverDetails() {
   }
 
   return (
-    <div >
+    <div>
       {/* Candidate Profile */}
       <div className="relative  bg-white mb-4 rounded-lg p-4 md:p-6 space-y-6">
         {/* Header Section */}
@@ -250,9 +320,16 @@ export default function CaregiverDetails() {
                 {caregiver.zipcode}
               </p>
             </div>
+            <div className="ml-5">
+              <Button
+              onClick={() => setIsDialogOpen(true)}
+              className="flex items-center gap-2"
+            >
+              <MessageSquareText className="h-4 w-4" />
+              Send SMS
+            </Button>
+            </div>
           </div>
-
-         
         </div>
 
         {/* Licenses and Availability */}
@@ -332,7 +409,105 @@ export default function CaregiverDetails() {
             </div>
           )}
       </div>
+      {/* --- SMS Dialog --- */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="lg:max-w-2xl max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
+          <DialogHeader>
+            <DialogTitle className="flex flex-col items-center justify-center text-center">
+              <div className="mb-3">
+                <div className="h-12 w-12 rounded-full bg-indigo-600 text-white flex items-center justify-center text-lg font-semibold">
+                  {getInitials(caregiver?.settings?.email || "A")}
+                </div>
+              </div>
+              <p className="font-bold text-2xl text-gray-800">
+                {caregiver?.settings?.email || "Applicant"}
+              </p>
+              <div className="flex items-center space-x-2 mt-2 text-gray-700">
+                <Phone size={16} />
+                <p className="text-sm font-medium">
+                  Send a text to {formatTel(caregiver?.settings?.tel)}
+                </p>
+              </div>
+            </DialogTitle>
+          </DialogHeader>
 
+          {/* Alerts */}
+          {smsError && (
+            <Alert variant="destructive" className="mb-3">
+              <AlertDescription>{smsError}</AlertDescription>
+            </Alert>
+          )}
+          {smsOk && (
+            <Alert className="mb-3 border-green-200 bg-green-50">
+              <AlertDescription className="text-green-700">
+                {smsOk}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          <div className="space-y-3">
+            <div className="grid gap-3 md:grid-cols-6">
+              <div className="md:col-span-4">
+                <label
+                  htmlFor="message"
+                  className="block text-xs font-semibold text-gray-700 mb-1"
+                >
+                  Your Message
+                </label>
+                <textarea
+                  id="message"
+                  value={smsMessage}
+                  onChange={(e) => setSmsMessage(e.target.value)}
+                  rows={8}
+                  placeholder="Type your SMS to the applicant…"
+                  className="block p-2.5 w-full text-sm focus-visible:outline-blue-500 text-gray-900 bg-gray-50 rounded-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label
+                  htmlFor="country"
+                  className="block text-xs font-semibold text-gray-700 mb-1"
+                >
+                  Country (ISO)
+                </label>
+                <input
+                  id="country"
+                  value={smsCountry}
+                  onChange={(e) => setSmsCountry(e.target.value.toUpperCase())}
+                  placeholder="US"
+                  className="block p-2.5 w-full text-sm focus-visible:outline-blue-500 text-gray-900 bg-gray-50 rounded-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                />
+                <div className="text-xs text-gray-500 mt-2">
+                  Default is <b>US</b>. Use ISO code, e.g., <b>NG</b>, <b>CA</b>
+                  .
+                </div>
+              </div>
+            </div>
+
+            <Button
+              onClick={sendSMS}
+              className="w-full flex items-center justify-center gap-2"
+              disabled={isSending || !smsMessage.trim() || !tel}
+            >
+              {isSending ? (
+                <>
+                  <Loader2 className="animate-spin w-5 h-5" />
+                  Sending…
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4" />
+                  Send Message
+                </>
+              )}
+            </Button>
+            <div className="text-xs text-slate-500 text-center">
+              Messages will be sent via Twilio. Standard carrier rates may
+              apply.
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
       {/* Similar Caregivers Section */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4">

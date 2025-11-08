@@ -23,12 +23,12 @@ import TagManager from "react-gtm-module";
 import * as Realm from "realm-web";
 
 const agentLinks = [
-  {
-    href: "/agent",
-    label: "Dashboard",
-    icon: <ClipboardList className="h-5 w-5" />,
-    description: "Overview and analytics",
-  },
+  // {
+  //   href: "/agent",
+  //   label: "Dashboard",
+  //   icon: <ClipboardList className="h-5 w-5" />,
+  //   description: "Overview and analytics",
+  // },
   {
     href: "/agent/twilio",
     label: "Twilio Providers",

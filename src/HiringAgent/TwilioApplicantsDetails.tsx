@@ -41,7 +41,8 @@ import {
 } from "@/components/ui/dialog";
 import { Trash2 } from "lucide-react";
 
-const TWILIO_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio";
+const TWILIO_BASE =
+  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio";
 
 function formatTel(raw?: string | null) {
   if (!raw) return "—";
@@ -110,7 +111,8 @@ export default function TwilioApplicantsDetails() {
   const [smsError, setSmsError] = useState<string | null>(null);
   const [smsOk, setSmsOk] = useState<string | null>(null);
 
-  const API_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+  const API_BASE =
+    "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [targetJob, setTargetJob] = useState<any>(null);
@@ -350,27 +352,28 @@ export default function TwilioApplicantsDetails() {
               ))}
             </div>
             <p className="text-sm text-slate-600">
-              Created: {fmtDate(applicant.createdAt)} • ID: {applicant._id}
+              Created: {fmtDate(applicant.createdAt)}
             </p>
           </div>
         </div>
-        <Button
-          variant="outline"
-          onClick={() => setIsDialogOpen(true)}
-          className="flex items-center gap-2"
-        >
-          <MessageSquareText className="h-4 w-4" />
-          Send SMS
-        </Button>
+
         <div className="flex gap-2">
+          <Button
+            
+            onClick={() => setIsDialogOpen(true)}
+            className="flex items-center gap-2"
+          >
+            <MessageSquareText className="h-4 w-4" />
+            Send SMS
+          </Button>
           <Link href={`/agent/twilio/provider/${id}/post`}>
-            <Button className="flex items-center gap-2">
+            <Button  variant="outline" className="flex items-center gap-2">
               <Building2 className="h-4 w-4" />
               Post Job
             </Button>
           </Link>
           <Button
-            variant="outline"
+            variant="ghost"
             onClick={() => window.history.back()}
             className="flex items-center gap-2"
           >
@@ -602,7 +605,6 @@ export default function TwilioApplicantsDetails() {
                       </div>
                       <div className="text-xs text-slate-500">
                         {fmtDate(n.createdAt)}{" "}
-                        {n.authorId ? `• ${n.authorId}` : ""}
                       </div>
                     </div>
                     <div className="text-sm text-slate-700 whitespace-pre-wrap">

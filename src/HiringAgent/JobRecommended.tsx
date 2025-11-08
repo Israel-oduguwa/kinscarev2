@@ -3,16 +3,34 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import {
-  Card, CardHeader, CardContent, CardDescription, CardTitle,
+  Card,
+  CardHeader,
+  CardContent,
+  CardDescription,
+  CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle, User, X, Filter, MapPin, Calendar, Award, Star, Search, Users } from "lucide-react";
+import {
+  AlertTriangle,
+  User,
+  X,
+  Filter,
+  MapPin,
+  Calendar,
+  Award,
+  Star,
+  Search,
+  Users,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import ProfileAvatar from "@/components/ProfileAvatar";
 
-const API_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+
+const API_BASE =
+  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
 
 const groupLicenses = [
   { label: "CNA", value: "CNA or NAC" },
@@ -69,16 +87,20 @@ function MultiSelectBox({
                   : "hover:bg-slate-50"
               }`}
             >
-              <div className={`h-4 w-4 rounded border flex items-center justify-center transition-all duration-200 ${
-                values.includes(opt.value)
-                  ? "bg-blue-500 border-blue-500"
-                  : "border-slate-300 bg-white"
-              }`}>
+              <div
+                className={`h-4 w-4 rounded border flex items-center justify-center transition-all duration-200 ${
+                  values.includes(opt.value)
+                    ? "bg-blue-500 border-blue-500"
+                    : "border-slate-300 bg-white"
+                }`}
+              >
                 {values.includes(opt.value) && (
                   <div className="h-2 w-2 bg-white rounded-sm" />
                 )}
               </div>
-              <span className="text-sm text-slate-800 font-medium">{opt.label}</span>
+              <span className="text-sm text-slate-800 font-medium">
+                {opt.label}
+              </span>
             </label>
           ))}
         </div>
@@ -88,7 +110,10 @@ function MultiSelectBox({
           {values.map((v) => {
             const found = options.find((o) => o.value === v);
             return (
-              <Badge key={v} className="bg-blue-100 text-blue-800 border-0 text-xs font-medium">
+              <Badge
+                key={v}
+                className="bg-blue-100 text-blue-800 border-0 text-xs font-medium"
+              >
                 {found?.label || v}
               </Badge>
             );
@@ -127,7 +152,8 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
       const A = (opts?.availability || []).filter(Boolean);
       const Z = (opts?.zipcode || "").trim();
 
-      (opts?.limit ? opts.limit : recLimit) && params.append("limit", String(opts?.limit || recLimit));
+      (opts?.limit ? opts.limit : recLimit) &&
+        params.append("limit", String(opts?.limit || recLimit));
       L.forEach((l) => params.append("licenses", l));
       A.forEach((a) => params.append("availability", a));
       if (Z) params.append("zipcode", Z);
@@ -183,12 +209,13 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
     !!applied.zipcode.trim();
 
   const labelFor = (arr: string[], dict: Option[]) =>
-    arr
-      .map((v) => dict.find((d) => d.value === v)?.label || v)
-      .filter(Boolean);
+    arr.map((v) => dict.find((d) => d.value === v)?.label || v).filter(Boolean);
 
   const appliedLicenseLabels = labelFor(applied.licenses, groupLicenses);
-  const appliedAvailabilityLabels = labelFor(applied.availability, groupSchedule);
+  const appliedAvailabilityLabels = labelFor(
+    applied.availability,
+    groupSchedule
+  );
 
   return (
     <Card className="bg-white/50 backdrop-blur-sm shadow-sm border-0">
@@ -202,7 +229,8 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
               Recommended Caregivers
             </CardTitle>
             <CardDescription className="text-base">
-              Find the perfect match based on licenses, availability, and location
+              Find the perfect match based on licenses, availability, and
+              location
             </CardDescription>
           </div>
 
@@ -216,8 +244,8 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
               <X className="h-4 w-4" />
               Reset All
             </Button>
-            <Button 
-              onClick={onApply} 
+            <Button
+              onClick={onApply}
               disabled={recLoading}
               className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
             >
@@ -233,9 +261,11 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
         <div className="space-y-6">
           <div className="flex items-center gap-3">
             <Filter className="h-5 w-5 text-slate-600" />
-            <h3 className="text-lg font-semibold text-slate-900">Refine Your Search</h3>
+            <h3 className="text-lg font-semibold text-slate-900">
+              Refine Your Search
+            </h3>
           </div>
-          
+
           <div className="grid gap-6 md:grid-cols-3">
             <MultiSelectBox
               label="Required Licenses"
@@ -262,7 +292,8 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
                   onChange={(e) => setZipcode(e.target.value)}
                 />
                 <p className="text-xs text-slate-500">
-                  Leave blank to use job location. We'll find caregivers within a 50-mile radius.
+                  Leave blank to use job location. We'll find caregivers within
+                  a 50-mile radius.
                 </p>
               </div>
             </div>
@@ -278,14 +309,19 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
             </div>
             <div className="flex flex-wrap gap-2">
               {appliedLicenseLabels.map((lbl) => (
-                <Badge key={`L-${lbl}`} className="bg-blue-100 text-blue-800 border-0 px-3 py-1.5">
+                <Badge
+                  key={`L-${lbl}`}
+                  className="bg-blue-100 text-blue-800 border-0 px-3 py-1.5"
+                >
                   <Award className="h-3 w-3 mr-1.5" />
                   {lbl}
                   <X
                     className="h-3.5 w-3.5 ml-1.5 cursor-pointer hover:text-blue-900"
                     onClick={() => {
                       const next = applied.licenses.filter(
-                        (v) => (groupLicenses.find((g) => g.label === lbl)?.value || lbl) !== v
+                        (v) =>
+                          (groupLicenses.find((g) => g.label === lbl)?.value ||
+                            lbl) !== v
                       );
                       setLicenses(next);
                       setApplied({ ...applied, licenses: next });
@@ -295,15 +331,21 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
                 </Badge>
               ))}
               {appliedAvailabilityLabels.map((lbl) => (
-                <Badge key={`A-${lbl}`} className="bg-green-100 text-green-800 border-0 px-3 py-1.5">
+                <Badge
+                  key={`A-${lbl}`}
+                  className="bg-green-100 text-green-800 border-0 px-3 py-1.5"
+                >
                   <Calendar className="h-3 w-3 mr-1.5" />
                   {lbl}
                   <X
                     className="h-3.5 w-3.5 ml-1.5 cursor-pointer hover:text-green-900"
                     onClick={() => {
                       const val =
-                        groupSchedule.find((g) => g.label === lbl)?.value || lbl;
-                      const next = applied.availability.filter((v) => v !== val);
+                        groupSchedule.find((g) => g.label === lbl)?.value ||
+                        lbl;
+                      const next = applied.availability.filter(
+                        (v) => v !== val
+                      );
                       setAvailability(next);
                       setApplied({ ...applied, availability: next });
                       fetchRecs(true);
@@ -333,10 +375,12 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <h3 className="text-lg font-semibold text-slate-900">Matching Caregivers</h3>
+              <h3 className="text-lg font-semibold text-slate-900">
+                Matching Caregivers
+              </h3>
               {!recLoading && (
                 <Badge variant="secondary" className="text-sm">
-                  {recs.length} {recs.length === 1 ? 'match' : 'matches'} found
+                  {recs.length} {recs.length === 1 ? "match" : "matches"} found
                 </Badge>
               )}
             </div>
@@ -379,12 +423,13 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
                 <div className="h-16 w-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <Users className="h-8 w-8 text-slate-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-2">No matches found</h3>
+                <h3 className="text-xl font-semibold text-slate-900 mb-2">
+                  No matches found
+                </h3>
                 <p className="text-slate-600 mb-6 max-w-md mx-auto">
-                  {hasActiveFilters 
+                  {hasActiveFilters
                     ? "Try adjusting your filters to find more caregivers."
-                    : "No caregivers match your current criteria. Try broadening your search."
-                  }
+                    : "No caregivers match your current criteria. Try broadening your search."}
                 </p>
                 {hasActiveFilters && (
                   <Button onClick={onReset} variant="outline">
@@ -397,16 +442,21 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
                 {recs.map((u: any, idx: number) => {
                   const name =
                     u?.fullName ||
-                    `${u?.fname|| ""} ${u?.lname || ""}`.trim() ||
+                    `${u?.fname || ""} ${u?.lname || ""}`.trim() ||
                     "Caregiver";
                   const lic = Array.isArray(u?.licenses) ? u.licenses : [];
-                  const avail = Array.isArray(u?.availability) ? u.availability : [];
+                  const avail = Array.isArray(u?.availability)
+                    ? u.availability
+                    : [];
                   const loc = [u?.city, u?.state, u?.zipcode]
                     .filter(Boolean)
                     .join(", ");
 
                   return (
-                    <Card key={u?.userID || idx} className="border-slate-200 bg-white hover:shadow-md transition-shadow duration-200">
+                    <Card
+                      key={u?.userID || idx}
+                      className="border-slate-200 bg-white hover:shadow-md transition-shadow duration-200"
+                    >
                       <CardContent className="p-6">
                         <div className="flex items-start justify-between gap-4 mb-4">
                           <div className="flex-1 min-w-0">
@@ -415,9 +465,11 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
                             </h4>
                             <div className="flex items-center gap-2 text-sm text-slate-600 mb-3">
                               <MapPin className="h-4 w-4 text-slate-400" />
-                              <span className="truncate">{loc || "Location not specified"}</span>
+                              <span className="truncate">
+                                {loc || "Location not specified"}
+                              </span>
                             </div>
-                            
+
                             {/* Match Score (if available) */}
                             {u?.matchScore && (
                               <div className="flex items-center gap-2 mb-3">
@@ -430,9 +482,11 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
                               </div>
                             )}
                           </div>
-                          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold text-sm shrink-0">
-                            {name.charAt(0).toUpperCase()}
-                          </div>
+                          <ProfileAvatar
+                            size="w-12 h-12"
+                            name={`${u?.fname} ${u?.lname}`}
+                            profileImage={u?.profileImage}
+                          />
                         </div>
 
                         {/* Tags */}
@@ -440,18 +494,25 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
                           {avail.length > 0 && (
                             <div className="flex flex-wrap gap-2">
                               {avail.map((s: string) => (
-                                <Badge key={s} className="bg-green-50 text-green-700 border-0 text-xs">
+                                <Badge
+                                  key={s}
+                                  className="bg-green-50 text-green-700 border-0 text-xs"
+                                >
                                   <Calendar className="h-3 w-3 mr-1" />
                                   {s}
                                 </Badge>
                               ))}
                             </div>
                           )}
-                          
+
                           {lic.length > 0 && (
                             <div className="flex flex-wrap gap-2">
                               {lic.map((l: string) => (
-                                <Badge key={l} variant="outline" className="text-xs border-blue-200 text-blue-700 bg-blue-50">
+                                <Badge
+                                  key={l}
+                                  variant="outline"
+                                  className="text-xs border-blue-200 text-blue-700 bg-blue-50"
+                                >
                                   <Award className="h-3 w-3 mr-1" />
                                   {l}
                                 </Badge>
@@ -462,10 +523,15 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
 
                         {/* Action Button */}
                         <div className="flex justify-end mt-4 pt-4 border-t border-slate-100">
-                         <Link href={`/agent/caregiver/${u?.userID}`}>
-                          <Button size="sm" variant="outline" className="text-xs">
-                            View Profile
-                          </Button></Link>
+                          <Link href={`/agent/caregiver/${u?.userID}`}>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-xs"
+                            >
+                              View Profile
+                            </Button>
+                          </Link>
                         </div>
                       </CardContent>
                     </Card>

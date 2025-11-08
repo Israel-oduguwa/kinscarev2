@@ -17,6 +17,12 @@ export const dynamic = "force-dynamic";
 const DEFAULT_SHIFTS = "Full time";
 const DEFAULT_LICENSES = "HCA";
 
+// --- SEO constants (safe to keep at top of your file) ---
+const SITE_URL = "https://www.kinscare.org";
+const OG_IMAGE =
+  "https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444";
+const BRAND = "KinsCare";
+
 /**
  * Generate dynamic metadata based on query parameters.
  * Runs on the server.
@@ -34,10 +40,37 @@ export async function generateMetadata({
   }>;
 }): Promise<Metadata> {
   const params = await searchParams; // ✅ required in Next.js 16
-  const shifts = params.shifts ?? DEFAULT_SHIFTS;
-  const licenses = params.licenses ?? DEFAULT_LICENSES;
-  const page = params.page ?? "1";
 
+  // Inputs (with defaults)
+  const shifts = (params.shifts ?? DEFAULT_SHIFTS).trim();
+  const licenses = (params.licenses ?? DEFAULT_LICENSES).trim();
+  const page = (params.page ?? "1").trim();
+  const zipcode = (params.zipcode ?? "").trim();
+
+  // Canonical URL (exclude PII like email, phone)
+  const qp = new URLSearchParams();
+  qp.set("shifts", shifts);
+  qp.set("licenses", licenses);
+  if (page) qp.set("page", page);
+  if (zipcode) qp.set("zipcode", zipcode);
+  const canonicalPath = `/caregivers?${qp.toString()}`;
+
+  // Title logic (short, scannable, keyword-rich)
+  const titleParts: string[] = [];
+  titleParts.push("Find Caregivers");
+  if (licenses) titleParts.push(licenses);
+  if (zipcode) titleParts.push(`in ${zipcode}`);
+  if (shifts && shifts.toLowerCase() !== DEFAULT_SHIFTS.toLowerCase()) {
+    titleParts.push(`• ${shifts}`);
+  }
+  titleParts.push(BRAND);
+  const title = titleParts.join(" | ");
+
+  // Default description (graceful fallback)
+  let description =
+    "Browse available, verified caregivers tailored to your needs. Filter by license (HCA, CNA, NAR), availability, and location to find the right match.";
+
+  // Attempt to enrich description from your API (best-effort; safe on failure)
   try {
     const response = await fetch(
       `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/find-caregivers/filter?availability=${encodeURIComponent(
@@ -48,38 +81,104 @@ export async function generateMetadata({
       { cache: "no-cache" }
     );
 
-    const { caregivers } = await response.json();
+    if (response.ok) {
+      const data = await response.json();
+      const caregivers: any[] = data?.caregivers ?? [];
+      const sample = caregivers
+        .slice(0, 3)
+        .map((c) => {
+          const name = [c?.fname, c?.lname].filter(Boolean).join(" ");
+          const certs = Array.isArray(c?.certifications)
+            ? c.certifications.join("/")
+            : c?.certifications || licenses;
+          return name ? `${name} (${certs})` : null;
+        })
+        .filter(Boolean)
+        .join(", ");
 
-    const truncatedDescription = (caregivers as any[])
-      ?.map(
-        (caregiver: any) =>
-          `${caregiver.fname} ${caregiver.lname} - ${caregiver.certifications}`
-      )
-      .slice(0, 3)
-      .join(", ");
-
-    return {
-      title: `Find Caregivers${licenses ? ` - ${licenses}` : ""}`,
-      description:
-        truncatedDescription || "Browse available caregivers near you.",
-      openGraph: {
-        title: `Find Caregivers${licenses ? ` - ${licenses}` : ""}`,
-        description:
-          truncatedDescription || "Browse available caregivers near you.",
-      },
-      twitter: {
-        title: `Caregivers${licenses ? ` - ${licenses}` : ""}`,
-        description:
-          truncatedDescription || "Browse available caregivers near you.",
-      },
-    };
-  } catch (error) {
-    console.error("Failed to fetch caregivers for metadata", error);
-    return {
-      title: "Caregivers — Search",
-      description: "Find caregivers available near you.",
-    };
+      if (sample) {
+        description = `Top matches near you: ${sample}. Filter by ${licenses}${
+          shifts ? ` and availability (${shifts})` : ""
+        } to find a caregiver who fits your schedule.`;
+      } else {
+        description = `Explore caregivers${
+          zipcode ? ` in ${zipcode}` : ""
+        } with ${licenses} licenses${
+          shifts ? ` and ${shifts} availability` : ""
+        }. Compare profiles and connect with the right match.`;
+      }
+    }
+  } catch {
+    // keep default description on failure
   }
+
+  // Dynamic keywords (avoid stuffing)
+  const keywords = [
+    "caregivers",
+    "home care",
+    "senior care",
+    "in-home support",
+    "care aide",
+    "licensed caregiver",
+    "HCA",
+    "CNA",
+    "NAR",
+    shifts,
+    licenses,
+    zipcode ? `caregivers ${zipcode}` : "",
+    BRAND,
+  ]
+    .filter(Boolean)
+    .map((k) => k.toString());
+
+  return {
+    metadataBase: new URL(SITE_URL),
+    title,
+    description,
+
+    alternates: {
+      canonical: canonicalPath,
+      languages: {
+        "en-US": canonicalPath,
+        en: canonicalPath,
+      },
+    },
+
+    robots: {
+      index: true,
+      follow: true,
+      nocache: false,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
+
+    keywords,
+    category: "Care Services",
+    referrer: "origin-when-cross-origin",
+    applicationName: BRAND,
+    authors: [{ name: BRAND }],
+
+    openGraph: {
+      type: "website",
+      url: canonicalPath,
+      siteName: BRAND,
+      title,
+      description,
+      images: [{ url: OG_IMAGE }],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [OG_IMAGE],
+    },
+  };
 }
 
 interface PageProps {
@@ -116,7 +215,7 @@ export default async function Page({ searchParams }: PageProps) {
     if (zipcode) qp.set("zipcode", zipcode);
     if (email) qp.set("email", email);
     if (phone) qp.set("phone", phone);
-    if (page) qp.set("page", page);
+    if (page) qp.set("page", page ?? "1");
 
     qp.set("shifts", shifts || DEFAULT_SHIFTS);
     qp.set("licenses", licenses || DEFAULT_LICENSES);
