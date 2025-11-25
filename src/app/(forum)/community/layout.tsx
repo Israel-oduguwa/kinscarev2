@@ -1,0 +1,16 @@
+import ForumDynamicNavbar from "@/Forum/Navbar/ForumDynamicNavbar";
+import Footer from "@/WebPages/Footer";
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  // this is the dashboard ui and layout page
+  return (
+    <section>
+      <ForumDynamicNavbar />
+      <div className="">{children}</div>
+      <Footer />
+    </section>
+  );
+}
