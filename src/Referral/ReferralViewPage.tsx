@@ -165,7 +165,7 @@ function ReferralViewPage() {
         </div>
       </div>
       <div className="">
-        <ReferralCarousel />
+        {/* <ReferralCarousel /> */}
       </div>
     </div>
   );
