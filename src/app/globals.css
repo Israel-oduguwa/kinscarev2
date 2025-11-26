@@ -34,22 +34,43 @@
   --animate-blob: blob 7s infinite;
 
   @keyframes accordion-down {
-    from { height: 0 }
-    to   { height: var(--radix-accordion-content-height) }
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
   }
   @keyframes accordion-up {
-    from { height: var(--radix-accordion-content-height) }
-    to   { height: 0 }
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
   }
   @keyframes float {
-    0%,100% { transform: translateY(0) }
-    50%     { transform: translateY(-15px) }
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-15px);
+    }
   }
   @keyframes blob {
-    0%   { transform: translate(0,0) scale(1) }
-    33%  { transform: translate(30px,-50px) scale(1.1) }
-    66%  { transform: translate(-20px,20px) scale(0.9) }
-    100% { transform: translate(0,0) scale(1) }
+    0% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
   }
 }
 
@@ -58,7 +79,9 @@
   width: 100%;
   margin-inline: auto;
   padding-inline: 2rem;
-  @variant 2xl { max-width: 1400px; }
+  @variant 2xl {
+    max-width: 1400px;
+  }
 }
 
 /* ---- Base Layer Defaults ---- */
@@ -207,25 +230,55 @@
 /* =========================================================
    HSL COMPATIBILITY SHIM (no component edits needed)
    ========================================================= */
-.text-\[hsl\(var\(--primary\)\)\] { color: hsl(from var(--primary) h s l) !important; }
-.bg-\[hsl\(var\(--primary\)\)\] { background-color: hsl(from var(--primary) h s l) !important; }
-.border-\[hsl\(var\(--primary\)\)\] { border-color: hsl(from var(--primary) h s l) !important; }
+.text-\[hsl\(var\(--primary\)\)\] {
+  color: hsl(from var(--primary) h s l) !important;
+}
+.bg-\[hsl\(var\(--primary\)\)\] {
+  background-color: hsl(from var(--primary) h s l) !important;
+}
+.border-\[hsl\(var\(--primary\)\)\] {
+  border-color: hsl(from var(--primary) h s l) !important;
+}
 
-.text-\[hsl\(var\(--primary-foreground\)\)\] { color: hsl(from var(--primary-foreground) h s l) !important; }
+.text-\[hsl\(var\(--primary-foreground\)\)\] {
+  color: hsl(from var(--primary-foreground) h s l) !important;
+}
 
-.text-\[hsl\(var\(--secondary\)\)\] { color: hsl(from var(--secondary) h s l) !important; }
-.text-\[hsl\(var\(--accent\)\)\] { color: hsl(from var(--accent) h s l) !important; }
-.text-\[hsl\(var\(--muted\)\)\] { color: hsl(from var(--muted) h s l) !important; }
-.text-\[hsl\(var\(--muted-foreground\)\)\] { color: hsl(from var(--muted-foreground) h s l) !important; }
-.text-\[hsl\(var\(--destructive\)\)\] { color: hsl(from var(--destructive) h s l) !important; }
-.text-\[hsl\(var\(--foreground\)\)\] { color: hsl(from var(--foreground) h s l) !important; }
+.text-\[hsl\(var\(--secondary\)\)\] {
+  color: hsl(from var(--secondary) h s l) !important;
+}
+.text-\[hsl\(var\(--accent\)\)\] {
+  color: hsl(from var(--accent) h s l) !important;
+}
+.text-\[hsl\(var\(--muted\)\)\] {
+  color: hsl(from var(--muted) h s l) !important;
+}
+.text-\[hsl\(var\(--muted-foreground\)\)\] {
+  color: hsl(from var(--muted-foreground) h s l) !important;
+}
+.text-\[hsl\(var\(--destructive\)\)\] {
+  color: hsl(from var(--destructive) h s l) !important;
+}
+.text-\[hsl\(var\(--foreground\)\)\] {
+  color: hsl(from var(--foreground) h s l) !important;
+}
 
-.bg-\[hsl\(var\(--background\)\)\] { background-color: hsl(from var(--background) h s l) !important; }
-.border-\[hsl\(var\(--border\)\)\] { border-color: hsl(from var(--border) h s l) !important; }
-.bg-\[hsl\(var\(--input\)\)\] { background-color: hsl(from var(--input) h s l) !important; }
+.bg-\[hsl\(var\(--background\)\)\] {
+  background-color: hsl(from var(--background) h s l) !important;
+}
+.border-\[hsl\(var\(--border\)\)\] {
+  border-color: hsl(from var(--border) h s l) !important;
+}
+.bg-\[hsl\(var\(--input\)\)\] {
+  background-color: hsl(from var(--input) h s l) !important;
+}
 
-.hover\:text-\[hsl\(var\(--primary\)\)\]:hover { color: hsl(from var(--primary) h s l) !important; }
-.hover\:text-\[hsl\(var\(--accent\)\)\]:hover { color: hsl(from var(--accent) h s l) !important; }
+.hover\:text-\[hsl\(var\(--primary\)\)\]:hover {
+  color: hsl(from var(--primary) h s l) !important;
+}
+.hover\:text-\[hsl\(var\(--accent\)\)\]:hover {
+  color: hsl(from var(--accent) h s l) !important;
+}
 
 /* =========================================================
    YOUR EXISTING CUSTOM STYLES (Tiptap, Editor, Loader, etc.)
@@ -251,7 +304,7 @@
   left: -16px;
   top: 0;
   animation: l6-1 1.5s linear infinite,
-             l6-2 0.5s cubic-bezier(0, 200, 0.8, 200) infinite;
+    l6-2 0.5s cubic-bezier(0, 200, 0.8, 200) infinite;
 }
 .loader:after {
   content: "";
@@ -264,29 +317,54 @@
   animation: l6-3 1.5s linear infinite;
 }
 @keyframes l6-0 {
-  0%,30% { background-position: 0 0, 50% 0; }
-  33%    { background-position: 0 100%, 50% 0; }
-  41%,63%{ background-position: 0 0, 50% 0; }
-  66%    { background-position: 0 0, 50% 100%; }
-  74%,100%{ background-position: 0 0, 50% 0; }
+  0%,
+  30% {
+    background-position: 0 0, 50% 0;
+  }
+  33% {
+    background-position: 0 100%, 50% 0;
+  }
+  41%,
+  63% {
+    background-position: 0 0, 50% 0;
+  }
+  66% {
+    background-position: 0 0, 50% 100%;
+  }
+  74%,
+  100% {
+    background-position: 0 0, 50% 0;
+  }
 }
 @keyframes l6-1 {
-  90% { transform: translateY(0); }
-  95% { transform: translateY(15px); }
-  100%{ transform: translateY(15px); left: calc(100% - 8px); }
+  90% {
+    transform: translateY(0);
+  }
+  95% {
+    transform: translateY(15px);
+  }
+  100% {
+    transform: translateY(15px);
+    left: calc(100% - 8px);
+  }
 }
-@keyframes l6-2 { 100% { top: -0.1px; } }
+@keyframes l6-2 {
+  100% {
+    top: -0.1px;
+  }
+}
 @keyframes l6-3 {
-  0%,80%,100% { transform: translate(0); }
-  90% { transform: translate(26px); }
+  0%,
+  80%,
+  100% {
+    transform: translate(0);
+  }
+  90% {
+    transform: translate(26px);
+  }
 }
 
 /* Keep all your editor / embla / dialog styles below unchanged ... */
-
-
-
-
-
 
 /* Custom Css Codes  */
 .tiptap {
@@ -423,6 +501,10 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+.cl-internal-ht35d7 {
+  gap: "1px!important";
 }
 
 .embla {

@@ -580,17 +580,23 @@ const CreateJobNewUser: React.FC<any> = ({ jobID, type, job }) => {
 
       {/* Clerk SignUp Dialog */}
       <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
-        <DialogContent className="max-w-md rounded-2xl">
-          <div className="space-y-4">
+        <DialogContent className="p-0 max-w-md overflow-hidden rounded-2xl border border-gray-100 shadow-2xl">
+          <div className="px-5 pt-5 pb-3 bg-white border-b border-gray-100">
+            <h3 className="text-lg font-semibold text-gray-900">Post your crowd job</h3>
+            <p className="text-sm text-gray-600">
+              Create your account to finish posting and reach caregivers.
+            </p>
+          </div>
+          <div className="p-5">
             {isGeoLoading && (
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="mb-3 flex items-center gap-2 text-sm text-gray-600">
                 <LoaderCircle className="h-4 w-4 animate-spin" />
                 Detecting your location...
               </div>
             )}
 
             {isJobPosting ? (
-              <div className="text-center py-12">
+              <div className="text-center py-10">
                 <LoaderCircle className="h-12 w-12 animate-spin mx-auto text-blue-600" />
                 <p className="mt-4 text-lg font-semibold">Creating your Crowd Post...</p>
                 <p className="text-sm text-gray-500">Almost there!</p>
@@ -603,8 +609,27 @@ const CreateJobNewUser: React.FC<any> = ({ jobID, type, job }) => {
                 afterSignInUrl={window.location.pathname}
                 appearance={{
                   elements: {
-                    formButtonPrimary: "bg-blue-600 hover:bg-blue-700 shadow-xl",
-                    card: "shadow-2xl border-0",
+                    rootBox: "m-0 p-0 w-full",
+                    cardBox: "w-full shadow-none border-none rounded-none bg-white",
+                    card: "m-0 p-0 w-full shadow-none border-none",
+                    main: "m-0 p-0 w-full border-none shadow-none flex flex-col gap-0",
+                    header: "hidden",
+                    headerTitle: "hidden",
+                    headerSubtitle: "hidden",
+                    form: "m-0 p-2 w-full flex flex-col gap-4",
+                    formFieldInput: "h-[3.5rem]",
+                    formFieldLabel: "text-sm",
+                    socialButtons: "m-0 p-2 pb-4 pt-2 w-full flex gap-2",
+                    socialButtonsBlockButton: "h-10",
+                    socialButtonsProviderIcon: "w-10",
+                    formButtonPrimary: "bg-blue-600 hover:bg-blue-700 shadow-none border-none py-2",
+                    footer: "m-0 p-2 w-full",
+                    footerAction: "text-sm text-gray-600",
+                    footerActionLink: "text-blue-600 font-semibold hover:underline",
+                  },
+                  layout: {
+                    socialButtonsVariant: "blockButton",
+                    socialButtonsPlacement: "top",
                   },
                 }}
               />

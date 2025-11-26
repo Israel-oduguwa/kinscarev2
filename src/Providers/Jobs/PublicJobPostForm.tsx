@@ -139,6 +139,8 @@ const PublicJobPostForm = ({
     setValue("description", editorState, { shouldValidate: true });
   };
 
+  const descriptionValue = watch("description");
+
   return (
     <div className="py-8 px-4 md:px-8 rounded-2xl shadow-lg bg-white">
       <form onSubmit={handleSubmit(submitHandler)} className="space-y-8">
@@ -176,7 +178,7 @@ const PublicJobPostForm = ({
             >
               <Editor
                 onChange={onEditorStateChange}
-                initialContent=""
+                initialContent={descriptionValue || ""}
                 usage="job_description"
               />
             </div>
@@ -513,6 +515,7 @@ const PublicJobPostPage = () => {
   const [isGeoLoading, setIsGeoLoading] = useState(false);
 
   const mountedRef = useRef(true);
+  const hasPostedRef = useRef(false); // guard against double submissions
   const { privateApi } = useApiClient();
   const router = useRouter();
   const { isSignedIn, user, isLoaded: isClerkLoaded } = useUser();
@@ -621,7 +624,7 @@ const PublicJobPostPage = () => {
     if (isSignedIn && user && isClerkLoaded) {
       const savedData = safeLocalGet<any>(LS_KEY_FORM_DATA);
       if (savedData && !isJobCreating) {
-        postJob({
+        maybePostJob({
           userID: user.id,
           hash: (user.publicMetadata as any)?.hash || "",
         });
@@ -635,7 +638,7 @@ const PublicJobPostPage = () => {
     if (isSignedIn && user?.publicMetadata?.role === "provider" && isClerkLoaded) {
       const savedData = safeLocalGet<any>(LS_KEY_FORM_DATA);
       if (savedData && !isJobCreating) {
-        postJob({
+        maybePostJob({
           userID: user.id,
           hash: (user.publicMetadata as any)?.hash || "",
         });
@@ -647,13 +650,19 @@ const PublicJobPostPage = () => {
     safeLocalSet(LS_KEY_FORM_DATA, data);
 
     if (isSignedIn && user?.publicMetadata?.role === "provider") {
-      postJob({
+      maybePostJob({
         userID: user.id,
         hash: (user.publicMetadata as any)?.hash || "",
       });
     } else {
       setIsSignupOpen(true);
     }
+  };
+
+  const maybePostJob = (ud: { userID: string; hash: string }) => {
+    if (hasPostedRef.current || isJobCreating) return;
+    hasPostedRef.current = true;
+    void postJob(ud);
   };
 
   const postJob = async (ud: { userID: string; hash: string }) => {
@@ -665,8 +674,21 @@ const PublicJobPostPage = () => {
       const formData = safeLocalGet<any>(LS_KEY_FORM_DATA);
       if (!formData) {
         toast({ variant: "destructive", description: "Form data missing." });
+        hasPostedRef.current = false;
         return;
       }
+
+      const rawDesc = (formData.description || "").toString();
+      const strippedDesc = rawDesc.replace(/<[^>]*>/g, "").trim();
+      if (!strippedDesc) {
+        toast({
+          variant: "destructive",
+          description: "Job description cannot be empty.",
+        });
+        hasPostedRef.current = false;
+        return;
+      }
+      const cleanedDesc = rawDesc.trim();
 
       const payload = {
         ...formData,
@@ -677,6 +699,7 @@ const PublicJobPostPage = () => {
           tel: formData.contacts.tel,
         },
         certifications: "",
+        description: cleanedDesc,
         hash: ud.hash,
         profileImage: "",
       };
@@ -702,6 +725,7 @@ const PublicJobPostPage = () => {
         title: "Failed to post job",
         description: error?.response?.data?.message || error?.message || "Please try again.",
       });
+      hasPostedRef.current = false;
     } finally {
       setIsJobCreating(false);
     }
@@ -743,17 +767,23 @@ const PublicJobPostPage = () => {
       />
 
       <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
-        <DialogContent className="rounded-xl max-w-md p-6">
-          <div className="space-y-4">
+        <DialogContent className="p-0 max-w-md overflow-hidden rounded-2xl border border-gray-100 shadow-2xl">
+          <div className="px-5 pt-5 bg-white">
+            <h3 className="text-lg font-semibold text-gray-900">Finish creating your job</h3>
+            <p className="text-sm text-gray-600">
+              Create your provider account to publish and manage this posting.
+            </p>
+          </div>
+          <div className="p-5">
             {isGeoLoading && (
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="mb-3 flex items-center gap-2 text-sm text-gray-600">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Detecting your location…
               </div>
             )}
 
             {isJobCreating ? (
-              <div className="text-center py-8">
+              <div className="text-center py-6">
                 <Loader2 className="h-10 w-10 animate-spin mx-auto text-blue-600" />
                 <p className="mt-4 text-lg font-medium">Creating your job post...</p>
                 <p className="text-sm text-gray-500">This won't take long!</p>
@@ -766,13 +796,28 @@ const PublicJobPostPage = () => {
                 afterSignInUrl={window.location.pathname}
                 appearance={{
                   elements: {
+                    rootBox: "m-0 p-0 w-full",
+                    cardBox: "w-full shadow-none border-none rounded-none bg-white",
+                    card: "m-0 p-0 w-full shadow-none border-none",
+                    main: "m-0 p-0 w-full border-none shadow-none flex flex-col gap-0",
+                    header: "hidden",
+                    headerTitle: "hidden",
+                    headerSubtitle: "hidden",
+                    form: "m-0 p-2 w-full flex flex-col gap-4",
+                    formFieldInput: "h-[3.5rem]",
+                    formFieldLabel: "text-sm",
+                    socialButtons: "m-0 p-2 pb-4 pt-2 w-full flex gap-2",
+                    socialButtonsBlockButton: "h-10",
+                    socialButtonsProviderIcon: "w-10",
                     formButtonPrimary:
-                      "bg-blue-600 shadow-xl border-none hover:bg-blue-500",
-                    card: "border-gray-200 gap-3",
-                    rootBox: "flex justify-center w-full px-4",
-                    main: "gap-3",
-                    cardBox:
-                      "w-full max-w-lg bg-white shadow-xl rounded-2xl border border-gray-100 transition-all",
+                      "bg-blue-600 shadow-xl py-2 border-none hover:bg-blue-500",
+                    footer: "m-0 p-2 w-full",
+                    footerAction: "text-sm text-gray-600",
+                    footerActionLink: "text-blue-600 font-semibold hover:underline",
+                  },
+                  layout: {
+                    socialButtonsVariant: "blockButton",
+                    socialButtonsPlacement: "top",
                   },
                 }}
               />

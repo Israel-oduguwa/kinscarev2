@@ -145,7 +145,7 @@ function CandidatesCard({
   return (
     <div className="w-full">
       {/* single-column card; button floats on desktop */}
-      <div className="group isolate relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 lg:pr-6 shadow-sm transition-all duration-300 hover:shadow-lg focus-within:shadow-lg">
+      <div className="group isolate relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-5 lg:p-6 shadow-sm transition-all duration-300 hover:shadow-lg focus-within:shadow-lg">
         {/* decorative top bar */}
         {/* <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-400 to-indigo-500" /> */}
 
@@ -156,7 +156,7 @@ function CandidatesCard({
           aria-label={`Open caregiver ${candidate.name}`}
         >
           {/* === your existing inner content starts === */}
-          <div className="mb-4 flex flex-col lg:flex-row lg:items-center gap-4">
+          <div className="mb-3 flex flex-col lg:flex-row lg:items-center gap-3.5">
             <div className="flex items-center gap-4">
               <div className="relative">
                 <ProfileAvatar
@@ -201,7 +201,7 @@ function CandidatesCard({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 mb-3.5">
             {/* Licenses */}
             <div className="bg-gray-50 rounded-lg p-3">
               <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2 flex items-center gap-1.5">
@@ -262,12 +262,12 @@ function CandidatesCard({
           </div>
 
           {/* Certifications */}
-          <div className="mb-4">
+          <div className="mb-3">
             <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2 flex items-center gap-1.5">
               <Award className="h-4 w-4" />
               Certifications
             </h4>
-            <div className="text-sm text-gray-700 line-clamp-2 bg-gray-50 rounded-lg p-3">
+            <div className="text-sm text-gray-700 line-clamp-3 bg-gray-50 rounded-lg p-3 break-words overflow-hidden">
               {sanitizedContent ? (
                 <Interweave content={sanitizedContent} />
               ) : (
@@ -277,7 +277,7 @@ function CandidatesCard({
           </div>
 
           {/* Contact */}
-          <div className="mb-4">
+          <div className="mb-3">
             <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2 flex items-center gap-1.5">
               <Phone className="h-4 w-4" />
               Contact Details
@@ -293,15 +293,13 @@ function CandidatesCard({
           </div>
 
           {/* Info banner */}
-          <div className="bg-blue-50 border border-blue-100 rounded-lg p-3">
-            <p className="text-sm text-blue-700 flex items-start gap-2">
+          <div className="bg-blue-50/70 border border-blue-100 rounded-lg p-3">
+            <p className="text-xs text-blue-800 flex items-start gap-2">
               <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
               <span>
-                Contact details are hidden. Click{" "}
-                <span className="font-semibold">
-                  &quot;View Caregiver&quot;
-                </span>{" "}
-                to see full information and hire.
+                Contact details are hidden. Tap{" "}
+                <span className="font-semibold">“View Caregiver”</span> to see
+                full info and hire.
               </span>
             </p>
           </div>
@@ -407,7 +405,6 @@ export default async function Caregivers({
 
   const firstCandidate = caregivers[0];
 
-  // Build “Load more” href (preserve filters)
   const nextPage =
     pagination.currentPage < pagination.totalPages
       ? pagination.currentPage + 1

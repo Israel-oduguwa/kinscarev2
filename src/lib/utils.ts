@@ -106,12 +106,12 @@ type DateInput = string | Date;
 export function isTrialActive(trialStartDate: DateInput, trialEndDate: DateInput): boolean {
   try {
     // Parse input dates to JavaScript Date objects
-    const startDate = new Date(trialStartDate);
-    const endDate = new Date(trialEndDate);
+    const startDate = trialStartDate ? new Date(trialStartDate) : null;
+    const endDate = trialEndDate ? new Date(trialEndDate) : null;
     const currentDate = new Date();
 
     // Check for invalid dates
-    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+    if (!startDate || !endDate || isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
       console.error("Invalid date format provided.");
       return false;
     }

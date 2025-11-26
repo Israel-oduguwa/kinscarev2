@@ -130,13 +130,15 @@ const PricingButton: React.FC<PricingButtonProps> = ({ children, plan }) => {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <SafeTrigger>{children}</SafeTrigger>
 
-          <DialogContent className="rounded-lg shadow-xl p-6 bg-white max-w-lg">
-            <DialogTitle className="text-3xl font-bold text-center">
-              Welcome to Kinscare
-            </DialogTitle>
-            <DialogDescription className="text-gray-600 text-sm text-center mb-6">
-              Sign up or sign in to continue
-            </DialogDescription>
+          <DialogContent className="p-0 max-w-md overflow-hidden rounded-2xl border border-gray-100 shadow-2xl">
+            <div className="px-5 pt-5 pb-3 bg-white border-b border-gray-100">
+              <h3 className="text-lg font-semibold text-gray-900 text-center">
+                Sign up to view pricing
+              </h3>
+              <p className="text-sm text-gray-600 text-center">
+                Create your provider account to unlock candidate access.
+              </p>
+            </div>
 
             <SignUp
               unsafeMetadata={unsafeMetadata}
@@ -145,13 +147,28 @@ const PricingButton: React.FC<PricingButtonProps> = ({ children, plan }) => {
               fallbackRedirectUrl="/provider/candidates/all"
               appearance={{
                 elements: {
+                  rootBox: "m-0 p-0 w-full",
+                  cardBox: "w-full shadow-none border-none rounded-none bg-white",
+                  card: "m-0 p-0 w-full shadow-none border-none",
+                  main: "m-0 p-0 w-full border-none shadow-none flex flex-col gap-0",
+                  header: "hidden",
+                  headerTitle: "hidden",
+                  headerSubtitle: "hidden",
+                  form: "m-0 p-2 w-full flex flex-col gap-4",
+                  formFieldInput: "h-[3.5rem]",
+                  formFieldLabel: "text-sm",
+                  socialButtons: "m-0 p-2 pb-4 pt-2 w-full flex gap-2",
+                  socialButtonsBlockButton: "h-10",
+                  socialButtonsProviderIcon: "w-10",
                   formButtonPrimary:
-                    "bg-blue-600 shadow-xl border-none hover:bg-blue-500",
-                  card: "border-gray-200 gap-3",
-                  rootBox: "flex justify-center w-full px-4",
-                  main: "gap-3",
-                  cardBox:
-                    "w-full max-w-lg bg-white shadow-xl rounded-2xl border border-gray-100",
+                    "bg-blue-600 shadow-xl py-2 border-none hover:bg-blue-500",
+                  footer: "m-0 p-2 w-full",
+                  footerAction: "text-sm text-gray-600",
+                  footerActionLink: "text-blue-600 font-semibold hover:underline",
+                },
+                layout: {
+                  socialButtonsVariant: "blockButton",
+                  socialButtonsPlacement: "top",
                 },
               }}
             />

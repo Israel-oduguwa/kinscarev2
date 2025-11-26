@@ -235,26 +235,51 @@ const FindLandingPage = () => {
         </div>
 
         {/* Post your job */}
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-10 pb-12">
-          <div>
-            <h3 className="tracking-tight text-2xl md:text-3xl font-bold text-gray-800 mb-4">
-              Get More Caregivers by Posting Your Job
-            </h3>
-            <p className="text-gray-700 leading-relaxed">
-              Posting a job on KinsCare makes it even easier to find caregivers.
-              Once live, caregivers can apply, share it with colleagues, and
-              help spread the word. We also notify our network to boost
-              qualified matches—fast. KinsCare keeps hiring simple, affordable,
-              and effective so you can focus on excellent care.
-            </p>
-          </div>
-          <div className="relative">
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1140153601-min.jpg?alt=media&token=93fce255-b7d8-4e0d-a28a-5e089a94d6e7"
-              alt="Posting jobs on KinsCare"
-              className="w-full h-auto rounded-xl object-cover"
-              loading="lazy"
-            />
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-12">
+          <div className="grid md:grid-cols-[1.05fr_0.95fr] gap-6 lg:gap-10 items-stretch rounded-2xl border border-gray-100 shadow-lg bg-white overflow-hidden">
+            <div className="p-6 sm:p-8 flex flex-col justify-center">
+              <h3 className="tracking-tight text-2xl md:text-3xl font-bold text-gray-800 mb-4">
+                Get More Caregivers by Posting Your Job
+              </h3>
+              <p className="text-gray-700 leading-relaxed">
+                Posting a job on KinsCare makes it even easier to find
+                caregivers. Once live, caregivers can apply, share it with
+                colleagues, and help spread the word. We also notify our network
+                to boost qualified matches—fast. KinsCare keeps hiring simple,
+                affordable, and effective so you can focus on excellent care.
+              </p>
+
+              <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  "Boosted to nearby caregivers",
+                  "Easy sharing with colleagues",
+                  "Fast matching alerts",
+                  "Built for affordable hiring",
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="flex items-start gap-2 text-sm text-gray-700"
+                  >
+                    <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                      <Check size={14} strokeWidth={2.4} />
+                    </span>
+                    <span className="leading-snug">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="relative bg-gray-100">
+              <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-cyan-400/10 to-transparent" />
+              <div className="relative h-full min-h-[260px] md:min-h-[320px]">
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1140153601-min.jpg?alt=media&token=93fce255-b7d8-4e0d-a28a-5e089a94d6e7"
+                  alt="Posting jobs on KinsCare"
+                  className="absolute inset-0 h-full w-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>

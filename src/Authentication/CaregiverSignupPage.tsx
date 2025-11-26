@@ -200,6 +200,9 @@ export default function CaregiverSignupPage() {
               // All the important context for your backend:
               unsafeMetadata={unsafeMetadata}
               // Redirects after successful signup/signin
+              afterSignUpUrl="/vitae/jobs/all"
+              afterSignInUrl="/vitae/jobs/all"
+              forceRedirectUrl="/vitae/jobs/all"
 
               appearance={{
                 elements: {

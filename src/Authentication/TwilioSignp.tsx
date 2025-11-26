@@ -87,6 +87,9 @@ export default function TwilioSignup() {
           <div className="mx-4">
             <SignUp
               unsafeMetadata={unsafeMetadata}
+              afterSignUpUrl="/provider/jobs/all"
+              afterSignInUrl="/provider/jobs/all"
+              forceRedirectUrl="/provider/jobs/all"
               appearance={{
                 elements: {
                   formButtonPrimary:

@@ -42,51 +42,73 @@ export default function AfterSignInPage() {
   }, [isAuthLoaded, isUserLoaded, isSignedIn, role, router]);
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-50">
+    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-sky-50">
+      {/* Logo top-left */}
+      <div className="absolute top-6 left-6 z-20 flex items-center gap-2 text-sm font-semibold text-slate-700">
+        <Image
+          src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
+          alt="Kinscare"
+          width={36}
+          height={36}
+          className="h-9 w-9"
+          priority
+        />
+        <span>Kinscare</span>
+      </div>
+
       {/* soft gradient blobs */}
-      <div className="pointer-events-none absolute -top-32 -left-32 h-104 w-104 rounded-full bg-indigo-200/40 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-40 -right-40 h-112 w-md rounded-full bg-blue-200/40 blur-3xl" />
+      <div className="pointer-events-none absolute -top-32 -left-32 h-64 w-64 rounded-full bg-indigo-200/40 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 h-72 w-72 rounded-full bg-blue-200/40 blur-3xl" />
 
-      {/* card */}
-      <div className="relative z-10 mx-4 w-full max-w-sm rounded-2xl border border-gray-200 bg-white/90 p-7 shadow-xl backdrop-blur">
-        <div className="flex flex-col items-center text-center">
-          {/* logo with spinning ring */}
-          <div className="relative">
-            <div className="absolute inset-0 -m-3 rounded-full border-2 border-indigo-200 border-t-indigo-600 animate-spin" />
-            <Image
-              src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
-              alt="Kinscare"
-              width={56}
-              height={56}
-              className="relative h-14 w-14"
-              priority
-            />
+      {/* center content */}
+      <div className="flex min-h-screen items-center justify-center px-4">
+        <div className="relative z-10 w-full max-w-md overflow-hidden rounded-3xl border border-slate-200/80 bg-white/90 shadow-xl backdrop-blur">
+          {/* header / progress */}
+          <div className="h-1 w-full overflow-hidden bg-slate-100">
+            <div className="h-full w-full bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 animate-[progress_1.6s_ease_infinite]" />
           </div>
 
-          {/* short title */}
-          <h1 className="mt-4 text-base font-semibold text-gray-900">
-            Loading your dashboard
-          </h1>
+          <div className="p-8">
+            <div className="flex items-center gap-4">
+              <div className="relative inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 ring-1 ring-slate-100">
+                <div className="absolute inset-0 rounded-2xl border-2 border-indigo-200 border-t-indigo-600 animate-spin" />
+                <Image
+                  src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
+                  alt="Kinscare"
+                  width={40}
+                  height={40}
+                  className="relative h-10 w-10"
+                  priority
+                />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-500">Hold tight</p>
+                <h1 className="text-lg font-semibold text-slate-900">
+                  Loading your dashboard
+                </h1>
+              </div>
+            </div>
 
-          {/* animated dots */}
-          <div className="mt-2 flex items-center gap-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.2s]" />
-            <span className="h-1.5 w-1.5 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.1s]" />
-            <span className="h-1.5 w-1.5 rounded-full bg-indigo-600 animate-bounce" />
+            {/* skeleton rows */}
+            <div className="mt-6 space-y-3">
+              <div className="h-4 w-3/4 animate-pulse rounded-full bg-slate-200" />
+              <div className="h-4 w-5/6 animate-pulse rounded-full bg-slate-200" />
+              <div className="h-4 w-2/3 animate-pulse rounded-full bg-slate-200" />
+            </div>
+
+            {/* animated dots */}
+            <div className="mt-6 flex items-center gap-1.5 text-slate-500">
+              <span className="h-2 w-2 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.2s]" />
+              <span className="h-2 w-2 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.1s]" />
+              <span className="h-2 w-2 rounded-full bg-indigo-600 animate-bounce" />
+              <span className="ml-2 text-xs font-medium">Setting things up…</span>
+            </div>
+          </div>
+
+          <div className="border-t border-slate-100 bg-slate-50/70 px-8 py-4 text-xs text-slate-500">
+            Your role is detected automatically so we can take you to the right dashboard.
           </div>
         </div>
-
-        {/* simple pulsing bar */}
-        <div className="mt-6">
-          <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
-            <div className="h-full w-full bg-indigo-600/70 animate-pulse" />
-          </div>
-        </div>
-
-        {/* tiny footer only */}
-        <p className="mt-5 text-center text-[11px] text-gray-400">
-          Kinscare • Secure login
-        </p>
       </div>
     </div>
   );

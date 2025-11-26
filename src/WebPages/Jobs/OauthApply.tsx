@@ -72,25 +72,44 @@ const OauthApply: React.FC<OauthApplyProps> = ({ jobID, job, children }:any) => 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger>{children}</DialogTrigger>
-      <DialogContent className="rounded-lg shadow-xl p-6 overflow-auto h-full md:h-min bg-white ">
-          <div>
-            <SignUp
-              unsafeMetadata={metadata}
-              // After signup/signin, send them back to the job page
-              forceRedirectUrl={jobID ? `/vitae/jobs/${jobID}` : "/vitae/jobs/all"}
-              appearance={{ 
-                elements: {
-                  formButtonPrimary:
-                    "bg-blue-600 shadow-xl border-none hover:bg-blue-500",
-                  card: "border-gray-200 gap-3",
-                  rootBox: "flex justify-center w-full px-4",
-                  main: "gap-3",
-                  cardBox:
-                    "w-full max-w-lg bg-white shadow-xl rounded-2xl border border-gray-100 transition-all",
-                },
-              }}
-            />
-          </div>
+      <DialogContent className="max-w-md overflow-hidden rounded-2xl  shadow-2xl">
+        <div className="  bg-white ">
+          <h3 className="text-lg font-semibold text-gray-900">Apply to this job</h3>
+          <p className="text-sm text-gray-600">
+            Create your caregiver account to view details and submit your application.
+          </p>
+        </div>
+        <SignUp
+          unsafeMetadata={metadata}
+          // After signup/signin, send them back to the job page
+          forceRedirectUrl={jobID ? `/vitae/jobs/${jobID}` : "/vitae/jobs/all"}
+          appearance={{
+            elements: {
+              rootBox: "m-0 p-0 w-full",
+              cardBox: "w-full shadow-none border-none rounded-none bg-white",
+              card: "m-0 p-0 w-full shadow-none border-none",
+              main: "m-0 p-0 w-full border-none shadow-none flex flex-col gap-0",
+              header: "hidden",
+              headerTitle: "hidden",
+              headerSubtitle: "hidden",
+              form: "m-0 p-2 w-full flex flex-col gap-4",
+              formFieldInput: "h-[3.5rem]",
+              formFieldLabel: "text-sm",
+              socialButtons: "m-0 p-2 pb-4 pt-2 w-full flex gap-2",
+              socialButtonsBlockButton: "h-10",
+              socialButtonsProviderIcon: "w-10",
+              formButtonPrimary:
+                "bg-blue-600 shadow-xl py-2 border-none hover:bg-blue-500",
+              footer: "m-0 p-2 w-full",
+              footerAction: "text-sm text-gray-600",
+              footerActionLink: "text-blue-600 font-semibold hover:underline",
+            },
+            layout: {
+              socialButtonsVariant: "blockButton",
+              socialButtonsPlacement: "top",
+            },
+          }}
+        />
       </DialogContent>
     </Dialog>
   );

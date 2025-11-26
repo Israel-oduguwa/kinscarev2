@@ -587,8 +587,8 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                 <div
                   className={`h-2 ${
                     plan.id === "monthly"
-                      ? "bg-linear-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary))]"
-                      : "bg-linear-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))]"
+                      ? "bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary))]"
+                      : "bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))]"
                   }`}
                 />
 

@@ -56,7 +56,7 @@ const safeLocalGet = <T,>(key: string): T | null => {
 /** Safe trigger wrapper to avoid crashes if children is weird */
 function SafeTrigger({
   children,
-  fallbackText = "Continue",
+  fallbackText = "View Caregiver",
 }: {
   children: React.ReactNode;
   fallbackText?: string;
@@ -176,7 +176,7 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
     role: "provider",
     signup_route: message === "caregiver" ? "caregiver" : "find_caregiver",
     caregiver_id: userID ?? null,
-    apply_metadata:true,
+    apply_metadata: true,
     zipcode: zipcode || undefined,
     attribution_cio_id: attribution.cio_id ?? null,
     attribution_email: attribution.email ?? null,
@@ -184,31 +184,75 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
     api_base: API_BASE, // optional if you want server to know which API base
   };
 
+  // Narrative copy per use-case
+  const headerTitle =
+    message === "caregiver" ? "Welcome to Kinscare" : "Continue with Kinscare";
+  const headerSubtitle =
+    message === "caregiver"
+      ? "Sign in to Kinscare to connect with this caregiver."
+      : "Create your provider account to view candidates and hire faster.";
+
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <SafeTrigger>{children}</SafeTrigger>
-      <DialogContent className="rounded-lg shadow-xl p-6 bg-white max-w-md">
-        <div className="mt-2">
-          <SignUp
-            // All the important context for your backend:
-            unsafeMetadata={unsafeMetadata}
-            // Redirects after successful signup/signin
-            afterSignUpUrl={redirectUrl}
-            afterSignInUrl={redirectUrl}
-            redirectUrl={redirectUrl}
-            appearance={{
-              elements: {
-                formButtonPrimary:
-                  "bg-blue-600 shadow-xl border-none hover:bg-blue-500",
-                card: "border-gray-200 gap-3",
-                rootBox: "flex justify-center w-full px-0",
-                main: "gap-3",
-                cardBox:
-                  "w-full max-w-md bg-white shadow-xl rounded-2xl border border-gray-100 transition-all",
-              },
-            }}
-          />
+      <DialogContent
+        className="
+      p-6
+      max-w-md 
+      overflow-hidden 
+      rounded-2xl 
+      border border-gray-100 
+      shadow-2xl
+      gap-0
+      bg-white
+    "
+      >
+        {/* Header Section */}
+        <div className="px-1 py-4 text-center bg-white">
+          <h3 className="text-2xl font-bold text-gray-900 leading-tight">
+            {headerTitle}
+          </h3>
+          <p className=" text-gray-600">{headerSubtitle}</p>
         </div>
+
+        {/* Clerk Signup */}
+        <SignUp
+          unsafeMetadata={unsafeMetadata}
+          afterSignUpUrl={redirectUrl}
+          afterSignInUrl={redirectUrl}
+          redirectUrl={redirectUrl}
+          appearance={{
+            elements: {
+              // Remove ALL margins/padding so Clerk fits the Dialog
+              rootBox: "m-0 p-0 w-full",
+              cardBox: "w-full shadow-none border-none rounded-none bg-white",
+              card: "m-0 p-0 w-full shadow-none border-none ",
+              main: "m-0 p-0 w-full border-none shadow-none flex flex-col gap-0",
+              header: "hidden",
+              headerTitle: "hidden",
+              headerSubtitle: "hidden",
+              // Form content full-width with no side padding
+              form: "m-0 p-2 w-full flex flex-col gap-4",
+              formFieldInput: "h-[3.5rem]",
+              formFieldLabel: "text-sm",
+              // Social buttons full bleed
+              socialButtons: "m-0 p-2 pb-4 pt-2 w-full flex  gap-2",
+              socialButtonsBlockButton:"h-10",
+              socialButtonsProviderIcon:"w-10",
+              // Primary button full width
+              formButtonPrimary:
+                "bg-blue-600 shadow-xl  py-2 border-none hover:bg-blue-500",
+              // Footer full-width and flush
+              footer: "m-0 p-2 w-full",
+              footerAction: "text-sm text-gray-600",
+              footerActionLink: "text-blue-600 font-semibold hover:underline",
+            },
+            layout: {
+              socialButtonsVariant: "blockButton",
+              socialButtonsPlacement: "top",
+            },
+          }}
+        />
       </DialogContent>
     </Dialog>
   );

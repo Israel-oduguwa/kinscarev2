@@ -12,12 +12,10 @@ import {
 } from "@stripe/react-stripe-js";
 import Confetti from "react-confetti";
 
-const stripePromise = loadStripe(
-  "pk_test_51KzQg6AoahxG9SLGESpHVcOxWL1PpnsEpvFusy1BdQ1iXLlNHZLjuzvpBmuZGUg798rnTimYfDCsRqMHBOvUrTse00GRInaoCZ"
-);
+const stripe_key: any = process.env.STRIPE_PUBLIC_KEY;
+const stripePromise = loadStripe(stripe_key);
 
-const API_BASE =
-  "http://localhost:8081/api/v1/providers";
+const API_BASE = "http://localhost:8081/api/v1/providers";
 
 type Applicant = {
   _id: string;

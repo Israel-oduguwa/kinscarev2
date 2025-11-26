@@ -161,6 +161,9 @@ export function EmployerAppSidebar({
             <SidebarMenu>
               {data.navMain.map((item: any) => {
                 const isActive = isActiveLink(item.url, !!item.items);
+                const activeClasses = isActive
+                  ? "bg-blue-50 text-blue-700 border border-blue-100 shadow-sm"
+                  : "hover:bg-gray-50";
 
                 return item.items ? (
                   <Collapsible
@@ -172,10 +175,10 @@ export function EmployerAppSidebar({
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton
-                          className=" font-semibold antialiased py-6 my-0.5 
-                                [&>svg]:w-6 [&>svg]:h-4"
                           tooltip={item.title}
                           isActive={isActive}
+                          data-active={isActive}
+                          className={`relative font-semibold antialiased py-6 my-0.5 [&>svg]:w-6 [&>svg]:h-4 ${activeClasses}`}
                         >
                           {item.icon && <item.icon />}
                           <span>{item.title}</span>
@@ -203,18 +206,17 @@ export function EmployerAppSidebar({
                     </SidebarMenuItem>
                   </Collapsible>
                 ) : (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      tooltip={item.title}
-                      isActive={isActive}
-                      asChild
-                      className="  font-semibold antialiased py-5
-                    [&>svg]:w-6 [&>svg]:h-4"
-                    >
-                      <Link href={item.url}>
-                        {item.icon && <item.icon />}
-                        <span>{item.title}</span>
-                      </Link>
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        tooltip={item.title}
+                        isActive={isActive}
+                        asChild
+                        className={`relative font-semibold antialiased py-5 [&>svg]:w-6 [&>svg]:h-4 ${activeClasses}`}
+                      >
+                        <Link href={item.url}>
+                          {item.icon && <item.icon />}
+                          <span>{item.title}</span>
+                        </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
@@ -236,13 +238,9 @@ export function EmployerAppSidebar({
               <NavigationMenu className="z-0">
                 <NavigationMenuList>
                   <NavigationMenuItem>
-                    <Link href="/provider/candidates/all" passHref>
-                      <NavigationMenuLink
-                        className={navigationMenuTriggerStyle()}
-                      >
-                        Find Caregivers
-                      </NavigationMenuLink>
-                    </Link>
+                    <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                      <Link href="/provider/candidates/all">Find Caregivers</Link>
+                    </NavigationMenuLink>
                   </NavigationMenuItem>
                 </NavigationMenuList>
               </NavigationMenu>
@@ -250,13 +248,9 @@ export function EmployerAppSidebar({
               <NavigationMenu className="z-0">
                 <NavigationMenuList>
                   <NavigationMenuItem>
-                    <Link href="/provider/job/update/new" passHref>
-                      <NavigationMenuLink
-                        className={navigationMenuTriggerStyle()}
-                      >
-                        Post Job
-                      </NavigationMenuLink>
-                    </Link>
+                    <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                      <Link href="/provider/job/update/new">Post Job</Link>
+                    </NavigationMenuLink>
                   </NavigationMenuItem>
                 </NavigationMenuList>
               </NavigationMenu>

@@ -72,19 +72,20 @@ const JobUpdatePage = ({type}:any) => {
   // Effect to handle job initialization
   useEffect(() => {
     const initializeJob = async () => {
-      setLoading(true); // Start loading
+      setLoading(true); // Start loading immediately
 
       if (id === "new") {
-        // Create a new draft job if the ID is "new"
+        // Create a draft and let the redirect unmount this view.
         const newJobID = await createDraftJob();
-        setCurrentJobID(newJobID); // Set currentJobID after draft creation
-      } else {
-        // Otherwise, fetch the existing job data
-        setCurrentJobID(id as string); // Set current job ID
-        await getJobData(id); // Fetch the job data for this ID
+        setCurrentJobID(newJobID); // so skeleton knows we're in progress
+        return; // keep loading state true to avoid flicker while routing
       }
 
-      setLoading(false); // Stop loading when everything is ready
+      // Otherwise, fetch existing job data
+      setCurrentJobID(id as string); // Set current job ID
+      await getJobData(id); // Fetch the job data for this ID
+
+      setLoading(false); // Stop loading when data is ready
     };
 
     if (contactData) {
@@ -94,7 +95,7 @@ const JobUpdatePage = ({type}:any) => {
 
   // Unified loading check - only render UI when loading is done and we have a valid job ID
   if (loading || !currentJobID) {
-    return <JobPostFormSkeleton/>;
+    return <JobPostFormSkeleton />;
   }
 
   // If no job is available after loading, show a message or fallback UI

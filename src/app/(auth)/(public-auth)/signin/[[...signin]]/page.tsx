@@ -117,7 +117,13 @@ function Page() {
               appearance={{
                 elements: {
                   formButtonPrimary:
-                    "bg-blue-600 shadow-xl border-none hover:bg-blue-500",
+                    "bg-blue-600 shadow-xl  py-2 border-none hover:bg-blue-500",
+                  socialButtonsBlockButton: "h-10",
+                  cardBox:
+                    " bg-white",
+                  socialButtonsProviderIcon: "w-10",
+                  formFieldInput: "h-[3.5rem]",
+                  formFieldLabel: "text-sm",
                 },
               }}
             />

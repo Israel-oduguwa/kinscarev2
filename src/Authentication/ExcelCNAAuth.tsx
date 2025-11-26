@@ -134,6 +134,9 @@ const ExcelCNASignupPage: React.FC = () => {
               {/* Clerk SignUp with unsafeMetadata + custom appearance */}
               <SignUp
                 unsafeMetadata={unsafeMetadata}
+                afterSignUpUrl="/vitae/jobs/all"
+                afterSignInUrl="/vitae/jobs/all"
+                forceRedirectUrl="/vitae/jobs/all"
                 appearance={{
                   elements: {
                     formButtonPrimary:

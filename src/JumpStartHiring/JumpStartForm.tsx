@@ -31,7 +31,7 @@ import { useApiClient } from "@/hooks/useApiClient";
 import { SignUp, useUser } from "@clerk/nextjs";
 import { DialogTitle } from "@radix-ui/react-dialog";
 
-const STRIPE_PUBLIC_KEY = "pk_test_51KzQg6AoahxG9SLGESpHVcOxWL1PpnsEpvFusy1BdQ1iXLlNHZLjuzvpBmuZGUg798rnTimYfDCsRqMHBOvUrTse00GRInaoCZ" // process.env.STRIPE_PUBLIC_KEY ?? "";
+const STRIPE_PUBLIC_KEY = process.env.STRIPE_PUBLIC_KEY ?? "";
 const stripePromise = loadStripe(STRIPE_PUBLIC_KEY);
 
 interface FormData {
@@ -151,8 +151,8 @@ function JumpStartForm() {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isFetchingSecret, setIsFetchingSecret] = useState(false);
   const [contactData, setContactData] = useState<any>(null);
-   const [isGeoLoading, setIsGeoLoading] = useState(false);
-    const [zipcode, setZipcode] = useState<string | null>(null);
+  const [isGeoLoading, setIsGeoLoading] = useState(false);
+  const [zipcode, setZipcode] = useState<string | null>(null);
   const [isSignOutPromptOpen, setIsSignOutPromptOpen] = useState(false);
   const { isSignedIn, user } = useUser();
   const [subscription, setSubscription] = useState<SubscriptionData | null>(
@@ -449,21 +449,21 @@ function JumpStartForm() {
         };
         await handleSignupSuccess(synthetic);
       } else {
-          const fetchGeo = async () => {
-      try {
-        setIsGeoLoading(true);
-        const response = await axios.get("/api/ip");
-        const { zip } = response.data || {};
-        setZipcode(zip || "");
-      } catch (error) {
-        console.error("Failed to retrieve IP data:", error);
-        setZipcode("");
-      } finally {
-        setIsGeoLoading(false);
-      }
-    };
+        const fetchGeo = async () => {
+          try {
+            setIsGeoLoading(true);
+            const response = await axios.get("/api/ip");
+            const { zip } = response.data || {};
+            setZipcode(zip || "");
+          } catch (error) {
+            console.error("Failed to retrieve IP data:", error);
+            setZipcode("");
+          } finally {
+            setIsGeoLoading(false);
+          }
+        };
 
-    fetchGeo();
+        fetchGeo();
         setIsSignOutPromptOpen(true);
       }
     } else {
@@ -477,8 +477,8 @@ function JumpStartForm() {
     role: "provider",
     jumpstart: true,
     signupRoute: "public_job_post",
-    apply_metadata:true,
-    zipcode:zipcode
+    apply_metadata: true,
+    zipcode: zipcode,
   };
 
   return (
@@ -832,7 +832,16 @@ function JumpStartForm() {
 
       {/* Signup Dialog */}
       <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
-        <DialogContent className="rounded-xl max-w-md">
+        <DialogContent className="p-0 max-w-md overflow-hidden rounded-2xl border border-gray-100 shadow-2xl">
+          <div className="px-5 pt-5 pb-3 bg-white border-b border-gray-100">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Apply for Jumpstart
+            </h3>
+            <p className="text-sm text-gray-600">
+              Create your provider account to connect with our team and start
+              hiring faster.
+            </p>
+          </div>
           <SignUp
             routing="path"
             path="/jumpstart-hiring/apply"
@@ -841,13 +850,28 @@ function JumpStartForm() {
             forceRedirectUrl="/jumpstart-hiring/apply"
             appearance={{
               elements: {
+                rootBox: "m-0 p-0 w-full",
+                cardBox: "w-full shadow-none border-none rounded-none bg-white",
+                card: "m-0 p-0 w-full shadow-none border-none",
+                main: "m-0 p-0 w-full border-none shadow-none flex flex-col gap-0",
+                header: "hidden",
+                headerTitle: "hidden",
+                headerSubtitle: "hidden",
+                form: "m-0 p-2 w-full flex flex-col gap-4",
+                formFieldInput: "h-[3.5rem]",
+                formFieldLabel: "text-sm",
+                socialButtons: "m-0 p-2 pb-4 pt-2 w-full flex gap-2",
+                socialButtonsBlockButton: "h-10",
+                socialButtonsProviderIcon: "w-10",
                 formButtonPrimary:
-                  "bg-blue-600 shadow-xl border-none hover:bg-blue-500",
-                card: "border-gray-200 gap-3",
-                rootBox: "flex justify-center w-full px-4",
-                main: "gap-3",
-                cardBox:
-                  "w-full max-w-lg bg-white shadow-xl rounded-2xl border border-gray-100 transition-all",
+                  "bg-blue-600 shadow-xl py-2 border-none hover:bg-blue-500",
+                footer: "m-0 p-2 w-full",
+                footerAction: "text-sm text-gray-600",
+                footerActionLink: "text-blue-600 font-semibold hover:underline",
+              },
+              layout: {
+                socialButtonsVariant: "blockButton",
+                socialButtonsPlacement: "top",
               },
             }}
           />

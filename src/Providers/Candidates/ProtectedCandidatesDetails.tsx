@@ -39,7 +39,7 @@ import { Separator } from "@radix-ui/react-dropdown-menu";
 import { useApiClient } from "@/hooks/useApiClient";
 
 /** Stripe setup */
-const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY || "");
+const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY|| "");
 
 /**
  * This component handles:
