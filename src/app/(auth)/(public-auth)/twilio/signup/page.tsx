@@ -1,6 +1,8 @@
 "use"
 import TwilioSignup from "@/Authentication/TwilioSignp";
 import { Metadata } from "next";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Define Metadata for SEO
 export const metadata: Metadata = {
@@ -86,7 +88,20 @@ function Page({ searchParams }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-   <TwilioSignup/>
+      <Suspense
+        fallback={
+          <div className="w-full max-w-lg mx-auto p-6">
+            <div className="space-y-3">
+              <Skeleton className="h-6 w-1/2 rounded-lg" />
+              <Skeleton className="h-10 w-3/4 rounded-lg" />
+              <Skeleton className="h-12 w-full rounded-xl" />
+              <Skeleton className="h-12 w-2/3 rounded-xl" />
+            </div>
+          </div>
+        }
+      >
+        <TwilioSignup />
+      </Suspense>
     </>
   );
 }
