@@ -605,8 +605,8 @@ const CreateJobNewUser: React.FC<any> = ({ jobID, type, job }) => {
               <SignUp
                 unsafeMetadata={unsafeMetadata}
                 routing="virtual"
-                afterSignUpUrl={window.location.pathname}
-                afterSignInUrl={window.location.pathname}
+                // afterSignUpUrl={window.location.pathname}
+                // afterSignInUrl={window.location.pathname}
                 appearance={{
                   elements: {
                     rootBox: "m-0 p-0 w-full",
