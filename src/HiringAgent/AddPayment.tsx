@@ -12,7 +12,7 @@ import {
 } from "@stripe/react-stripe-js";
 import Confetti from "react-confetti";
 
-const stripe_key: any = process.env.STRIPE_PUBLIC_KEY;
+const stripe_key:any = process.env.STRIPE_PUBLIC_KEY;
 const stripePromise = loadStripe(stripe_key);
 
 const API_BASE = "http://localhost:8081/api/v1/providers";
