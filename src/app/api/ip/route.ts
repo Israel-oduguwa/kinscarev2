@@ -6,9 +6,17 @@ export async function GET(req: Request) {
   try {
     // Get the user's IP address from headers
     const forwarded = req.headers.get("x-forwarded-for");
+    const realIp = req.headers.get("x-real-ip");
+
+    // x-forwarded-for can be a comma separated list; use the first public IP.
+    const parsedForwarded = forwarded
+      ?.split(",")
+      .map((part) => part.trim())
+      .filter(Boolean)[0];
+
     const userIp =
       process.env.NODE_ENV === "production"
-        ? forwarded || req.headers.get("x-real-ip") || ""
+        ? parsedForwarded || realIp || ""
         : "67.183.58.7";
 
     // Check if IP exists
@@ -20,8 +28,14 @@ export async function GET(req: Request) {
     }
 
     const ipApiKey = process.env.IPAPI_KEY;
+    if (!ipApiKey) {
+      return NextResponse.json(
+        { error: "Missing IPAPI_KEY configuration" },
+        { status: 500 }
+      );
+    }
 
-    // Fetch location information using ipapi
+    // Fetch location information using ipapi/ipstack
     const response = await axios.get(
       `http://api.ipstack.com/${userIp}?access_key=${ipApiKey}`
     );
@@ -29,15 +43,31 @@ export async function GET(req: Request) {
     if (response.status === 200 && response.data) {
       const location = response.data;
 
-      // Check if the data includes city and region
-      if (!location) {
+      // ipstack returns an error payload with success=false
+      if (location?.success === false || !location) {
         return NextResponse.json(
-          { error: "Cannot determine location" },
+          { error: "Cannot determine location", details: location?.error },
           { status: 404 }
         );
       }
 
-      return NextResponse.json(location, { status: 200 });
+      const normalized = {
+        ip: location.ip ?? userIp,
+        city: location.city ?? null,
+        region_name: location.region_name ?? location.region ?? null,
+        country_code: location.country_code ?? location.country ?? null,
+        zip:
+          location.zip ??
+          location.postal_code ??
+          location.postal ??
+          location.postcode ??
+          null,
+        latitude: location.latitude ?? null,
+        longitude: location.longitude ?? null,
+        raw: location,
+      };
+
+      return NextResponse.json(normalized, { status: 200 });
     } else {
       return NextResponse.json(
         { error: "Failed to fetch location" },
@@ -55,5 +85,3 @@ export async function GET(req: Request) {
     );
   }
 }
-
-// https://www.kinscare.org/excelcna?hashedUserData=d16cfc0a0442745acc2ff6c7a8f67f5db1461503dd3c4d1580a0273a8c33937f&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMWE2ZWJiYjJiMGJmMTJlNDhjN2NhNTgiLCJoYXNoZWRVc2VyRGF0YSI6ImQxNmNmYzBhMDQ0Mjc0NWFjYzJmZjZjN2E4ZjY3ZjVkYjE0NjE1MDNkZDNjNGQxNTgwYTAyNzNhOGMzMzkzN2YiLCJwaG9uZU51bWJlciI6IisyMzQ3MDgxNzgzMjUyIiwiZW1haWwiOiJvZHVndXdhLmlzcmFlbDIyQGdtYWlsLmNvbSIsInJvbGUiOiJjYXJlZ2l2ZXIiLCJsbmFtZSI6Ik9kdWd1d2EiLCJmbmFtZSI6IklzcmFlbCBjdXN0b20iLCJkYXRlQ3JlYXRlZCI6IjIwMjUtMDMtMDlUMTk6MTM6MDUuNDE2WiIsImlhdCI6MTc0MTU0NzU4NSwiZXhwIjoxNzQ0MTM5NTg1fQ.VKO8DuGhLAbktlLQOpO2ePrvYM_WZLO99LLdJWfja3A&kincaret=7754bcc3d85c20ed5ce7ca9d7b08d73c9086c93fc092fe93080684472f18d46b4e36c41603c7d933487d768d2d095c07c60f344c204c35c0e5e891c468100684

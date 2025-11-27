@@ -129,10 +129,15 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
 
         const res = await axios.get("/api/ip");
         const data = res?.data || {};
-        const { zip } = data;
+        const zip =
+          data?.zip ||
+          data?.postal_code ||
+          data?.postal ||
+          data?.postalCode ||
+          "";
 
         if (mountedRef.current) {
-          setZipcode(zip || "");
+          setZipcode(zip);
         }
       } catch (err) {
         console.error("Failed to retrieve IP data:", err);
