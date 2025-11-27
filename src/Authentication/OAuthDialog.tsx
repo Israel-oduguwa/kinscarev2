@@ -23,9 +23,7 @@ import ProviderDialog from "@/Providers/Candidates/ProviderDialog";
 import { useAuthContext } from "@/context/AuthContext";
 import { SignUp } from "@clerk/nextjs";
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE ||
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com";
+const API_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com";
 
 interface OAuthDialogProps {
   message: string; // "caregiver" or other - controls copy + signup_route
