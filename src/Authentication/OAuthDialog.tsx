@@ -1,12 +1,6 @@
 "use client";
 
-import React, {
-  Children,
-  isValidElement,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { Children, isValidElement, useMemo, useState } from "react";
 
 import {
   Dialog,
@@ -21,7 +15,7 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProviderDialog from "@/Providers/Candidates/ProviderDialog";
 import { useAuthContext } from "@/context/AuthContext";
-import { SignUp } from "@clerk/nextjs";
+import { SignUp, useAuth } from "@clerk/nextjs";
 
 const API_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com";
 
@@ -40,6 +34,8 @@ type Attribution = {
 };
 
 const LS_KEY_PREFS = "kc_search_prefs";
+const LS_KEY_ZIP = "kc_cached_zip";
+let sharedZipPromise: Promise<string> | null = null;
 
 const safeLocalGet = <T,>(key: string): T | null => {
   if (typeof window === "undefined") return null;
@@ -83,12 +79,14 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
   children,
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [zipcode, setZipcode] = useState<string | null>(null);
+  const [zipcode, setZipcode] = useState<string | null>(() =>
+    safeLocalGet<string>(LS_KEY_ZIP)
+  );
   const [isGeoLoading, setIsGeoLoading] = useState(false);
-  const mountedRef = useRef(true);
 
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { isSignedIn } = useAuth();
 
   const authData: any = useAuthContext();
   const { userData } = authData || {};
@@ -112,47 +110,42 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
+  // Fetch IP/zipcode ASAP (once) only for signed-out users
   React.useEffect(() => {
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
-
-  // Fetch IP/zipcode when the dialog opens (once)
-  React.useEffect(() => {
-    if (!isDialogOpen || zipcode) return;
+    if (zipcode || isSignedIn) return;
 
     const fetchGeo = async () => {
       try {
-        if (!mountedRef.current) return;
         setIsGeoLoading(true);
+        if (!sharedZipPromise) {
+          sharedZipPromise = axios.get("/api/ip").then((res) => {
+            const data = res?.data || {};
+            return (
+              data?.zip ||
+              data?.postal_code ||
+              data?.postal ||
+              data?.postalCode ||
+              data?.zipcode ||
+              "unknown"
+            );
+          });
+        }
 
-        const res = await axios.get("/api/ip");
-        const data = res?.data || {};
-        const zip =
-          data?.zip ||
-          data?.postal_code ||
-          data?.postal ||
-          data?.postalCode ||
-          "";
-
-        if (mountedRef.current) {
-          setZipcode(zip);
+        const zip = await sharedZipPromise;
+        setZipcode(zip || "unknown");
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem(LS_KEY_ZIP, JSON.stringify(zip));
         }
       } catch (err) {
         console.error("Failed to retrieve IP data:", err);
-        if (mountedRef.current) {
-          setZipcode("");
-        }
+        setZipcode("unknown");
       } finally {
-        if (mountedRef.current) {
-          setIsGeoLoading(false);
-        }
+        setIsGeoLoading(false);
       }
     };
 
     fetchGeo();
-  }, [isDialogOpen, zipcode]);
+  }, [zipcode, isSignedIn]);
 
   // If user is already a provider, open ProviderDialog instead of signup
   if (userData && userData.role === "provider") {
@@ -174,18 +167,22 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
     ? `/provider/candidates/${userID}`
     : "/provider/candidates/all";
 
+  // Normalize zipcode so metadata always carries a value
+  const zipcodeValue = zipcode || "unknown";
+
   // What we send to Clerk unsafe metadata
   const unsafeMetadata = {
     role: "provider",
     signup_route: message === "caregiver" ? "caregiver" : "find_caregiver",
     caregiver_id: userID ?? null,
     apply_metadata: true,
-    zipcode: zipcode || undefined,
+    zipcode: zipcodeValue,
     attribution_cio_id: attribution.cio_id ?? null,
     attribution_email: attribution.email ?? null,
     attribution_name: attribution.name ?? null,
     api_base: API_BASE, // optional if you want server to know which API base
   };
+  console.log(unsafeMetadata)
 
   // Narrative copy per use-case
   const headerTitle =
@@ -194,7 +191,6 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
     message === "caregiver"
       ? "Sign in to Kinscare to connect with this caregiver."
       : "Create your provider account to view candidates and hire faster.";
-console.log(unsafeMetadata)
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <SafeTrigger>{children}</SafeTrigger>
