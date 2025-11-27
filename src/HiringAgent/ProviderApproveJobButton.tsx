@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import Confetti from "react-confetti";
 import Link from "next/link";
 
-const API_BASE = "http://localhost:8081/api/v1/providers";
+const API_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
 
 type Props = {
   jobId: string;

@@ -5,7 +5,7 @@ import { useAuth } from "@clerk/nextjs";
 import { useApiClient } from "@/hooks/useApiClient";
 
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8081";
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://jrp7pe2xhj.us-east-1.awsapprunner.com";
 
 export type InitializeStatus = "idle" | "loading" | "success" | "error";
 

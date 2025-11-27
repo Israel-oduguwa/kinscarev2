@@ -10,6 +10,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { format } from "date-fns";
+import { useApiClient } from "@/hooks/useApiClient";
 
 const API_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/jumpstart";
 
@@ -21,6 +22,7 @@ export default function InterviewingPage({ applicationId }: { applicationId: str
   const [error, setError] = useState<string>("");
   const [toggling, setToggling] = useState<string>(""); // userID being toggled
   const [removing, setRemoving] = useState<string>(""); // userID being removed
+  const {privateApi} = useApiClient()
 
   const fetchCaregivers = async () => {
     setLoading(true);
