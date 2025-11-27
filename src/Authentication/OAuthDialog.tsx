@@ -194,7 +194,7 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
     message === "caregiver"
       ? "Sign in to Kinscare to connect with this caregiver."
       : "Create your provider account to view candidates and hire faster.";
-
+console.log(unsafeMetadata)
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <SafeTrigger>{children}</SafeTrigger>
