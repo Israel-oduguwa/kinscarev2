@@ -15,7 +15,7 @@ function AgentAuth({ children }: AgentAuthProps) {
 
   const { isLoaded: isAuthLoaded, isSignedIn } = useAuth();
   const { isLoaded: isUserLoaded, user } = useUser();
-  const { contactData, status, isLoading, isRefreshing, error, refreshData } =
+  const { status, isLoading, isRefreshing, error, refreshData } =
     useAuthContext();
 
   const [isRedirecting, setIsRedirecting] = useState(false);
@@ -42,7 +42,7 @@ function AgentAuth({ children }: AgentAuthProps) {
   // Mixpanel identify (once per session)
   const didIdentifyRef = useRef(false);
   useEffect(() => {
-    if (!contactData || didIdentifyRef.current) return;
+    if (didIdentifyRef.current) return;
     if (!isAgentOrAdmin) return;
 
     didIdentifyRef.current = true;
@@ -60,11 +60,11 @@ function AgentAuth({ children }: AgentAuthProps) {
     //     verified: contactData.payment_verified,
     //   },
     // });
-  }, [contactData, isAgentOrAdmin]);
+  }, [isAgentOrAdmin]);
 
   const isClerkLoading = !isAuthLoaded || !isUserLoaded;
-  const waitingForContactData =
-    isLoading || (status !== "success" && !contactData);
+  // const waitingForContactData =
+  //   isLoading || (status !== "success" && !contactData);
 
   // Show error state
   if (error) {
