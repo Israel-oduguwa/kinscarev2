@@ -188,7 +188,7 @@ export default function PostJobApplicant({ applicantData }: any) {
         applicantId: id, // twilio lead id
         hash: userData?.hash,
         geocode: userData.geocode_address,
-        existingAccount:applicantData.existingAccount,
+        // existingAccount:applicantData.existingAccount,
         draft: false,
       },
     };
