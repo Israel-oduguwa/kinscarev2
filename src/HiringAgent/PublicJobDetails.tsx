@@ -212,6 +212,7 @@ async function PublicJobDetails({ jobID }: { jobID: string }) {
   );
   const response = await data.json();
   const { job, similarJobs } = response;
+  console.log(job)
 
   const locationLine = [
     job?.contacts?.address ?? "",
@@ -225,6 +226,7 @@ async function PublicJobDetails({ jobID }: { jobID: string }) {
     typeof job?._id === "string" ? job._id : job?._id?.toString?.() ?? "";
 
   console.log(job);
+  const paymentLink = `https//www.kinscare.org/add-payment/${job?.agentMeta?.applicantId}`
   return (
     <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
@@ -292,8 +294,8 @@ async function PublicJobDetails({ jobID }: { jobID: string }) {
               {!job.approve ? (
                 <ProviderApproveJobButton
                   initialApproved={job.status === "provider_approved"}
-                  initialPaymentLink={job.jumpstart.paymentLink}
-                  existingAccount={job.existingAccount}
+                  initialPaymentLink={paymentLink}
+                  // existingAccount={job.existingAccount}
                   jobId={jobIdString}
                 />
               ) : (

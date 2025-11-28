@@ -195,7 +195,7 @@ const ProviderApproveJobButton: React.FC<Props> = ({
           <Button
             onClick={handleApprove}
             disabled={disableButton || isSubmitting}
-            className="w-full rounded-xl px-5 py-2.5 shadow-[0_8px_20px_-8px_rgba(59,130,246,0.6)]"
+            className="w-full rounded-xl px-5 py-3 shadow-[0_8px_20px_-8px_rgba(59,130,246,0.6)]"
           >
             {disableButton
               ? "Already Approved"
