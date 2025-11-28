@@ -193,12 +193,13 @@ export default function PostJobApplicant({ applicantData }: any) {
       },
     };
 
+      console.log(payload)
     try {
       const res = await privateApi.post(
         `/api/v1/providers/jumpstart/agent-post-job`,
         payload
       );
-
+      console.log(res.data)
       if (!res?.data?.ok) {
         setSubmitError(res?.data?.error || "Failed to post job.");
         return;
@@ -272,6 +273,7 @@ export default function PostJobApplicant({ applicantData }: any) {
 
       router.push(`/agent/twilio/provider/${id}`);
     } catch (e: any) {
+      console.log(e)
       console.error("AgentPostJob submit error:", e);
       setSubmitError(
         e?.response?.data?.error || e?.message || "Failed to post job."
