@@ -13,31 +13,60 @@ interface AgentAuthProps {
 function AgentAuth({ children }: AgentAuthProps) {
   const router = useRouter();
 
-  const { isLoaded: isAuthLoaded, isSignedIn } = useAuth();
+  const { isLoaded: isAuthLoaded, isSignedIn, sessionClaims } = useAuth();
   const { isLoaded: isUserLoaded, user } = useUser();
-  const { status, isLoading, isRefreshing, error, refreshData } =
-    useAuthContext();
+  const {
+    status,
+    isLoading,
+    isRefreshing,
+    error,
+    refreshData,
+    userData,
+  } = useAuthContext();
 
   const [isRedirecting, setIsRedirecting] = useState(false);
 
-  // Extract role safely
-  const role = useMemo(
-    () => (user?.publicMetadata?.role as string | undefined) ?? null,
-    [user?.publicMetadata?.role]
-  );
+  // Extract role safely from multiple sources (Clerk public metadata, session claims, backend)
+  const role = useMemo(() => {
+    const rawRole =
+      (user?.publicMetadata?.role as string | undefined) ??
+      ((sessionClaims as any)?.metadata?.role as string | undefined) ??
+      (userData?.role as string | undefined) ??
+      (userData as any)?.auth?.role;
+
+    return rawRole ? String(rawRole).toLowerCase() : null;
+  }, [user?.publicMetadata?.role, sessionClaims, userData]);
 
   const isAgentOrAdmin = role === "agent" || role === "admin";
 
   // Redirect if signed in but NOT agent/admin
   useEffect(() => {
     if (!isAuthLoaded || !isUserLoaded) return;
-    if (!isSignedIn) return; // Let middleware handle unauthenticated
 
-    if (!isAgentOrAdmin) {
+    // Kick unauthenticated users to sign-in but avoid an endless skeleton loop
+    if (!isSignedIn) {
       setIsRedirecting(true);
-      router.replace("/signin?redirect=agent-dashboard"); // Or /dashboard, /home, etc.
+      router.replace("/signin?redirect=agent-dashboard");
+      return;
     }
-  }, [isAuthLoaded, isUserLoaded, isSignedIn, isAgentOrAdmin, router]);
+
+    // Signed in → clear any redirecting state set earlier
+    if (isRedirecting) {
+      setIsRedirecting(false);
+    }
+
+    // Signed in but not authorized → show a clear deny state instead of hanging
+    if (!isAgentOrAdmin) {
+      setIsRedirecting(false);
+    }
+  }, [
+    isAuthLoaded,
+    isUserLoaded,
+    isSignedIn,
+    isAgentOrAdmin,
+    isRedirecting,
+    router,
+  ]);
 
   // Mixpanel identify (once per session)
   const didIdentifyRef = useRef(false);
@@ -97,6 +126,29 @@ function AgentAuth({ children }: AgentAuthProps) {
   // Not signed in → render nothing (middleware should redirect)
   if (!isSignedIn) {
     return null;
+  }
+
+  // Authenticated but not authorized → show an explicit denial (prevents infinite skeleton)
+  if (isSignedIn && !isAgentOrAdmin) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+        <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-lg text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
+            <span className="text-3xl">!</span>
+          </div>
+          <h2 className="text-xl font-bold text-gray-900">Access restricted</h2>
+          <p className="mt-2 text-sm text-gray-600">
+            This page is only available to KinsCare agents and admins.
+          </p>
+          <button
+            onClick={() => router.push("/signin?redirect=agent-dashboard")}
+            className="mt-6 inline-flex items-center rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white hover:bg-indigo-700"
+          >
+            Switch account
+          </button>
+        </div>
+      </div>
+    );
   }
 
   // Signed in + correct role → render children
