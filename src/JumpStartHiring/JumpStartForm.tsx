@@ -351,7 +351,7 @@ function JumpStartForm() {
         {
           userID,
           customerEmail: formData.email,
-          priceId: "price_1SWoyMAoahxG9SLGpddkX6NQ",
+          priceId: "price_1SYRanAoahxG9SLG5HyUbAQ1",
         }
       );
 
