@@ -8,10 +8,11 @@ import { Button } from "@/components/ui/button";
 import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { useApiClient } from "@/hooks/useApiClient";
+
 // ---------- Constants ----------
 const API_BASE =
   "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
@@ -63,7 +64,6 @@ const schema = yup.object({
     .of(yup.string())
     .min(1, "Select at least one license")
     .required("Licenses are required"),
-  //   category: yup.string().trim().required("Category is required"),
   schedule: yup
     .array()
     .of(yup.string())
@@ -85,15 +85,19 @@ const schema = yup.object({
 });
 
 // ---------- Component ----------
-export default function PostJobApplicant({ applicantData }: any) {
- const {userData} = useAuthContext();
+export default function PostJobApplicant() {
+  // ✅ Safe access to context
+  const auth = useAuthContext();
+  const userData = auth?.userData ?? null;
+
+  // ✅ Agent ID now guarded
+  const agentUserId: string | null = userData?.userID ?? null;
+
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
-  // Agent ID to attribute posts
-  const agentUserId: any = userData.userID;
   const { privateApi } = useApiClient();
   const initialContent = "";
 
@@ -116,11 +120,9 @@ export default function PostJobApplicant({ applicantData }: any) {
       zipcode: "",
       title: "",
       licenses: [] as string[],
-      //   category: "",
       schedule: [] as string[],
       days: DAYS.map((d) => ({ ...d, checked: false })),
       description: initialContent,
-      // metadata you mentioned
       draft: true,
     },
   });
@@ -158,6 +160,12 @@ export default function PostJobApplicant({ applicantData }: any) {
     setSubmitError(null);
     setSubmitSuccess(null);
 
+    // Extra guard: don't let it submit without a logged-in agent
+    if (!agentUserId) {
+      setSubmitError("Missing agent user ID. Please sign in again.");
+      return;
+    }
+
     const selectedDays = (values.days || [])
       .filter((d: any) => d.checked)
       .map((d: any) => d.label);
@@ -169,37 +177,30 @@ export default function PostJobApplicant({ applicantData }: any) {
         address: values.address,
         state: values.state,
         zipcode: values.zipcode,
-        
-        // if you also collect phone/email in the form you can pass them:
-        // email: values.email,
-        // tel: values.tel,
       },
       userID: agentUserId,
       job: {
         title: values.title,
         licenses: values.licenses,
-        // category: values.category,
         schedule: values.schedule,
         days: selectedDays,
         description: values.description,
       },
       meta: {
-        createdBy: agentUserId, // agent user id for metadata
-        applicantId: id, // twilio lead id
-        hash: userData?.hash,
-        geocode: userData.geocode_address,
-        // existingAccount:applicantData.existingAccount,
+        createdBy: agentUserId,
+        applicantId: id,
+        hash: userData?.hash ?? null,
+        geocode: userData?.geocode_address ?? null,
         draft: false,
       },
     };
 
-      // console.log(payload)
     try {
       const res = await privateApi.post(
         `/api/v1/providers/jumpstart/agent-post-job`,
         payload
       );
-      console.log(res.data)
+      console.log(res.data);
       if (!res?.data?.ok) {
         setSubmitError(res?.data?.error || "Failed to post job.");
         return;
@@ -214,12 +215,7 @@ export default function PostJobApplicant({ applicantData }: any) {
 
       // --------- Build SMS + send to provider ----------
       try {
-        // choose the best phone you have
-        // 1) from form (if you add it)
-        // 2) from candidate object (if you have it)
-        // 3) from userData fallback
         const phoneFromForm = values.tel;
-
         const toPhone = phoneFromForm;
 
         if (toPhone && jobId) {
@@ -246,7 +242,6 @@ export default function PostJobApplicant({ applicantData }: any) {
           "Failed to send job preview SMS:",
           smsErr?.message || smsErr
         );
-        // we don't fail the whole flow – job is still created
         setSubmitError(
           "Job posted, but we couldn't send the SMS preview. You may need to resend manually."
         );
@@ -263,7 +258,6 @@ export default function PostJobApplicant({ applicantData }: any) {
         zipcode: "",
         title: "",
         licenses: [],
-        //   category: "",
         schedule: [],
         days: DAYS.map((d) => ({ ...d, checked: false })),
         description: initialContent,
@@ -273,7 +267,6 @@ export default function PostJobApplicant({ applicantData }: any) {
 
       router.push(`/agent/twilio/provider/${id}`);
     } catch (e: any) {
-      // console.log(e)
       console.error("AgentPostJob submit error:", e);
       setSubmitError(
         e?.response?.data?.error || e?.message || "Failed to post job."
@@ -302,6 +295,7 @@ export default function PostJobApplicant({ applicantData }: any) {
           <AlertDescription>{submitSuccess}</AlertDescription>
         </Alert>
       )}
+
       <div>
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6">
           {/* Job Details */}
@@ -441,16 +435,18 @@ export default function PostJobApplicant({ applicantData }: any) {
                 </label>
                 <input
                   type="number"
-                  id="last-name"
+                  id="tel"
                   className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   required
-                  {...register("tel")} // To connect with react-hook-form
+                  {...register("tel")}
                   onBlur={(e) => {
                     handleFieldUpdate(e.target.name, e.target.value);
-                  }} // To connect with react-hook-form
+                  }}
                 />
                 {errors?.tel && (
-                  <p className="text-red-500 text-xs">{errors?.tel.message}</p>
+                  <p className="text-red-500 text-xs">
+                    {String(errors?.tel.message)}
+                  </p>
                 )}
               </div>
             </div>
