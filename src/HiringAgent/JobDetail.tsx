@@ -251,7 +251,7 @@ export default function JobDetail() {
         </div>
 
         <div className="flex items-center gap-3">
-          {!job?.approve ? (
+          {!job?.approved ? (
             <ProviderApproveJobButton
               initialApproved={job.status === "provider_approved"}
               initialPaymentLink={paymentLink}
@@ -261,7 +261,7 @@ export default function JobDetail() {
             />
           ) : (
             <Button disabled className="w-full rounded-xl px-5 py-2.5">
-              Unable to approve
+              Approved
             </Button>
           )}
 

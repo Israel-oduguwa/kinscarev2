@@ -226,7 +226,7 @@ async function PublicJobDetails({ jobID }: { jobID: string }) {
     typeof job?._id === "string" ? job._id : job?._id?.toString?.() ?? "";
 
   console.log(job);
-  const paymentLink = `https//www.kinscare.org/add-payment/${job?.agentMeta?.applicantId}`
+  const paymentLink = `https//kinscare.org/add-payment/${job?.agentMeta?.applicantId}`
   return (
     <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
@@ -291,16 +291,16 @@ async function PublicJobDetails({ jobID }: { jobID: string }) {
 
             {/* Provider "Accept Job Post" button */}
             <div className="w-full max-w-xs">
-              {!job.approve ? (
+              {!job.approved ? (
                 <ProviderApproveJobButton
                   initialApproved={job.status === "provider_approved"}
                   initialPaymentLink={paymentLink}
                   // existingAccount={job.existingAccount}
                   jobId={jobIdString}                 />
               ) : (
-                <Button disabled className="w-full rounded-xl px-5 py-2.5">
-                  Unable to approve
-                </Button>
+                <p  className="text-sm font-semibold">
+                  Your Job is already approved, please contact kinscare agent for more details
+                </p>
               )}
             </div>
           </div>

@@ -332,7 +332,7 @@ export default function PostJobApplicant() {
                 <Controller
                   control={control}
                   name="licenses"
-                  render={({ field }) => (
+                  render={({ field }:any) => (
                     <MultiSelectField
                       name="licenses"
                       control={control}

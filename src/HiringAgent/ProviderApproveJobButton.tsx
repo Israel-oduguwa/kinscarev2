@@ -16,7 +16,7 @@ type Props = {
   jobId: string;
   initialApproved?: boolean;
   initialPaymentLink?: string | null;
-  phoneNumber: string;
+  phoneNumber?: string;
 };
 
 const ProviderApproveJobButton: React.FC<Props> = ({
@@ -210,10 +210,11 @@ const ProviderApproveJobButton: React.FC<Props> = ({
           {providerLink ? (
             <Button
               asChild
+              disabled
               className="w-full rounded-lg px-4 py-2 text-sm font-semibold shadow-sm"
             >
               <Link href={providerLink} target="_blank">
-                Verify payment now
+                Providers can Verify payment now
               </Link>
             </Button>
           ) : (
