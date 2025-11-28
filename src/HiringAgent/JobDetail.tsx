@@ -33,11 +33,12 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ApplicantsTab from "./JobApplicants";
 import RecommendedTab from "./JobRecommended";
+import ProviderApproveJobButton from "./ProviderApproveJobButton";
 
 // NEW: split components
 
-
-const API_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+const API_BASE =
+  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
 
 export function fmtDate(d?: string | Date | null) {
   if (!d) return "—";
@@ -74,10 +75,7 @@ export default function JobDetail() {
     () => (Array.isArray(job?.licenses) ? job.licenses : []),
     [job]
   );
-  const days = useMemo(
-    () => (Array.isArray(job?.days) ? job.days : []),
-    [job]
-  );
+  const days = useMemo(() => (Array.isArray(job?.days) ? job.days : []), [job]);
   const location = useMemo(() => {
     const c = job?.contacts || {};
     const city = c.city ? `${c.city}, ` : "";
@@ -194,7 +192,9 @@ export default function JobDetail() {
   const isClaimed = !!job.claimed;
   const createdAt = fmtDate(job.created);
   const applicantLinkId = job?.agentMeta?.applicantId || null;
-
+  const paymentLink = `https//www.kinscare.org/add-payment/${job?.agentMeta?.applicantId}`;
+  const jobIdString =
+    typeof job?._id === "string" ? job._id : job?._id?.toString?.() ?? "";
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-8">
       {/* Header Section */}
@@ -251,6 +251,20 @@ export default function JobDetail() {
         </div>
 
         <div className="flex items-center gap-3">
+          {!job?.approve ? (
+            <ProviderApproveJobButton
+              initialApproved={job.status === "provider_approved"}
+              initialPaymentLink={paymentLink}
+              phoneNumber={job?.contacts?.tel}
+              // existingAccount={job.existingAccount}
+              jobId={jobIdString}
+            />
+          ) : (
+            <Button disabled className="w-full rounded-xl px-5 py-2.5">
+              Unable to approve
+            </Button>
+          )}
+
           <Button
             variant="outline"
             onClick={() => window.history.back()}

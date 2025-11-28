@@ -363,7 +363,7 @@ export default function PostJobApplicant() {
                 <Controller
                   control={control}
                   name="schedule"
-                  render={({ field }) => (
+                  render={({ field }: any) => (
                     <MultiSelectField
                       name="schedule"
                       control={control}
@@ -396,7 +396,7 @@ export default function PostJobApplicant() {
                 <Controller
                   control={control}
                   name="days"
-                  render={({ field }) => (
+                  render={({ field }: any) => (
                     <div className="flex flex-wrap gap-3">
                       {(field.value || []).map((d: any, idx: number) => (
                         <label

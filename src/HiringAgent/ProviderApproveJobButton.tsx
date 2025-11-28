@@ -7,18 +7,22 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Confetti from "react-confetti";
 import Link from "next/link";
+import { useApiClient } from "@/hooks/useApiClient";
 
-const API_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+const API_BASE =
+  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
 
 type Props = {
   jobId: string;
   initialApproved?: boolean;
   initialPaymentLink?: string | null;
+  phoneNumber: string;
 };
 
 const ProviderApproveJobButton: React.FC<Props> = ({
   jobId,
   initialApproved = false,
+  phoneNumber,
   initialPaymentLink = null,
 }) => {
   const router = useRouter();
@@ -29,11 +33,12 @@ const ProviderApproveJobButton: React.FC<Props> = ({
   const [showCelebration, setShowCelebration] = useState(initialApproved);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [providerLink, setProviderLink] = useState(initialPaymentLink);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
   const role = (user?.publicMetadata?.role as string) || null;
   const isAdmin = role === "admin";
-
+  const { privateApi } = useApiClient();
   // Disable button if already approved
   const disableButton = initialApproved || showCelebration;
 
@@ -75,6 +80,36 @@ const ProviderApproveJobButton: React.FC<Props> = ({
         null;
 
       setProviderLink(link);
+      //send the SMS
+      // --------- Build SMS + send to provider ----------
+      try {
+        if (phoneNumber) {
+          const messageBody =
+            `Thanks for approving your job post on KinsCare.\n\n` +
+            `To finalize your caregiver match, please secure your payment using this secure link:\n` +
+            `${initialPaymentLink}\n\n` +
+            `If you have any questions, reply to this message.`;
+
+          const sms_payload = {
+            body: messageBody,
+            to: phoneNumber,
+            country: "US",
+          };
+
+          await privateApi.post(`/api/v1/twilio/sms/send`, sms_payload);
+        } else {
+          console.warn("No phone available to send job preview SMS.");
+        }
+      } catch (smsErr: any) {
+        console.error(
+          "Failed to send job preview SMS:",
+          smsErr?.message || smsErr
+        );
+        setSubmitError(
+          "Job posted, but we couldn't send the SMS preview. You may need to resend manually."
+        );
+      }
+
       setShowCelebration(true);
       router.refresh?.();
     } catch (err: any) {
