@@ -15,14 +15,8 @@ function AgentAuth({ children }: AgentAuthProps) {
 
   const { isLoaded: isAuthLoaded, isSignedIn } = useAuth();
   const { isLoaded: isUserLoaded, user } = useUser();
-  const {
-    contactData,
-    status,
-    isLoading,
-    isRefreshing,
-    error,
-    refreshData,
-  } = useAuthContext();
+  const { contactData, status, isLoading, isRefreshing, error, refreshData } =
+    useAuthContext();
 
   const [isRedirecting, setIsRedirecting] = useState(false);
 
@@ -69,7 +63,8 @@ function AgentAuth({ children }: AgentAuthProps) {
   }, [contactData, isAgentOrAdmin]);
 
   const isClerkLoading = !isAuthLoaded || !isUserLoaded;
-  const waitingForContactData = isLoading || (status !== "success" && !contactData);
+  const waitingForContactData =
+    isLoading || (status !== "success" && !contactData);
 
   // Show error state
   if (error) {
@@ -95,7 +90,7 @@ function AgentAuth({ children }: AgentAuthProps) {
   }
 
   // Show skeleton while loading
-  if (isClerkLoading || isRedirecting || waitingForContactData) {
+  if (isClerkLoading || isRedirecting) {
     return <DashboardSkeleton />;
   }
 
