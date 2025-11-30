@@ -77,11 +77,11 @@ export default function Home() {
       <header className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 relative overflow-hidden">
         {/* Floating decorative elements */}
         <div className="absolute w-64 h-64 rounded-full bg-gradient-to-r from-indigo-200/30 to-rose-200/30 -top-32 -left-32 animate-[float_8s_ease-in-out_infinite]"></div>
-        <div className="absolute w-48 h-48 rounded-full bg-gradient-to-r from-amber-200/30 to-emerald-200/30 top-1/4 right-20 animate-[float_7s_ease-in-out_infinite_1s]"></div>
+        <div className="absolute w-48 h-48 rounded-full bg-linear-to-r from-amber-200/30 to-emerald-200/30 top-1/4 right-20 animate-[float_7s_ease-in-out_infinite_1s]"></div>
         <div className="absolute w-32 h-32 rounded-full bg-gradient-to-r from-rose-200/30 to-indigo-200/30 bottom-20 left-1/4 animate-[float_6s_ease-in-out_infinite_2s]"></div>
         <div className="absolute w-24 h-24 rounded-full bg-gradient-to-r from-emerald-200/30 to-amber-200/30 bottom-32 right-1/3 animate-[float_5s_ease-in-out_infinite_3s]"></div>
 
-        <div className="max-w-screen-xl mx-auto px-4 lg:px-4 ">
+        <div className="max-w-7xl mx-auto px-4 lg:px-4 ">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             {/* Text content */}
             <div className="relative pt-20 md:pt-40  z-10">
@@ -807,7 +807,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <FeaturesSection/>
+      {/* <FeaturesSection/> */}
       <section className="relative py-24 md:py-30 overflow-hidden bg-gradient-to-br from-gray-900 to-gray-950 dark:from-gray-900 dark:to-gray-950">
         {/* Decorative background elements */}
         <div className="absolute inset-0 z-0">

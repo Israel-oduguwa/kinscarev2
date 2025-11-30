@@ -21,6 +21,7 @@ import { useAuth } from "@clerk/nextjs";
 import CaregiverNavbarRight from "@/Caregivers/CaregiverNavbarRight";
 import ProviderNavbarRight from "@/Providers/ProviderNavbarRight";
 import AgentNavbarRight from "@/HiringAgent/AgentNavbarRight";
+import MigrationBanner from "@/Authentication/MigrationBanner";
 
 const menuItems = [
   { label: "Jobs", href: "/find-jobs" },
@@ -154,8 +155,9 @@ function Navbar() {
 
   return (
     <header>
-      <nav className="bg-white/60 z-50 backdrop-blur-md fixed top-0 w-full border-b border-gray-100 px-4 lg:px-6 py-3 transition-all duration-300 dark:bg-gray-800/60">
-        <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-2xl">
+      <nav className="bg-white/60 z-50 backdrop-blur-md fixed top-0 w-full border-b border-gray-100 transition-all duration-300 dark:bg-gray-800/60">
+        <MigrationBanner />
+        <div className="flex flex-wrap  px-4 lg:px-6 py-4 justify-between items-center mx-auto max-w-screen-2xl">
           {/* LEFT cluster (mobile signed-in: hamburger + logo) */}
           <div className="flex items-center mr-2 gap-2">
             {/* Hamburger on LEFT only when signed in (match dashboard) */}

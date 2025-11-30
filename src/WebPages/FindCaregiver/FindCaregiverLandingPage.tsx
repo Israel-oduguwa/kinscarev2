@@ -16,7 +16,9 @@ import Link from "next/link";
 
 const FindLandingPage = () => {
   return (
-    <div className="bg-white text-gray-900 pt-16 sm:pt-16"> {/* Added responsive padding-top to account for fixed/sticky navbar height (assuming ~64px/5rem on small, ~80px on larger; adjust values based on actual navbar height) */}
+    <div className="bg-white text-gray-900 pt-20 sm:pt-20">
+      {" "}
+      {/* Added responsive padding-top to account for fixed/sticky navbar height (assuming ~64px/5rem on small, ~80px on larger; adjust values based on actual navbar height) */}
       {/* ============== HERO ============== */}
       <section
         aria-label="Find caregivers hero"
@@ -41,7 +43,7 @@ const FindLandingPage = () => {
         <div className="relative z-10 h-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center text-center">
           <h1 className="text-white font-extrabold leading-tight tracking-tight text-4xl sm:text-5xl md:text-6xl">
             Find the{" "}
-            <span className="bg-[conic-gradient(var(--tw-gradient-stops))] from-yellow-400 via-red-500 to-pink-500 text-transparent bg-clip-text">
+            <span className="bg-conic from-yellow-400 via-red-500 to-pink-500 text-transparent bg-clip-text">
               Perfect Caregiver
             </span>
           </h1>
@@ -57,7 +59,6 @@ const FindLandingPage = () => {
           </p>
         </div>
       </section>
-
       {/* ============== VALUE BANNER ============== */}
       <section aria-label="KinsCare value banner" className="bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 md:py-16">
@@ -83,7 +84,6 @@ const FindLandingPage = () => {
           </div>
         </div>
       </section>
-
       {/* ============== VALUE PROPOSITION ============== */}
       <section aria-labelledby="vp-title" className="bg-white">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center py-10 md:py-14">
@@ -180,7 +180,6 @@ const FindLandingPage = () => {
           </div>
         </div>
       </section>
-
       {/* ============== WHY IT MATTERS ============== */}
       <section aria-labelledby="why-title" className="bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 md:py-14 grid md:grid-cols-1 gap-10">
@@ -283,7 +282,6 @@ const FindLandingPage = () => {
           </div>
         </div>
       </section>
-
       {/* ============== TESTIMONIALS ============== */}
       <section aria-labelledby="testimonials-title" className="bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
@@ -409,7 +407,6 @@ const FindLandingPage = () => {
           </div>
         </div>
       </section>
-
       {/* ============== HOW IT WORKS ============== */}
       <section aria-labelledby="how-title" className="bg-gray-100">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
@@ -514,7 +511,6 @@ const FindLandingPage = () => {
           </div>
         </div>
       </section>
-
       {/* ============== CTA ============== */}
       <section aria-label="Primary call to action" className="bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
@@ -534,14 +530,13 @@ const FindLandingPage = () => {
 
               <div className="flex flex-col sm:flex-row justify-center gap-3">
                 <Link href="/caregivers?shifts=Full+time&licenses=HCA">
-                 <button
-                  className="px-8 py-4 rounded-full font-semibold bg-white text-indigo-700 shadow-lg hover:shadow-xl hover:scale-[1.02] transition"
-                  aria-label="Search caregivers now"
-                >
-                  Search Caregivers Now
-                </button>
+                  <button
+                    className="px-8 py-4 rounded-full font-semibold bg-white text-indigo-700 shadow-lg hover:shadow-xl hover:scale-[1.02] transition"
+                    aria-label="Search caregivers now"
+                  >
+                    Search Caregivers Now
+                  </button>
                 </Link>
-               
               </div>
             </div>
           </div>
