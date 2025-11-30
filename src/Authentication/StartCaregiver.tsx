@@ -14,7 +14,7 @@ import {
   Phone,
   ShieldCheck,
   Users2,
-  Calendar,
+  Calendar, 
   MapPin,
   DollarSign,
   ChevronDown,
@@ -234,129 +234,9 @@ function StartCaregiver() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {/* Job Card 1 */}
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:border-indigo-100">
-              <div className="p-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900">Certified Nursing Assistant</h3>
-                    <div className="flex items-center mt-1">
-                      <Building2 className="w-4 h-4 text-gray-500 mr-1" />
-                      <span className="text-gray-600">Mercy General Hospital</span>
-                    </div>
-                  </div>
-                  <div className="bg-indigo-100 text-indigo-800 px-2.5 py-1 rounded-full text-xs font-bold">
-                    URGENT
-                  </div>
-                </div>
+        
 
-                <div className="flex flex-wrap gap-3 mt-6">
-                  <div className="flex items-center text-sm">
-                    <DollarSign className="w-4 h-4 text-gray-500 mr-1" />
-                    <span className="font-medium">$22 - $28/hr</span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <MapPin className="w-4 h-4 text-gray-500 mr-1" />
-                    <span className="font-medium">Seattle, WA</span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <Calendar className="w-4 h-4 text-gray-500 mr-1" />
-                    <span className="font-medium">Full-time</span>
-                  </div>
-                </div>
-
-                <div className="mt-6 flex justify-between items-center">
-                  <div className="text-xs text-gray-500">Posted 2 hours ago</div>
-                  <Link href="#" className="text-indigo-600 font-medium text-sm hover:text-indigo-800 flex items-center">
-                    Apply Now <ArrowRight className="ml-1 h-4 w-4" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Job Card 2 */}
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:border-indigo-100">
-              <div className="p-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900">Home Health Aide</h3>
-                    <div className="flex items-center mt-1">
-                      <Building2 className="w-4 h-4 text-gray-500 mr-1" />
-                      <span className="text-gray-600">Comfort Home Care</span>
-                    </div>
-                  </div>
-                  <div className="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full text-xs font-bold">
-                    FLEXIBLE
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-3 mt-6">
-                  <div className="flex items-center text-sm">
-                    <DollarSign className="w-4 h-4 text-gray-500 mr-1" />
-                    <span className="font-medium">$19 - $24/hr</span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <MapPin className="w-4 h-4 text-gray-500 mr-1" />
-                    <span className="font-medium">Bellevue, WA</span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <Calendar className="w-4 h-4 text-gray-500 mr-1" />
-                    <span className="font-medium">Part-time</span>
-                  </div>
-                </div>
-
-                <div className="mt-6 flex justify-between items-center">
-                  <div className="text-xs text-gray-500">Posted yesterday</div>
-                  <Link href="#" className="text-indigo-600 font-medium text-sm hover:text-indigo-800 flex items-center">
-                    Apply Now <ArrowRight className="ml-1 h-4 w-4" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Job Card 3 */}
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:border-indigo-100">
-              <div className="p-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900">Live-in Caregiver</h3>
-                    <div className="flex items-center mt-1">
-                      <Building2 className="w-4 h-4 text-gray-500 mr-1" />
-                      <span className="text-gray-600">Golden Years Senior Care</span>
-                    </div>
-                  </div>
-                  <div className="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full text-xs font-bold">
-                    ROOM & BOARD
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-3 mt-6">
-                  <div className="flex items-center text-sm">
-                    <DollarSign className="w-4 h-4 text-gray-500 mr-1" />
-                    <span className="font-medium">$3,200 - $3,800/mo</span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <MapPin className="w-4 h-4 text-gray-500 mr-1" />
-                    <span className="font-medium">Kirkland, WA</span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <Calendar className="w-4 h-4 text-gray-500 mr-1" />
-                    <span className="font-medium">Live-in</span>
-                  </div>
-                </div>
-
-                <div className="mt-6 flex justify-between items-center">
-                  <div className="text-xs text-gray-500">Posted 3 days ago</div>
-                  <Link href="#" className="text-indigo-600 font-medium text-sm hover:text-indigo-800 flex items-center">
-                    Apply Now <ArrowRight className="ml-1 h-4 w-4" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-12 text-center">
+          <div className="mt-2 text-center">
             <Link
               href="/find-jobs"
               className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-3.5 text-base font-semibold shadow-lg shadow-indigo-500/20 transition transform hover:-translate-y-0.5 duration-300"
