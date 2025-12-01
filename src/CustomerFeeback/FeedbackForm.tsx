@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useApiClient } from "@/hooks/useApiClient";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -44,11 +44,7 @@ export default function FeedbackForm({ onSubmit }: FeedbackFormProps) {
     e.preventDefault();
     if (!captchaToken) {
       setCaptchaError("Please verify the captcha.");
-      toast({
-        title: "Captcha required",
-        description: "Please complete the captcha before sending your message.",
-        variant: "destructive",
-      });
+      toast.error("Please complete the captcha before sending your message.");
       return;
     }
 
@@ -70,10 +66,9 @@ export default function FeedbackForm({ onSubmit }: FeedbackFormProps) {
           },
         }
       );
-
+      console.log(response);
       if (response.status === 200) {
-        toast({
-          title: "Feedback Sent!",
+        toast.success("Feedback Sent!", {
           description: "Your feedback has been successfully submitted.",
         });
         setFormData({ email: "", subject: "", message: "" }); // Reset form
@@ -83,11 +78,9 @@ export default function FeedbackForm({ onSubmit }: FeedbackFormProps) {
       }
     } catch (error) {
       console.error("Error submitting feedback:", error);
-      toast({
-        title: "Failed to Send Feedback",
+      toast.error("Failed to Send Feedback", {
         description:
           "There was an error submitting your feedback. Please try again later.",
-        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
@@ -95,15 +88,19 @@ export default function FeedbackForm({ onSubmit }: FeedbackFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      <div>
-        <h2 className="mb-0.5 text-gray-800 font-semibold">Contact Support</h2>
-        <p className="mb-2 text-sm text-gray-700">
-          Let us know how we can assist you. Fill out the form below to send us
-          a message.
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6 rounded-2xl  bg-white p-6 shadow-sm"
+    >
+      <div className="space-y-1">
+        <h2 className="text-xl font-semibold text-slate-900">
+          Contact Support
+        </h2>
+        <p className="text-sm text-slate-600">
+          Tell us how we can help. We typically reply within one business day.
         </p>
       </div>
-      <div>
+      <div className="space-y-2">
         <Label htmlFor="email">Your Email</Label>
         <Input
           id="email"
@@ -113,9 +110,10 @@ export default function FeedbackForm({ onSubmit }: FeedbackFormProps) {
           value={formData.email}
           onChange={handleInputChange}
           required
+          className="h-11"
         />
       </div>
-      <div>
+      <div className="space-y-2">
         <Label htmlFor="subject">Subject</Label>
         <Input
           id="subject"
@@ -125,9 +123,10 @@ export default function FeedbackForm({ onSubmit }: FeedbackFormProps) {
           value={formData.subject}
           onChange={handleInputChange}
           required
+          className="h-11"
         />
       </div>
-      <div>
+      <div className="space-y-2">
         <Label htmlFor="message">Your Message</Label>
         <Textarea
           id="message"
@@ -135,12 +134,13 @@ export default function FeedbackForm({ onSubmit }: FeedbackFormProps) {
           placeholder="Let us know how we can assist you..."
           value={formData.message}
           onChange={handleInputChange}
-          rows={4}
+          rows={5}
           required
+          className="resize-none"
         />
       </div>
       {recaptchaSiteKey ? (
-        <div className="space-y-1">
+        <div className="space-y-2">
           <ReCAPTCHA
             sitekey={recaptchaSiteKey}
             onChange={(token) => {
@@ -161,7 +161,7 @@ export default function FeedbackForm({ onSubmit }: FeedbackFormProps) {
       )}
       <Button
         type="submit"
-        className="w-full"
+        className="w-full h-11 font-semibold"
         disabled={isSubmitting || !captchaToken}
       >
         {isSubmitting ? (
