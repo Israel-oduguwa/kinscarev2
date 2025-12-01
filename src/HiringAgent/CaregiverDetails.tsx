@@ -17,6 +17,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import ProtectedCandidatesDetails from "@/Providers/Candidates/ProtectedCandidatesDetails";
 import { useParams } from "next/navigation";
+import { useApiClient } from "@/hooks/useApiClient";
 
 const TWILIO_BASE =
   "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio";
@@ -187,6 +188,7 @@ export default function CaregiverDetails() {
   const [caregiver, setCaregiver] = useState<any>(null);
   const [similarCaregivers, setSimilarCaregivers] = useState<any[]>([]);
   const params = useParams();
+  const {privateApi} =  useApiClient()
   const id = params?.id as string;
   const candidateID = id;
   // Endpoint (keep your existing one)

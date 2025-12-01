@@ -99,7 +99,6 @@ export const useInitialize = <TUser = any, TContact = any>(
 
     try {
       const token = await getToken();
-      console.log(token)
       if (!token) throw new Error("No Clerk token available");
 
       const res = await privateApi.get<GetUserDataResponse<TUser, TContact>>(
@@ -110,7 +109,6 @@ export const useInitialize = <TUser = any, TContact = any>(
           timeout: requestTimeoutMs,
         }
       );
-      console.log(res)
 
       const payload = res?.data;
 

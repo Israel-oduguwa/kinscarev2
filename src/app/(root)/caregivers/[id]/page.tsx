@@ -146,12 +146,7 @@ export async function generateMetadata({
           caregiver.profileImage || 'https://default-profile-image.com',
         ],
       },
-      script: [
-        {
-          type: 'application/ld+json',
-          children: JSON.stringify(jsonLd),
-        },
-      ],
+      
     };
   } catch (error) {
     console.error('Failed to fetch caregiver details for metadata', error);

@@ -108,7 +108,6 @@ export default function MatchedCaregivers({
         toast({
           title: "Caregiver added to interview!",
           description: `${caregiver.fname} ${caregiver.lname} has been added.`,
-          variant: "success",
         });
         setInterviewed((prev) => [...prev, caregiver.userID]);
         // Route immediately

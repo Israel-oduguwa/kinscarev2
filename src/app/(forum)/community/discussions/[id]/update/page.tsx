@@ -17,6 +17,7 @@ import ImageUpload from "@/components/ImageUpload";
 import ForumNavbar from "@/Forum/Navbar/ForumNavbar";
 import CategoryChipInput from "@/components/ui/CategoryChipInput";
 import ForumDynamicNavbar from "@/Forum/Navbar/ForumDynamicNavbar";
+import { useApiClient } from "@/hooks/useApiClient";
 
 const categories = [
   "Questions",
@@ -39,6 +40,7 @@ const Page = (props: { params: Promise<{ id: string }> }) => {
   const authData = useAuthContext()
   const { contactData }: any = authData
   const router = useRouter();
+  const {privateApi} = useApiClient();
   const { loginToast }: any = useCustomToast();
 
   useEffect(() => {
@@ -61,7 +63,7 @@ const Page = (props: { params: Promise<{ id: string }> }) => {
       }
     };
     fetchThread();
-  }, [user]);
+  }, [contactData]);
 
   const { mutate: createThread, isPending } = useMutation({
     mutationFn: async () => {

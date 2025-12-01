@@ -88,12 +88,7 @@ export async function generateMetadata(
             "https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444",
         ],
       },
-      script: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify(jsonLd),
-        },
-      ],
+      
     };
   } catch (error) {
     console.error("Failed to fetch job details for metadata", error);
