@@ -21,7 +21,7 @@ function ShareSocial({ slug, title }: any) {
   const currentURL = `https://kinscare.org/blog/${slug}`;
   return (
     <div className="mt-4">
-      <p className="font-semibold text-gray-900 mb-1">Share this article</p>
+      <p className="font-semibold text-gray-900 mb-4">Share this article</p>
       <div className="flex items-center gap-4">
         <FacebookShareButton title={title}  url={currentURL}>
           <FacebookIcon

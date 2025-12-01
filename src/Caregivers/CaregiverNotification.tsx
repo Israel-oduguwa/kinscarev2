@@ -34,7 +34,7 @@ function CaregiverNotification() {
         data.notifications.filter((notif: any) => !notif.read).length
       );
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       toast({
         title: "Error fetching notifications",
         description: "Failed to fetch notifications. Please try again later.",
@@ -57,7 +57,7 @@ function CaregiverNotification() {
       );
       setUnreadCount((count) => Math.max(count - 1, 0));
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       toast({
         title: "Error updating notification",
         description: "Unable to mark notification as read.",

@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 const PrivacyPolicy: React.FC = () => {
   return (
     <>
-      <Navbar />
+      
       <div className="max-w-4xl mt-10 mx-auto my-8 py-20 px-4">
         {/* Page Header */}
         <header>
@@ -695,7 +695,7 @@ const PrivacyPolicy: React.FC = () => {
           </p>
         </section>
       </div>
-      <Footer/>
+      
     </>
   );
 };

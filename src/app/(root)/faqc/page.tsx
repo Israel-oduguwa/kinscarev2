@@ -24,8 +24,7 @@ export const metadata: Metadata = {
 const FAQPage: React.FC = () => {
   return (
     <>
-      {/* Top Navbar */}
-      <Navbar />
+    
 
       {/* Main content with top margin */}
       <div className="mt-10">
@@ -321,8 +320,7 @@ const FAQPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Optional Footer */}
-      <Footer />
+    
     </>
   );
 };

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
 import { useApiClient } from "@/hooks/useApiClient";
+import ReCAPTCHA from "react-google-recaptcha";
 
 type FeedbackFormProps = {
   onSubmit?: (data: {
@@ -26,6 +27,10 @@ export default function FeedbackForm({ onSubmit }: FeedbackFormProps) {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaError, setCaptchaError] = useState<string | null>(null);
+
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
   const { privateApi } = useApiClient();
 
   const handleInputChange = (
@@ -37,6 +42,16 @@ export default function FeedbackForm({ onSubmit }: FeedbackFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!captchaToken) {
+      setCaptchaError("Please verify the captcha.");
+      toast({
+        title: "Captcha required",
+        description: "Please complete the captcha before sending your message.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     // Trigger the parent `onSubmit` if provided
@@ -48,7 +63,7 @@ export default function FeedbackForm({ onSubmit }: FeedbackFormProps) {
       // Use Axios to send the POST request to your API
       const response = await privateApi.post(
         "/api/v1/email/customer_feedback",
-        formData,
+        { ...formData, captchaToken },
         {
           headers: {
             "Content-Type": "application/json",
@@ -62,6 +77,7 @@ export default function FeedbackForm({ onSubmit }: FeedbackFormProps) {
           description: "Your feedback has been successfully submitted.",
         });
         setFormData({ email: "", subject: "", message: "" }); // Reset form
+        setCaptchaToken(null);
       } else {
         throw new Error("Something went wrong.");
       }
@@ -123,7 +139,31 @@ export default function FeedbackForm({ onSubmit }: FeedbackFormProps) {
           required
         />
       </div>
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
+      {recaptchaSiteKey ? (
+        <div className="space-y-1">
+          <ReCAPTCHA
+            sitekey={recaptchaSiteKey}
+            onChange={(token) => {
+              setCaptchaToken(token);
+              setCaptchaError(null);
+            }}
+            onExpired={() => setCaptchaToken(null)}
+          />
+          {captchaError && (
+            <p className="text-sm text-red-600">{captchaError}</p>
+          )}
+        </div>
+      ) : (
+        <p className="text-sm text-red-600">
+          Missing reCAPTCHA site key. Set NEXT_PUBLIC_RECAPTCHA_SITE_KEY in your
+          env.
+        </p>
+      )}
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={isSubmitting || !captchaToken}
+      >
         {isSubmitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

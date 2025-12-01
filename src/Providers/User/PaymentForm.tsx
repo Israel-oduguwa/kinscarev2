@@ -84,7 +84,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
       router.refresh();
       // Handle success or error response
       if (response.data.success) {
-        console.log("PaymentMethod ID updated successfully:", response.data);
+        // console.log("PaymentMethod ID updated successfully:", response.data);
       } else {
         throw new Error(
           response.data.message || "Failed to update PaymentMethod ID."

@@ -381,9 +381,9 @@ function QuoteEditor({
               const file = item.getAsFile();
               if (file) {
                 uploadFile(file).then((url) => {
-                  console.log(url);
+                  // console.log(url);
                   const { schema } = view.state;
-                  console.log(schema);
+                  // console.log(schema);
                   const node = schema.nodes.image.create({ src: url });
                   const transaction = view.state.tr.replaceSelectionWith(node);
                   view.dispatch(transaction);
@@ -531,7 +531,7 @@ function QuoteEditor({
       editor.commands.insertContent(quotedContent.content);
       setQuotedContent({ id: "", content: "" }); // Clear after use
     } else {
-      console.log("dont post");
+      console.log("don't post");
     }
   }, [quotedContent, postID, editor, setQuotedContent]);
 

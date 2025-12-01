@@ -42,14 +42,14 @@ export default function TwilioSignup() {
 
     return meta;
   }, [email, tempHash, twilioId, zipcode]);
-  console.log(unsafeMetadata)
+  // console.log(unsafeMetadata)
   // Debug log (remove in prod if needed)
   useEffect(() => {
-    console.log("Twilio Invite Detected:", { email, tempHash, twilioId, zipcode });
-    console.log("unsafeMetadata sent to Clerk:", unsafeMetadata);
+    // console.log("Twilio Invite Detected:", { email, tempHash, twilioId, zipcode });
+    // console.log("unsafeMetadata sent to Clerk:", unsafeMetadata);
   }, [unsafeMetadata]);
 
-  console.log(unsafeMetadata)
+  // console.log(unsafeMetadata)
   return (
      <div className="w-full min-h-screen bg-gray-100 dark:bg-inherit">
         {/* Header */}

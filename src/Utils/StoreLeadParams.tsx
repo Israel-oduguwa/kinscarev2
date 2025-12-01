@@ -16,7 +16,7 @@ export default function StoreLeadParams({
       if (email) localStorage.setItem("lead_email", email);
       if (phone) localStorage.setItem("lead_phone", phone);
 
-      console.log("✅ Lead data saved to localStorage");
+      // console.log("✅ Lead data saved to localStorage");
     } catch (error) {
       console.error("Failed to store lead data:", error);
     }

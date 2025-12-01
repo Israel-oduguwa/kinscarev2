@@ -1,19 +1,25 @@
 // app/blog/[slug]/page.tsx
 import React from "react";
-import Head from "next/head";
 import PostHeader from "@/Blog/PostHeader";
 import PostBody from "@/Blog/PostBody";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-// API Utility Functions
+// ---------- API Utility Functions ----------
 
 async function getAllPosts(): Promise<string[]> {
   try {
-    const res = await fetch("https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/blogs/get-blog-slugs");
+    const res = await fetch(
+      "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/blogs/get-blog-slugs",
+      {
+        cache: "no-store",
+      }
+    );
+
     if (!res.ok) {
       throw new Error("Failed to fetch blog slugs");
     }
+
     const data = await res.json();
     // Assume data is an array of slugs (strings)
     return data;
@@ -25,7 +31,13 @@ async function getAllPosts(): Promise<string[]> {
 
 async function getPostBySlug(slug: string) {
   try {
-    const res = await fetch(`https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/blogs/blog/${slug}`);
+    // console.log(slug, "this is slug");
+    const res = await fetch(
+      `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/blogs/blog/${slug}`,
+      {
+        cache: "no-store",
+      }
+    );
     if (!res.ok) {
       throw new Error("Failed to fetch post");
     }
@@ -37,10 +49,18 @@ async function getPostBySlug(slug: string) {
   }
 }
 
-// Page Component
+// ---------- Page Component ----------
 
-export default async function Page({ params }: { params: { slug: string } }) {
-  const response = await getPostBySlug(params.slug);
+// NOTE: params is now a Promise<{ slug: string }>
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params; // ✅ unwrap the Promise
+  // console.log(slug, "checking params");
+
+  const response = await getPostBySlug(slug);
   if (!response) {
     return notFound();
   }
@@ -48,7 +68,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
   const { blog, similarBlogs } = response;
   const canonicalUrl = `https://kinscare.org/blog/${blog.slug}`;
 
-  // Prepare structured data for rich results (JSON‑LD).
+  // Prepare structured data for rich results (JSON-LD).
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -74,33 +94,15 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
   return (
     <>
-      <Head>
-        {/* Basic Meta Tags */}
-        <title>{blog.title}</title>
-        <meta name="description" content={blog.excerpt} />
-        <link rel="canonical" href={canonicalUrl} />
-
-        {/* Open Graph */}
-        <meta property="og:title" content={blog.title} />
-        <meta property="og:description" content={blog.excerpt} />
-        <meta property="og:image" content={blog.featuredImage} />
-        <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:type" content="article" />
-
-        {/* Twitter Card */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={blog.title} />
-        <meta name="twitter:description" content={blog.excerpt} />
-        <meta name="twitter:image" content={blog.featuredImage} />
-
-        {/* JSON‑LD Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
-      </Head>
       <main>
         <article>
+          {/* JSON-LD Structured Data */}
+          <script
+            type="application/ld+json"
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+          />
+
           <PostHeader
             title={blog.title}
             slug={blog.slug}
@@ -120,13 +122,30 @@ export default async function Page({ params }: { params: { slug: string } }) {
   );
 }
 
-// generateMetadata for Next.js SSG/SSR
+// ---------- generateMetadata for Next.js SSG/SSR ----------
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const postResponse = await getPostBySlug(params.slug);
-  if (!postResponse) return notFound();
-  const blog = postResponse.blog;
+// NOTE: params is also a Promise here in Next 15/16
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params; // ✅ unwrap here as well
+
+  const postResponse = await getPostBySlug(slug);
+  // console.log(postResponse, "response");
+
+  if (!postResponse) {
+    // generateMetadata can't call notFound(), so return fallback metadata
+    return {
+      title: "Post not found | KinsCare",
+      description: "The requested blog post could not be found.",
+    };
+  }
+
+  const { blog } = postResponse;
   const canonicalUrl = `https://kinscare.org/blog/${blog.slug}`;
+
   return {
     title: blog.title,
     description: blog.excerpt,
@@ -149,7 +168,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-// generateStaticParams for SSG
+// ---------- generateStaticParams for SSG ----------
 
 export async function generateStaticParams() {
   const slugs = await getAllPosts();

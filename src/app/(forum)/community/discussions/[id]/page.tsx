@@ -157,12 +157,12 @@ export async function generateMetadata({
         description: sanitizedDescription,
         images: thread.imageUrl,
       },
-      script: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify(jsonLd),
-        },
-      ],
+      // script: [
+      //   {
+      //     type: "application/ld+json",
+      //     children: JSON.stringify(jsonLd),
+      //   },
+      // ],
     };
   } catch (error) {
     console.error("Failed to fetch data for metadata", error);

@@ -283,7 +283,7 @@ function AddPayment() {
     fetchApplicant();
   }, [twilioId]);
 
-  console.log(applicant?.existingAccount, applicant?.userID, twilioId);
+  // console.log(applicant?.existingAccount, applicant?.userID, twilioId);
 
   const handleCreatePaymentIntent = async () => {
     if (!applicant) return;
@@ -313,7 +313,7 @@ function AddPayment() {
         `${API_BASE}/jumpstart/verify_payment`,
         payload
       );
-      console.log(res.data);
+      // console.log(res.data);
       if (!res.data.ok || !res.data.data?.clientSecret) {
         setIntentError(
           res.data.message ||

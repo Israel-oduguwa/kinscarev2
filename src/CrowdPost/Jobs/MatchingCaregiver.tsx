@@ -15,7 +15,7 @@ function MatchingCaregiver({ jobID }: { jobID: string }) {
       const caregiver = await axios.get(
         `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/jobs/${jobID}/matching-caregivers`
       );
-      console.log(caregiver)
+      // console.log(caregiver)
       setMatchingCaregiver(caregiver.data.caregivers);
     } catch (error) {
       console.log(error);
@@ -29,7 +29,7 @@ function MatchingCaregiver({ jobID }: { jobID: string }) {
   }, [jobID])
   
   const availability = false;
-  console.log(matchingCaregivers, "matching")
+  // console.log(matchingCaregivers, "matching")
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
       {/* Map through your caregivers and display each card */}

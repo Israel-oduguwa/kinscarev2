@@ -16,7 +16,7 @@ export default function AfterSignInPage() {
     () => (user?.publicMetadata?.role as string | undefined) ?? null,
     [user]
   );
-  console.log(user)
+  // console.log(user)
   useEffect(() => {
     if (!isAuthLoaded || !isUserLoaded) return;
 

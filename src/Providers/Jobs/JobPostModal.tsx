@@ -190,7 +190,7 @@ const JobPostModal = ({ caregiver }: any) => {
         profileImage: userData?.profileImage,
         hash: userData?.hash,
       };
-      console.log(jobPayload);
+      // console.log(jobPayload);
       // Post the job
       await privateApi.post(
         "/api/v1/providers/post-job",
@@ -226,7 +226,7 @@ const JobPostModal = ({ caregiver }: any) => {
         `/api/v1/providers/settings/update/${userData.userID}`,
         profilePayload
       );
-      console.log(profile);
+      // console.log(profile);
       trackEvents(
         contactData?.hash,
         "Create Provider Profile",

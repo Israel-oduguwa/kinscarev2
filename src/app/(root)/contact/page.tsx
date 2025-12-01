@@ -34,11 +34,11 @@ export const metadata: Metadata = {
 const Contact = () => {
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <div className="mt-10">
         <ContactUs />
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

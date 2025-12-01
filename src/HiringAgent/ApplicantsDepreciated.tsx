@@ -98,7 +98,7 @@ export default function TwilioApplicantsPage() {
         const res = await privateApi.get("/api/v1/providers/jumpstart/get-twilio-applicants",
           { signal: controller.signal }
         );
-        console.log(res.data)
+        // console.log(res.data)
         const data = Array.isArray(res.data?.data) ? res.data.data : [];
         setApplicants(data);
       } catch (err: any) {

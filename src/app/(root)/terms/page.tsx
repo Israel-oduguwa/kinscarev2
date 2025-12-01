@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 const Terms = () => {
   return (
     <>
-    <Navbar/>
+   
     <div className="mt-10">
     <div className="  pt-20 pb-10 px-6 lg:px-8 max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Terms and Conditions</h1>
@@ -237,7 +237,7 @@ const Terms = () => {
         </section>
       </div>
     </div>
-      <Footer/>
+      
     </>
   );
 };

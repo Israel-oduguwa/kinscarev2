@@ -72,7 +72,7 @@ export default function InterviewingPage({ applicationId }: { applicationId: str
         caregiverId,
         removedBy:agentId,
       });
-      console.log(red)
+      // console.log(red)
       toast({ title: "Removed!", description: "Caregiver removed from interview list." });
       fetchCaregivers();
     } catch (e: any) {

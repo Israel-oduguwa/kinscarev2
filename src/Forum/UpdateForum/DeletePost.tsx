@@ -63,7 +63,7 @@ export default function DeletePost({
       });
     },
     onSuccess: (data: any) => {
-      console.log(data);
+      // console.log(data);
       close();
       // lets refresh the page to update the User interface
       // Which takes a lot of time to update

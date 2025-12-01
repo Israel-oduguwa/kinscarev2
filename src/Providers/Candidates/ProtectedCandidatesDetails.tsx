@@ -329,7 +329,7 @@ function ProtectedCandidatesDetails({
         "/api/v1/auth/crud-operation",
         payload,
       );
-      console.log(setReveal, "setReveal");
+      // console.log(setReveal, "setReveal");
       refreshData()
     } catch (error) {
       console.error("Error updating reveal status:", error);

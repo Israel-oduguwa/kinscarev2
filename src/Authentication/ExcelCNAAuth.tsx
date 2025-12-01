@@ -77,7 +77,7 @@ const ExcelCNASignupPage: React.FC = () => {
 
     buildMetadata();
   }, [searchParams]);
-  console.log(unsafeMetadata)
+  // console.log(unsafeMetadata)
   return (
     <>
       {/* Header + Page Shell */}

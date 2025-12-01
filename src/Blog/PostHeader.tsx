@@ -63,7 +63,7 @@ const ArticleHeader: React.FC<ArticleHeaderProps> = ({
         <div className="grid auto-rows-min items-center grid-cols-1 gap-y-8 lg:grid-cols-2 lg:gap-x-16 lg:gap-y-0">
           {/* Text Content */}
           <div className="max-w-3xl space-y-8">
-            <h1 className="text-3xl font-semibold tracking-tight leading-9 text-gray-700 dark:text-gray-100 sm:text-3xl lg:text-5xl">
+            <h1 className="text-3xl font-semibold tracking-tight text-gray-700 dark:text-gray-100 sm:text-3xl lg:text-5xl">
               {title}
             </h1>
 

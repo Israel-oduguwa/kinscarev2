@@ -36,7 +36,7 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ isOpen, onClose, platform }) 
       });
 
       if (response.ok) {
-        console.log('User rewarded successfully');
+        // console.log('User rewarded successfully');
       } else {
         console.error('Failed to reward the user');
       }

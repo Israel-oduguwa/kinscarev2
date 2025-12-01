@@ -182,7 +182,7 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
     attribution_name: attribution.name ?? null,
     api_base: API_BASE, // optional if you want server to know which API base
   };
-  console.log(unsafeMetadata)
+  // console.log(unsafeMetadata)
 
   // Narrative copy per use-case
   const headerTitle =

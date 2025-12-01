@@ -87,7 +87,7 @@ export const CandidatesProvider: React.FC<Props> = ({ children }) => {
       const response = await privateApi.get(
         `/api/v1/providers/caregivers/match/${userID}?page=${page}&limit=10`
       );
-      console.log(response.data)
+      // console.log(response.data)
       const data: CandidatesApiResponse = response.data;
       setCandidates(data.candidates);
       setTotalPages(data.totalPages);

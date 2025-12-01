@@ -50,7 +50,7 @@ export default async function DiscussionList({
 }) {
   const response = await getThreads(searchParams);
   const { page, pages } = response.pagination;
-  console.log(response.threads, "sjhs");
+  // console.log(response.threads, "sjhs");
   return (
     <div>
       <div className="mb-6">

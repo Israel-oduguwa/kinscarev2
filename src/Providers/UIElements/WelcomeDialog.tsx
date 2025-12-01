@@ -66,7 +66,7 @@ export default function WelcomeDialog() {
       setIsOpen(false);
     }
   };
-console.log(isOpen)
+// console.log(isOpen)
   return (
     <Dialog open={isOpen}>
       <DialogContent className="rounded-xl border  [&>button]:hidden border-gray-200  sm:max-w-xl animate-fade-in">

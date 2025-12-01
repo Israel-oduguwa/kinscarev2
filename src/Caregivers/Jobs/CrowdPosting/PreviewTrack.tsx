@@ -4,8 +4,8 @@ import { trackEvent } from "@/lib/mixpanelUtils";
 import React, { useContext, useEffect } from "react";
 
 function PreviewTrack({referrer_id}:any) {
-  const { user, userData }: any = useAuthContext();
-  console.log(userData)
+  const { userData, contactData }: any = useAuthContext();
+  // console.log(userData)
   useEffect(() => {
     const mixpanelPayload = {
       name: "Crowd Post",

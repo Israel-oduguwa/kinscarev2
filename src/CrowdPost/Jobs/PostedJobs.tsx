@@ -88,7 +88,7 @@ function PostedJobs() {
           `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/posted-jobs/${user?.customData?.hash}`
         );
         setJobs(response.data.jobs);
-        console.log(response.data.jobs);
+        // console.log(response.data.jobs);
         setError(null);
       } catch (error: any) {
         // toast({

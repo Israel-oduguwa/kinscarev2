@@ -1,7 +1,7 @@
 "use client";
 import axios from "axios";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Article {
   slug: string;
@@ -12,12 +12,11 @@ interface Article {
 function RelatedBlogPost({ threadID }: { threadID: string }) {
   const [similarArticles, setSimilarArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
   // Fetch Similar Articles
   const getSimilarArticles = async () => {
     setLoading(true);
     try {
-      const { data } = await privateApi.get(`/v1/blogs/get-article-similar-to-thread/${threadID}`
+      const { data } = await axios.get(`https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/blogs/get-article-similar-to-thread/${threadID}`
       );
       setSimilarArticles(data.similarArticles || []);
     } catch (error) {

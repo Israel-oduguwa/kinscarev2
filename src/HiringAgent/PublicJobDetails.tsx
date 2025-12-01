@@ -212,7 +212,7 @@ async function PublicJobDetails({ jobID }: { jobID: string }) {
   );
   const response = await data.json();
   const { job, similarJobs } = response;
-  console.log(job)
+  // console.log(job)
 
   const locationLine = [
     job?.contacts?.address ?? "",
@@ -225,7 +225,7 @@ async function PublicJobDetails({ jobID }: { jobID: string }) {
   const jobIdString =
     typeof job?._id === "string" ? job._id : job?._id?.toString?.() ?? "";
 
-  console.log(job);
+  // console.log(job);
   const paymentLink = `https//kinscare.org/add-payment/${job?.agentMeta?.applicantId}`
   return (
     <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">
