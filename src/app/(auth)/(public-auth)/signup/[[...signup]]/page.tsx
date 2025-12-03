@@ -122,6 +122,9 @@ function Page() {
                     "w-full max-w-lg bg-white shadow-xl rounded-2xl border border-gray-100 transition-all",
                 },
               }}
+              redirectUrl="/onboarding"
+              afterSignUpUrl="/onboarding"
+              afterSignInUrl="/after-sign-in"
             />
             <GoogleOneTap/>
             {/* Terms & Privacy */}

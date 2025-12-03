@@ -15,26 +15,38 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const endpoint =
-      evt.type === "user.deleted"
-        ? "/api/v1/auth/clerk/user_deleted"
-        : "/api/v1/auth/clerk/user_created";
-
-    const url = `${API_BASE.replace(/\/+$/, "")}/${endpoint.replace(/^\/+/, "")}`;
-
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ data: evt.data }),
-      // 10s timeout safeguard for hung upstreams
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw new Error(`Upstream responded ${res.status}: ${text}`);
+    switch (evt.type) {
+      case "user.created": {
+        const url = `${API_BASE.replace(/\/+$/, "")}/api/v1/auth/clerk/user_created`;
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ data: evt.data }),
+          cache: "no-store",
+        });
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          throw new Error(`Upstream responded ${res.status}: ${text}`);
+        }
+        break;
+      }
+      case "user.deleted": {
+        const url = `${API_BASE.replace(/\/+$/, "")}/api/v1/auth/clerk/user_deleted`;
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ data: evt.data }),
+          cache: "no-store",
+        });
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          throw new Error(`Upstream responded ${res.status}: ${text}`);
+        }
+        break;
+      }
+      default:
+        // ignore other event types
+        break;
     }
   } catch (err: any) {
     console.error("Webhook handling failed:", err?.message || err);
