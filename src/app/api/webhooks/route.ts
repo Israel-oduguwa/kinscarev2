@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
-import {
-  handleUserCreated,
-  handleUserDeleted,
-  handleUserUpdated,
-} from "@/lib/clerkWebhookHandlers";
+const API_BASE =
+  process.env.BACKEND_API_BASE ||
+  "https://jrp7pe2xhj.us-east-1.awsapprunner.com";
 
 export async function POST(req: NextRequest) {
   let evt: WebhookEvent;
@@ -17,19 +15,26 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    switch (evt.type) {
-      case "user.created":
-        await handleUserCreated(evt.data);
-        break;
-      case "user.updated":
-        await handleUserUpdated(evt.data);
-        break;
-      case "user.deleted":
-        await handleUserDeleted(evt.data);
-        break;
-      default:
-        // ignore unhandled events
-        break;
+    const endpoint =
+      evt.type === "user.deleted"
+        ? "/api/v1/auth/clerk/user_deleted"
+        : "/api/v1/auth/clerk/user_created";
+
+    const url = `${API_BASE.replace(/\/+$/, "")}/${endpoint.replace(/^\/+/, "")}`;
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ data: evt.data }),
+      // 10s timeout safeguard for hung upstreams
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`Upstream responded ${res.status}: ${text}`);
     }
   } catch (err: any) {
     console.error("Webhook handling failed:", err?.message || err);
