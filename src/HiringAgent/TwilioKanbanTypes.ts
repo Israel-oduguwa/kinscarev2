@@ -28,7 +28,7 @@ export const COLUMN_CONFIG: Record<
     subtitle: "Contacted & confirmed details",
   },
   post_job: {
-    title: "Post job",
+    title: "Posted job",
     subtitle: "Job selected or created",
   },
   add_payment: {
@@ -59,6 +59,16 @@ export type TwilioApplicantRaw = {
   existingAccount?: boolean;
   temp_hash?: string | null;
   userID?: string | null;
+
+  auth?: {
+    email?: string | null;
+    tel?: string | null;
+    role?: string | null;
+    mode?: string | null;
+    acquisition_channel?: string | null;
+    [key: string]: any;
+  };
+  mode?: string | null;
 
   jump_start?: any;
 
@@ -91,6 +101,8 @@ export type TwilioApplicantRaw = {
 
   contacted?: boolean;
   workflowStage?: ColumnKey | string;
+  jobCount?: number | null;
+  lastJobCreated?: string | null;
 
   // Job info
   jobCreatedByAgentId?: string | null;
@@ -151,4 +163,7 @@ export type Meta = {
 export type FiltersState = {
   search: string;
   hasAccount: "all" | "true" | "false";
+  source: "twilio" | "providers";
+  jobWindow: "any" | "3d" | "2w" | "4w";
+  postedJob: "all" | "true" | "false";
 };

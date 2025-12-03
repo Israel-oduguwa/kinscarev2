@@ -61,7 +61,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const params = await rawParams; // Await the params object
   const data = await fetch(
-    `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/caregivers/${params.id}`,
+    `http://localhost:8081/api/v1/providers/caregivers/${params.id}`,
     { cache: "no-cache" }
   );
   // console.log("Check Data", await data.json())

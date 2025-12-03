@@ -64,7 +64,7 @@ export default function AgentLayout({
 
   return (
     <AgentAuth>
-      <div className="min-h-screen flex bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="min-h-screen flex bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50">
         {/* Mobile Header */}
         <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-xl border-b border-slate-200 z-30 flex items-center justify-between px-4">
           <div className="flex items-center gap-3">

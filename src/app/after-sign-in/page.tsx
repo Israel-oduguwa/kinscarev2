@@ -16,6 +16,26 @@ export default function AfterSignInPage() {
     () => (user?.publicMetadata?.role as string | undefined) ?? null,
     [user]
   );
+  const onboardingComplete = useMemo(
+    () => user?.publicMetadata?.onboardingComplete === true,
+    [user]
+  );
+
+  const routeByRole = useMemo(
+    () =>
+      (r: string | null) => {
+        if (r === "admin") {
+          router.replace("/agent/twilio");
+          return true;
+        }
+        if (r === "caregiver" || r === "provider") {
+          router.replace("/vitae/jobs/all");
+          return true;
+        }
+        return false;
+      },
+    [router]
+  );
   // console.log(user)
   useEffect(() => {
     if (!isAuthLoaded || !isUserLoaded) return;
@@ -28,18 +48,11 @@ export default function AfterSignInPage() {
     if (didRedirectRef.current) return;
     didRedirectRef.current = true;
 
-    if (role === "provider") {
-      router.replace("/provider/candidates/all");
-      return;
-    }
-
-    if (role === "caregiver") {
-      router.replace("/vitae/jobs/all");
-      return;
-    }
+    // Route based on public metadata role when onboarding is done
+    if (onboardingComplete && routeByRole(role)) return;
 
     router.replace("/onboarding");
-  }, [isAuthLoaded, isUserLoaded, isSignedIn, role, router]);
+  }, [isAuthLoaded, isUserLoaded, isSignedIn, onboardingComplete, role, routeByRole, router]);
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-sky-50">

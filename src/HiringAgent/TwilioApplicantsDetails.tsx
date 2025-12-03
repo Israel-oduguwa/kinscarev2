@@ -43,7 +43,7 @@ import { Trash2 } from "lucide-react";
 import { useApiClient } from "@/hooks/useApiClient";
 
 const TWILIO_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio";
+  "http://localhost:8081/api/v1/twilio";
 
 function formatTel(raw?: string | null) {
   if (!raw) return "—";
@@ -89,6 +89,7 @@ function toIdString(id: any): string | null {
 export default function TwilioApplicantsDetails() {
   const params = useParams();
   const id = params?.id as string;
+  const isUserId = typeof id === "string" && id.startsWith("user_");
 
  const {userData} = useAuthContext();
   const agentUserId = userData?.userID;
@@ -114,7 +115,7 @@ export default function TwilioApplicantsDetails() {
   const [smsOk, setSmsOk] = useState<string | null>(null);
 
   const API_BASE =
-    "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+    "http://localhost:8081/api/v1/providers";
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [targetJob, setTargetJob] = useState<any>(null);
@@ -150,7 +151,11 @@ export default function TwilioApplicantsDetails() {
     setLoading(true);
     setErr(null);
     try {
-      const res = await axios.get(`${API_BASE}/jumpstart/applicant/${id}`);
+      const endpoint = isUserId
+        ? `${API_BASE}/jumpstart/provider/${id}`
+        : `${API_BASE}/jumpstart/applicant/${id}`;
+
+      const res = await axios.get(endpoint);
       const data = res.data?.data || null;
       setApplicant(data);
       setContacted(!!data?.contacted);

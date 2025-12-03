@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useApiClient } from "@/hooks/useApiClient";
 
 const API_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+  "http://localhost:8081/api/v1/providers";
 
 type Props = {
   jobId: string;

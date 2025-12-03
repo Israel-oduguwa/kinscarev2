@@ -65,9 +65,17 @@ function mapApplicantsToBoard(raw: TwilioApplicantRaw[]): BoardState {
   };
 
   raw.forEach((d:any) => {
-    const id = typeof d._id === "string" ? d._id : String(d._id);
+    const preferredId = d.userID || d.userId || d.id;
+    const fallbackId =
+      typeof d._id === "string" ? d._id : d._id != null ? String(d._id) : null;
+    const id = preferredId
+      ? String(preferredId)
+      : fallbackId || crypto.randomUUID?.() || Math.random().toString(36);
 
-    const isRegistered = !!d.existingAccount;
+    const auth = (d.auth || {}) as Record<string, any>;
+
+    const isRegistered =
+      !!d.existingAccount || auth.mode === "clerk" || auth.mode === "email";
     const contacted = !!d.contacted;
 
     const jump = d.jumpstart || {};
@@ -115,7 +123,11 @@ function mapApplicantsToBoard(raw: TwilioApplicantRaw[]): BoardState {
     // 3) Promote based on underlying facts (never downgrade)
 
     // If there is a job → at least post_job
-    if (!!d.jobId || !!d.post_job) {
+    const jobCount = typeof d.jobCount === "number" ? d.jobCount : null;
+    const lastJobCreated =
+      typeof d.lastJobCreated === "string" ? d.lastJobCreated : null;
+
+    if (!!d.jobId || !!d.post_job || (jobCount && jobCount > 0)) {
       advanceTo("post_job");
     }
 
@@ -143,16 +155,19 @@ function mapApplicantsToBoard(raw: TwilioApplicantRaw[]): BoardState {
     const applicant: Applicant = {
       ...d,
       _id: id,
-      email: d.email ?? null,
+      email: d.email ?? auth.email ?? null,
       phone:
         d.phone ??
+        auth.tel ??
         d.contact?.channel?.address ??
         (d.contact as any)?.channelAddress ??
         null,
       zipcode: d.zipcode ?? null,
-      source: d.source ?? "twilio",
-      channel: d.channel ?? "sms",
+      source: d.source ?? auth.acquisition_channel ?? "web",
+      channel: d.channel ?? "web",
       tags: d.tags ?? [],
+      jobCount: jobCount ?? undefined,
+      lastJobCreated: lastJobCreated ?? undefined,
 
       stage,
       contacted,
@@ -160,7 +175,10 @@ function mapApplicantsToBoard(raw: TwilioApplicantRaw[]): BoardState {
       addPayment,
       matchMade,
       verified: paymentVerified,
-      hasFreshJob: false, // can implement later
+      hasFreshJob:
+        !!lastJobCreated &&
+        Date.now() - new Date(lastJobCreated).getTime() <
+          14 * 24 * 60 * 60 * 1000,
       paymentNeeded,
       isRegistered,
     };
@@ -189,6 +207,9 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
   const [filters, setFilters] = React.useState<FiltersState>({
     search: "",
     hasAccount: "all",
+    source: "twilio",
+    jobWindow: "any",
+    postedJob: "all",
   });
 
   const [loading, setLoading] = React.useState<boolean>(false);
@@ -205,15 +226,37 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
       const params: Record<string, any> = {
         page: 1,
         limit: 50,
+        sort: "-created",
       };
 
       if (filters.search.trim()) params.search = filters.search.trim();
       if (filters.hasAccount !== "all") params.hasAccount = filters.hasAccount;
 
-      const res = await privateApi.get(
-        "/api/v1/providers/jumpstart/get-twilio-applicants",
-        { params }
-      );
+      let endpoint = "/api/v1/providers/jumpstart/get-twilio-applicants";
+
+      if (filters.source === "providers") {
+        endpoint = "/api/v1/providers/jumpstart/get-providers";
+        params.sort = "-lastJobCreated";
+
+        if (filters.postedJob !== "all") {
+          params.postedJob = filters.postedJob;
+        }
+
+        if (filters.jobWindow !== "any") {
+          const now = new Date();
+          const days =
+            filters.jobWindow === "3d"
+              ? 3
+              : filters.jobWindow === "2w"
+              ? 14
+              : 28;
+          const from = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+          params.jobFrom = from.toISOString();
+        }
+      }
+
+      const res = await privateApi.get(endpoint, { params });
+      console.log(res)
 
       const payload = res.data || {};
       const raw: TwilioApplicantRaw[] = payload.data || [];
@@ -227,7 +270,14 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [privateApi, filters.search, filters.hasAccount]);
+  }, [
+    privateApi,
+    filters.search,
+    filters.hasAccount,
+    filters.source,
+    filters.jobWindow,
+    filters.postedJob,
+  ]);
 
   React.useEffect(() => {
     fetchApplicants();
@@ -240,6 +290,21 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
 
   const handleHasAccountChange = (value: "all" | "true" | "false") => {
     setFilters((prev) => ({ ...prev, hasAccount: value }));
+  };
+
+  const handleSourceChange = (value: "twilio" | "providers") => {
+    setFilters((prev) => ({
+      ...prev,
+      source: value,
+    }));
+  };
+
+  const handleJobWindowChange = (value: "any" | "3d" | "2w" | "4w") => {
+    setFilters((prev) => ({ ...prev, jobWindow: value }));
+  };
+
+  const handlePostedJobChange = (value: "all" | "true" | "false") => {
+    setFilters((prev) => ({ ...prev, postedJob: value }));
   };
 
   // ---------- Remove helper (used by delete) ----------
@@ -773,6 +838,23 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
               <div className="flex items-center gap-2">
                 <Filter className="w-4 h-4 text-slate-400" />
                 <Select
+                  value={filters.source}
+                  onValueChange={(val: "twilio" | "providers") =>
+                    handleSourceChange(val)
+                  }
+                >
+                  <SelectTrigger className="h-9 w-40 text-xs">
+                    <SelectValue placeholder="Source" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="twilio">Twilio SMS</SelectItem>
+                    <SelectItem value="providers">Non-SMS providers</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Select
                   value={filters.hasAccount}
                   onValueChange={(val: "all" | "true" | "false") =>
                     handleHasAccountChange(val)
@@ -788,6 +870,43 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
                   </SelectContent>
                 </Select>
               </div>
+
+              {filters.source === "providers" && (
+                <>
+                  <Select
+                    value={filters.jobWindow}
+                    onValueChange={(val: "any" | "3d" | "2w" | "4w") =>
+                      handleJobWindowChange(val)
+                    }
+                  >
+                    <SelectTrigger className="h-9 w-44 text-xs">
+                      <SelectValue placeholder="Job activity" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="any">Any job date</SelectItem>
+                      <SelectItem value="3d">Jobs in last 3 days</SelectItem>
+                      <SelectItem value="2w">Jobs in last 2 weeks</SelectItem>
+                      <SelectItem value="4w">Jobs in last 4 weeks</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    value={filters.postedJob}
+                    onValueChange={(val: "all" | "true" | "false") =>
+                      handlePostedJobChange(val)
+                    }
+                  >
+                    <SelectTrigger className="h-9 w-40 text-xs">
+                      <SelectValue placeholder="Job posts" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All providers</SelectItem>
+                      <SelectItem value="true">Has job posts</SelectItem>
+                      <SelectItem value="false">No job posts</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </>
+              )}
 
               <Button
                 variant="outline"

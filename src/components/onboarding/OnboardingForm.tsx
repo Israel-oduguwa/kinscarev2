@@ -7,8 +7,9 @@ import { UserRound, MapPin, ChevronDown, Check, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { completeOnboarding } from "@/lib/actions";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
-type RoleValue = "" | "provider" | "caregiver";
+type RoleValue = "" | "provider" | "caregiver" | "admin";
 
 const ROLE_OPTIONS: {
   value: Exclude<RoleValue, "">;
@@ -204,6 +205,40 @@ export default function OnboardingForm() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [roleError, setRoleError] = React.useState<string | null>(null);
   const router = useRouter();
+  const { user } = useUser();
+  const autoRoutedRef = React.useRef(false);
+
+  const routeByRole = React.useCallback(
+    (userRole: RoleValue | null | undefined) => {
+      switch (userRole) {
+        case "caregiver":
+          router.push("/vitae/jobs/all");
+          return true;
+        case "provider":
+          router.push("/provider/candidates/all");
+          return true;
+        case "admin":
+          router.push("/agent/twilio");
+          return true;
+        default:
+          return false;
+      }
+    },
+    [router]
+  );
+
+  React.useEffect(() => {
+    if (autoRoutedRef.current) return;
+    const pm = (user?.publicMetadata || {}) as Record<string, any>;
+    if (pm.onboardingComplete === true) {
+      autoRoutedRef.current = true;
+      const roleToRoute = (pm.role as RoleValue | undefined) || role || undefined;
+      if (!routeByRole(roleToRoute)) {
+        router.push("/");
+      }
+    }
+  }, [user, role, routeByRole, router]);
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!role) {
@@ -220,18 +255,15 @@ export default function OnboardingForm() {
     };
     const res = await completeOnboarding(formData);
     if (res.success) {
-      // we send the Tracking Data's GTM, mixpanel and email it might be from the server
+      await user?.reload();
+      const roleToRoute =
+        ((user?.publicMetadata || {}) as Record<string, any>).role ||
+        (res.role as RoleValue | undefined) ||
+        role ||
+        undefined;
 
-      //   send a good toast message
-      // Route the user to their Dashboards
-      switch (res.role) {
-        case "caregiver":
-          router.push("/vitae/jobs/all");
-        case "provider":
-          router.push("/vitae/jobs/all");
-          break;
-        default:
-          break;
+      if (!routeByRole(roleToRoute)) {
+        router.push("/");
       }
     }
     setIsLoading(false);
