@@ -21,7 +21,7 @@ type JobDoc = {
   contacts?: { zipcode?: string; state?: string; city?: string };
 };
 
-const API_BASE = ""https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+const API_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
 
 function toIdString(id: any): string {
   if (!id) return "";

@@ -107,7 +107,7 @@ const CandidatesCard = ({ similarCaregivers }: any) => {
 
 async function CandidateDetails({ candidateID }: { candidateID: string }) {
   let data = await fetch(
-    `"https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/caregivers/${candidateID}`,
+    `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/caregivers/${candidateID}`,
     { cache: "no-cache" }
   );
   const response: any = await data.json();

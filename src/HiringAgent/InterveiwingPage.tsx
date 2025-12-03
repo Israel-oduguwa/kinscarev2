@@ -12,7 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { format } from "date-fns";
 import { useApiClient } from "@/hooks/useApiClient";
 
-const API_BASE = ""https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/jumpstart";
+const API_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/jumpstart";
 
 export default function InterviewingPage({ applicationId }: { applicationId: string }) {
  const {userData} = useAuthContext();

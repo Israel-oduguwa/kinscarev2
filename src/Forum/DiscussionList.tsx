@@ -11,7 +11,7 @@ const ITEMS_PER_PAGE = 10;
 
 // async function getThreads(page: number, limit: number) {
 //   const response = await fetch(
-//     `"https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/threads?page=${page}&limit=${limit}`
+//     `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/threads?page=${page}&limit=${limit}`
 //   );
 //   return response.json();
 // }
@@ -34,7 +34,7 @@ async function getThreads(queryParams: {
     sortReplies,
     sortOrder = "desc",
   } = queryParams;
-  const url = `"https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/threads?page=${page}&limit=10${
+  const url = `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/threads?page=${page}&limit=10${
     sortReplies ? `&sortReplies=${sortReplies}` : ""
   }${popular ? "&popular=1" : ""}${category ? `&categories=${category}` : ""}${
     tags ? `&tags=${tags}` : ""

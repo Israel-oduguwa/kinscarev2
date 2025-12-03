@@ -146,7 +146,7 @@ const fetchJobs = async (
   page: number
 ): Promise<JobsApiResponse> => {
   const response = await fetch(
-    `"https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/jobs/${userId}?page=${page}`
+    `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/jobs/${userId}?page=${page}`
   );
   if (!response.ok) throw new Error("Error fetching jobs");
   return response.json();

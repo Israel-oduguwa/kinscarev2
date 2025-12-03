@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Clock, Flame } from "lucide-react";
 
-const API_URL = ""https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/blogs/all";
+const API_URL = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/blogs/all";
 
 interface Blog {
   _id: string;
