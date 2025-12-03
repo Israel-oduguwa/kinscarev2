@@ -11,7 +11,7 @@ import { useParams } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
 import { useApiClient } from "@/hooks/useApiClient";
 
-const BASEURL = "http://localhost:8081";
+const BASEURL = ""https://jrp7pe2xhj.us-east-1.awsapprunner.com";
 
 // ------------------------
 // Custom Block Parsers

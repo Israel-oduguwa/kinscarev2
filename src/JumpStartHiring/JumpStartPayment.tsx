@@ -92,7 +92,7 @@ const JumpStartPayment: React.FC<JumpStartPaymentProps> = ({
     };
 
     const res = await privateApi.post(
-      "http://localhost:8081/api/v1/auth/crud-operation",
+      ""https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/crud-operation",
       payload,
       { headers: { "Content-Type": "application/json" } }
     );
@@ -140,7 +140,7 @@ const JumpStartPayment: React.FC<JumpStartPaymentProps> = ({
     };
 
     const res = await privateApi.post(
-      "http://localhost:8081/api/v1/auth/crud-operation",
+      ""https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/crud-operation",
       payload,
       { headers: { "Content-Type": "application/json" } }
     );
@@ -160,7 +160,7 @@ const JumpStartPayment: React.FC<JumpStartPaymentProps> = ({
   }) => {
     try {
       await axios.post(
-        "http://localhost:8081/api/v1/email/jumpstart/payment-confirmation",
+        ""https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/email/jumpstart/payment-confirmation",
         { email, first_name }
       );
     } catch (e) {

@@ -18,7 +18,7 @@ import { SignUp, useUser } from "@clerk/nextjs";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { WhatsappIcon, WhatsappShareButton } from "next-share";
 
-const CROWDPOST_URL = "http://localhost:8081/api/v1/providers/crowd-post";
+const CROWDPOST_URL = ""https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/crowd-post";
 
 const groupLicenses = [
   { label: "CNA", value: "CNA or NAC" },
@@ -168,7 +168,7 @@ const CreateJobNewUser: React.FC<any> = ({ jobID, type, job }) => {
       // Send referral SMS
       if (type === "new" && result.data.referralLink) {
         await axios.post(
-          "http://localhost:8081/api/v1/twilio/send-referrred-provider-sms",
+          ""https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio/send-referrred-provider-sms",
           {
             type: "referral_drip",
             providerPhone: result.data.jobData?.phone_number,

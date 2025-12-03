@@ -43,7 +43,7 @@ import { Trash2 } from "lucide-react";
 import { useApiClient } from "@/hooks/useApiClient";
 
 const TWILIO_BASE =
-  "http://localhost:8081/api/v1/twilio";
+  ""https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio";
 
 function formatTel(raw?: string | null) {
   if (!raw) return "—";
@@ -115,7 +115,7 @@ export default function TwilioApplicantsDetails() {
   const [smsOk, setSmsOk] = useState<string | null>(null);
 
   const API_BASE =
-    "http://localhost:8081/api/v1/providers";
+    ""https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [targetJob, setTargetJob] = useState<any>(null);

@@ -89,7 +89,7 @@ export default function AdminBlogList() {
   const deleteBlog = async (blogId: string) => {
     setDeletingBlog(blogId);
     try {
-      await axios.delete(`http://localhost:8081/api/v1/blogs/delete/${blogId}`);
+      await axios.delete(`"https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/blogs/delete/${blogId}`);
       setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog._id !== blogId));
      
     } catch (error) {

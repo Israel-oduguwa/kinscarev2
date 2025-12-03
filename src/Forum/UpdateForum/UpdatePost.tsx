@@ -47,7 +47,7 @@ export default function UpdatePost({
     //   console.log(replyEndPoint)
       // console.log("jo");
       const { data } = await axios.put(
-        `http://localhost:8081/api/${usage === "comments" ? replyEndPoint : postEndPoint}`,
+        `"https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/${usage === "comments" ? replyEndPoint : postEndPoint}`,
         payload
       );
       //   console.log(data)

@@ -73,7 +73,7 @@ export async function generateMetadata({
   // Attempt to enrich description from your API (best-effort; safe on failure)
   try {
     const response = await fetch(
-      `http://localhost:8081/api/v1/providers/find-caregivers/filter?availability=${encodeURIComponent(
+      `"https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/find-caregivers/filter?availability=${encodeURIComponent(
         shifts
       )}&licenses=${encodeURIComponent(licenses)}&page=${encodeURIComponent(
         page

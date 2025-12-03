@@ -362,7 +362,7 @@ export default async function Caregivers({
     if (zipcode) params.set("zipcode", zipcode); // <-- add
 
     const res = await fetch(
-      `http://localhost:8081/api/v1/providers/find-caregivers/filter?${params.toString()}`,
+      `"https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/find-caregivers/filter?${params.toString()}`,
       { cache: "no-cache" }
     );
 
