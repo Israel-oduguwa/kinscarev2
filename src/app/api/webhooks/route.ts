@@ -17,7 +17,10 @@ export async function POST(req: NextRequest) {
   try {
     switch (evt.type) {
       case "user.created": {
-        const url = `${API_BASE.replace(/\/+$/, "")}/api/v1/auth/clerk/user_created`;
+        const url = `${API_BASE.replace(
+          /\/+$/,
+          ""
+        )}/api/v1/auth/clerk/user_created`;
         const res = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -31,7 +34,10 @@ export async function POST(req: NextRequest) {
         break;
       }
       case "user.deleted": {
-        const url = `${API_BASE.replace(/\/+$/, "")}/api/v1/auth/clerk/user_deleted`;
+        const url = `${API_BASE.replace(
+          /\/+$/,
+          ""
+        )}/api/v1/auth/clerk/user_deleted`;
         const res = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -42,6 +48,10 @@ export async function POST(req: NextRequest) {
           const text = await res.text().catch(() => "");
           throw new Error(`Upstream responded ${res.status}: ${text}`);
         }
+        break;
+      }
+      case "user.updated": {
+        console.log("User updated event received");
         break;
       }
       default:
