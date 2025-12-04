@@ -45,6 +45,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
+import ProviderPostJobBanner from "./ProviderPostJobBanner";
 
 export function EmployerAppSidebar({
   children,
@@ -228,7 +229,9 @@ export function EmployerAppSidebar({
       </Sidebar>
       <SidebarInset>
         {/* Header / Top Bar */}
-        <header className="sticky  top-0 z-30 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+       
+        <header className="sticky  top-0 z-30 bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
+         <ProviderPostJobBanner />
           <div className="flex  h-16 xl:h-14 items-center shrink-0 px-2 gap-2 transition-[height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
             {/* Sidebar Trigger (always visible) */}
             <SidebarTrigger className="-ml-1" />

@@ -110,6 +110,7 @@ export const useInitialize = <TUser = any, TContact = any>(
         }
       );
 
+        console.log(res)
       const payload = res?.data;
 
       // Ignore out-of-order responses

@@ -176,7 +176,7 @@ export default function OnboardingForm() {
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-200/20 dark:bg-purple-500/10 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="w-full max-w-md relative">
+      <div className="w-full max-w-lg relative">
         {/* Enhanced Brand Section */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}

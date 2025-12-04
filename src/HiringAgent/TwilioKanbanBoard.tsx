@@ -256,7 +256,7 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
       }
 
       const res = await privateApi.get(endpoint, { params });
-      console.log(res)
+      console.log(endpoint)
 
       const payload = res.data || {};
       const raw: TwilioApplicantRaw[] = payload.data || [];
@@ -265,6 +265,7 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
       setMeta(meta);
       setBoard(mapApplicantsToBoard(raw));
     } catch (err) {
+      console.log(err)
       console.error("Failed to fetch Twilio applicants", err);
       setError("Failed to load applicants. Please try again.");
     } finally {

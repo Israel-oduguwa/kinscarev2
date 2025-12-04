@@ -37,7 +37,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import { useApiClient } from "@/hooks/useApiClient";
 const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY || "");
 
-function ProviderDialog({ candidate, similar, detailsPage }: any) {
+function ProviderDialog({ candidate, similar, detailsPage, page }: any) {
   const authData = useAuthContext();
   const { userData, contactData, refreshData } = authData;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -137,8 +137,8 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
       onSuccess: async () => {
         setIsFavorite((prev) => !prev);
         try {
-          // refresh the data 
-          refreshData()
+          // refresh the data
+          refreshData();
           toast.success(
             isFavorite
               ? `Removed ${candidate.name} from Favorites`
@@ -158,7 +158,6 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
 
   // Sends SMS message to candidate
   const sendMessage = async () => {
-    
     setIsSending(true);
     try {
       // Send SMS
@@ -183,23 +182,20 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
       } else {
         closeDialog();
         // Send notification to caregiver
-        await privateApi.post(
-          "/api/v1/notifications/send",
-          {
-            type: "message_caregiver",
-            fromUserId: userData.userID,
-            toUserId: candidate.userID,
-            senderType: "caregiver",
-            message: `"You have a new message from ${userData.fname} ${userData.lname}`,
-            metadata: {
-              caregiverEmail: candidate.settings.email,
-              providerEmail: userData.settings.email,
-              providerFullName: `${userData.fname} ${userData.lname}`,
-              providerName: userData.name,
-              caregiverName: candidate.name,
-            },
-          }
-        );
+        await privateApi.post("/api/v1/notifications/send", {
+          type: "message_caregiver",
+          fromUserId: userData.userID,
+          toUserId: candidate.userID,
+          senderType: "caregiver",
+          message: `"You have a new message from ${userData.fname} ${userData.lname}`,
+          metadata: {
+            caregiverEmail: candidate.settings.email,
+            providerEmail: userData.settings.email,
+            providerFullName: `${userData.fname} ${userData.lname}`,
+            providerName: userData.name,
+            caregiverName: candidate.name,
+          },
+        });
       }
     } catch (error: any) {
       toast.error(
@@ -382,6 +378,7 @@ function ProviderDialog({ candidate, similar, detailsPage }: any) {
             openDialog();
           }}
           className="w-full lg:w-auto"
+          variant={page === "all" ? "outline" : "default"}
         >
           <span className="flex space-x-1 items-center gap-2">
             <Send size={16} /> Message{" "}

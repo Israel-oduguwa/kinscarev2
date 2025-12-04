@@ -174,7 +174,7 @@ const CandidatesCard = ({ candidate }: any) => {
         </div>
       </Link>
       <div className="md:absolute py-1 px-1 right-4 top-4">
-        <ProviderDialog candidate={candidate} />
+        <ProviderDialog page="all" candidate={candidate} />
       </div>
       {/* Dialog Box for Hire Action */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -242,7 +242,7 @@ function All() {
     fetchFilteredCandidatesData,
     selectedShifts,
     selectedLicenses,
-  }:any = useContext(CandidatesContext)!;
+  }: any = useContext(CandidatesContext)!;
   // console.log(candidates);
   // Shift and license options
   const shiftOptions = [
@@ -271,9 +271,13 @@ function All() {
                   <h1 className="text-xl font-bold tracking-tight">
                     {candidates.length} Caregivers Found
                   </h1>
-                  <p className=" text-gray-200 text-sm">
+                  {/* <p className=" text-gray-200 text-sm">
                     Explore a list of experienced caregivers ready to meet your
                     needs. Use the filters below to find the best match.
+                  </p> */}
+                  <p className=" text-gray-200 text-sm">
+                    Post your caregiver opening, and connect with local
+                    caregivers who match your needs
                   </p>
                 </div>
                 <div className="mb-1">
@@ -299,7 +303,12 @@ function All() {
                           onClick={handleSearch}
                           disabled={loading}
                         >
-                          {loading ? <Loader2 className="animate-spin" /> : <Search />} Search
+                          {loading ? (
+                            <Loader2 className="animate-spin" />
+                          ) : (
+                            <Search />
+                          )}{" "}
+                          Search
                         </Button>
                       </div>
                     </div>
@@ -311,7 +320,8 @@ function All() {
           <div className="pb-4">
             <Link href="/provider/job/update/new">
               <p className="text-red-500 text-sm flex gap-1 items-center">
-            Post your job now and let caregivers looking for work apply! <SquareArrowOutUpRight className="h-3.5 w-3.5" />
+                Post your job now and let caregivers looking for work apply!{" "}
+                <SquareArrowOutUpRight className="h-3.5 w-3.5" />
               </p>
             </Link>
           </div>
