@@ -28,7 +28,6 @@ const ROLE_OPTIONS: {
   },
 ];
 
-/** Headless custom selector with keyboard & ARIA */
 function RoleSelect({
   value,
   onChange,
@@ -38,163 +37,52 @@ function RoleSelect({
   onChange: (v: RoleValue) => void;
   error?: string | null;
 }) {
-  const [open, setOpen] = React.useState(false);
-  const [activeIndex, setActiveIndex] = React.useState<number>(-1);
-  const buttonRef = React.useRef<HTMLButtonElement | null>(null);
-  const listRef = React.useRef<HTMLUListElement | null>(null);
-
-  const selected = ROLE_OPTIONS.find((o) => o.value === value);
-
-  // Close on outside click
-  React.useEffect(() => {
-    function onDocClick(e: MouseEvent) {
-      if (!open) return;
-      const target = e.target as Node;
-      if (buttonRef.current?.contains(target)) return;
-      if (listRef.current?.contains(target)) return;
-      setOpen(false);
-      setActiveIndex(-1);
-    }
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
-  }, [open]);
-
-  // Keyboard interactions
-  function handleButtonKeyDown(e: React.KeyboardEvent<HTMLButtonElement>) {
-    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-      e.preventDefault();
-      setOpen(true);
-      setActiveIndex((idx) => {
-        if (idx === -1) return 0;
-        const next = e.key === "ArrowDown" ? idx + 1 : idx - 1;
-        return Math.max(0, Math.min(ROLE_OPTIONS.length - 1, next));
-      });
-    } else if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      setOpen((o) => !o);
-    }
-  }
-
-  function handleListKeyDown(e: React.KeyboardEvent<HTMLUListElement>) {
-    if (e.key === "Escape") {
-      e.preventDefault();
-      setOpen(false);
-      buttonRef.current?.focus();
-      return;
-    }
-    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-      e.preventDefault();
-      setActiveIndex((idx) => {
-        const next = e.key === "ArrowDown" ? idx + 1 : idx - 1;
-        return Math.max(0, Math.min(ROLE_OPTIONS.length - 1, next));
-      });
-    }
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      const opt = ROLE_OPTIONS[activeIndex];
-      if (opt) {
-        onChange(opt.value);
-        setOpen(false);
-        buttonRef.current?.focus();
-      }
-    }
-  }
-
   return (
     <div className="space-y-3">
       <label className="text-sm font-medium text-slate-700 dark:text-slate-200 flex items-center gap-2">
         <div className="p-1.5 rounded-lg bg-indigo-100 dark:bg-indigo-500/20">
           <UserRound className="h-4.5 w-4.5 text-indigo-600 dark:text-indigo-400" />
         </div>
-        I am a .....
+        Tell us why you are here
       </label>
 
-      <div className="relative group">
-        <button
-          ref={buttonRef}
-          type="button"
-          role="combobox"
-          aria-expanded={open}
-          aria-controls="role-listbox"
-          aria-haspopup="listbox"
-          aria-activedescendant={
-            activeIndex >= 0 ? `role-opt-${activeIndex}` : undefined
-          }
-          onKeyDown={handleButtonKeyDown}
-          onClick={() => setOpen((o) => !o)}
-          className="w-full h-12 rounded-2xl bg-white dark:bg-slate-800 border border-gray-200/80 dark:border-slate-700/80 px-4 pr-12 text-left text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200 group-hover:border-indigo-300 dark:group-hover:border-indigo-400 shadow-sm"
-        >
-          {selected ? (
-            <span className="block truncate">{selected.label}</span>
-          ) : (
-            <span className="text-slate-400 dark:text-slate-500">
-              Select your role
-            </span>
-          )}
-          <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 transition-transform duration-200 group-hover:scale-110">
-            <ChevronDown className="h-4 w-4" />
-          </span>
-        </button>
-
-        <AnimatePresence>
-          {open && (
-            <motion.ul
-              ref={listRef}
-              id="role-listbox"
-              role="listbox"
-              aria-label="Select role"
-              tabIndex={-1}
-              initial={{ opacity: 0, y: 8, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 6, scale: 0.98 }}
-              transition={{ duration: 0.12 }}
-              onKeyDown={handleListKeyDown}
-              className="absolute z-50 mt-2 w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl overflow-hidden"
+      <div className="grid gap-3">
+        {ROLE_OPTIONS.map((opt) => {
+          const isSelected = opt.value === value;
+          return (
+            <label
+              key={opt.value}
+              className={[
+                "flex items-start gap-3 rounded-2xl border px-4 py-3 cursor-pointer transition-all",
+                isSelected
+                  ? "border-indigo-500/70 bg-indigo-50/60 dark:bg-indigo-900/20 shadow-sm"
+                  : "border-gray-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500/60",
+              ].join(" ")}
             >
-              {ROLE_OPTIONS.map((opt, idx) => {
-                const isActive = idx === activeIndex;
-                const isSelected = opt.value === value;
-                return (
-                  <li
-                    id={`role-opt-${idx}`}
-                    key={opt.value}
-                    role="option"
-                    aria-selected={isSelected}
-                    onMouseEnter={() => setActiveIndex(idx)}
-                    onMouseDown={(e) => {
-                      // prevent button blur cancellation
-                      e.preventDefault();
-                    }}
-                    onClick={() => {
-                      onChange(opt.value);
-                      setOpen(false);
-                      buttonRef.current?.focus();
-                    }}
-                    className={[
-                      "cursor-pointer px-4 py-3 text-sm flex items-start justify-between gap-3 transition-colors",
-                      isActive ? "bg-indigo-50 dark:bg-indigo-900/20" : "",
-                    ].join(" ")}
-                  >
-                    <div>
-                      <div className="font-medium text-slate-900 dark:text-slate-100">
-                        {opt.label}
-                      </div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400">
-                        {opt.desc}
-                      </div>
-                    </div>
-                    {isSelected && (
-                      <Check className="h-4 w-4 mt-0.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
-                    )}
-                  </li>
-                );
-              })}
-            </motion.ul>
-          )}
-        </AnimatePresence>
-
-        {error ? <p className="mt-2 text-xs text-rose-600">{error}</p> : null}
+              <input
+                type="radio"
+                name="role"
+                value={opt.value}
+                checked={isSelected}
+                onChange={() => onChange(opt.value)}
+                className="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+              />
+              <div>
+                <div className="font-semibold text-slate-900 dark:text-slate-100">
+                  {opt.value === "caregiver"
+                    ? "I AM A CAREGIVER LOOKING FOR A JOB"
+                    : "I AM A PROVIDER SEARCHING FOR CAREGIVER(S)/NACs"}
+                </div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">
+                  {opt.desc}
+                </div>
+              </div>
+            </label>
+          );
+        })}
       </div>
+
+      {error ? <p className="mt-2 text-xs text-rose-600">{error}</p> : null}
     </div>
   );
 }
@@ -330,7 +218,7 @@ export default function OnboardingForm() {
                 Get Started
               </h2>
               <p className="text-sm text-slate-600 dark:text-slate-400">
-                Tell us about yourself to personalize your experience
+                Tell us why you are here so we can tailor your experience
               </p>
             </div>
 
