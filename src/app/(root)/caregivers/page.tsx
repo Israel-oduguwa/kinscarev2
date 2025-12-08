@@ -37,6 +37,7 @@ export async function generateMetadata({
     zipcode?: string;
     email?: string;
     phone?: string;
+    jumpstart?: string;
   }>;
 }): Promise<Metadata> {
   const params = await searchParams; // ✅ required in Next.js 16
@@ -189,6 +190,9 @@ interface PageProps {
     zipcode?: string;
     email?: string;
     phone?: string;
+    jumpstart?: string;
+    flowSid?: string;
+    executionSid?: string;
   }>;
 }
 
@@ -206,6 +210,9 @@ export default async function Page({ searchParams }: PageProps) {
     zipcode = "",
     email = "",
     phone = "",
+    jumpstart = "",
+    flowSid = "",
+    executionSid = "",
   } = params;
 
   // If coming from Twilio with only zipcode/email/phone, add defaults and preserve all params.
@@ -215,6 +222,8 @@ export default async function Page({ searchParams }: PageProps) {
     if (zipcode) qp.set("zipcode", zipcode);
     if (email) qp.set("email", email);
     if (phone) qp.set("phone", phone);
+    if (flowSid) qp.set("flowSid", flowSid);
+    if (executionSid) qp.set("executionSid", executionSid);
     if (page) qp.set("page", page ?? "1");
 
     qp.set("shifts", shifts || DEFAULT_SHIFTS);
@@ -244,7 +253,15 @@ export default async function Page({ searchParams }: PageProps) {
           licenses={licenses || DEFAULT_LICENSES}
           zipcode={zipcode}
         />
-        <JumpstartHiringModal source="twilio" email={email} phone={phone} />
+        <JumpstartHiringModal
+          source="twilio"
+          email={email}
+          phone={phone}
+          jumpstart={jumpstart}
+          zipcode={zipcode}
+          flowSid={flowSid}
+          executionSid={executionSid}
+        />
       </Suspense>
     </div>
   );

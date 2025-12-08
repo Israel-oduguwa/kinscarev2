@@ -9,8 +9,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Zap } from "lucide-react";
-import Link from "next/link";
+import { Loader2, Zap } from "lucide-react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 import * as React from "react";
 
 type Ms = number;
@@ -88,14 +89,25 @@ export default function JumpstartHiringModal({
   source,
   email,
   phone,
+  jumpstart,
+  zipcode,
+  flowSid,
+  executionSid,
 }: {
   source?: string;
   email?: string;
   phone?: string;
+  jumpstart?: string;
+  zipcode?: string;
+  flowSid?: string;
+  executionSid?: string;
 }) {
   const [open, setOpen] = React.useState(false);
+  const [submitting, setSubmitting] = React.useState(false);
+  const router = useRouter();
   const {userData}:any = useAuthContext()
   const isSignedIn  = userData
+  const forceShow = (jumpstart || "").toUpperCase() === "NO";
 
   // Plan: decide eligibility once on mount.
   React.useEffect(() => {
@@ -107,11 +119,24 @@ export default function JumpstartHiringModal({
     const fromTwilio = source === "twilio" || !!email || !!phone;
     if (!fromTwilio) return;
 
-    // Don’t show if already shown this session or signed in
-    if (sessionShown() || isSignedIn) return;
-
     const store = readStore();
     const t = now();
+
+    // Force show path (jumpstart=NO link) bypasses cooldown/session guard
+    if (forceShow && !isSignedIn) {
+      setOpen(true);
+      setSessionShown();
+      const newCount = (store.showCount || 0) + 1;
+      writeStore({
+        lastShownAt: now(),
+        showCount: newCount,
+        cooldownUntil: now() + nextAutoCooldown(newCount),
+      });
+      return;
+    }
+
+    // Don’t show if already shown this session or signed in
+    if (sessionShown() || isSignedIn) return;
 
     // Respect active cooldown
     if (store.cooldownUntil && t < store.cooldownUntil) return;
@@ -143,11 +168,43 @@ export default function JumpstartHiringModal({
     );
 
     return () => clearTimeout(timer);
-  }, [source, email, phone, isSignedIn]);
+  }, [source, email, phone, isSignedIn, forceShow]);
 
-  // CTA click → mark intent; navigation goes to apply route as you already had
-  const handleCtaClick = () => {
+  // CTA click → capture lead then route to apply
+  const handleCtaClick = async () => {
     writeStore({ lastCtaClickAt: now() });
+    setSubmitting(true);
+
+    const payload = {
+      email: email || "",
+      phone: phone || "",
+      zipcode: zipcode || "",
+      source: "twilio",
+      channel: "sms",
+      flowSid: flowSid || undefined,
+      executionSid: executionSid || undefined,
+      jump_start: true,
+      timestamp: new Date().toISOString(),
+      tags: ["findcaregiver", "yes-response", "qualified-caregiver"],
+      contact: {
+        channel: {
+          address: phone || "",
+        },
+      },
+    };
+
+    try {
+      await axios.post(
+        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/webhooks/twilio/capture-lead",
+        payload
+      );
+      localStorage.setItem(CONVERTED_KEY, "true");
+    } catch (error) {
+      console.error("Failed to capture jumpstart lead", error);
+    } finally {
+      setSubmitting(false);
+      router.push("/caregivers");
+    }
   };
 
   // “Maybe later” → shorter cooldown
@@ -201,16 +258,21 @@ export default function JumpstartHiringModal({
         </div>
 
         <DialogFooter className="mt-6">
-          <Link
-            href="/jumpstart-hiring/apply"
-            className="group inline-block w-full rounded-xl bg-gradient-to-r from-blue-500 to-sky-500 hover:from-blue-600 hover:to-sky-600 shadow-lg px-4 py-3.5 text-white font-bold text-base text-center transition-all duration-300 relative overflow-hidden"
+          <button
+            onClick={handleCtaClick}
+            disabled={submitting}
+            className="group inline-block w-full rounded-xl bg-linear-to-r from-blue-500 to-sky-500 hover:from-blue-600 hover:to-sky-600 shadow-lg px-4 py-3.5 text-white font-bold text-base text-center transition-all duration-300 relative overflow-hidden disabled:opacity-70"
           >
             <div className="relative z-10 flex items-center justify-center gap-2">
-              <Zap className="h-5 w-5 text-yellow-200 group-hover:animate-pulse" />
-              <span>Get Started — $175</span>
+              {submitting ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Zap className="h-5 w-5 text-yellow-200 group-hover:animate-pulse" />
+              )}
+              <span>{submitting ? "Working..." : "Get Started"}</span>
             </div>
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-sky-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </Link>
+            <div className="absolute inset-0 bg-linear-to-r from-blue-600 to-sky-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
