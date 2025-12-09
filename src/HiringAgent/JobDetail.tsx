@@ -192,7 +192,7 @@ export default function JobDetail() {
   const isClaimed = !!job.claimed;
   const createdAt = fmtDate(job.created);
   const applicantLinkId = job?.agentMeta?.applicantId || null;
-  const paymentLink = `https//www.kinscare.org/add-payment/${job?.agentMeta?.applicantId}`;
+  const paymentLink = `https://www.kinscare.org/add-payment/${job?.agentMeta?.applicantId}`;
   const jobIdString =
     typeof job?._id === "string" ? job._id : job?._id?.toString?.() ?? "";
   return (
@@ -201,7 +201,7 @@ export default function JobDetail() {
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
         <div className="space-y-4 flex-1">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+            <div className="h-12 w-12 bg-linear-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
               <Building2 className="h-6 w-6 text-white" />
             </div>
             <div>

@@ -222,7 +222,7 @@ export default function PostJobApplicant() {
           const jobUrl = `https://www.kinscare.org/job-post/${jobId}`;
 
           const message =
-            `Hi! KinsCare has created a caregiver job post for you.\n\n` +
+            `Hi! We have posted your caregiver job opening.\n\n` +
             `Title: ${job.title || "Caregiver job"}\n` +
             `Location: ${job.contacts?.zipcode || ""}\n\n` +
             `Review and approve your job here:\n${jobUrl}`;
