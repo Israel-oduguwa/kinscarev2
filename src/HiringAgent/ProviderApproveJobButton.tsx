@@ -87,8 +87,7 @@ const ProviderApproveJobButton: React.FC<Props> = ({
           const messageBody =
             `Thanks for approving your job post on KinsCare.\n\n` +
             `To finalize your caregiver match, please secure your payment using this secure link:\n` +
-            `${initialPaymentLink}\n\n` +
-            `If you have any questions, reply to this message.`;
+            `${initialPaymentLink}\n\n `;
 
           const sms_payload = {
             body: messageBody,
