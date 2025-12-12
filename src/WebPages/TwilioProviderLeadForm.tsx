@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CheckCircle2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 
 type ProviderTwilioLeadFormProps = {
@@ -39,9 +39,7 @@ export default function TwilioProviderLeadForm({
   const [phone, setPhone] = React.useState(initialPhone);
   const [zipcode, setZipcode] = React.useState(initialZipcode);
   const [error, setError] = React.useState<string | null>(null);
-  const [status, setStatus] = React.useState<"idle" | "submitting" | "success">(
-    "idle"
-  );
+  const [status, setStatus] = React.useState<"idle" | "submitting">("idle");
 
   const mergedTags = React.useMemo(() => {
     const base = ["provider", "twilio", "sms"];
@@ -94,7 +92,11 @@ export default function TwilioProviderLeadForm({
         throw new Error(`Request failed with status ${response.status}`);
       }
 
-      setStatus("success");
+      // Clear fields after successful submit
+      setEmail("");
+      setPhone("");
+      setZipcode("");
+      setStatus("idle");
       toast({
         title: "Success",
         description: "Provider has been added to the Twilio SMS flow.",
@@ -185,17 +187,6 @@ export default function TwilioProviderLeadForm({
                   <AlertDescription className="text-red-100">
                     {error}
                   </AlertDescription>
-                </Alert>
-              )}
-
-              {status === "success" && (
-                <Alert className="bg-emerald-500/10 border-emerald-500/40 text-emerald-100">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4" />
-                    <AlertDescription className="text-emerald-50">
-                      Lead captured. We&apos;ll follow up via SMS.
-                    </AlertDescription>
-                  </div>
                 </Alert>
               )}
 
