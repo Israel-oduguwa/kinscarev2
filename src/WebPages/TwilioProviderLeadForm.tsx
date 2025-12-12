@@ -17,6 +17,7 @@ type ProviderTwilioLeadFormProps = {
   executionSid?: string;
   source?: string;
   tags?: string[];
+  variant?: "standalone" | "dashboard";
 };
 
 const ENDPOINT =
@@ -34,12 +35,14 @@ export default function TwilioProviderLeadForm({
   executionSid,
   source,
   tags = [],
+  variant = "standalone",
 }: ProviderTwilioLeadFormProps) {
   const [email, setEmail] = React.useState(initialEmail);
   const [phone, setPhone] = React.useState(initialPhone);
   const [zipcode, setZipcode] = React.useState(initialZipcode);
   const [error, setError] = React.useState<string | null>(null);
   const [status, setStatus] = React.useState<"idle" | "submitting">("idle");
+  const isDashboard = variant === "dashboard";
 
   const mergedTags = React.useMemo(() => {
     const base = ["provider", "twilio", "sms"];
@@ -111,26 +114,42 @@ export default function TwilioProviderLeadForm({
 
   const isSubmitting = status === "submitting";
 
+  const outerClass = isDashboard
+    ? "max-w-4xl mx-auto space-y-8"
+    : "min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white py-16 px-4";
+  const textAccent = isDashboard ? "text-blue-600" : "text-cyan-300";
+  const headingColor = isDashboard ? "text-slate-900" : "text-white";
+  const subTextColor = isDashboard ? "text-slate-600" : "text-slate-300";
+  const cardClass = isDashboard
+    ? "bg-white border border-slate-200 shadow-sm text-slate-900"
+    : "bg-slate-900/70 border border-slate-800 shadow-2xl backdrop-blur text-white";
+  const cardDescriptionColor = isDashboard ? "text-slate-600" : "text-slate-300";
+  const labelColor = isDashboard ? "text-slate-700" : "text-slate-200";
+  const inputClass = isDashboard
+    ? ""
+    : "bg-slate-800 border-slate-700 text-white placeholder:text-slate-500";
+  const helperTextColor = isDashboard ? "text-slate-500" : "text-slate-400";
+
   return (
-    <main className="min-h-screen pt-56 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white py-16 px-4">
+    <div className={outerClass}>
       <div className="max-w-3xl mx-auto space-y-8">
         <div className="text-center space-y-3">
-          <p className="text-cyan-300 text-xs font-semibold tracking-widest uppercase">
+          <p className={`${textAccent} text-xs font-semibold tracking-widest uppercase`}>
             Twilio SMS Flow
           </p>
-          <h1 className="text-3xl md:text-4xl font-bold leading-tight">
+          <h1 className={`text-3xl md:text-4xl font-bold leading-tight ${headingColor}`}>
             Add a Provider to the SMS Flow
           </h1>
-          <p className="text-slate-300 max-w-2xl mx-auto">
+          <p className={`${subTextColor} max-w-2xl mx-auto`}>
             Capture a provider&apos;s contact details so we can enroll them into the
             Twilio SMS flow and keep the conversation going.
           </p>
         </div>
 
-        <Card className="bg-slate-900/70 border border-slate-800 shadow-2xl backdrop-blur text-white">
+        <Card className={cardClass}>
           <CardHeader>
             <CardTitle className="text-2xl">Provider contact</CardTitle>
-            <CardDescription className="text-slate-300">
+            <CardDescription className={cardDescriptionColor}>
               We&apos;ll send this info directly to the Twilio capture webhook.
             </CardDescription>
           </CardHeader>
@@ -138,7 +157,7 @@ export default function TwilioProviderLeadForm({
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-slate-200">
+                  <Label htmlFor="phone" className={labelColor}>
                     Phone number
                   </Label>
                   <Input
@@ -148,11 +167,11 @@ export default function TwilioProviderLeadForm({
                     placeholder="+1234567890"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
+                    className={inputClass}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="zipcode" className="text-slate-200">
+                  <Label htmlFor="zipcode" className={labelColor}>
                     Zipcode
                   </Label>
                   <Input
@@ -163,12 +182,12 @@ export default function TwilioProviderLeadForm({
                     placeholder="94105"
                     value={zipcode}
                     onChange={(e) => setZipcode(e.target.value)}
-                    className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
+                    className={inputClass}
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-200">
+                <Label htmlFor="email" className={labelColor}>
                   Email
                 </Label>
                 <Input
@@ -178,7 +197,7 @@ export default function TwilioProviderLeadForm({
                   placeholder="provider@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
+                  className={inputClass}
                 />
               </div>
 
@@ -205,7 +224,7 @@ export default function TwilioProviderLeadForm({
                 )}
               </Button>
 
-              <p className="text-xs text-slate-400">
+              <p className={`text-xs ${helperTextColor}`}>
                 We automatically pass flow and execution IDs from the URL when
                 provided, along with tags: {mergedTags.join(", ")}.
               </p>
@@ -213,6 +232,6 @@ export default function TwilioProviderLeadForm({
           </CardContent>
         </Card>
       </div>
-    </main>
+    </div>
   );
 }

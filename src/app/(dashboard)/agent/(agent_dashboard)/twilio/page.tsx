@@ -1,11 +1,24 @@
-import TwilioApplicantsPage from '@/HiringAgent/TwilioApplicantsPage'
-import React from 'react'
+import TwilioApplicantsPage from "@/HiringAgent/TwilioApplicantsPage";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Plus } from "lucide-react";
+import React from "react";
 
-function page() {
+function Page() {
   return (
-   <>
-   <TwilioApplicantsPage/></>
-  )
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Twilio Applicants</h1>
+        <Link href="/agent/twilio/add-provider">
+          <Button className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Add provider
+          </Button>
+        </Link>
+      </div>
+      <TwilioApplicantsPage />
+    </div>
+  );
 }
 
-export default page
+export default Page;
