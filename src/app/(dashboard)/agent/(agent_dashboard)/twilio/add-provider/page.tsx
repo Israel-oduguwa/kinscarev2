@@ -1,5 +1,8 @@
+"use client";
+
 import TwilioProviderLeadForm from "@/WebPages/TwilioProviderLeadForm";
 import { Metadata } from "next";
+import { useRouter } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Add Provider | Twilio SMS Flow",
@@ -23,6 +26,8 @@ type PageProps = {
 };
 
 export default function Page({ searchParams }: PageProps) {
+  const router = useRouter();
+
   const parsedTags =
     searchParams?.tags
       ?.split(",")
@@ -31,6 +36,7 @@ export default function Page({ searchParams }: PageProps) {
 
   return (
     <TwilioProviderLeadForm
+      variant="dashboard"
       initialEmail={searchParams?.email || ""}
       initialPhone={searchParams?.phone || ""}
       initialZipcode={searchParams?.zipcode || ""}
@@ -38,6 +44,7 @@ export default function Page({ searchParams }: PageProps) {
       executionSid={searchParams?.executionSid}
       source={searchParams?.source}
       tags={parsedTags}
+      onSuccess={() => router.back()}
     />
   );
 }

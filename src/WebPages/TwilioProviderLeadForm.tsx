@@ -1,13 +1,18 @@
 "use client";
 
 import * as React from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 type ProviderTwilioLeadFormProps = {
   initialEmail?: string;
@@ -18,6 +23,7 @@ type ProviderTwilioLeadFormProps = {
   source?: string;
   tags?: string[];
   variant?: "standalone" | "dashboard";
+  onSuccess?: () => void;
 };
 
 const ENDPOINT =
@@ -36,11 +42,11 @@ export default function TwilioProviderLeadForm({
   source,
   tags = [],
   variant = "standalone",
+  onSuccess,
 }: ProviderTwilioLeadFormProps) {
   const [email, setEmail] = React.useState(initialEmail);
   const [phone, setPhone] = React.useState(initialPhone);
   const [zipcode, setZipcode] = React.useState(initialZipcode);
-  const [error, setError] = React.useState<string | null>(null);
   const [status, setStatus] = React.useState<"idle" | "submitting">("idle");
   const isDashboard = variant === "dashboard";
 
@@ -55,10 +61,9 @@ export default function TwilioProviderLeadForm({
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(null);
 
     if (!email.trim() || !phone.trim() || !zipcode.trim()) {
-      setError("Phone, zipcode, and email are required.");
+      toast.error("Phone, zipcode, and email are required.");
       return;
     }
 
@@ -100,14 +105,14 @@ export default function TwilioProviderLeadForm({
       setPhone("");
       setZipcode("");
       setStatus("idle");
-      toast({
-        title: "Success",
-        description: "Provider has been added to the Twilio SMS flow.",
+      toast.success("Provider added to the SMS flow", {
+        description: "We’ll start the Twilio follow-up shortly.",
       });
+      onSuccess?.();
     } catch (err: any) {
       const message =
         err?.message || "Something went wrong while capturing this lead.";
-      setError(message);
+      toast.error("Failed to capture lead", { description: message });
       setStatus("idle");
     }
   };
@@ -200,14 +205,6 @@ export default function TwilioProviderLeadForm({
                   className={inputClass}
                 />
               </div>
-
-              {error && (
-                <Alert variant="destructive" className="bg-red-500/10 border-red-500/40">
-                  <AlertDescription className="text-red-100">
-                    {error}
-                  </AlertDescription>
-                </Alert>
-              )}
 
               <Button
                 type="submit"
