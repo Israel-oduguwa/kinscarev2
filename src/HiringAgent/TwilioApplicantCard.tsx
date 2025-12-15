@@ -201,7 +201,6 @@ const TwilioApplicantCard: React.FC<TwilioApplicantCardProps> = ({
           <Button
             variant="destructive"
             size="sm"
-            disabled
             className="text-[11px]"
             onClick={() => onDeleteSignup(applicant._id)}
           >
