@@ -362,8 +362,23 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
 
   // ---------- Toggle handlers ----------
 
+  const getProviderContext = React.useCallback(
+    (id: string) => {
+      const applicant = findApplicant(board, id);
+      const userId = applicant?.userID || (applicant as any)?.userId || null;
+      const isNonSms =
+        applicant?.source === "providers" ||
+        applicant?.channel === "providers" ||
+        filters.source === "providers";
+
+      return { applicant, userId, isNonSms };
+    },
+    [board, filters.source]
+  );
+
   // 1) Contacted toggle → Jobs ⇄ Confirmed
   const handleToggleContacted = (id: string, value: boolean) => {
+    const { userId, isNonSms } = getProviderContext(id);
     const targetStage: ColumnKey = value ? "confirmed" : "jobs";
     const revertStage: ColumnKey = value ? "jobs" : "confirmed";
 
@@ -378,13 +393,24 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
 
     (async () => {
       try {
-        await privateApi.post(
-          `/api/v1/providers/jumpstart/twilio-applicants/${id}/contacted`,
-          {
-            contacted: value,
-            agentId: agentId || undefined,
-          }
-        );
+        if (isNonSms) {
+          if (!userId) throw new Error("Missing userID for provider toggle");
+          await privateApi.patch(
+            `/api/v1/providers/jumpstart/providers/${userId}/contacted`,
+            {
+              contacted: value,
+              agentId: agentId || undefined,
+            }
+          );
+        } else {
+          await privateApi.post(
+            `/api/v1/providers/jumpstart/twilio-applicants/${id}/contacted`,
+            {
+              contacted: value,
+              agentId: agentId || undefined,
+            }
+          );
+        }
       } catch (err) {
         console.error("Failed to update contacted status", err);
         setDragError("Failed to save contacted status. Reverting.");
@@ -403,9 +429,9 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
 
   // 2) Post job toggle → Confirmed ⇄ Post job
   const handleTogglePostJob = (id: string, value: boolean) => {
+    const { applicant, userId, isNonSms } = getProviderContext(id);
     // Forward move only: validate job exists
     if (value) {
-      const applicant = findApplicant(board, id);
       const hasAgentJob =
         applicant?.agent_jobs && applicant.agent_jobs.length > 0;
       const hasJobId = !!applicant?.jobId;
@@ -435,13 +461,24 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
 
     (async () => {
       try {
-        await privateApi.post(
-          `/api/v1/providers/jumpstart/twilio-applicants/${id}/mark-provider-post-job`,
-          {
-            post_job: value,
-            agentId: agentId || undefined,
-          }
-        );
+        if (isNonSms) {
+          if (!userId) throw new Error("Missing userID for provider toggle");
+          await privateApi.patch(
+            `/api/v1/providers/jumpstart/providers/${userId}/post-job`,
+            {
+              post_job: value,
+              agentId: agentId || undefined,
+            }
+          );
+        } else {
+          await privateApi.post(
+            `/api/v1/providers/jumpstart/twilio-applicants/${id}/mark-provider-post-job`,
+            {
+              post_job: value,
+              agentId: agentId || undefined,
+            }
+          );
+        }
       } catch (err) {
         console.error("Failed to mark provider post job", err);
         setDragError("Failed to save post job status. Reverting.");
@@ -534,10 +571,10 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
   // 4) Match made toggle → Add payment ⇄ Match made
   const handleToggleMatchMade = (app: MatchApplicantPayload, value: boolean) => {
     const id = app.id;
+    const { applicant, userId, isNonSms } = getProviderContext(id);
 
     // Forward move only: validate payment verified
     if (value) {
-      const applicant = findApplicant(board, id);
       const paymentVerified = !!applicant?.jumpstart?.paymentVerified;
 
       if (!paymentVerified) {
@@ -565,20 +602,36 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
 
     (async () => {
       try {
-        // ✅ Save match on backend (backend may send SMS too)
-        await privateApi.post(
-          `/api/v1/providers/jumpstart/twilio-signup/${id}/match-caregiver`,
-          {
-            agentId: agentId || undefined,
-            matched: value,
-            // optional: send these too if your server wants them
-            temp_hash: app.tempHash ?? undefined,
-            email: app.email ?? undefined,
-            phone: app.phone ?? undefined,
-            zipcode: app.zipcode ?? undefined,
-            existingAccount: app.existingAccount ?? undefined,
-          }
-        );
+        if (isNonSms) {
+          if (!userId) throw new Error("Missing userID for provider toggle");
+          await privateApi.patch(
+            `/api/v1/providers/jumpstart/providers/${userId}/match-caregiver`,
+            {
+              agentId: agentId || undefined,
+              matched: value,
+              temp_hash: app.tempHash ?? undefined,
+              email: app.email ?? undefined,
+              phone: app.phone ?? undefined,
+              zipcode: app.zipcode ?? undefined,
+              existingAccount: app.existingAccount ?? undefined,
+            }
+          );
+        } else {
+          // ✅ Save match on backend (backend may send SMS too)
+          await privateApi.post(
+            `/api/v1/providers/jumpstart/twilio-signup/${id}/match-caregiver`,
+            {
+              agentId: agentId || undefined,
+              matched: value,
+              // optional: send these too if your server wants them
+              temp_hash: app.tempHash ?? undefined,
+              email: app.email ?? undefined,
+              phone: app.phone ?? undefined,
+              zipcode: app.zipcode ?? undefined,
+              existingAccount: app.existingAccount ?? undefined,
+            }
+          );
+        }
 
         /**
          * ✅ Client-side SMS ONLY when:
@@ -680,25 +733,47 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
     // Optimistic: remove from board immediately
     removeApplicantFromBoard(applicant._id);
 
-    // Existing accounts must be deleted by userID, not the Twilio doc _id
-    const deleteId =
-      applicant.existingAccount && (applicant.userID || (applicant as any).userId)
-        ? (applicant.userID || (applicant as any).userId)!
-        : applicant._id;
+    const isNonSms =
+      filters.source === "providers" ||
+      applicant.source === "providers" ||
+      applicant.channel === "providers";
+
+    const userId = applicant.userID || (applicant as any).userId || null;
+
+    // Existing accounts must be deleted by userID, not the Twilio doc _id.
+    // Non-SMS providers also require userID for the remove-from-flow endpoint.
+    const deleteId = isNonSms
+      ? userId
+      : applicant.existingAccount && userId
+      ? userId
+      : applicant._id;
 
     (async () => {
       try {
-        await privateApi.delete(
-          `/api/v1/providers/jumpstart/twilio/${deleteId}`
-        );
+        if (isNonSms) {
+          if (!deleteId) {
+            throw new Error("Missing userID for non-SMS provider removal");
+          }
+          await privateApi.patch(
+            `/api/v1/providers/jumpstart/providers/${deleteId}/remove-from-flow`
+          );
+          toast({
+            title: "Provider removed from flow",
+            description: "The provider has been removed from the Jumpstart flow.",
+          });
+        } else {
+          await privateApi.delete(
+            `/api/v1/providers/jumpstart/twilio/${deleteId}`
+          );
 
-        toast({
-          title: "Lead deleted",
-          description: "The Twilio signup has been removed permanently.",
-        });
+          toast({
+            title: "Lead deleted",
+            description: "The Twilio signup has been removed permanently.",
+          });
+        }
       } catch (err) {
-        console.error("Failed to delete Twilio signup", err);
-        setDragError("Failed to delete lead. Refreshing board.");
+        console.error("Failed to remove lead", err);
+        setDragError("Failed to remove lead. Refreshing board.");
         // restore from backend
         await fetchApplicants();
       }
