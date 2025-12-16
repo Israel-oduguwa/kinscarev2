@@ -183,11 +183,30 @@ export default function TwilioApplicantsDetails() {
   const onSaveContacted = async () => {
     if (!id) return;
     setSavingContacted(true);
+    const providerUserId =
+      (typeof applicant?.userID === "string" && applicant.userID) ||
+      (typeof (applicant as any)?.userId === "string" && (applicant as any).userId) ||
+      (isUserId ? id : null);
+    const isNonSms =
+      isUserId ||
+      applicant?.source === "providers" ||
+      applicant?.channel === "providers";
+
     try {
-      await privateApi.post(`${API_BASE}/jumpstart/edit-twilio-details`, {
-        id,
-        contacted,
-      });
+      if (isNonSms && providerUserId) {
+        await privateApi.patch(
+          `${API_BASE}/jumpstart/providers/${providerUserId}/contacted`,
+          {
+            contacted,
+            agentId: agentUserId || undefined,
+          }
+        );
+      } else {
+        await privateApi.post(`${API_BASE}/jumpstart/edit-twilio-details`, {
+          id,
+          contacted,
+        });
+      }
     } catch (e: any) {
       setContacted((v) => !v);
     } finally {

@@ -6,9 +6,8 @@ import MultiSelectField from "@/components/MultiSelect";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { yupResolver } from "@hookform/resolvers/yup";
-import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { useApiClient } from "@/hooks/useApiClient";
@@ -97,9 +96,25 @@ export default function PostJobApplicant() {
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   const params = useParams();
   const id = params?.id as string;
+  const isUserId = typeof id === "string" && id.startsWith("user_");
   const router = useRouter();
   const { privateApi } = useApiClient();
   const initialContent = "";
+
+  const [isTwilioSmsProvider, setIsTwilioSmsProvider] = useState<
+    boolean | null
+  >(null);
+  const [providerCheckLoading, setProviderCheckLoading] = useState(false);
+  const [providerCheckError, setProviderCheckError] = useState<string | null>(
+    null
+  );
+  const [providerUserId, setProviderUserId] = useState<string | null>(null);
+  const [providerHash, setProviderHash] = useState<string | null>(null);
+  const [providerProfileImage, setProviderProfileImage] = useState<
+    string | null
+  >(null);
+  const [providerEmail, setProviderEmail] = useState<string | null>(null);
+  const [draftJobId, setDraftJobId] = useState<string | null>(null);
 
   const {
     register,
@@ -126,6 +141,73 @@ export default function PostJobApplicant() {
       draft: true,
     },
   });
+
+  // Detect whether the provider is a Twilio SMS signup or a non-SMS provider
+  // and capture the provider metadata we need for standard job posting.
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      if (!id) return;
+      setProviderCheckLoading(true);
+      setProviderCheckError(null);
+
+      let resolvedUserId: string | null = isUserId ? id : null;
+
+      // Try to load provider record (works for Twilio provider IDs as well).
+      try {
+        const res = await privateApi.get(`${API_BASE}/jumpstart/provider/${id}`);
+        const data = res?.data?.data;
+        if (data && !cancelled) {
+          const nextUserId =
+            data.userID ||
+            data.userId ||
+            (typeof data._id === "string" ? data._id : null);
+          resolvedUserId = nextUserId || resolvedUserId;
+          setProviderHash(data.hash || data.temp_hash || null);
+          setProviderProfileImage(data.profileImage || null);
+          setProviderEmail(
+            data.email ||
+              data.contact?.email ||
+              data.contacts?.email ||
+              data?.provider?.email ||
+              null
+          );
+        }
+      } catch (err: any) {
+        if (!cancelled) {
+          setProviderCheckError(
+            "Could not load provider record. Proceeding with fallback check."
+          );
+        }
+      }
+
+      // Check if the provider has a Twilio SMS signup; if the lookup fails,
+      // treat it as a non-SMS provider per API contract.
+      let twilioFlag: boolean | null = resolvedUserId ? false : true;
+      if (resolvedUserId) {
+        try {
+          const twilioRes = await privateApi.get(
+            `${API_BASE}/jumpstart/providers/${resolvedUserId}/twilio-sms`
+          );
+          const twilioData = twilioRes?.data?.data;
+          twilioFlag = !!twilioData?.isTwilioSmsProvider;
+        } catch (err) {
+          twilioFlag = false;
+        }
+      }
+
+      if (!cancelled) {
+        setProviderUserId(resolvedUserId);
+        setIsTwilioSmsProvider(twilioFlag);
+        setProviderCheckLoading(false);
+      }
+    };
+
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [id, isUserId, privateApi]);
 
   // --------- Draft saver (safe no-op now) ---------
   const savetoDB = async (_formData: any) => true;
@@ -155,6 +237,21 @@ export default function PostJobApplicant() {
     void savetoDB(formData);
   };
 
+  const ensureDraftJobId = async (userId: string) => {
+    if (draftJobId) return draftJobId;
+    const draftRes = await privateApi.post("/api/v1/providers/post-job", {
+      userID: userId,
+      draft: true,
+    });
+    const newJobId =
+      draftRes?.data?.jobId ||
+      draftRes?.data?.jobID ||
+      draftRes?.data?.jobData?._id ||
+      null;
+    setDraftJobId(newJobId);
+    return newJobId;
+  };
+
   // --------- Submit to API ----------
   const onSubmit = async (values: any) => {
     setSubmitError(null);
@@ -166,41 +263,123 @@ export default function PostJobApplicant() {
       return;
     }
 
+    if (providerCheckLoading || isTwilioSmsProvider === null) {
+      setSubmitError("Checking provider type. Please try again in a moment.");
+      return;
+    }
+
     const selectedDays = (values.days || [])
       .filter((d: any) => d.checked)
       .map((d: any) => d.label);
 
-    const payload = {
-      provider: {
-        firstName: values.firstName,
-        lastName: values.lastName,
-        address: values.address,
-        state: values.state,
-        zipcode: values.zipcode,
-      },
-      userID: agentUserId,
-      job: {
-        title: values.title,
-        licenses: values.licenses,
-        schedule: values.schedule,
-        days: selectedDays,
-        description: values.description,
-      },
-      meta: {
-        createdBy: agentUserId,
-        applicantId: id,
-        hash: userData?.hash ?? null,
-        geocode: userData?.geocode_address ?? null,
-        draft: false,
-      },
+    const contactBlock = {
+      firstName: values.firstName,
+      lastName: values.lastName,
+      address: values.address,
+      state: values.state,
+      zipcode: values.zipcode,
+      tel: values.tel,
+      email: providerEmail || undefined,
     };
 
-    try {
+    const baseJobData = {
+      title: values.title,
+      licenses: values.licenses,
+      schedule: values.schedule,
+      days: selectedDays,
+      description: values.description,
+      contacts: contactBlock,
+    };
+
+    const submitForNonSmsProvider = async () => {
+      if (!providerUserId) {
+        setSubmitError("Missing provider user ID for standard job posting.");
+        throw new Error("Missing provider user ID");
+      }
+
+      const jobId = await ensureDraftJobId(providerUserId);
+      if (!jobId) {
+        setSubmitError("Could not create a draft job for this provider.");
+        throw new Error("Draft job creation failed");
+      }
+
+      const payload = {
+        ...baseJobData,
+        draft: false,
+        _id: jobId,
+        userID: providerUserId,
+        hash: providerHash ?? undefined,
+        profileImage: providerProfileImage || userData?.profileImage || "",
+      };
+
+      const res = await privateApi.post("/api/v1/providers/post-job", payload);
+
+      const createdJobId =
+        res?.data?.jobId ||
+        res?.data?.jobID ||
+        res?.data?.jobData?._id ||
+        jobId;
+
+      // Best-effort SMS notification to the provider
+      try {
+        if (values.tel && createdJobId) {
+          const jobUrl = `https://www.kinscare.org/job-post/${createdJobId}`;
+          const message =
+            `Hi! We have posted your caregiver job opening.\n\n` +
+            `Title: ${values.title || "Caregiver job"}\n` +
+            `Location: ${values.zipcode || ""}\n\n` +
+            `Review and approve your job here:\n${jobUrl}`;
+
+          await privateApi.post(`/api/v1/twilio/sms/send`, {
+            body: message,
+            to: values.tel,
+            country: "US",
+          });
+        }
+      } catch (smsErr: any) {
+        console.error(
+          "Failed to send job preview SMS (non-SMS provider):",
+          smsErr?.message || smsErr
+        );
+        setSubmitError(
+          "Job posted, but we couldn't send the SMS preview. You may need to resend manually."
+        );
+      }
+
+      return createdJobId;
+    };
+
+    const submitForTwilioProvider = async () => {
+      const payload = {
+        provider: {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          address: values.address,
+          state: values.state,
+          zipcode: values.zipcode,
+        },
+        userID: agentUserId,
+        job: {
+          title: values.title,
+          licenses: values.licenses,
+          schedule: values.schedule,
+          days: selectedDays,
+          description: values.description,
+        },
+        meta: {
+          createdBy: agentUserId,
+          applicantId: id,
+          hash: userData?.hash ?? null,
+          geocode: userData?.geocode_address ?? null,
+          draft: false,
+        },
+      };
+
       const res = await privateApi.post(
         `/api/v1/providers/jumpstart/agent-post-job`,
         payload
       );
-      console.log(res.data);
+
       if (!res?.data?.ok) {
         setSubmitError(res?.data?.error || "Failed to post job.");
         return;
@@ -247,6 +426,16 @@ export default function PostJobApplicant() {
         );
       }
 
+      return jobId;
+    };
+
+    try {
+      if (isTwilioSmsProvider === false) {
+        await submitForNonSmsProvider();
+      } else {
+        await submitForTwilioProvider();
+      }
+
       // --------- Success: reset + redirect ----------
       setSubmitSuccess("Job posted successfully.");
 
@@ -281,6 +470,18 @@ export default function PostJobApplicant() {
           <AlertDescription>
             Agent user ID not found — attribution may be missing.
           </AlertDescription>
+        </Alert>
+      )}
+
+      {providerCheckLoading && (
+        <Alert className="mb-2">
+          <AlertDescription>Checking provider type...</AlertDescription>
+        </Alert>
+      )}
+
+      {providerCheckError && (
+        <Alert className="mb-2" variant="destructive">
+          <AlertDescription>{providerCheckError}</AlertDescription>
         </Alert>
       )}
 
@@ -594,7 +795,12 @@ export default function PostJobApplicant() {
 
           {/* Submit */}
           <div className="flex justify-end gap-3 pt-2">
-            <Button type="submit" disabled={isSubmitting || !agentUserId}>
+            <Button
+              type="submit"
+              disabled={
+                isSubmitting || !agentUserId || providerCheckLoading
+              }
+            >
               {isSubmitting ? "Posting..." : "Post Job"}
             </Button>
           </div>

@@ -76,9 +76,13 @@ function mapApplicantsToBoard(raw: TwilioApplicantRaw[]): BoardState {
 
     const isRegistered =
       !!d.existingAccount || auth.mode === "clerk" || auth.mode === "email";
-    const contacted = !!d.contacted;
 
-    const jump = d.jumpstart || {};
+    const jump = d.jumpstart || d.jump_start || {};
+    const contacted =
+      !!d.contacted ||
+      !!(jump as any).providerContacted ||
+      !!(jump as any).provider_contacted ||
+      !!(jump as any).providercontacted;
     const match = jump.match || {};
 
     const paymentApplied = !!jump.paymentApplied;
@@ -433,10 +437,13 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
     // Forward move only: validate job exists
     if (value) {
       const hasAgentJob =
-        applicant?.agent_jobs && applicant.agent_jobs.length > 0;
+        (applicant?.agent_jobs && applicant.agent_jobs.length > 0) ||
+        (typeof applicant?.jobCount === "number" && applicant.jobCount > 0);
       const hasJobId = !!applicant?.jobId;
+      const hasFreshJob = !!applicant?.hasFreshJob;
+      const hasAnyJobEvidence = hasJobId || hasAgentJob || hasFreshJob;
 
-      if (!hasAgentJob || !hasJobId) {
+      if (!hasAnyJobEvidence) {
         toast({
           variant: "destructive",
           title: "No job posted yet",
