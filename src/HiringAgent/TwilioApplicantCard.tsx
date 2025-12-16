@@ -26,7 +26,7 @@ type TwilioApplicantCardProps = {
   onToggleAddPayment: (id: string, value: boolean) => void;
   onToggleMatchMade: (payload: MatchApplicantPayload, value: boolean) => void;
   onRemoveFromFlow: (id: string, jobId?: string | null) => void;
-  onDeleteSignup: (id: string) => void;
+  onDeleteSignup: (applicant: Applicant) => void;
 };
 
 const TwilioApplicantCard: React.FC<TwilioApplicantCardProps> = ({
@@ -202,7 +202,7 @@ const TwilioApplicantCard: React.FC<TwilioApplicantCardProps> = ({
             variant="destructive"
             size="sm"
             className="text-[11px]"
-            onClick={() => onDeleteSignup(applicant._id)}
+            onClick={() => onDeleteSignup(applicant)}
           >
             Delete lead
           </Button>

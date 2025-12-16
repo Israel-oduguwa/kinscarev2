@@ -37,7 +37,7 @@ type TwilioColumnProps = {
   onToggleAddPayment: (id: string, value: boolean) => void;
   onToggleMatchMade: (payload: MatchApplicantPayload, value: boolean) => void;
   onRemoveFromFlow: (id: string, jobId?: string | null) => void;
-  onDeleteSignup: (id: string) => void;
+  onDeleteSignup: (applicant: Applicant) => void;
 };
 
 const TwilioColumn: React.FC<TwilioColumnProps> = ({

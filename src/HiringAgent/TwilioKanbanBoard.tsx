@@ -667,7 +667,7 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
   };
 
   // 6) Delete Twilio signup (remove from Kanban forever)
-  const handleDeleteSignup = (id: string) => {
+  const handleDeleteSignup = (applicant: Applicant) => {
     const confirmed =
       typeof window === "undefined"
         ? true
@@ -678,11 +678,19 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
     if (!confirmed) return;
 
     // Optimistic: remove from board immediately
-    removeApplicantFromBoard(id);
+    removeApplicantFromBoard(applicant._id);
+
+    // Existing accounts must be deleted by userID, not the Twilio doc _id
+    const deleteId =
+      applicant.existingAccount && (applicant.userID || (applicant as any).userId)
+        ? (applicant.userID || (applicant as any).userId)!
+        : applicant._id;
 
     (async () => {
       try {
-        await privateApi.delete(`/api/v1/providers/jumpstart/twilio/${id}`);
+        await privateApi.delete(
+          `/api/v1/providers/jumpstart/twilio/${deleteId}`
+        );
 
         toast({
           title: "Lead deleted",
