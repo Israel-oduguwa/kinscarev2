@@ -21,6 +21,17 @@ interface JumpStartPaymentProps {
   plan: any;
   subscription: any;
   onError?: (error: any) => void;
+  formData?: {
+    fullName?: string;
+    email?: string;
+    phoneNumber?: string;
+    zipcode?: string;
+    city?: string;
+    jobDescription?: string;
+    licenses?: (string | undefined)[];
+    schedule?: (string | undefined)[];
+    orgName?: string;
+  };
 }
 
 const JumpStartPayment: React.FC<JumpStartPaymentProps> = ({
@@ -30,6 +41,7 @@ const JumpStartPayment: React.FC<JumpStartPaymentProps> = ({
   plan,
   onSuccess,
   onError,
+  formData,
 }) => {
   const stripe = useStripe();
   const elements = useElements();
@@ -151,6 +163,107 @@ const JumpStartPayment: React.FC<JumpStartPaymentProps> = ({
     }
   };
 
+  const createDraftJobFromForm = async () => {
+    const phone =
+      formData?.phoneNumber || userData?.auth?.tel || user?.customData?.tel;
+    const email =
+      formData?.email ||
+      userData?.auth?.email ||
+      user?.customData?.email ||
+      user?.customData?.auth?.email;
+    const zipcode = formData?.zipcode || userData?.zipcode;
+    const city = formData?.city || userData?.city;
+
+    const contacts = {
+      name: formData?.fullName,
+      tel: phone,
+      email,
+      zipcode,
+      city,
+    };
+
+    const payload: any = {
+      userID,
+      hash: userData?.hash || user?.customData?.hash,
+      draft: true,
+      title: formData?.orgName || "Caregiver Job",
+      licenses: formData?.licenses?.filter(Boolean) || [],
+      schedule: formData?.schedule?.filter(Boolean) || [],
+      description: formData?.jobDescription,
+      contacts,
+    };
+
+    const res = await privateApi.post("/api/v1/providers/post-job", payload);
+    const jobId =
+      res?.data?.jobId ||
+      res?.data?.jobID ||
+      res?.data?.jobData?._id ||
+      res?.data?.data?._id;
+
+    if (!jobId) {
+      throw new Error(
+        "Payment captured, but we could not create your job post."
+      );
+    }
+
+    return jobId;
+  };
+
+  // Send combined manual-add payload to upsert twilio signup, contacts, and jumpstart status
+  const manualAddTwilioSignup = async (
+    paymentIntent: any,
+    paymentMethodID: string,
+    jobId?: string
+  ) => {
+    const stripeCustomerId = userData.customer_id; //the stripe customer-id
+
+    const phone =
+      formData?.phoneNumber || userData?.auth?.tel || user?.customData?.tel;
+    const email = userData?.auth?.email;
+    const zipcode = formData?.zipcode || userData?.zipcode;
+
+    const payload = {
+      userID,
+      email,
+      phone,
+      zipcode,
+      source: "twilio",
+      channel: "sms",
+      flowSid: undefined,
+      executionSid: undefined,
+      jump_start: true,
+      timestamp: new Date().toISOString(),
+      tags: ["jumpstart"],
+      contact: phone ? { channel: { address: phone } } : undefined,
+      jobId,
+      paymentIntentId: paymentIntent?.id,
+      paymentMethodId: paymentMethodID,
+      stripeCustomerId,
+      amount: paymentIntent?.amount,
+      currency: paymentIntent?.currency,
+      contacted: true,
+      contactConfirmedAt: new Date().toISOString(),
+      contactConfirmedBy: userID,
+      workflowStage: "confirmed",
+      paymentVerified: true,
+      paymentApplied: true,
+      post_job: true,
+      status: "captured",
+    };
+    console.log(payload, "Payload signup");
+    const res = await privateApi.post(
+      "/api/v1/providers/jumpstart/twilio-signup/manual-add",
+      payload
+    );
+
+    if (!res?.data?.ok) {
+      throw new Error(
+        res?.data?.message ||
+          "Payment captured, but we could not finalize your onboarding."
+      );
+    }
+  };
+
   const sendConfirmationEmail = async ({
     email,
     first_name,
@@ -219,14 +332,18 @@ const JumpStartPayment: React.FC<JumpStartPaymentProps> = ({
         );
       }
 
-      const paymentMethodID = pi.payment_method;
+      const paymentMethodID: any = pi.payment_method;
       if (!paymentMethodID) {
         throw new Error("Payment method ID was not returned by Stripe.");
       }
 
+      // Create a draft job from the Jumpstart form data so we can attach the jobId
+      const jobId = await createDraftJobFromForm();
+
       // Persist updates
       await updatePaymentMethod();
       await updateJumpstartPayment();
+      await manualAddTwilioSignup(pi, paymentMethodID, jobId);
 
       // Tag Manager + Mixpanel tracking (best-effort)
       try {
@@ -280,7 +397,7 @@ const JumpStartPayment: React.FC<JumpStartPaymentProps> = ({
 
       toast.success("Payment successful. Welcome to Jumpstart!");
       // Route then close
-      router.push("/provider/jumpstart");
+      router.push("/provider/candidates/all");
       close();
     } catch (e: any) {
       notifyError(e, "Payment Failed");

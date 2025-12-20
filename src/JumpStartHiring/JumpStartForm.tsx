@@ -119,6 +119,7 @@ type Attribution = {
 };
 
 const LS_KEY_PREFS = "kc_search_prefs";
+const LS_KEY_SIGNUP_PENDING = "jumpstart_signup_pending";
 
 const safeLocalGet = <T,>(key: string): T | null => {
   if (typeof window === "undefined") return null;
@@ -148,6 +149,7 @@ function JumpStartForm() {
   const [step, setStep] = useState(0);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
+  const signupRequestedRef = useRef(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isFetchingSecret, setIsFetchingSecret] = useState(false);
   const [contactData, setContactData] = useState<any>(null);
@@ -225,22 +227,34 @@ function JumpStartForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSignedIn, user, saved]);
 
-  // Detect signup completion and proceed
+  // Detect signup completion and proceed immediately after Clerk signs in the new user.
+  // Persist a flag in localStorage because Clerk redirects after signup, resetting component state.
   useEffect(() => {
-    if (isSignupOpen && isSignedIn && user) {
-      setIsSignupOpen(false);
-      const synthetic = {
-        userID: user.id,
-        email:
-          user.primaryEmailAddress?.emailAddress ||
-          formData.email ||
-          contactData?.email ||
-          "",
-      };
-      handleSignupSuccess(synthetic);
+    if (!isSignedIn || !user) return;
+    const pending =
+      signupRequestedRef.current ||
+      (typeof window !== "undefined" &&
+        window.localStorage.getItem(LS_KEY_SIGNUP_PENDING) === "1");
+    if (!pending) return;
+
+    // Reset the flag so we only run once per signup attempt
+    signupRequestedRef.current = false;
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem(LS_KEY_SIGNUP_PENDING);
     }
+    setIsSignupOpen(false);
+
+    const synthetic = {
+      userID: user.id,
+      email:
+        user.primaryEmailAddress?.emailAddress ||
+        formData.email ||
+        contactData?.email ||
+        "",
+    };
+    handleSignupSuccess(synthetic);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSignupOpen, isSignedIn, user]);
+  }, [isSignedIn, user]);
 
   // Attribution from URL -> persist to LS (shared with your other flows)
   const attribution: Attribution = useMemo(() => {
@@ -467,6 +481,10 @@ function JumpStartForm() {
         setIsSignOutPromptOpen(true);
       }
     } else {
+      signupRequestedRef.current = true;
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(LS_KEY_SIGNUP_PENDING, "1");
+      }
       setIsSignupOpen(true);
     }
   };
@@ -850,7 +868,7 @@ function JumpStartForm() {
             forceRedirectUrl="/jumpstart-hiring/apply"
             appearance={{
               elements: {
-                rootBox: "m-0 p-0 w-full",
+                rootBox: "m-0 p-3 w-full",
                 cardBox: "w-full shadow-none border-none rounded-none bg-white",
                 card: "m-0 p-0 w-full shadow-none border-none",
                 main: "m-0 p-0 w-full border-none shadow-none flex flex-col gap-0",
@@ -907,6 +925,7 @@ function JumpStartForm() {
                 subscription={subscription}
                 plan="bi-weekly"
                 subscriptionID={subscriptionID}
+                formData={formData}
                 onSuccess={(result) => {
                   notify.success("Payment successful. Welcome to Jumpstart!");
                   setIsPaymentOpen(false);
