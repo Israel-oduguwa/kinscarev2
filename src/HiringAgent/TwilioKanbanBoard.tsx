@@ -374,7 +374,7 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
         applicant?.source === "providers" ||
         applicant?.channel === "providers" ||
         filters.source === "providers";
-
+      console.log(isNonSms)
       return { applicant, userId, isNonSms };
     },
     [board, filters.source]
@@ -382,6 +382,7 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
 
   // 1) Contacted toggle → Jobs ⇄ Confirmed
   const handleToggleContacted = (id: string, value: boolean) => {
+    console.log(id)
     const { userId, isNonSms } = getProviderContext(id);
     const targetStage: ColumnKey = value ? "confirmed" : "jobs";
     const revertStage: ColumnKey = value ? "jobs" : "confirmed";
@@ -407,6 +408,7 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
             }
           );
         } else {
+          console.log(id)
           await privateApi.post(
             `/api/v1/providers/jumpstart/twilio-applicants/${id}/contacted`,
             {

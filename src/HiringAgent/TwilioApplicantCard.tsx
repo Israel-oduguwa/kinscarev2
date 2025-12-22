@@ -9,6 +9,19 @@ import { ColumnKey, Applicant } from "./TwilioKanbanTypes";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
+function formatTimestamp(value?: string | Date | null) {
+  if (!value) return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleString(undefined, {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 type MatchApplicantPayload = {
   id: string;
   tempHash?: string | null;
@@ -71,6 +84,23 @@ const TwilioApplicantCard: React.FC<TwilioApplicantCardProps> = ({
   const isRegistered = applicant.isRegistered;
   const paymentNeeded = applicant.paymentNeeded;
 
+  const providerTimestamp = applicant.timestamp || applicant.createdAt || null;
+  const assistanceRequestedAt =
+    applicant.assistanceRequestedAt ||
+    applicant.requestedAssistanceAt ||
+    applicant.teamAssistanceRequestedAt ||
+    applicant.jumpstart?.assistanceRequestedAt ||
+    applicant.jumpstart?.requestedAssistanceAt ||
+    applicant.jumpstart?.teamAssistanceRequestedAt ||
+    null;
+  const agentActionAt =
+    applicant.lastAgentActionAt ||
+    applicant.agentActionAt ||
+    applicant.jumpstart?.lastAgentActionAt ||
+    applicant.jumpstart?.agentActionAt ||
+    applicant.updatedAt ||
+    null;
+
   return (
     <Card
       ref={ref}
@@ -126,6 +156,27 @@ const TwilioApplicantCard: React.FC<TwilioApplicantCardProps> = ({
               </span>
             )}
           </div>
+        </div>
+      </div>
+
+      <div className="mt-2 grid grid-cols-1 gap-1.5 rounded-md border border-slate-100 bg-slate-50 px-2 py-1.5">
+        <div className="flex items-center justify-between gap-2 text-[10px] text-slate-500">
+          <span className="uppercase tracking-wide">Provider added</span>
+          <span className="font-medium text-slate-700">
+            {formatTimestamp(providerTimestamp)}
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-2 text-[10px] text-slate-500">
+          <span className="uppercase tracking-wide">Team assistance</span>
+          <span className="font-medium text-slate-700">
+            {formatTimestamp(assistanceRequestedAt)}
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-2 text-[10px] text-slate-500">
+          <span className="uppercase tracking-wide">Last agent action</span>
+          <span className="font-medium text-slate-700">
+            {formatTimestamp(agentActionAt)}
+          </span>
         </div>
       </div>
 

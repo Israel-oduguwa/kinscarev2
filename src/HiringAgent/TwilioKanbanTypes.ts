@@ -54,6 +54,12 @@ export type TwilioApplicantRaw = {
   updatedAt?: string;
   timestamp?: string;
 
+  assistanceRequestedAt?: string | null;
+  requestedAssistanceAt?: string | null;
+  teamAssistanceRequestedAt?: string | null;
+  lastAgentActionAt?: string | null;
+  agentActionAt?: string | null;
+
   tags?: string[];
 
   existingAccount?: boolean;
