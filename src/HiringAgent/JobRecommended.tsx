@@ -22,6 +22,7 @@ import {
   Star,
   Search,
   Users,
+  Phone,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,7 +31,7 @@ import ProfileAvatar from "@/components/ProfileAvatar";
 
 
 const API_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+  "http://localhost:8081/api/v1/providers";
 
 const groupLicenses = [
   { label: "CNA", value: "CNA or NAC" },
@@ -86,6 +87,7 @@ function MultiSelectBox({
                   ? "bg-blue-50 border-l-2 border-l-blue-500"
                   : "hover:bg-slate-50"
               }`}
+              onClick={() => toggle(opt.value)}
             >
               <div
                 className={`h-4 w-4 rounded border flex items-center justify-center transition-all duration-200 ${
@@ -445,12 +447,23 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
                     `${u?.fname || ""} ${u?.lname || ""}`.trim() ||
                     "Caregiver";
                   const lic = Array.isArray(u?.licenses) ? u.licenses : [];
+                  // console.log(u)
                   const avail = Array.isArray(u?.availability)
                     ? u.availability
                     : [];
+                  const phone =
+                    u?.tel ||
+                    u?.phone ||
+                    u?.auth?.tel ||
+                    u?.settings?.tel ||
+                    null;
                   const loc = [u?.city, u?.state, u?.zipcode]
                     .filter(Boolean)
                     .join(", ");
+
+                  if (!phone) {
+                    return null;
+                  }
 
                   return (
                     <Card
@@ -468,6 +481,10 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
                               <span className="truncate">
                                 {loc || "Location not specified"}
                               </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                              <Phone className="h-4 w-4 text-slate-400" />
+                              <span>{phone || "Phone not available"}</span>
                             </div>
 
                             {/* Match Score (if available) */}

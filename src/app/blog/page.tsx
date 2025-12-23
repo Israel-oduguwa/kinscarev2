@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import BlogList from "@/Blog/BlogList";
 import FeaturedArticle from "@/Blog/FeaturedArticle";
 
-const API_URL = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/blogs/all";
+const API_URL = "http://localhost:8081/api/v1/blogs/all";
 
 // **Generate SEO Metadata**
 export async function generateMetadata(): Promise<Metadata> {
@@ -39,7 +39,7 @@ async function fetchInitialBlogs() {
 async function fetchFeaturedArticle() {
   try {
     const res = await fetch(
-      `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/blogs/featured-article/68633e79e236b3979597f4a8`,
+      `http://localhost:8081/api/v1/blogs/featured-article/68633e79e236b3979597f4a8`,
       { cache: "no-cache" }
     );
 

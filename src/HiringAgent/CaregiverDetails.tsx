@@ -19,8 +19,7 @@ import ProtectedCandidatesDetails from "@/Providers/Candidates/ProtectedCandidat
 import { useParams } from "next/navigation";
 import { useApiClient } from "@/hooks/useApiClient";
 
-const TWILIO_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio";
+const TWILIO_BASE = "http://localhost:8081/api/v1/twilio";
 
 function formatTel(raw?: string | null) {
   if (!raw) return "—";
@@ -188,13 +187,12 @@ export default function CaregiverDetails() {
   const [caregiver, setCaregiver] = useState<any>(null);
   const [similarCaregivers, setSimilarCaregivers] = useState<any[]>([]);
   const params = useParams();
-  const {privateApi} =  useApiClient()
+  const { privateApi } = useApiClient();
   const id = params?.id as string;
   const candidateID = id;
   // Endpoint (keep your existing one)
   const API_URL = useMemo(
-    () =>
-      `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/caregivers/${candidateID}`,
+    () => `http://localhost:8081/api/v1/providers/caregivers/${candidateID}`,
     [candidateID]
   );
   // SMS dialog states
@@ -324,12 +322,12 @@ export default function CaregiverDetails() {
             </div>
             <div className="ml-5">
               <Button
-              onClick={() => setIsDialogOpen(true)}
-              className="flex items-center gap-2"
-            >
-              <MessageSquareText className="h-4 w-4" />
-              Send SMS
-            </Button>
+                onClick={() => setIsDialogOpen(true)}
+                className="flex items-center gap-2"
+              >
+                <MessageSquareText className="h-4 w-4" />
+                Send SMS
+              </Button>
             </div>
           </div>
         </div>
@@ -366,11 +364,14 @@ export default function CaregiverDetails() {
 
         {/* Contact Details */}
         <div className="mt-6">
-          <ProtectedCandidatesDetails
-            name={`${caregiver.fname ?? ""} ${caregiver.lname ?? ""}`}
-            email={caregiver?.settings?.email}
-            tel={caregiver?.settings?.tel}
-          />
+          <div className="space-y-2 max-w-sm">
+            <p className="text-sm px-4 py-2 rounded-md bg-gray-50 text-gray-800 border border-gray-200">
+              {caregiver?.settings?.email}
+            </p>
+            <p className="text-sm px-4 py-2 rounded-md bg-gray-50 text-gray-800 border border-gray-200">
+              {caregiver?.settings?.tel}
+            </p>
+          </div>
         </div>
 
         {/* About Section */}

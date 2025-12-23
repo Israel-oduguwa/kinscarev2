@@ -5,6 +5,8 @@ import Editor from "@/components/Editor";
 import MultiSelectField from "@/components/MultiSelect";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -16,7 +18,7 @@ import { useApiClient } from "@/hooks/useApiClient";
 
 // ---------- Constants ----------
 const API_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+  "http://localhost:8081/api/v1/providers";
 
 const groupLicenses = [
   { label: "CNA", value: "CNA or NAC" },
@@ -33,6 +35,14 @@ const groupSchedule = [
   { label: "Live In", value: "Live In" },
 ];
 
+const groupAlertPreferences = [
+  { label: "Phone Call", value: "Phone_call" },
+  { label: "SMS/Text message", value: "SMS/Text message" },
+  { label: "Email", value: "Email" },
+];
+
+const DEFAULT_ALERT_PREFERENCES = ["SMS/Text message", "Email"];
+
 const DAYS = [
   { key: "mon", label: "Mon" },
   { key: "tue", label: "Tue" },
@@ -48,12 +58,17 @@ const schema = yup.object({
   firstName: yup.string().trim().required("First name is required"),
   lastName: yup.string().trim().required("Last name is required"),
   address: yup.string().trim().required("Address is required"),
+  city: yup.string().trim().required("City is required"),
   state: yup.string().trim().required("State is required"),
   tel: yup
     .string()
     .required(
       "Please enter the telephone number caregivers will use to contact you."
     ),
+  email: yup
+    .string()
+    .email("Enter a valid email")
+    .required("Email is required"),
   zipcode: yup
     .string()
     .trim()
@@ -70,6 +85,11 @@ const schema = yup.object({
     .of(yup.string())
     .min(1, "Select at least one schedule option")
     .required("Schedule is required"),
+  alert_preferences: yup
+    .array()
+    .of(yup.string())
+    .min(1, "Select at least one alert preference")
+    .required("Alert preferences are required"),
   days: yup
     .array()
     .of(
@@ -82,6 +102,20 @@ const schema = yup.object({
     .test("at-least-one-day", "Select at least one day", (arr) =>
       Array.isArray(arr) ? arr.some((d) => d.checked) : false
     ),
+  minHours: yup
+    .number()
+    .typeError("Minimum hours must be a number")
+    .max(50, "working hours must not be greater than 50 hrs.")
+    .nullable()
+    .transform((value, originalValue) =>
+      originalValue === "" ? null : value
+    ),
+  compensation: yup
+    .string()
+    .trim()
+    .required("Enter compensation per day/hour or 'DoE' or 'Negotiable'"),
+  mobility: yup.string().required("Please select if caregiver needs to drive"),
+  smsConsent: yup.boolean(),
   description: yup.string().required("Description is required"),
 });
 
@@ -101,7 +135,6 @@ export default function AgentEditJob() {
   const [initialContent, setInitialContent] = useState("");
   const [editorKey, setEditorKey] = useState(0);
   const [applicantId, setApplicantId] = useState<string | null>(null);
-  const [contactEmail, setContactEmail] = useState<string | null>(null);
 
   const {
     register,
@@ -117,13 +150,20 @@ export default function AgentEditJob() {
       firstName: "",
       lastName: "",
       address: "",
+      city: "",
       state: "",
+      email: "",
       zipcode: "",
       tel: "",
       title: "",
       licenses: [] as string[],
       schedule: [] as string[],
+      alert_preferences: DEFAULT_ALERT_PREFERENCES,
       days: DAYS.map((d) => ({ ...d, checked: false })),
+      minHours: "",
+      compensation: "",
+      mobility: "car_needed",
+      smsConsent: false,
       description: "",
     },
   });
@@ -139,7 +179,6 @@ export default function AgentEditJob() {
         `${API_BASE}/jumpstart/agent-jobs/${id}`
       );
       const job = res?.data?.data;
-      console.log(job)
 
       if (!job) {
         throw new Error("Job not found.");
@@ -147,26 +186,35 @@ export default function AgentEditJob() {
 
       const contacts = job.contacts || {};
       const jobDays = Array.isArray(job.days) ? job.days : [];
+      const alertPreferences = Array.isArray(job.alert_preferences)
+        ? job.alert_preferences
+        : DEFAULT_ALERT_PREFERENCES;
       const nextDays = DAYS.map((d) => ({
         ...d,
         checked: jobDays.includes(d.label),
       }));
 
       setApplicantId(job?.agentMeta?.applicantId || job?.applicantId || null);
-      setContactEmail(contacts.email || null);
-      console.log(contacts.tel )
       reset({
         firstName: contacts.firstName || "",
         lastName: contacts.lastName || "",
         address: contacts.address || "",
+        city: contacts.city || "",
         state: contacts.state || "",
         zipcode: contacts.zipcode || "",
         tel: contacts.tel || "",
+        email: contacts.email || "",
         title: job.title || "",
         licenses: Array.isArray(job.licenses) ? job.licenses : [],
         schedule: Array.isArray(job.schedule) ? job.schedule : [],
+        alert_preferences: alertPreferences,
         days: nextDays,
         description: job.description || "",
+        minHours: job.minHours ?? "",
+        compensation: job.compensation || "",
+        mobility: job.mobility || "car_needed",
+        smsConsent:
+          typeof job.smsConsent === "boolean" ? job.smsConsent : false,
       });
 
       setInitialContent(job.description || "");
@@ -215,10 +263,11 @@ export default function AgentEditJob() {
       firstName: values.firstName,
       lastName: values.lastName,
       address: values.address,
+      city: values.city,
       state: values.state,
       zipcode: values.zipcode,
       tel: values.tel,
-      email: contactEmail || undefined,
+      email: values.email || undefined,
     };
 
     const payload: any = {
@@ -228,8 +277,13 @@ export default function AgentEditJob() {
         title: values.title,
         licenses: values.licenses,
         schedule: values.schedule,
+        alert_preferences: values.alert_preferences,
         days: selectedDays,
         description: values.description,
+        minHours: values.minHours,
+        compensation: values.compensation,
+        mobility: values.mobility,
+        smsConsent: values.smsConsent,
         contacts,
       },
     };
@@ -260,9 +314,11 @@ export default function AgentEditJob() {
           firstName: updatedContacts.firstName || values.firstName,
           lastName: updatedContacts.lastName || values.lastName,
           address: updatedContacts.address || values.address,
+          city: updatedContacts.city || values.city,
           state: updatedContacts.state || values.state,
           zipcode: updatedContacts.zipcode || values.zipcode,
           tel: updatedContacts.tel || values.tel,
+          email: updatedContacts.email || values.email,
           title: updatedJob.title || values.title,
           licenses: Array.isArray(updatedJob.licenses)
             ? updatedJob.licenses
@@ -270,13 +326,22 @@ export default function AgentEditJob() {
           schedule: Array.isArray(updatedJob.schedule)
             ? updatedJob.schedule
             : values.schedule,
+          alert_preferences: Array.isArray(updatedJob.alert_preferences)
+            ? updatedJob.alert_preferences
+            : values.alert_preferences,
           days: DAYS.map((d) => ({
             ...d,
             checked: updatedDays.includes(d.label),
           })),
           description: updatedJob.description || values.description,
+          minHours: updatedJob.minHours ?? values.minHours,
+          compensation: updatedJob.compensation || values.compensation,
+          mobility: updatedJob.mobility || values.mobility,
+          smsConsent:
+            typeof updatedJob.smsConsent === "boolean"
+              ? updatedJob.smsConsent
+              : values.smsConsent,
         });
-        setContactEmail(updatedContacts.email || contactEmail);
         setInitialContent(updatedJob.description || values.description);
         setEditorKey((k) => k + 1);
       }
@@ -484,6 +549,46 @@ export default function AgentEditJob() {
                 )}
               </div>
             </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label
+                  htmlFor="min-hours"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  Minimum hours per week
+                </label>
+                <input
+                  type="number"
+                  id="min-hours"
+                  className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                  {...register("minHours")}
+                />
+                {errors?.minHours && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {String(errors?.minHours.message)}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label
+                  htmlFor="compensation"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  Compensation
+                </label>
+                <input
+                  type="text"
+                  id="compensation"
+                  className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                  {...register("compensation")}
+                />
+                {errors?.compensation && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {String(errors?.compensation.message)}
+                  </p>
+                )}
+              </div>
+            </div>
           </section>
 
           {/* Provider Identity */}
@@ -530,64 +635,105 @@ export default function AgentEditJob() {
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-4">
-              <div className="md:col-span-2">
-                <label
-                  htmlFor="address"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Address
-                </label>
-                <input
-                  id="address"
-                  type="text"
-                  className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                  {...register("address")}
-                />
-                {errors.address && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {String(errors.address.message)}
-                  </p>
-                )}
+            <div className="grid gap-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label
+                    htmlFor="address"
+                    className="block mb-2 text-sm font-medium text-gray-900"
+                  >
+                    Address
+                  </label>
+                  <input
+                    id="address"
+                    type="text"
+                    className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                    {...register("address")}
+                  />
+                  {errors.address && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {String(errors.address.message)}
+                    </p>
+                  )}
+                </div>
               </div>
-
-              <div>
-                <label
-                  htmlFor="state"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  State
-                </label>
-                <input
-                  id="state"
-                  type="text"
-                  className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                  {...register("state")}
-                />
-                {errors.state && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {String(errors.state.message)}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label
-                  htmlFor="zipcode"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Zipcode
-                </label>
-                <input
-                  id="zipcode"
-                  inputMode="numeric"
-                  className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                  {...register("zipcode")}
-                />
-                {errors.zipcode && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {String(errors.zipcode.message)}
-                  </p>
-                )}
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label
+                    htmlFor="city"
+                    className="block mb-2 text-sm font-medium text-gray-900"
+                  >
+                    City
+                  </label>
+                  <input
+                    id="city"
+                    type="text"
+                    className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                    {...register("city")}
+                  />
+                  {errors.city && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {String(errors.city.message)}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label
+                    htmlFor="state"
+                    className="block mb-2 text-sm font-medium text-gray-900"
+                  >
+                    State
+                  </label>
+                  <input
+                    id="state"
+                    type="text"
+                    className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                    {...register("state")}
+                  />
+                  {errors.state && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {String(errors.state.message)}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label
+                    htmlFor="zipcode"
+                    className="block mb-2 text-sm font-medium text-gray-900"
+                  >
+                    Zipcode
+                  </label>
+                  <input
+                    id="zipcode"
+                    inputMode="numeric"
+                    className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                    {...register("zipcode")}
+                  />
+                  {errors.zipcode && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {String(errors.zipcode.message)}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block mb-2 text-sm font-medium text-gray-900"
+                  >
+                    Email
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                    {...register("email")}
+                  />
+                  {errors.email && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {String(errors.email.message)}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </section>
@@ -617,6 +763,91 @@ export default function AgentEditJob() {
               {errors.description && (
                 <p className="text-red-500 text-xs mt-1">
                   {String(errors.description.message)}
+                </p>
+              )}
+            </div>
+          </section>
+
+          <section className="grid gap-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <h3 className="font-semibold text-sm text-gray-900 antialiased mb-2">
+                  Does the job require caregiver to drive?
+                </h3>
+                <Controller
+                  name="mobility"
+                  control={control}
+                  render={({ field }) => (
+                    <RadioGroup
+                      value={field.value}
+                      onValueChange={(value) => field.onChange(value)}
+                      className="flex gap-4"
+                    >
+                      <div className="flex gap-1 items-center">
+                        <RadioGroupItem value="car_needed" />
+                        <Label>Yes</Label>
+                      </div>
+                      <div className="flex gap-1 items-center">
+                        <RadioGroupItem value="no_car_needed" />
+                        <Label>No</Label>
+                      </div>
+                    </RadioGroup>
+                  )}
+                />
+                {errors.mobility && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {String(errors.mobility.message)}
+                  </p>
+                )}
+              </div>
+              <div className="md:pt-7">
+                <Controller
+                  name="smsConsent"
+                  control={control}
+                  render={({ field }) => (
+                    <label className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        {...field}
+                        checked={field.value}
+                        className="form-checkbox h-5 w-5 text-blue-600"
+                      />
+                      <span className="text-sm text-gray-700">
+                        We’ll text you if a provider wants to interview you or
+                        respond to your application. Message & data rates may
+                        apply. Reply STOP to opt out.
+                      </span>
+                    </label>
+                  )}
+                />
+              </div>
+            </div>
+            <div>
+              <h3 className="font-semibold text-sm text-gray-900 antialiased mb-2">
+                Alert preferences
+              </h3>
+              <Controller
+                name="alert_preferences"
+                control={control}
+                render={({ field }: any) => (
+                  <MultiSelectField
+                    name="alert_preferences"
+                    control={control}
+                    isAnimation={true}
+                    options={groupAlertPreferences}
+                    placeholder="How should caregivers contact you?"
+                    maxCount={3}
+                    rules={{ required: true }}
+                    value={field.value}
+                    onChange={(vals: string[]) => {
+                      field.onChange(vals);
+                    }}
+                  />
+                )}
+              />
+              {errors.alert_preferences && (
+                <p className="text-red-500 text-xs mt-1">
+                  {String(errors.alert_preferences.message)}
                 </p>
               )}
             </div>

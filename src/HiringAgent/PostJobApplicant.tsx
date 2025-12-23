@@ -5,16 +5,19 @@ import Editor from "@/components/Editor";
 import MultiSelectField from "@/components/MultiSelect";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { useApiClient } from "@/hooks/useApiClient";
+import { useUser } from "@clerk/nextjs";
 
 // ---------- Constants ----------
 const API_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+  "http://localhost:8081/api/v1/providers";
 
 const groupLicenses = [
   { label: "CNA", value: "CNA or NAC" },
@@ -29,6 +32,12 @@ const groupSchedule = [
   { label: "Weekend", value: "Weekends" },
   { label: "On Call", value: "on Call" },
   { label: "Live In", value: "Live In" },
+];
+
+const groupAlertPreferences = [
+  { label: "Phone Call", value: "Phone_call" },
+  { label: "SMS/Text message", value: "SMS/Text message" },
+  { label: "Email", value: "Email" },
 ];
 
 const DAYS = [
@@ -46,12 +55,17 @@ const schema = yup.object({
   firstName: yup.string().trim().required("First name is required"),
   lastName: yup.string().trim().required("Last name is required"),
   address: yup.string().trim().required("Address is required"),
+  city: yup.string().trim().required("City is required"),
   state: yup.string().trim().required("State is required"),
   tel: yup
     .string()
     .required(
       "Please enter the telephone number caregivers will use to contact you."
     ),
+  email: yup
+    .string()
+    .email("Enter a valid email")
+    .required("Email is required"),
   zipcode: yup
     .string()
     .trim()
@@ -68,6 +82,11 @@ const schema = yup.object({
     .of(yup.string())
     .min(1, "Select at least one schedule option")
     .required("Schedule is required"),
+  alert_preferences: yup
+    .array()
+    .of(yup.string())
+    .min(1, "Select at least one alert preference")
+    .required("Alert preferences are required"),
   days: yup
     .array()
     .of(
@@ -80,6 +99,20 @@ const schema = yup.object({
     .test("at-least-one-day", "Select at least one day", (arr) =>
       Array.isArray(arr) ? arr.some((d) => d.checked) : false
     ),
+  minHours: yup
+    .number()
+    .typeError("Minimum hours must be a number")
+    .max(50, "working hours must not be greater than 50 hrs.")
+    .nullable()
+    .transform((value, originalValue) =>
+      originalValue === "" ? null : value
+    ),
+  compensation: yup
+    .string()
+    .trim()
+    .required("Enter compensation per day/hour or 'DoE' or 'Negotiable'"),
+  mobility: yup.string().required("Please select if caregiver needs to drive"),
+  smsConsent: yup.boolean(),
   description: yup.string().required("Description is required"),
 });
 
@@ -87,10 +120,12 @@ const schema = yup.object({
 export default function PostJobApplicant() {
   // ✅ Safe access to context
   const auth = useAuthContext();
+  const {user}:any = useUser();
+  // console.log(user.id)
   const userData = auth?.userData ?? null;
-
+// console.log(auth)
   // ✅ Agent ID now guarded
-  const agentUserId: string | null = userData?.userID ?? null;
+  const agentUserId: string | null = user.id ?? null;
 
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
@@ -134,12 +169,20 @@ export default function PostJobApplicant() {
       firstName: "",
       lastName: "",
       address: "",
+      city: "",
       state: "",
+      email: "",
+      tel: "",
       zipcode: "",
       title: "",
       licenses: [] as string[],
       schedule: [] as string[],
+      alert_preferences: ["SMS/Text message", "Email"],
       days: DAYS.map((d) => ({ ...d, checked: false })),
+      minHours: "",
+      compensation: "",
+      mobility: "car_needed",
+      smsConsent: false,
       description: initialContent,
       draft: true,
     },
@@ -170,13 +213,16 @@ export default function PostJobApplicant() {
           resolvedUserId = nextUserId || resolvedUserId;
           setProviderHash(data.hash || data.temp_hash || null);
           setProviderProfileImage(data.profileImage || null);
-          setProviderEmail(
+          const email =
             data.email ||
-              data.contact?.email ||
-              data.contacts?.email ||
-              data?.provider?.email ||
-              null
-          );
+            data.contact?.email ||
+            data.contacts?.email ||
+            data?.provider?.email ||
+            null;
+          setProviderEmail(email);
+          if (email) {
+            setValue("email", email);
+          }
           const existingAccountFlag =
             typeof data.existingAccount === "boolean"
               ? data.existingAccount
@@ -204,13 +250,16 @@ export default function PostJobApplicant() {
             resolvedUserId = nextUserId || resolvedUserId;
             setProviderHash(applicant.hash || applicant.temp_hash || null);
             setProviderProfileImage(applicant.profileImage || null);
-            setProviderEmail(
+            const email =
               applicant.email ||
-                applicant.contact?.email ||
-                applicant.contacts?.email ||
-                applicant?.provider?.email ||
-                null
-            );
+              applicant.contact?.email ||
+              applicant.contacts?.email ||
+              applicant?.provider?.email ||
+              null;
+            setProviderEmail(email);
+            if (email) {
+              setValue("email", email);
+            }
             const existingAccountFlag =
               typeof applicant.existingAccount === "boolean"
                 ? applicant.existingAccount
@@ -237,7 +286,6 @@ export default function PostJobApplicant() {
             `${API_BASE}/jumpstart/providers/${resolvedUserId}/twilio-sms`
           );
           const twilioData = twilioRes?.data?.data;
-          console.log(twilioData)
           twilioFlag = !!twilioData?.isTwilioSmsProvider;
         } catch (err) {
           twilioFlag = false;
@@ -255,7 +303,7 @@ export default function PostJobApplicant() {
     return () => {
       cancelled = true;
     };
-  }, [id, isUserId, privateApi]);
+  }, [id, isUserId, privateApi, setValue]);
 
   // --------- Draft saver (safe no-op now) ---------
   const savetoDB = async (_formData: any) => true;
@@ -324,18 +372,24 @@ export default function PostJobApplicant() {
       firstName: values.firstName,
       lastName: values.lastName,
       address: values.address,
+      city: values.city,
       state: values.state,
       zipcode: values.zipcode,
       tel: values.tel,
-      email: providerEmail || undefined,
+      email: values.email || providerEmail || undefined,
     };
 
     const baseJobData = {
       title: values.title,
       licenses: values.licenses,
       schedule: values.schedule,
+      alert_preferences: values.alert_preferences,
       days: selectedDays,
       description: values.description,
+      minHours: values.minHours,
+      compensation: values.compensation,
+      mobility: values.mobility,
+      smsConsent: values.smsConsent,
       contacts: contactBlock,
     };
 
@@ -408,6 +462,7 @@ export default function PostJobApplicant() {
           firstName: values.firstName,
           lastName: values.lastName,
           address: values.address,
+          city: values.city,
           state: values.state,
           zipcode: values.zipcode,
         },
@@ -416,8 +471,14 @@ export default function PostJobApplicant() {
           title: values.title,
           licenses: values.licenses,
           schedule: values.schedule,
+          alert_preferences: values.alert_preferences,
           days: selectedDays,
           description: values.description,
+          minHours: values.minHours,
+          compensation: values.compensation,
+          mobility: values.mobility,
+          smsConsent: values.smsConsent,
+          contacts: contactBlock,
         },
         meta: {
           createdBy: agentUserId,
@@ -496,12 +557,20 @@ export default function PostJobApplicant() {
         firstName: "",
         lastName: "",
         address: "",
+        city: "",
         state: "",
+        email: "",
+        tel: "",
         zipcode: "",
         title: "",
         licenses: [],
         schedule: [],
+        alert_preferences: ["SMS/Text message", "Email"],
         days: DAYS.map((d) => ({ ...d, checked: false })),
+        minHours: "",
+        compensation: "",
+        mobility: "car_needed",
+        smsConsent: false,
         description: initialContent,
         agentUserID: agentUserId || "",
         draft: true,
@@ -688,7 +757,7 @@ export default function PostJobApplicant() {
                   Phone Number
                 </label>
                 <input
-                  type="number"
+                  type="tel"
                   id="tel"
                   className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   required
@@ -700,6 +769,50 @@ export default function PostJobApplicant() {
                 {errors?.tel && (
                   <p className="text-red-500 text-xs">
                     {String(errors?.tel.message)}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label
+                  htmlFor="min-hours"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  Minimum hours per week
+                </label>
+                <input
+                  type="number"
+                  id="min-hours"
+                  className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                  {...register("minHours")}
+                  onBlur={(e) => handleFieldUpdate("minHours", e.target.value)}
+                />
+                {errors?.minHours && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {String(errors?.minHours.message)}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label
+                  htmlFor="compensation"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  Compensation
+                </label>
+                <input
+                  type="text"
+                  id="compensation"
+                  className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                  {...register("compensation")}
+                  onBlur={(e) =>
+                    handleFieldUpdate("compensation", e.target.value)
+                  }
+                />
+                {errors?.compensation && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {String(errors?.compensation.message)}
                   </p>
                 )}
               </div>
@@ -752,28 +865,53 @@ export default function PostJobApplicant() {
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-4">
-              <div className="md:col-span-2">
+            <div className="grid gap-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label
+                    htmlFor="address"
+                    className="block mb-2 text-sm font-medium text-gray-900"
+                  >
+                    Address
+                  </label>
+                  <input
+                    id="address"
+                    type="text"
+                    className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                    {...register("address")}
+                    onBlur={(e) =>
+                      handleFieldUpdate("address", e.target.value)
+                    }
+                  />
+                  {errors.address && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {String(errors.address.message)}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
                 <label
-                  htmlFor="address"
+                  htmlFor="city"
                   className="block mb-2 text-sm font-medium text-gray-900"
                 >
-                  Address
+                  City
                 </label>
                 <input
-                  id="address"
+                  id="city"
                   type="text"
                   className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                  {...register("address")}
-                  onBlur={(e) => handleFieldUpdate("address", e.target.value)}
+                  {...register("city")}
+                  onBlur={(e) => handleFieldUpdate("city", e.target.value)}
                 />
-                {errors.address && (
+                {errors.city && (
                   <p className="text-red-500 text-xs mt-1">
-                    {String(errors.address.message)}
+                    {String(errors.city.message)}
                   </p>
                 )}
               </div>
-
               <div>
                 <label
                   htmlFor="state"
@@ -814,6 +952,26 @@ export default function PostJobApplicant() {
                   </p>
                 )}
               </div>
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                  {...register("email")}
+                  onBlur={(e) => handleFieldUpdate("email", e.target.value)}
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {String(errors.email.message)}
+                  </p>
+                )}
+              </div>
             </div>
           </section>
 
@@ -841,6 +999,95 @@ export default function PostJobApplicant() {
               {errors.description && (
                 <p className="text-red-500 text-xs mt-1">
                   {String(errors.description.message)}
+                </p>
+              )}
+            </div>
+          </section>
+
+          <section className="grid gap-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <h3 className="font-semibold text-sm text-gray-900 antialiased mb-2">
+                  Does the job require caregiver to drive?
+                </h3>
+                <Controller
+                  name="mobility"
+                  control={control}
+                  render={({ field }) => (
+                    <RadioGroup
+                      value={field.value}
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        handleFieldUpdate("mobility", value);
+                      }}
+                      className="flex gap-4"
+                    >
+                      <div className="flex gap-1 items-center">
+                        <RadioGroupItem value="car_needed" />
+                        <Label>Yes</Label>
+                      </div>
+                      <div className="flex gap-1 items-center">
+                        <RadioGroupItem value="no_car_needed" />
+                        <Label>No</Label>
+                      </div>
+                    </RadioGroup>
+                  )}
+                />
+                {errors.mobility && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {String(errors.mobility.message)}
+                  </p>
+                )}
+              </div>
+              <div className="md:pt-7">
+                <Controller
+                  name="smsConsent"
+                  control={control}
+                  render={({ field }) => (
+                    <label className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        {...field}
+                        checked={field.value}
+                        className="form-checkbox h-5 w-5 text-blue-600"
+                      />
+                      <span className="text-sm text-gray-700">
+                        We’ll text you if a provider wants to interview you or
+                        respond to your application. Message & data rates may
+                        apply. Reply STOP to opt out.
+                      </span>
+                    </label>
+                  )}
+                />
+              </div>
+            </div>
+            <div>
+              <h3 className="font-semibold text-sm text-gray-900 antialiased mb-2">
+                Alert preferences
+              </h3>
+              <Controller
+                name="alert_preferences"
+                control={control}
+                render={({ field }: any) => (
+                  <MultiSelectField
+                    name="alert_preferences"
+                    control={control}
+                    isAnimation={true}
+                    options={groupAlertPreferences}
+                    placeholder="How should caregivers contact you?"
+                    maxCount={3}
+                    rules={{ required: true }}
+                    value={field.value}
+                    onChange={(vals: string[]) => {
+                      field.onChange(vals);
+                      handleFieldUpdate("alert_preferences", vals);
+                    }}
+                  />
+                )}
+              />
+              {errors.alert_preferences && (
+                <p className="text-red-500 text-xs mt-1">
+                  {String(errors.alert_preferences.message)}
                 </p>
               )}
             </div>

@@ -77,7 +77,7 @@ const Page = (props: { params: Promise<{ id: string }> }) => {
       };
       // console.log("jo");
       const { data } = await axios.put(
-        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/threads/${id}`,
+        `http://localhost:8081/api/v1/forum/threads/${id}`,
         payload
       );
       return data as string;

@@ -34,11 +34,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ApplicantsTab from "./JobApplicants";
 import RecommendedTab from "./JobRecommended";
 import ProviderApproveJobButton from "./ProviderApproveJobButton";
+import { useToast } from "@/components/ui/use-toast";
 
 // NEW: split components
 
 const API_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+  "http://localhost:8081/api/v1/providers";
 
 export function fmtDate(d?: string | Date | null) {
   if (!d) return "—";
@@ -66,6 +67,7 @@ export default function JobDetail() {
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const schedule = useMemo(
     () => (Array.isArray(job?.schedule) ? job.schedule : []),
@@ -110,6 +112,35 @@ export default function JobDetail() {
   const handleRefresh = async () => {
     setRefreshing(true);
     await fetchJob({ silent: true });
+  };
+
+  const handleCopyJobLink = async () => {
+    if (!jobIdString) return;
+    const link = `https://www.kinscare.org/jobs/${jobIdString}`;
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(link);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = link;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+      toast({
+        title: "Job link copied",
+        description: "Share this link with caregivers to apply.",
+      });
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Copy failed",
+        description: err?.message || "Unable to copy job link.",
+      });
+    }
   };
 
   // ---------- Loading / Error / Empty Job ----------
@@ -298,6 +329,32 @@ export default function JobDetail() {
             Refresh
           </Button>
         </div>
+      </div>
+
+      <div className="flex flex-col gap-3 rounded-2xl border border-slate-200/70 bg-white/90 p-4 shadow-sm md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-slate-900 text-white flex items-center justify-center">
+            <LinkIcon className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+              Share Job Link
+            </p>
+            <p className="text-sm font-medium text-slate-900">
+              https://www.kinscare.org/jobs/{jobIdString || "—"}
+            </p>
+          </div>
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleCopyJobLink}
+          disabled={!jobIdString}
+          className="flex items-center gap-2"
+        >
+          <LinkIcon className="h-4 w-4" />
+          Copy Link
+        </Button>
       </div>
 
       {/* ---- Tabs: Overview | Applicants | Recommended ---- */}

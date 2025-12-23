@@ -30,6 +30,7 @@ import {
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 import {
   Dialog,
@@ -39,11 +40,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Trash2 } from "lucide-react";
+import { Copy, Trash2 } from "lucide-react";
 import { useApiClient } from "@/hooks/useApiClient";
 
 const TWILIO_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio";
+  "http://localhost:8081/api/v1/twilio";
 
 function formatTel(raw?: string | null) {
   if (!raw) return "—";
@@ -113,9 +114,10 @@ export default function TwilioApplicantsDetails() {
   const [isSending, setIsSending] = useState(false);
   const [smsError, setSmsError] = useState<string | null>(null);
   const [smsOk, setSmsOk] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const API_BASE =
-    "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+    "http://localhost:8081/api/v1/providers";
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [targetJob, setTargetJob] = useState<any>(null);
@@ -144,6 +146,35 @@ export default function TwilioApplicantsDetails() {
       console.error("Delete job failed:", e?.response?.data || e?.message || e);
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const handleCopyJobLink = async (jobId?: string | null) => {
+    if (!jobId) return;
+    const link = `https://www.kinscare.org/jobs/${jobId}`;
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(link);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = link;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+      toast({
+        title: "Job link copied",
+        description: "Share the link with caregivers to apply.",
+      });
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Copy failed",
+        description: err?.message || "Unable to copy job link.",
+      });
     }
   };
   const fetchApplicant = async () => {
@@ -805,6 +836,24 @@ export default function TwilioApplicantsDetails() {
                         <Badge variant="secondary" className="text-[11px]">
                           Job ID: {jobId || "—"}
                         </Badge>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                        <span className="font-medium text-slate-700">
+                          Share job link:
+                        </span>
+                        {jobId ? (
+                          <button
+                            type="button"
+                            onClick={() => handleCopyJobLink(jobId)}
+                            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700"
+                          >
+                            https://www.kinscare.org/jobs/{jobId}
+                            <Copy className="h-3.5 w-3.5" />
+                          </button>
+                        ) : (
+                          <span>—</span>
+                        )}
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2">
