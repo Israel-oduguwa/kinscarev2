@@ -27,7 +27,7 @@ type ProviderTwilioLeadFormProps = {
 };
 
 const ENDPOINT =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/webhooks/twilio/capture-lead";
+  "http://localhost:8081/webhooks/twilio/capture-lead";
 
 function sanitizePhone(phone: string) {
   return phone.replace(/[^\d+]/g, "");

@@ -5,6 +5,8 @@ import Editor from "@/components/Editor";
 import MultiSelectField from "@/components/MultiSelect";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/use-toast";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -84,48 +86,29 @@ const schema = yup.object({
 });
 
 // ---------- Component ----------
-export default function PostJobApplicant() {
-  // ✅ Safe access to context
-  const auth = useAuthContext();
-  const userData = auth?.userData ?? null;
-
-  // ✅ Agent ID now guarded
+export default function AgentEditJob() {
+  const { userData } = useAuthContext();
   const agentUserId: string | null = userData?.userID ?? null;
-
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   const params = useParams();
   const id = params?.id as string;
-  const isUserId = typeof id === "string" && id.startsWith("user_");
   const router = useRouter();
   const { privateApi } = useApiClient();
-  const initialContent = "";
+  const { toast } = useToast();
 
-  const [isTwilioSmsProvider, setIsTwilioSmsProvider] = useState<
-    boolean | null
-  >(null);
-  const [providerCheckLoading, setProviderCheckLoading] = useState(false);
-  const [providerCheckError, setProviderCheckError] = useState<string | null>(
-    null
-  );
-  const [providerUserId, setProviderUserId] = useState<string | null>(null);
-  const [providerHash, setProviderHash] = useState<string | null>(null);
-  const [providerProfileImage, setProviderProfileImage] = useState<
-    string | null
-  >(null);
-  const [providerEmail, setProviderEmail] = useState<string | null>(null);
-  const [providerExistingAccount, setProviderExistingAccount] = useState<
-    boolean | null
-  >(null);
-  const [draftJobId, setDraftJobId] = useState<string | null>(null);
-  console.log(isTwilioSmsProvider)
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [initialContent, setInitialContent] = useState("");
+  const [editorKey, setEditorKey] = useState(0);
+  const [applicantId, setApplicantId] = useState<string | null>(null);
+  const [contactEmail, setContactEmail] = useState<string | null>(null);
+
   const {
     register,
     control,
     handleSubmit,
-    setValue,
-    getValues,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
@@ -136,183 +119,91 @@ export default function PostJobApplicant() {
       address: "",
       state: "",
       zipcode: "",
+      tel: "",
       title: "",
       licenses: [] as string[],
       schedule: [] as string[],
       days: DAYS.map((d) => ({ ...d, checked: false })),
-      description: initialContent,
-      draft: true,
+      description: "",
     },
   });
 
-  // Detect whether the provider is a Twilio SMS signup or a non-SMS provider
-  // and capture the provider metadata we need for standard job posting.
-  useEffect(() => {
-    let cancelled = false;
-    const run = async () => {
-      if (!id) return;
-      setProviderCheckLoading(true);
-      setProviderCheckError(null);
+  const loadJob = async () => {
+    if (!id) return;
+    setLoading(true);
+    setLoadError(null);
+    setSubmitError(null);
 
-      let resolvedUserId: string | null = isUserId ? id : null;
+    try {
+      const res = await privateApi.get(
+        `${API_BASE}/jumpstart/agent-jobs/${id}`
+      );
+      const job = res?.data?.data;
+      console.log(job)
 
-      // Try to load provider record (works for Twilio provider IDs as well).
-      try {
-        const res = await privateApi.get(
-          `${API_BASE}/jumpstart/provider/${id}`
-        );
-        const data = res?.data?.data;
-        if (data && !cancelled) {
-          const nextUserId =
-            data.userID ||
-            data.userId ||
-            (typeof data._id === "string" ? data._id : null);
-          resolvedUserId = nextUserId || resolvedUserId;
-          setProviderHash(data.hash || data.temp_hash || null);
-          setProviderProfileImage(data.profileImage || null);
-          setProviderEmail(
-            data.email ||
-              data.contact?.email ||
-              data.contacts?.email ||
-              data?.provider?.email ||
-              null
-          );
-          const existingAccountFlag =
-            typeof data.existingAccount === "boolean"
-              ? data.existingAccount
-              : typeof data.accountCreated === "boolean"
-              ? data.accountCreated
-              : !!(data.userID || data.userId);
-          setProviderExistingAccount(existingAccountFlag);
-        }
-      } catch (err: any) {
-        // Ignore here; we may be dealing with a Twilio applicant without an account.
+      if (!job) {
+        throw new Error("Job not found.");
       }
 
-      // If no provider record and it's a Twilio applicant ID, try applicant lookup.
-      if (!resolvedUserId && !isUserId) {
-        try {
-          const applicantRes = await privateApi.get(
-            `${API_BASE}/jumpstart/applicant/${id}`
-          );
-          const applicant = applicantRes?.data?.data;
-          if (applicant && !cancelled) {
-            const nextUserId =
-              applicant.userID ||
-              applicant.userId ||
-              (typeof applicant._id === "string" ? applicant._id : null);
-            resolvedUserId = nextUserId || resolvedUserId;
-            setProviderHash(applicant.hash || applicant.temp_hash || null);
-            setProviderProfileImage(applicant.profileImage || null);
-            setProviderEmail(
-              applicant.email ||
-                applicant.contact?.email ||
-                applicant.contacts?.email ||
-                applicant?.provider?.email ||
-                null
-            );
-            const existingAccountFlag =
-              typeof applicant.existingAccount === "boolean"
-                ? applicant.existingAccount
-                : typeof applicant.accountCreated === "boolean"
-                ? applicant.accountCreated
-                : !!(applicant.userID || applicant.userId);
-            setProviderExistingAccount(existingAccountFlag);
-          }
-        } catch (err: any) {
-          if (!cancelled) {
-            setProviderCheckError(
-              "Could not load provider/applicant record. Proceeding with fallback check."
-            );
-          }
-        }
-      }
+      const contacts = job.contacts || {};
+      const jobDays = Array.isArray(job.days) ? job.days : [];
+      const nextDays = DAYS.map((d) => ({
+        ...d,
+        checked: jobDays.includes(d.label),
+      }));
 
-      // Check if the provider has a Twilio SMS signup; if the lookup fails,
-      // treat it as a non-SMS provider per API contract.
-      let twilioFlag: boolean | null = resolvedUserId ? false : true;
-      if (resolvedUserId) {
-        try {
-          const twilioRes = await privateApi.get(
-            `${API_BASE}/jumpstart/providers/${resolvedUserId}/twilio-sms`
-          );
-          const twilioData = twilioRes?.data?.data;
-          console.log(twilioData)
-          twilioFlag = !!twilioData?.isTwilioSmsProvider;
-        } catch (err) {
-          twilioFlag = false;
-        }
-      }
+      setApplicantId(job?.agentMeta?.applicantId || job?.applicantId || null);
+      setContactEmail(contacts.email || null);
+      console.log(contacts.tel )
+      reset({
+        firstName: contacts.firstName || "",
+        lastName: contacts.lastName || "",
+        address: contacts.address || "",
+        state: contacts.state || "",
+        zipcode: contacts.zipcode || "",
+        tel: contacts.tel || "",
+        title: job.title || "",
+        licenses: Array.isArray(job.licenses) ? job.licenses : [],
+        schedule: Array.isArray(job.schedule) ? job.schedule : [],
+        days: nextDays,
+        description: job.description || "",
+      });
 
-      if (!cancelled) {
-        setProviderUserId(resolvedUserId);
-        setIsTwilioSmsProvider(twilioFlag);
-        setProviderCheckLoading(false);
-      }
-    };
-
-    run();
-    return () => {
-      cancelled = true;
-    };
-  }, [id, isUserId, privateApi]);
-
-  // --------- Draft saver (safe no-op now) ---------
-  const savetoDB = async (_formData: any) => true;
-
-  const handleFieldUpdate = (name: string, value: any) => {
-    setValue(name as any, value, { shouldValidate: true, shouldDirty: true });
-    const formData = getValues();
-    Object.assign(formData, {
-      userID: agentUserId,
-      draft: true,
-      address: formData.address,
-    });
-    void savetoDB(formData);
+      setInitialContent(job.description || "");
+      setEditorKey((k) => k + 1);
+    } catch (err: any) {
+      const message =
+        err?.response?.data?.error || err?.message || "Failed to load job.";
+      setLoadError(message);
+      toast({
+        variant: "destructive",
+        title: "Failed to load job",
+        description: message,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    loadJob();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const onEditorStateChange = (editorState: any) => {
     setValue("description", editorState, {
       shouldValidate: true,
       shouldDirty: true,
     });
-    const formData = getValues();
-    Object.assign(formData, {
-      userID: agentUserId,
-      draft: true,
-      address: formData.address,
-    });
-    void savetoDB(formData);
   };
 
-  const ensureDraftJobId = async (userId: string) => {
-    if (draftJobId) return draftJobId;
-    const draftRes = await privateApi.post("/api/v1/providers/post-job", {
-      userID: userId,
-      draft: true,
-    });
-    const newJobId =
-      draftRes?.data?.jobId ||
-      draftRes?.data?.jobID ||
-      draftRes?.data?.jobData?._id ||
-      null;
-    setDraftJobId(newJobId);
-    return newJobId;
-  };
-
-  // --------- Submit to API ----------
   const onSubmit = async (values: any) => {
     setSubmitError(null);
-    setSubmitSuccess(null);
 
-    // Extra guard: don't let it submit without a logged-in agent
     if (!agentUserId) {
-      setSubmitError("Missing agent user ID. Please sign in again.");
-      return;
-    }
-
-    if (providerCheckLoading || isTwilioSmsProvider === null) {
-      setSubmitError("Checking provider type. Please try again in a moment.");
+      const message = "Missing agent user ID. Please sign in again.";
+      setSubmitError(message);
+      toast({ variant: "destructive", title: "Missing agent", description: message });
       return;
     }
 
@@ -320,233 +211,129 @@ export default function PostJobApplicant() {
       .filter((d: any) => d.checked)
       .map((d: any) => d.label);
 
-    const contactBlock = {
+    const contacts = {
       firstName: values.firstName,
       lastName: values.lastName,
       address: values.address,
       state: values.state,
       zipcode: values.zipcode,
       tel: values.tel,
-      email: providerEmail || undefined,
+      email: contactEmail || undefined,
     };
 
-    const baseJobData = {
-      title: values.title,
-      licenses: values.licenses,
-      schedule: values.schedule,
-      days: selectedDays,
-      description: values.description,
-      contacts: contactBlock,
+    const payload: any = {
+      jobId: id,
+      agentUserID: agentUserId,
+      job: {
+        title: values.title,
+        licenses: values.licenses,
+        schedule: values.schedule,
+        days: selectedDays,
+        description: values.description,
+        contacts,
+      },
     };
 
-    const submitForNonSmsProvider = async () => {
-      if (!providerUserId) {
-        setSubmitError("Missing provider user ID for standard job posting.");
-        throw new Error("Missing provider user ID");
-      }
+    if (applicantId) {
+      payload.applicantId = applicantId;
+    }
 
-      const jobId = await ensureDraftJobId(providerUserId);
-      if (!jobId) {
-        setSubmitError("Could not create a draft job for this provider.");
-        throw new Error("Draft job creation failed");
-      }
-
-      const payload = {
-        ...baseJobData,
-        draft: false,
-        _id: jobId,
-        userID: providerUserId,
-        hash: providerHash ?? undefined,
-        profileImage: providerProfileImage || userData?.profileImage || "",
-      };
-
-      const res = await privateApi.post("/api/v1/providers/post-job", payload);
-
-      const createdJobId =
-        res?.data?.jobId ||
-        res?.data?.jobID ||
-        res?.data?.jobData?._id ||
-        jobId;
-
-      // Best-effort SMS notification to the provider
-      try {
-        if (values.tel && createdJobId) {
-          const jobUrl = `https://www.kinscare.org/job-post/${createdJobId}`;
-          const message =
-            `Hi! We have posted your caregiver job opening.\n\n` +
-            `Title: ${values.title || "Caregiver job"}\n` +
-            `Location: ${values.zipcode || ""}\n\n` +
-            `Review and approve your job here:\n${jobUrl}`;
-
-          await privateApi.post(`/api/v1/twilio/sms/send`, {
-            body: message,
-            to: values.tel,
-            country: "US",
-          });
-        }
-      } catch (smsErr: any) {
-        console.error(
-          "Failed to send job preview SMS (non-SMS provider):",
-          smsErr?.message || smsErr
-        );
-        setSubmitError(
-          "Job posted, but we couldn't send the SMS preview. You may need to resend manually."
-        );
-      }
-
-      return createdJobId;
-    };
-
-    const submitForTwilioProvider = async () => {
-      const jobOwnerUserId =
-        providerExistingAccount && providerUserId
-          ? providerUserId
-          : agentUserId;
-
-      const payload = {
-        provider: {
-          firstName: values.firstName,
-          lastName: values.lastName,
-          address: values.address,
-          state: values.state,
-          zipcode: values.zipcode,
-        },
-        userID: jobOwnerUserId,
-        job: {
-          title: values.title,
-          licenses: values.licenses,
-          schedule: values.schedule,
-          days: selectedDays,
-          description: values.description,
-        },
-        meta: {
-          createdBy: agentUserId,
-          applicantId: id,
-          hash: userData?.hash ?? null,
-          geocode: userData?.geocode_address ?? null,
-          draft: false,
-        },
-      };
-      console.log(payload)
+    try {
       const res = await privateApi.post(
-        `/api/v1/providers/jumpstart/agent-post-job`,
+        `${API_BASE}/jumpstart/agent-edit-job`,
         payload
       );
 
       if (!res?.data?.ok) {
-        setSubmitError(res?.data?.error || "Failed to post job.");
-        return;
+        throw new Error(res?.data?.error || "Failed to update job.");
       }
 
-      const job = res.data.data;
-      const jobId = job?._id;
+      toast({ title: "Job updated", description: "Changes saved successfully." });
 
-      if (!jobId) {
-        console.warn("AgentPostJob succeeded but no jobId returned.");
+      const updatedJob = res?.data?.data?.job;
+      if (updatedJob) {
+        const updatedContacts = updatedJob.contacts || contacts;
+        const updatedDays = Array.isArray(updatedJob.days)
+          ? updatedJob.days
+          : selectedDays;
+        reset({
+          firstName: updatedContacts.firstName || values.firstName,
+          lastName: updatedContacts.lastName || values.lastName,
+          address: updatedContacts.address || values.address,
+          state: updatedContacts.state || values.state,
+          zipcode: updatedContacts.zipcode || values.zipcode,
+          tel: updatedContacts.tel || values.tel,
+          title: updatedJob.title || values.title,
+          licenses: Array.isArray(updatedJob.licenses)
+            ? updatedJob.licenses
+            : values.licenses,
+          schedule: Array.isArray(updatedJob.schedule)
+            ? updatedJob.schedule
+            : values.schedule,
+          days: DAYS.map((d) => ({
+            ...d,
+            checked: updatedDays.includes(d.label),
+          })),
+          description: updatedJob.description || values.description,
+        });
+        setContactEmail(updatedContacts.email || contactEmail);
+        setInitialContent(updatedJob.description || values.description);
+        setEditorKey((k) => k + 1);
       }
 
-      // --------- Build SMS + send to provider ----------
-      try {
-        const phoneFromForm = values.tel;
-        const toPhone = phoneFromForm;
-
-        if (toPhone && jobId) {
-          const jobUrl = `https://www.kinscare.org/job-post/${jobId}`;
-
-          const message =
-            `Hi! We have posted your caregiver job opening.\n\n` +
-            `Title: ${job.title || "Caregiver job"}\n` +
-            `Location: ${job.contacts?.zipcode || ""}\n\n` +
-            `Review and approve your job here:\n${jobUrl}`;
-
-          const sms_payload = {
-            body: message,
-            to: toPhone,
-            country: "US",
-          };
-
-          await privateApi.post(`/api/v1/twilio/sms/send`, sms_payload);
-        } else {
-          console.warn("No phone available to send job preview SMS.");
-        }
-      } catch (smsErr: any) {
-        console.error(
-          "Failed to send job preview SMS:",
-          smsErr?.message || smsErr
-        );
-        setSubmitError(
-          "Job posted, but we couldn't send the SMS preview. You may need to resend manually."
-        );
-      }
-
-      return jobId;
-    };
-
-    try {
-      if (isTwilioSmsProvider === false) {
-        await submitForNonSmsProvider();
-      } else {
-        await submitForTwilioProvider();
-      }
-
-      // --------- Success: reset + redirect ----------
-      setSubmitSuccess("Job posted successfully.");
-
-      reset({
-        firstName: "",
-        lastName: "",
-        address: "",
-        state: "",
-        zipcode: "",
-        title: "",
-        licenses: [],
-        schedule: [],
-        days: DAYS.map((d) => ({ ...d, checked: false })),
-        description: initialContent,
-        agentUserID: agentUserId || "",
-        draft: true,
-      });
-
-      router.push(`/agent/twilio/provider/${id}`);
-    } catch (e: any) {
-      console.error("AgentPostJob submit error:", e);
-      setSubmitError(
-        e?.response?.data?.error || e?.message || "Failed to post job."
-      );
+      router.push(`/agent/jobs/${id}`);
+    } catch (err: any) {
+      const message =
+        err?.response?.data?.error || err?.message || "Failed to update job.";
+      setSubmitError(message);
+      toast({ variant: "destructive", title: "Update failed", description: message });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl">
+        <div className="grid gap-6">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-10 w-full" />
+          <div className="grid gap-4 md:grid-cols-2">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <Skeleton className="h-48 w-full" />
+        </div>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="max-w-7xl">
+        <Alert className="mb-4" variant="destructive">
+          <AlertDescription>{loadError}</AlertDescription>
+        </Alert>
+        <Button onClick={loadJob}>Try Again</Button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl">
       {!agentUserId && (
         <Alert className="mb-2" variant="destructive">
           <AlertDescription>
-            Agent user ID not found — attribution may be missing.
+            Agent user ID not found — updates may fail.
           </AlertDescription>
-        </Alert>
-      )}
-
-      {providerCheckLoading && (
-        <Alert className="mb-2">
-          <AlertDescription>Checking provider type...</AlertDescription>
-        </Alert>
-      )}
-
-      {providerCheckError && (
-        <Alert className="mb-2" variant="destructive">
-          <AlertDescription>{providerCheckError}</AlertDescription>
         </Alert>
       )}
 
       {submitError && (
         <Alert className="mb-2" variant="destructive">
           <AlertDescription>{submitError}</AlertDescription>
-        </Alert>
-      )}
-
-      {submitSuccess && (
-        <Alert className="mb-2">
-          <AlertDescription>{submitSuccess}</AlertDescription>
         </Alert>
       )}
 
@@ -568,7 +355,6 @@ export default function PostJobApplicant() {
                 type="text"
                 className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                 {...register("title")}
-                onBlur={(e) => handleFieldUpdate("title", e.target.value)}
               />
               {errors.title && (
                 <p className="text-red-500 text-xs mt-1">
@@ -586,7 +372,7 @@ export default function PostJobApplicant() {
                 <Controller
                   control={control}
                   name="licenses"
-                  render={({ field }:any) => (
+                  render={({ field }: any) => (
                     <MultiSelectField
                       name="licenses"
                       control={control}
@@ -598,7 +384,6 @@ export default function PostJobApplicant() {
                       value={field.value}
                       onChange={(vals: string[]) => {
                         field.onChange(vals);
-                        handleFieldUpdate("licenses", vals);
                       }}
                     />
                   )}
@@ -629,7 +414,6 @@ export default function PostJobApplicant() {
                       value={field.value}
                       onChange={(vals: string[]) => {
                         field.onChange(vals);
-                        handleFieldUpdate("schedule", vals);
                       }}
                     />
                   )}
@@ -665,7 +449,6 @@ export default function PostJobApplicant() {
                               const next = [...field.value];
                               next[idx] = { ...d, checked: e.target.checked };
                               field.onChange(next);
-                              handleFieldUpdate("days", next);
                             }}
                           />
                           <span className="text-sm">{d.label}</span>
@@ -688,14 +471,11 @@ export default function PostJobApplicant() {
                   Phone Number
                 </label>
                 <input
-                  type="number"
+                  type="tel"
                   id="tel"
-                  className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   required
                   {...register("tel")}
-                  onBlur={(e) => {
-                    handleFieldUpdate(e.target.name, e.target.value);
-                  }}
                 />
                 {errors?.tel && (
                   <p className="text-red-500 text-xs">
@@ -722,7 +502,6 @@ export default function PostJobApplicant() {
                   type="text"
                   className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                   {...register("firstName")}
-                  onBlur={(e) => handleFieldUpdate("firstName", e.target.value)}
                 />
                 {errors.firstName && (
                   <p className="text-red-500 text-xs mt-1">
@@ -742,7 +521,6 @@ export default function PostJobApplicant() {
                   type="text"
                   className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                   {...register("lastName")}
-                  onBlur={(e) => handleFieldUpdate("lastName", e.target.value)}
                 />
                 {errors.lastName && (
                   <p className="text-red-500 text-xs mt-1">
@@ -765,7 +543,6 @@ export default function PostJobApplicant() {
                   type="text"
                   className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                   {...register("address")}
-                  onBlur={(e) => handleFieldUpdate("address", e.target.value)}
                 />
                 {errors.address && (
                   <p className="text-red-500 text-xs mt-1">
@@ -786,7 +563,6 @@ export default function PostJobApplicant() {
                   type="text"
                   className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                   {...register("state")}
-                  onBlur={(e) => handleFieldUpdate("state", e.target.value)}
                 />
                 {errors.state && (
                   <p className="text-red-500 text-xs mt-1">
@@ -806,7 +582,6 @@ export default function PostJobApplicant() {
                   inputMode="numeric"
                   className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                   {...register("zipcode")}
-                  onBlur={(e) => handleFieldUpdate("zipcode", e.target.value)}
                 />
                 {errors.zipcode && (
                   <p className="text-red-500 text-xs mt-1">
@@ -829,6 +604,7 @@ export default function PostJobApplicant() {
                 name="description"
                 render={({ field }) => (
                   <Editor
+                    key={editorKey}
                     onChange={(val: any) => {
                       field.onChange(val);
                       onEditorStateChange(val);
@@ -847,14 +623,16 @@ export default function PostJobApplicant() {
           </section>
 
           {/* Submit */}
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
             <Button
-              type="submit"
-              disabled={
-                isSubmitting || !agentUserId || providerCheckLoading
-              }
+              type="button"
+              variant="outline"
+              onClick={() => router.push(`/agent/jobs/${id}`)}
             >
-              {isSubmitting ? "Posting..." : "Post Job"}
+              Back to Job
+            </Button>
+            <Button type="submit" disabled={isSubmitting || !agentUserId}>
+              {isSubmitting ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </form>

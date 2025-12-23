@@ -43,7 +43,7 @@ import { Trash2 } from "lucide-react";
 import { useApiClient } from "@/hooks/useApiClient";
 
 const TWILIO_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio";
+  "http://localhost:8081/api/v1/twilio";
 
 function formatTel(raw?: string | null) {
   if (!raw) return "—";
@@ -115,7 +115,7 @@ export default function TwilioApplicantsDetails() {
   const [smsOk, setSmsOk] = useState<string | null>(null);
 
   const API_BASE =
-    "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+    "http://localhost:8081/api/v1/providers";
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [targetJob, setTargetJob] = useState<any>(null);
@@ -156,7 +156,9 @@ export default function TwilioApplicantsDetails() {
         : `${API_BASE}/jumpstart/applicant/${id}`;
 
       const res = await axios.get(endpoint);
+      
       const data = res.data?.data || null;
+      console.log(data)
       setApplicant(data);
       setContacted(!!data?.contacted);
       setAccountCreated(!!data?.accountCreated);
@@ -790,17 +792,22 @@ export default function TwilioApplicantsDetails() {
                     key={jobId || idx}
                     className="p-4 rounded-xl border bg-white"
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <h3 className="text-base font-semibold text-slate-900">
-                          {job.title || "Untitled Job"}
-                        </h3>
-                        <p className="text-xs text-slate-500">
-                          Created: {created}
-                        </p>
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <h3 className="text-base font-semibold text-slate-900">
+                            {job.title || "Untitled Job"}
+                          </h3>
+                          <p className="text-xs text-slate-500">
+                            Created: {created}
+                          </p>
+                        </div>
+                        <Badge variant="secondary" className="text-[11px]">
+                          Job ID: {jobId || "—"}
+                        </Badge>
                       </div>
 
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex flex-wrap items-center gap-2">
                         {jobId ? (
                           <Link href={`/agent/jobs/${jobId}`}>
                             <Button size="sm" variant="outline">
@@ -810,6 +817,15 @@ export default function TwilioApplicantsDetails() {
                         ) : (
                           <Button size="sm" variant="outline" disabled>
                             View Job
+                          </Button>
+                        )}
+                        {jobId ? (
+                          <Link href={`/agent/jobs/${jobId}/edit`}>
+                            <Button size="sm">Edit Job</Button>
+                          </Link>
+                        ) : (
+                          <Button size="sm" disabled>
+                            Edit Job
                           </Button>
                         )}
                         <Button

@@ -38,7 +38,7 @@ import ProviderApproveJobButton from "./ProviderApproveJobButton";
 // NEW: split components
 
 const API_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+  "http://localhost:8081/api/v1/providers";
 
 export function fmtDate(d?: string | Date | null) {
   if (!d) return "—";
@@ -190,16 +190,22 @@ export default function JobDetail() {
   }
 
   const isClaimed = !!job.claimed;
+  const statusTone = isClaimed
+    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+    : "bg-amber-50 text-amber-700 border-amber-200";
   const createdAt = fmtDate(job.created);
   const applicantLinkId = job?.agentMeta?.applicantId || null;
   const paymentLink = `https://www.kinscare.org/add-payment/${job?.agentMeta?.applicantId}`;
   const jobIdString =
     typeof job?._id === "string" ? job._id : job?._id?.toString?.() ?? "";
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-8">
+    <div className="max-w-7xl mx-auto p-6 space-y-8 bg-gradient-to-br from-slate-50 via-white to-slate-100/70 rounded-3xl border border-slate-100">
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
         <div className="space-y-4 flex-1">
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+            Job Overview
+          </p>
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 bg-linear-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
               <Building2 className="h-6 w-6 text-white" />
@@ -213,44 +219,52 @@ export default function JobDetail() {
                   <Calendar className="h-4 w-4" />
                   <span className="text-sm">Created {createdAt}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`h-2 w-2 rounded-full ${
-                      isClaimed ? "bg-green-500" : "bg-amber-500"
-                    }`}
-                  />
-                  <span className="text-sm">
-                    {isClaimed ? "Claimed" : "Available"}
-                  </span>
-                </div>
+                <Badge variant="outline" className={`text-xs ${statusTone}`}>
+                  {isClaimed ? "Claimed" : "Available"}
+                </Badge>
               </div>
             </div>
           </div>
 
           {/* Quick Stats */}
-          <div className="flex flex-wrap gap-4 pt-4">
-            <div className="flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-lg">
-              <Clock className="h-4 w-4 text-slate-600" />
-              <span className="text-sm font-medium text-slate-700">
-                {schedule.length} Schedule Types
-              </span>
+          <div className="grid gap-3 pt-4 sm:grid-cols-3">
+            <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white px-4 py-3 shadow-sm">
+              <div className="h-9 w-9 rounded-xl bg-slate-100 flex items-center justify-center">
+                <Clock className="h-4 w-4 text-slate-600" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">Schedule Types</p>
+                <p className="text-sm font-semibold text-slate-900">
+                  {schedule.length}
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-lg">
-              <FileText className="h-4 w-4 text-slate-600" />
-              <span className="text-sm font-medium text-slate-700">
-                {licenses.length} Licenses
-              </span>
+            <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white px-4 py-3 shadow-sm">
+              <div className="h-9 w-9 rounded-xl bg-slate-100 flex items-center justify-center">
+                <FileText className="h-4 w-4 text-slate-600" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">Licenses</p>
+                <p className="text-sm font-semibold text-slate-900">
+                  {licenses.length}
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-lg">
-              <User className="h-4 w-4 text-slate-600" />
-              <span className="text-sm font-medium text-slate-700">
-                {days.length} Days
-              </span>
+            <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white px-4 py-3 shadow-sm">
+              <div className="h-9 w-9 rounded-xl bg-slate-100 flex items-center justify-center">
+                <User className="h-4 w-4 text-slate-600" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">Working Days</p>
+                <p className="text-sm font-semibold text-slate-900">
+                  {days.length}
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {!job?.approved ? (
             <ProviderApproveJobButton
               initialApproved={job.status === "provider_approved"}
@@ -260,7 +274,7 @@ export default function JobDetail() {
               jobId={jobIdString}
             />
           ) : (
-            <Button disabled className="w-full rounded-xl px-5 py-2.5">
+            <Button disabled className="rounded-xl px-5 py-2.5">
               Approved
             </Button>
           )}
@@ -288,10 +302,25 @@ export default function JobDetail() {
 
       {/* ---- Tabs: Overview | Applicants | Recommended ---- */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="mb-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="applicants">Applicants</TabsTrigger>
-          <TabsTrigger value="recommended">Recommended</TabsTrigger>
+        <TabsList className=" mb-5  rounded-2xl border border-slate-200/70 bg-white/90  shadow-sm">
+          <TabsTrigger
+            value="overview"
+            className="rounded-xl px-4 py-4 text-sm font-medium text-slate-600 data-[state=active]:bg-slate-900 data-[state=active]:text-white data-[state=active]:shadow"
+          >
+            Overview
+          </TabsTrigger>
+          <TabsTrigger
+            value="applicants"
+            className="rounded-xl px-4 py-4 text-sm font-medium text-slate-600 data-[state=active]:bg-slate-900 data-[state=active]:text-white data-[state=active]:shadow"
+          >
+            Applicants
+          </TabsTrigger>
+          <TabsTrigger
+            value="recommended"
+            className="rounded-xl px-4 py-4  text-sm font-medium text-slate-600 data-[state=active]:bg-slate-900 data-[state=active]:text-white data-[state=active]:shadow"
+          >
+            Recommended
+          </TabsTrigger>
         </TabsList>
 
         {/* ============= OVERVIEW TAB ============= */}
@@ -300,7 +329,7 @@ export default function JobDetail() {
             {/* Left Column - Job Details */}
             <div className="lg:col-span-2 space-y-6">
               {/* Job Description Card */}
-              <Card className="bg-white/50 backdrop-blur-sm shadow-sm">
+              <Card className="bg-white/80 backdrop-blur-sm shadow-sm border-slate-100">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl">
                     <FileText className="h-5 w-5 text-blue-600" />
@@ -382,7 +411,7 @@ export default function JobDetail() {
               </Card>
 
               {/* Contact & Location Information */}
-              <Card className="bg-white/50 backdrop-blur-sm shadow-sm">
+              <Card className="bg-white/80 backdrop-blur-sm shadow-sm border-slate-100">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl">
                     <MapPin className="h-5 w-5 text-green-600" />
@@ -453,7 +482,7 @@ export default function JobDetail() {
             {/* Right Column - Meta Information */}
             <div className="space-y-6">
               {/* Status Card */}
-              <Card className="bg-white/50 backdrop-blur-sm shadow-sm">
+              <Card className="bg-white/80 backdrop-blur-sm shadow-sm border-slate-100">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl">
                     <ShieldCheck className="h-5 w-5 text-purple-600" />
@@ -529,7 +558,7 @@ export default function JobDetail() {
               </Card>
 
               {/* Provider Information */}
-              <Card className="bg-white/50 backdrop-blur-sm shadow-sm">
+              <Card className="bg-white/80 backdrop-blur-sm shadow-sm border-slate-100">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl">
                     <User className="h-5 w-5 text-indigo-600" />
@@ -583,7 +612,7 @@ export default function JobDetail() {
               </Card>
 
               {/* Agent Information */}
-              <Card className="bg-white/50 backdrop-blur-sm shadow-sm">
+              <Card className="bg-white/80 backdrop-blur-sm shadow-sm border-slate-100">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl">
                     <Building2 className="h-5 w-5 text-slate-600" />

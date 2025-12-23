@@ -166,12 +166,12 @@ const TwilioApplicantCard: React.FC<TwilioApplicantCardProps> = ({
             {formatTimestamp(providerTimestamp)}
           </span>
         </div>
-        <div className="flex items-center justify-between gap-2 text-[10px] text-slate-500">
+        {/* <div className="flex items-center justify-between gap-2 text-[10px] text-slate-500">
           <span className="uppercase tracking-wide">Team assistance</span>
           <span className="font-medium text-slate-700">
             {formatTimestamp(assistanceRequestedAt)}
           </span>
-        </div>
+        </div> */}
         <div className="flex items-center justify-between gap-2 text-[10px] text-slate-500">
           <span className="uppercase tracking-wide">Last agent action</span>
           <span className="font-medium text-slate-700">

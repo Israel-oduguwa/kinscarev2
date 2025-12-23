@@ -10,7 +10,7 @@ import { notFound } from "next/navigation";
 async function getAllPosts(): Promise<string[]> {
   try {
     const res = await fetch(
-      "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/blogs/get-blog-slugs",
+      "http://localhost:8081/api/v1/blogs/get-blog-slugs",
       {
         cache: "no-store",
       }
@@ -33,7 +33,7 @@ async function getPostBySlug(slug: string) {
   try {
     // console.log(slug, "this is slug");
     const res = await fetch(
-      `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/blogs/blog/${slug}`,
+      `http://localhost:8081/api/v1/blogs/blog/${slug}`,
       {
         cache: "no-store",
       }
