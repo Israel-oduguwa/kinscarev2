@@ -17,7 +17,7 @@ import { useUser } from "@clerk/nextjs";
 
 // ---------- Constants ----------
 const API_BASE =
-  "http://localhost:8081/api/v1/providers";
+  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
 
 const groupLicenses = [
   { label: "CNA", value: "CNA or NAC" },
