@@ -38,7 +38,7 @@ import ProviderApproveJobButton from "./ProviderApproveJobButton";
 // NEW: split components
 
 const API_BASE =
-  "http://localhost:8081/api/v1/providers";
+  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
 
 export function fmtDate(d?: string | Date | null) {
   if (!d) return "—";

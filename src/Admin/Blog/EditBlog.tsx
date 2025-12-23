@@ -190,7 +190,7 @@ export default function EditBlog() {
   const router = useRouter();
   const { id } = useParams();
  const {userData} = useAuthContext();
-  const BASEURL = "http://localhost:8081";
+  const BASEURL = "https://jrp7pe2xhj.us-east-1.awsapprunner.com";
   const {privateApi} = useApiClient()
   // --- State variables for blog fields ---
   const [loading, setLoading] = useState<boolean>(true);
