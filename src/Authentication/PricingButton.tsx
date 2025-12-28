@@ -130,7 +130,7 @@ const PricingButton: React.FC<PricingButtonProps> = ({ children, plan }) => {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <SafeTrigger>{children}</SafeTrigger>
 
-          <DialogContent className="p-0 max-w-md overflow-hidden rounded-2xl border border-gray-100 shadow-2xl">
+          <DialogContent className="p-0 max-w-md max-h-[90vh] overflow-x-auto overflow-y-auto rounded-2xl border border-gray-100 shadow-2xl">
             <div className="px-5 pt-5 pb-3 bg-white border-b border-gray-100">
               <h3 className="text-lg font-semibold text-gray-900 text-center">
                 Sign up to view pricing

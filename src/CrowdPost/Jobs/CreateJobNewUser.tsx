@@ -580,7 +580,7 @@ const CreateJobNewUser: React.FC<any> = ({ jobID, type, job }) => {
 
       {/* Clerk SignUp Dialog */}
       <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
-        <DialogContent className="p-0 max-w-md overflow-hidden rounded-2xl border border-gray-100 shadow-2xl">
+        <DialogContent className="p-0 max-w-md max-h-[90vh] overflow-x-auto overflow-y-auto rounded-2xl border border-gray-100 shadow-2xl">
           <div className="px-5 pt-5 pb-3 bg-white border-b border-gray-100">
             <h3 className="text-lg font-semibold text-gray-900">Post your crowd job</h3>
             <p className="text-sm text-gray-600">

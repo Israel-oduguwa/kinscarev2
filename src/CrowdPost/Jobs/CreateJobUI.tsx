@@ -784,7 +784,7 @@ const CreateJobUI = ({ job, jobID }: any) => {
         />
         {/* Sign-Up Dialog */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="rounded-lg shadow-xl p-6 bg-white max-w-lg">
+          <DialogContent className="rounded-lg shadow-xl p-6 bg-white max-w-lg max-h-[90vh] overflow-x-auto overflow-y-auto">
             <DialogTitle className="text-3xl font-bold tracking-tight text-center">
               Welcome to Kinscare
             </DialogTitle>

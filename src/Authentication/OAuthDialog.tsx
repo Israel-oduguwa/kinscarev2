@@ -196,7 +196,8 @@ const OAuthDialog: React.FC<OAuthDialogProps> = ({
         className="
       p-6
       max-w-md 
-      overflow-hidden 
+      overflow-x-auto 
+      overflow-y-auto 
       rounded-2xl 
       border border-gray-100 
       shadow-2xl

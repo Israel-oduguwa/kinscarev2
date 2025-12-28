@@ -30,7 +30,7 @@ import {
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 import {
   Dialog,
@@ -45,6 +45,27 @@ import { useApiClient } from "@/hooks/useApiClient";
 
 const TWILIO_BASE =
   "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio";
+
+const AGENT_SCRIPTS = [
+  {
+    id: "text-no-answer",
+    title: "Short Text Message (If No Answer)",
+    body:
+      "Hi, this is [Your Name] from KinsCare.\n" +
+      "I'm reaching out because you're looking for a caregiver. We help providers get in front of available caregivers quickly.\n\n" +
+      "I'll try you again, or you can call/text me back at [Your Number] when it's convenient.",
+  },
+  {
+    id: "voicemail-30-35",
+    title: "Voicemail Script (30-35 seconds)",
+    body:
+      "Hi, this is [Your Name] calling from KinsCare.\n\n" +
+      "I'm reaching out because you're currently looking for a caregiver, or were recently. We help providers get visible to caregivers who are actively looking by making it easy to post a job and review local caregivers.\n\n" +
+      "I was hoping to take just 5 minutes to see if we can help speed things up for you.\n\n" +
+      "You can call or text me back at [Your Number].\n" +
+      "Again, this is [Your Name] with KinsCare. Thank you.",
+  },
+];
 
 function formatTel(raw?: string | null) {
   if (!raw) return "—";
@@ -114,7 +135,6 @@ export default function TwilioApplicantsDetails() {
   const [isSending, setIsSending] = useState(false);
   const [smsError, setSmsError] = useState<string | null>(null);
   const [smsOk, setSmsOk] = useState<string | null>(null);
-  const { toast } = useToast();
 
   const API_BASE =
     "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
@@ -165,18 +185,41 @@ export default function TwilioApplicantsDetails() {
         document.execCommand("copy");
         document.body.removeChild(textArea);
       }
-      toast({
-        title: "Job link copied",
+      toast.success("Job link copied", {
         description: "Share the link with caregivers to apply.",
       });
     } catch (err: any) {
-      toast({
-        variant: "destructive",
-        title: "Copy failed",
+      toast.error("Copy failed", {
         description: err?.message || "Unable to copy job link.",
       });
     }
   };
+
+  const handleCopyText = async (text: string, label: string) => {
+    if (!text) return;
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+      toast.success("Copied", {
+        description: `${label} copied to clipboard.`,
+      });
+    } catch (copyErr: any) {
+      toast.error("Copy failed", {
+        description: copyErr?.message || "Unable to copy script.",
+      });
+    }
+  };
+
   const fetchApplicant = async () => {
     if (!id) return;
     setLoading(true);
@@ -185,6 +228,7 @@ export default function TwilioApplicantsDetails() {
       const endpoint = isUserId
         ? `${API_BASE}/jumpstart/provider/${id}`
         : `${API_BASE}/jumpstart/applicant/${id}`;
+        
 
       const res = await axios.get(endpoint);
       
@@ -501,7 +545,123 @@ export default function TwilioApplicantsDetails() {
         </CardContent>
       </Card>
 
-      {/* Progress Tracking */}
+    
+
+      {/* Notes Section */}
+      <Card className="bg-white/50 backdrop-blur-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Send className="h-5 w-5 text-slate-600" />
+            Notes & Communication
+          </CardTitle>
+          <CardDescription>
+            Add notes and track conversations. Newest notes appear first.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Note Composer */}
+          <div className="space-y-4">
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Add a note about your conversation with this applicant (e.g., 'Called and left voicemail', 'Scheduled follow-up for tomorrow', etc.)"
+              className="w-full min-h-[120px] rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white"
+            />
+            <div className="flex items-center justify-between">
+              <div className="text-xs text-slate-500">
+                {agentUserId
+                  ? `You will be recorded as author (${agentUserId}).`
+                  : "Author ID missing; note will be rejected by API."}
+              </div>
+              <Button
+                onClick={onAddNote}
+                disabled={addingNote || !note.trim() || !agentUserId}
+                className="flex items-center gap-2"
+              >
+                {addingNote ? (
+                  <>Adding...</>
+                ) : (
+                  <>
+                    <Send className="h-4 w-4" /> Add Note
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+
+          {/* Existing Notes */}
+          <div className="space-y-4">
+            <h4 className="font-semibold text-slate-900">Previous Notes</h4>
+            {Array.isArray(applicant.notes) && applicant.notes.length > 0 ? (
+              <div className="space-y-3">
+                {applicant.notes.map((n: any) => (
+                  <div
+                    key={n._id || n.createdAt}
+                    className="p-4 bg-slate-50 rounded-xl"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="text-sm font-medium text-slate-900">
+                        Note
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        {fmtDate(n.createdAt)}{" "}
+                      </div>
+                    </div>
+                    <div className="text-sm text-slate-700 whitespace-pre-wrap">
+                      {n.content}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-slate-500">
+                <Send className="h-12 w-12 mx-auto mb-3 text-slate-300" />
+                <p>No notes yet. Add your first note above.</p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Scripts */}
+      <Card className="bg-white/50 backdrop-blur-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <MessageSquareText className="h-5 w-5 text-slate-600" />
+            Scripts
+          </CardTitle>
+          <CardDescription>
+            Quick copy-and-paste templates for outreach.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {AGENT_SCRIPTS.map((script) => (
+            <div
+              key={script.id}
+              className="rounded-xl border border-slate-200 bg-white p-4"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="font-semibold text-slate-900">
+                  {script.title}
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleCopyText(script.body, script.title)}
+                  className="flex items-center gap-2"
+                >
+                  <Copy className="h-4 w-4" />
+                  Copy
+                </Button>
+              </div>
+              <div className="mt-3 text-sm text-slate-700 whitespace-pre-wrap">
+                {script.body}
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+        {/* Progress Tracking */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="bg-white/50 backdrop-blur-sm">
           <CardHeader className="pb-4">
@@ -606,81 +766,6 @@ export default function TwilioApplicantsDetails() {
         </Card>
       </div>
 
-      {/* Notes Section */}
-      <Card className="bg-white/50 backdrop-blur-sm">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Send className="h-5 w-5 text-slate-600" />
-            Notes & Communication
-          </CardTitle>
-          <CardDescription>
-            Add notes and track conversations. Newest notes appear first.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Note Composer */}
-          <div className="space-y-4">
-            <textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="Add a note about your conversation with this applicant (e.g., 'Called and left voicemail', 'Scheduled follow-up for tomorrow', etc.)"
-              className="w-full min-h-[120px] rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white"
-            />
-            <div className="flex items-center justify-between">
-              <div className="text-xs text-slate-500">
-                {agentUserId
-                  ? `You will be recorded as author (${agentUserId}).`
-                  : "Author ID missing; note will be rejected by API."}
-              </div>
-              <Button
-                onClick={onAddNote}
-                disabled={addingNote || !note.trim() || !agentUserId}
-                className="flex items-center gap-2"
-              >
-                {addingNote ? (
-                  <>Adding...</>
-                ) : (
-                  <>
-                    <Send className="h-4 w-4" /> Add Note
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
-
-          {/* Existing Notes */}
-          <div className="space-y-4">
-            <h4 className="font-semibold text-slate-900">Previous Notes</h4>
-            {Array.isArray(applicant.notes) && applicant.notes.length > 0 ? (
-              <div className="space-y-3">
-                {applicant.notes.map((n: any) => (
-                  <div
-                    key={n._id || n.createdAt}
-                    className="p-4 bg-slate-50 rounded-xl"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="text-sm font-medium text-slate-900">
-                        Note
-                      </div>
-                      <div className="text-xs text-slate-500">
-                        {fmtDate(n.createdAt)}{" "}
-                      </div>
-                    </div>
-                    <div className="text-sm text-slate-700 whitespace-pre-wrap">
-                      {n.content}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-slate-500">
-                <Send className="h-12 w-12 mx-auto mb-3 text-slate-300" />
-                <p>No notes yet. Add your first note above.</p>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
       {/* --- SMS Dialog --- */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="lg:max-w-2xl max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">

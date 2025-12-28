@@ -72,7 +72,7 @@ const OauthApply: React.FC<OauthApplyProps> = ({ jobID, job, children }:any) => 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger>{children}</DialogTrigger>
-      <DialogContent className="max-w-md overflow-hidden rounded-2xl  shadow-2xl">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-x-auto overflow-y-auto rounded-2xl shadow-2xl">
         <div className="  bg-white ">
           <h3 className="text-lg font-semibold text-gray-900">Apply to this job</h3>
           <p className="text-sm text-gray-600">

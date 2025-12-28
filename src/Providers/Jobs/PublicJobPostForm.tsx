@@ -767,7 +767,7 @@ const PublicJobPostPage = () => {
       />
 
       <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
-        <DialogContent className="p-0 max-w-md overflow-hidden rounded-2xl border border-gray-100 shadow-2xl">
+        <DialogContent className="p-0 max-w-md max-h-[90vh] overflow-x-auto overflow-y-auto rounded-2xl border border-gray-100 shadow-2xl">
           <div className="px-5 pt-5 bg-white">
             <h3 className="text-lg font-semibold text-gray-900">Finish creating your job</h3>
             <p className="text-sm text-gray-600">

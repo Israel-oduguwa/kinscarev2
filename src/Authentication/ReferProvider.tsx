@@ -252,7 +252,7 @@ const ReferProvider: React.FC<ReferProviderProps> = ({
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>{children}</DialogTrigger>
 
-        <DialogContent className="rounded-lg shadow-xl p-6 bg-white max-w-lg">
+        <DialogContent className="rounded-lg shadow-xl p-6 bg-white max-w-lg max-h-[90vh] overflow-x-auto overflow-y-auto">
           <div>
             <DialogTitle className="text-3xl font-bold tracking-tight  text-center">
               Welcome to Kinscare
@@ -301,7 +301,7 @@ const ReferProvider: React.FC<ReferProviderProps> = ({
 
       {/* Email Signup Dialog */}
       <Dialog open={isEmailDialogOpen} onOpenChange={setIsEmailDialogOpen}>
-        <DialogContent className="rounded-lg shadow-xl p-6 bg-white max-w-lg">
+        <DialogContent className="rounded-lg shadow-xl p-6 bg-white max-w-lg max-h-[90vh] overflow-x-auto overflow-y-auto">
           <div className="flex w-full space-x-10">
             <Button onClick={goBack} size="icon" variant="outline">
               <ArrowBigLeft />
