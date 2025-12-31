@@ -129,14 +129,18 @@ export function EmployerAppSidebar({
   const communityActive = checkIsActive("/community");
   return (
     <SidebarProvider>
-      <Sidebar variant="inset" collapsible="icon">
-        <SidebarHeader>
+      <Sidebar
+        variant="inset"
+        collapsible="icon"
+        className="border-r border-slate-200/70 bg-white/80 backdrop-blur-xl shadow-[0_20px_60px_-40px_rgba(15,23,42,0.4)]"
+      >
+        <SidebarHeader className="border-b border-slate-200/70">
           <SidebarMenu>
             <SidebarMenuItem>
               <Link className="flex items-center  mt-2" href="/">
                 <SidebarMenuButton
                   size="lg"
-                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                  className="rounded-2xl px-3 py-2 data-[state=open]:bg-blue-50 data-[state=open]:text-blue-700"
                 >
                   <div className="flex  items-center justify-center ">
                     <Image
@@ -156,15 +160,17 @@ export function EmployerAppSidebar({
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
-        <SidebarContent>
+        <SidebarContent className="bg-linear-to-b from-white/90 via-white/80 to-slate-50/80">
           <SidebarGroup>
-            <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-xs uppercase tracking-[0.2em] text-slate-500">
+              Provider
+            </SidebarGroupLabel>
             <SidebarMenu>
               {data.navMain.map((item: any) => {
                 const isActive = isActiveLink(item.url, !!item.items);
                 const activeClasses = isActive
-                  ? "bg-blue-50 text-blue-700 border border-blue-100 shadow-sm"
-                  : "hover:bg-gray-50";
+                  ? "bg-gradient-to-r from-blue-50 via-blue-100/70 to-transparent text-blue-800 shadow-[inset_0_0_0_1px_rgba(59,130,246,0.25),0_12px_28px_-24px_rgba(37,99,235,0.55)]"
+                  : "hover:bg-slate-50 hover:border hover:border-slate-200/60";
 
                 return item.items ? (
                   <Collapsible
@@ -179,7 +185,7 @@ export function EmployerAppSidebar({
                           tooltip={item.title}
                           isActive={isActive}
                           data-active={isActive}
-                          className={`relative font-semibold antialiased py-6 my-0.5 [&>svg]:w-6 [&>svg]:h-4 ${activeClasses}`}
+                          className={`relative font-semibold antialiased rounded-xl px-3 py-6 my-0.5 [&>svg]:w-6 [&>svg]:h-4 ${activeClasses}`}
                         >
                           {item.icon && <item.icon />}
                           <span>{item.title}</span>
@@ -212,7 +218,7 @@ export function EmployerAppSidebar({
                         tooltip={item.title}
                         isActive={isActive}
                         asChild
-                        className={`relative font-semibold antialiased py-5 [&>svg]:w-6 [&>svg]:h-4 ${activeClasses}`}
+                        className={`relative font-semibold antialiased rounded-xl px-3 py-5 [&>svg]:w-6 [&>svg]:h-4 ${activeClasses}`}
                       >
                         <Link href={item.url}>
                           {item.icon && <item.icon />}
