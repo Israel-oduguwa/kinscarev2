@@ -12,11 +12,8 @@ export const metadata = {
 
 export default function AgentHome() {
   return (
-    <main className="max-w-5xl mx-auto py-2 px-4">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">
-        Jumpstart Hiring Queue
-      </h1>
+    <section>
       <AgentQueue />
-    </main>
+    </section>
   );
 }

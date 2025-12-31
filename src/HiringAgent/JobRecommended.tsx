@@ -31,7 +31,7 @@ import ProfileAvatar from "@/components/ProfileAvatar";
 
 
 const API_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+  "http://localhost:8081/api/v1/providers";
 
 const groupLicenses = [
   { label: "CNA", value: "CNA or NAC" },
@@ -224,7 +224,7 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
       <CardHeader className="pb-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div className="space-y-2">
-            <CardTitle className="flex items-center gap-3 text-2xl">
+            <CardTitle className="flex items-center gap-3 text-xl">
               <div className="h-10 w-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
                 <Users className="h-5 w-5 text-white" />
               </div>
@@ -261,12 +261,12 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
       <CardContent className="space-y-8">
         {/* Filter Section */}
         <div className="space-y-6">
-          <div className="flex items-center gap-3">
+          {/* <div className="flex items-center gap-3">
             <Filter className="h-5 w-5 text-slate-600" />
             <h3 className="text-lg font-semibold text-slate-900">
               Refine Your Search
             </h3>
-          </div>
+          </div> */}
 
           <div className="grid gap-6 md:grid-cols-3">
             <MultiSelectBox
@@ -468,88 +468,83 @@ export default function RecommendedTab({ jobId }: { jobId: string }) {
                   return (
                     <Card
                       key={u?.userID || idx}
-                      className="border-slate-200 bg-white hover:shadow-md transition-shadow duration-200"
+                      className="border-slate-200 bg-white hover:shadow-lg transition-all duration-200"
                     >
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between gap-4 mb-4">
-                          <div className="flex-1 min-w-0">
-                            <h4 className="text-lg font-semibold text-slate-900 mb-1">
-                              {name}
-                            </h4>
-                            <div className="flex items-center gap-2 text-sm text-slate-600 mb-3">
-                              <MapPin className="h-4 w-4 text-slate-400" />
-                              <span className="truncate">
-                                {loc || "Location not specified"}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-slate-600">
-                              <Phone className="h-4 w-4 text-slate-400" />
-                              <span>{phone || "Phone not available"}</span>
-                            </div>
-
-                            {/* Match Score (if available) */}
-                            {u?.matchScore && (
-                              <div className="flex items-center gap-2 mb-3">
-                                <div className="flex items-center gap-1 px-2 py-1 bg-blue-50 rounded-full">
-                                  <Star className="h-3 w-3 text-blue-600 fill-blue-600" />
-                                  <span className="text-xs font-medium text-blue-700">
-                                    {Math.round(u.matchScore * 100)}% Match
+                      <CardContent className="p-5">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-3 min-w-0">
+                            <ProfileAvatar
+                              size="w-11 h-11"
+                              name={`${u?.fname} ${u?.lname}`}
+                              profileImage={u?.profileImage}
+                            />
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <h4 className="text-base font-semibold text-slate-900 truncate">
+                                  {name}
+                                </h4>
+                                {u?.matchScore && (
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-700">
+                                    <Star className="h-3 w-3 fill-blue-600 text-blue-600" />
+                                    {Math.round(u.matchScore * 100)}%
+                                  </span>
+                                )}
+                              </div>
+                              <div className="mt-1 space-y-1 text-sm text-slate-600">
+                                <div className="flex items-center gap-2">
+                                  <MapPin className="h-4 w-4 text-slate-400" />
+                                  <span className="truncate">
+                                    {loc || "Location not specified"}
                                   </span>
                                 </div>
+                                <div className="flex items-center gap-2">
+                                  <Phone className="h-4 w-4 text-slate-400" />
+                                  <span>{phone || "Phone not available"}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-end gap-2">
+                            <Link href={`/agent/caregiver/${u?.userID}`}>
+                              <Button size="sm" className="text-xs">
+                                View Profile
+                              </Button>
+                            </Link>
+                          </div>
+                        </div>
+
+                        {(avail.length > 0 || lic.length > 0) && (
+                          <div className="mt-4 pt-4 border-t border-slate-100 space-y-2">
+                            {avail.length > 0 && (
+                              <div className="flex flex-wrap gap-2">
+                                {avail.map((s: string) => (
+                                  <Badge
+                                    key={s}
+                                    className="bg-emerald-50 text-emerald-700 border-0 text-xs"
+                                  >
+                                    <Calendar className="h-3 w-3 mr-1" />
+                                    {s}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
+
+                            {lic.length > 0 && (
+                              <div className="flex flex-wrap gap-2">
+                                {lic.map((l: string) => (
+                                  <Badge
+                                    key={l}
+                                    variant="outline"
+                                    className="text-xs border-blue-200 text-blue-700 bg-blue-50"
+                                  >
+                                    <Award className="h-3 w-3 mr-1" />
+                                    {l}
+                                  </Badge>
+                                ))}
                               </div>
                             )}
                           </div>
-                          <ProfileAvatar
-                            size="w-12 h-12"
-                            name={`${u?.fname} ${u?.lname}`}
-                            profileImage={u?.profileImage}
-                          />
-                        </div>
-
-                        {/* Tags */}
-                        <div className="space-y-3">
-                          {avail.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                              {avail.map((s: string) => (
-                                <Badge
-                                  key={s}
-                                  className="bg-green-50 text-green-700 border-0 text-xs"
-                                >
-                                  <Calendar className="h-3 w-3 mr-1" />
-                                  {s}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-
-                          {lic.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                              {lic.map((l: string) => (
-                                <Badge
-                                  key={l}
-                                  variant="outline"
-                                  className="text-xs border-blue-200 text-blue-700 bg-blue-50"
-                                >
-                                  <Award className="h-3 w-3 mr-1" />
-                                  {l}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Action Button */}
-                        <div className="flex justify-end mt-4 pt-4 border-t border-slate-100">
-                          <Link href={`/agent/caregiver/${u?.userID}`}>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-xs"
-                            >
-                              View Profile
-                            </Button>
-                          </Link>
-                        </div>
+                        )}
                       </CardContent>
                     </Card>
                   );

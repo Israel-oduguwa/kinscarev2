@@ -32,6 +32,7 @@ type MatchApplicantPayload = {
 type TwilioColumnProps = {
   columnKey: ColumnKey;
   items: Applicant[];
+  privateApi: any;
   onToggleContacted: (id: string, value: boolean) => void;
   onTogglePostJob: (id: string, value: boolean) => void;
   onToggleAddPayment: (id: string, value: boolean) => void;
@@ -43,6 +44,7 @@ type TwilioColumnProps = {
 const TwilioColumn: React.FC<TwilioColumnProps> = ({
   columnKey,
   items,
+  privateApi,
   onToggleContacted,
   onTogglePostJob,
   onToggleAddPayment,
@@ -77,30 +79,35 @@ const TwilioColumn: React.FC<TwilioColumnProps> = ({
   }, [columnKey]);
 
   return (
-    <div ref={columnRef} className="w-[380px] shrink-0">
+    <div ref={columnRef} className="w-[390px] shrink-0">
       <Card
-        className={`border border-slate-200 bg-slate-50/80 flex flex-col max-h-[75vh] transition-colors ${
-          isDraggedOver ? "border-indigo-400 bg-indigo-50/80" : ""
+        className={`border border-slate-200/70 bg-white/80 flex flex-col max-h-[75vh] transition-all duration-200 shadow-[0_10px_30px_-20px_rgba(15,23,42,0.35)] rounded-2xl ${
+          isDraggedOver
+            ? "border-indigo-400/80 bg-indigo-50/80 shadow-[0_18px_40px_-25px_rgba(79,70,229,0.35)]"
+            : "hover:border-slate-300/70"
         }`}
       >
-        <CardHeader className="pb-2">
-          <div className="flex items-baseline justify-between">
-            <CardTitle className="text-sm font-semibold flex items-center gap-1.5">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-semibold text-slate-900 flex items-center gap-2">
               {COLUMN_CONFIG[columnKey].title}
-              <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-200/70 text-slate-700">
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200/70">
                 {items.length}
               </span>
             </CardTitle>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400">
+              Stage
+            </span>
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 mt-1">
             {COLUMN_CONFIG[columnKey].subtitle}
           </p>
         </CardHeader>
         <Separator />
-        <CardContent className="pt-2 px-2 flex-1 overflow-x-hidden overflow-y-auto">
+        <CardContent className="pt-2 px-3 flex-1 overflow-x-hidden overflow-y-auto">
           <ScrollArea className="h-full pr-2">
             {items.length === 0 ? (
-              <p className="text-[11px] text-slate-400 italic py-4 text-center">
+              <p className="text-[11px] text-slate-400 italic py-6 text-center">
                 No providers in this stage yet.
               </p>
             ) : (
@@ -109,6 +116,7 @@ const TwilioColumn: React.FC<TwilioColumnProps> = ({
                   key={applicant._id}
                   applicant={applicant}
                   columnKey={columnKey}
+                  privateApi={privateApi}
                   onToggleContacted={onToggleContacted}
                   onTogglePostJob={onTogglePostJob}
                   onToggleAddPayment={onToggleAddPayment}

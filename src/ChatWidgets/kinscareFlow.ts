@@ -139,7 +139,7 @@ async function fetchAndCacheCollegeRecos(programOrReco: string): Promise<void> {
 
   try {
     const { data: collegeRecommendation } = await axios.post<CollegeRecoAPIOut>(
-      "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/ai/college-recommendation/",
+      "http://localhost:8081/api/v1/ai/college-recommendation/",
       { program: programOrReco }
     );
 
@@ -799,7 +799,7 @@ async function unknownRecommend(state: FlowState): Promise<{ state: FlowState; u
 
   try {
     const { data } = await axios.post<CareerRecoAPIOut>(
-      "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/ai/recommend-career",
+      "http://localhost:8081/api/v1/ai/recommend-career",
       payload
     );
 

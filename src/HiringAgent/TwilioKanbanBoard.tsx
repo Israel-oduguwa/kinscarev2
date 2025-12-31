@@ -24,6 +24,7 @@ import {
   COLUMN_ORDER,
   ColumnKey,
   FiltersState,
+  FlowState,
   Meta,
   TwilioApplicantRaw,
 } from "./TwilioKanbanTypes";
@@ -54,6 +55,26 @@ function findApplicant(board: BoardState, id: string): Applicant | null {
   return null;
 }
 
+function flowStateToStage(flowState?: FlowState | string | null): ColumnKey {
+  switch (flowState) {
+    case "INTAKE_COMPLETE":
+      return "confirmed";
+    case "JOB_POSTED":
+      return "post_job";
+    case "CARE_GIVERS_SENT":
+      return "add_payment";
+    case "MATCHED":
+      return "match_made";
+    case "STUCK":
+      return "confirmed";
+    case "CLOSED":
+      return "match_made";
+    case "INTAKE_INCOMPLETE":
+    default:
+      return "jobs";
+  }
+}
+
 // Helper: map raw docs from API to initial board state
 function mapApplicantsToBoard(raw: TwilioApplicantRaw[]): BoardState {
   const base: BoardState = {
@@ -64,34 +85,46 @@ function mapApplicantsToBoard(raw: TwilioApplicantRaw[]): BoardState {
     match_made: [],
   };
 
-  raw.forEach((d:any) => {
-    const preferredId = d.userID || d.userId || d.id;
+  raw.forEach((d: any) => {
+    const isFlowDoc =
+      !!d.flowState || !!d.intake || !!d.primaryContact || !!d.payment;
+    const preferredId = d.linkedUserId || d.userID || d.userId || d.id;
     const fallbackId =
       typeof d._id === "string" ? d._id : d._id != null ? String(d._id) : null;
-    const id = preferredId
+    const id = isFlowDoc
+      ? fallbackId || crypto.randomUUID?.() || Math.random().toString(36)
+      : preferredId
       ? String(preferredId)
       : fallbackId || crypto.randomUUID?.() || Math.random().toString(36);
 
     const auth = (d.auth || {}) as Record<string, any>;
+    const intake = (d.intake || {}) as Record<string, any>;
+    const payment = (d.payment || {}) as Record<string, any>;
+    const flowState = (d.flowState || "") as FlowState | string;
 
     const isRegistered =
-      !!d.existingAccount || auth.mode === "clerk" || auth.mode === "email";
+      typeof d.hasAccount === "boolean"
+        ? d.hasAccount
+        : !!d.existingAccount || auth.mode === "clerk" || auth.mode === "email";
 
     const jump = d.jumpstart || d.jump_start || {};
     const contacted =
+      !!intake.providerContacted ||
       !!d.contacted ||
       !!(jump as any).providerContacted ||
       !!(jump as any).provider_contacted ||
       !!(jump as any).providercontacted;
     const match = jump.match || {};
 
-    const paymentApplied = !!jump.paymentApplied;
-    const paymentVerified = !!jump.paymentVerified;
+    const paymentStatus = payment.status || "";
+    const paymentVerified =
+      paymentStatus === "paid" || paymentStatus === "authorized";
+    const paymentApplied = paymentVerified || paymentStatus === "pending";
 
     const matchStatus = (match.status || "") as string;
     const jobStatus = (d.jobStatus || "") as string;
 
-    const matched = matchStatus === "matched";
+    const matched = flowState === "MATCHED" || matchStatus === "matched";
 
     // Provider approval can come from either jobStatus or match.status
     const providerApproved =
@@ -107,12 +140,7 @@ function mapApplicantsToBoard(raw: TwilioApplicantRaw[]): BoardState {
     if (rawStage && COLUMN_ORDER.includes(rawStage as ColumnKey)) {
       stage = rawStage as ColumnKey;
     } else {
-      // 2) Fallback base from flags
-      if (contacted) {
-        stage = "confirmed";
-      } else {
-        stage = "jobs";
-      }
+      stage = flowStateToStage(flowState);
     }
 
     // Helper: only move "forwards" in the pipeline
@@ -125,6 +153,11 @@ function mapApplicantsToBoard(raw: TwilioApplicantRaw[]): BoardState {
     };
 
     // 3) Promote based on underlying facts (never downgrade)
+
+    // If contacted → at least confirmed
+    if (contacted) {
+      advanceTo("confirmed");
+    }
 
     // If there is a job → at least post_job
     const jobCount = typeof d.jobCount === "number" ? d.jobCount : null;
@@ -145,31 +178,35 @@ function mapApplicantsToBoard(raw: TwilioApplicantRaw[]): BoardState {
       advanceTo("match_made");
     }
 
+    if (!contacted && stage === "confirmed") {
+      stage = "jobs";
+    }
+
     // 4) Derived flags for UI from final stage
     const stageIndex = COLUMN_ORDER.indexOf(stage);
     const postJob = stageIndex >= COLUMN_ORDER.indexOf("post_job");
     const addPayment =
-      stageIndex >= COLUMN_ORDER.indexOf("add_payment") ||
-      paymentApplied ||
-      paymentVerified;
+      stageIndex >= COLUMN_ORDER.indexOf("add_payment") || paymentApplied;
     const matchMade = matched || stage === "match_made";
 
-    const paymentNeeded = !paymentApplied && !paymentVerified;
+    const paymentRequired = payment.required !== false;
+    const paymentNeeded = paymentRequired && !paymentVerified;
 
     const applicant: Applicant = {
       ...d,
       _id: id,
-      email: d.email ?? auth.email ?? null,
+      email: d.primaryContact?.email ?? d.email ?? auth.email ?? null,
       phone:
+        d.primaryContact?.phone ??
         d.phone ??
         auth.tel ??
         d.contact?.channel?.address ??
         (d.contact as any)?.channelAddress ??
         null,
-      zipcode: d.zipcode ?? null,
-      source: d.source ?? auth.acquisition_channel ?? "web",
+      zipcode: intake.zipcode ?? d.zipcode ?? null,
+      source: d.entryTrigger ?? d.source ?? auth.acquisition_channel ?? "web",
       channel: d.channel ?? "web",
-      tags: d.tags ?? [],
+      tags: intake.tags ?? d.tags ?? [],
       jobCount: jobCount ?? undefined,
       lastJobCreated: lastJobCreated ?? undefined,
 
@@ -211,7 +248,7 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
   const [filters, setFilters] = React.useState<FiltersState>({
     search: "",
     hasAccount: "all",
-    source: "twilio",
+    source: "sms",
     jobWindow: "any",
     postedJob: "all",
   });
@@ -236,27 +273,9 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
       if (filters.search.trim()) params.search = filters.search.trim();
       if (filters.hasAccount !== "all") params.hasAccount = filters.hasAccount;
 
-      let endpoint = "/api/v1/providers/jumpstart/get-twilio-applicants";
-
-      if (filters.source === "providers") {
-        endpoint = "/api/v1/providers/jumpstart/get-providers";
-        params.sort = "-lastJobCreated";
-
-        if (filters.postedJob !== "all") {
-          params.postedJob = filters.postedJob;
-        }
-
-        if (filters.jobWindow !== "any") {
-          const now = new Date();
-          const days =
-            filters.jobWindow === "3d"
-              ? 3
-              : filters.jobWindow === "2w"
-              ? 14
-              : 28;
-          const from = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
-          params.jobFrom = from.toISOString();
-        }
+      const endpoint = "/api/v1/providers/jumpstart/get-twilio-applicants";
+      if (filters.source !== "all") {
+        params.source = filters.source;
       }
 
       const res = await privateApi.get(endpoint, { params });
@@ -297,7 +316,7 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
     setFilters((prev) => ({ ...prev, hasAccount: value }));
   };
 
-  const handleSourceChange = (value: "twilio" | "providers") => {
+  const handleSourceChange = (value: "sms" | "providers" | "all") => {
     setFilters((prev) => ({
       ...prev,
       source: value,
@@ -368,9 +387,14 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
 
   const getProviderContext = React.useCallback(
     (id: string) => {
-      const applicant = findApplicant(board, id);
-      const userId = applicant?.userID || (applicant as any)?.userId || null;
+      const applicant:any = findApplicant(board, id);
+      const userId =
+        applicant?.linkedUserId ||
+        applicant?.userID ||
+        (applicant as any)?.userId ||
+        null;
       const isNonSms =
+        applicant?.intake?.nonSms === true ||
         applicant?.source === "providers" ||
         applicant?.channel === "providers" ||
         filters.source === "providers";
@@ -509,21 +533,23 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
     // Forward move only: validate provider approval
     if (value) {
       const applicant = findApplicant(board, id);
-      const matchStatus = (applicant?.jumpstart?.match?.status || "") as string;
-      const jobStatus = (applicant?.jobStatus || "") as string;
+      const flowState = (applicant?.flowState || "") as string;
+      const hasJob =
+        !!applicant?.jobId ||
+        !!applicant?.intake?.providerPostJob ||
+        (typeof applicant?.jobCount === "number" && applicant.jobCount > 0);
+      const jobPosted =
+        flowState === "JOB_POSTED" ||
+        flowState === "CARE_GIVERS_SENT" ||
+        flowState === "MATCHED" ||
+        hasJob;
 
-      const providerApproved =
-        matchStatus === "provider_approved" ||
-        matchStatus === "matched" ||
-        jobStatus === "approved" ||
-        jobStatus === "provider_approved";
-
-      if (!providerApproved) {
+      if (!jobPosted) {
         toast({
           variant: "destructive",
-          title: "Provider not approved yet",
+          title: "Job not posted yet",
           description:
-            "The provider has not approved this job post. Wait for approval before moving to Add payment.",
+            "A job must be posted before moving to the Add payment step.",
         });
         return;
       }
@@ -584,9 +610,12 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
 
     // Forward move only: validate payment verified
     if (value) {
-      const paymentVerified = !!applicant?.jumpstart?.paymentVerified;
+      const paymentStatus = applicant?.payment?.status || "";
+      const paymentVerified =
+        paymentStatus === "paid" || paymentStatus === "authorized";
+      const paymentRequired = applicant?.payment?.required !== false;
 
-      if (!paymentVerified) {
+      if (paymentRequired && !paymentVerified) {
         toast({
           variant: "destructive",
           title: "Payment not verified",
@@ -888,41 +917,18 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
   }, [board]);
 
   return (
-    <div className="flex flex-col h-full w-full px-4 md:px-8 py-6 space-y-4">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">
-            KinsCare Agent Board
-          </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Track providers from SMS “YES” replies through to caregiver match.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-slate-500">
-            Total leads:{" "}
-            <span className="font-semibold text-slate-800">{totalCount}</span>
-          </span>
-          {meta && (
-            <span className="text-xs text-slate-400">
-              Page {meta.page} of {meta.pages}
-            </span>
-          )}
-        </div>
-      </div>
-
+    <div className="flex flex-col h-full w-full space-y-6">
       {/* Filters + Legend */}
-      <Card className="border border-slate-200 bg-white/80 backdrop-blur">
-        <CardContent className="pt-4 pb-3 flex flex-col gap-4">
-          <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+      <Card className="border border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
+        <CardContent className="pt-5 pb-4 flex flex-col gap-4">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             {/* Filters */}
             <div className="flex flex-wrap gap-3 items-center">
-              <div className="relative w-full md:w-72">
+              <div className="relative w-full md:w-80">
                 <Search className="w-4 h-4 text-slate-400 absolute left-2.5 top-2.5" />
                 <Input
                   placeholder="Search by email, phone or zipcode..."
-                  className="pl-8 h-9 text-sm"
+                  className="pl-8 h-10 text-sm bg-white/90"
                   value={filters.search}
                   onChange={(e) => handleSearchChange(e.target.value)}
                 />
@@ -932,16 +938,17 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
                 <Filter className="w-4 h-4 text-slate-400" />
                 <Select
                   value={filters.source}
-                  onValueChange={(val: "twilio" | "providers") =>
+                  onValueChange={(val: "sms" | "providers" | "all") =>
                     handleSourceChange(val)
                   }
                 >
-                  <SelectTrigger className="h-9 w-40 text-xs">
+                  <SelectTrigger className="h-10 w-44 text-xs bg-white/90">
                     <SelectValue placeholder="Source" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="twilio">Twilio SMS</SelectItem>
+                    <SelectItem value="sms">SMS flows</SelectItem>
                     <SelectItem value="providers">Non-SMS providers</SelectItem>
+                    <SelectItem value="all">All flows</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -953,7 +960,7 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
                     handleHasAccountChange(val)
                   }
                 >
-                  <SelectTrigger className="h-9 w-40 text-xs">
+                  <SelectTrigger className="h-10 w-44 text-xs bg-white/90">
                     <SelectValue placeholder="Account filter" />
                   </SelectTrigger>
                   <SelectContent>
@@ -972,7 +979,7 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
                       handleJobWindowChange(val)
                     }
                   >
-                    <SelectTrigger className="h-9 w-44 text-xs">
+                    <SelectTrigger className="h-10 w-48 text-xs bg-white/90">
                       <SelectValue placeholder="Job activity" />
                     </SelectTrigger>
                     <SelectContent>
@@ -989,7 +996,7 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
                       handlePostedJobChange(val)
                     }
                   >
-                    <SelectTrigger className="h-9 w-40 text-xs">
+                    <SelectTrigger className="h-10 w-44 text-xs bg-white/90">
                       <SelectValue placeholder="Job posts" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1004,7 +1011,7 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 text-xs"
+                className="h-9 text-xs bg-white/90"
                 onClick={() => fetchApplicants()}
                 disabled={loading}
               >
@@ -1013,37 +1020,58 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
             </div>
 
             {/* Legend */}
-            <div className="flex flex-wrap gap-3 text-xs">
-              <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-purple-500" />
+            <div className="flex flex-wrap gap-3 text-xs text-slate-600">
+              <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1">
+                <span className="h-2.5 w-2.5 rounded-full bg-purple-500" />
                 <span>Unregistered provider</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
                 <span>Registered provider</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-blue-500" />
+              <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1">
+                <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
                 <span>Has fresh job (&lt; 14 days)</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-amber-500" />
+              <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1">
+                <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
                 <span>Payment needed</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-emerald-600 ring-1 ring-emerald-200" />
+              <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-600 ring-2 ring-emerald-200" />
                 <span>Verified</span>
               </div>
             </div>
           </div>
 
+          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+            <span className="rounded-full border border-slate-200 bg-white/80 px-3 py-1">
+              Total leads{" "}
+              <span className="ml-1 font-semibold text-slate-900">
+                {totalCount}
+              </span>
+            </span>
+            {meta && (
+              <span className="rounded-full border border-slate-200 bg-white/80 px-3 py-1">
+                Page{" "}
+                <span className="font-semibold text-slate-900">
+                  {meta.page}
+                </span>{" "}
+                of{" "}
+                <span className="font-semibold text-slate-900">
+                  {meta.pages}
+                </span>
+              </span>
+            )}
+          </div>
+
           {error && (
-            <div className="text-xs text-rose-600 bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-md">
+            <div className="text-xs text-rose-600 bg-rose-50 border border-rose-200 px-3 py-2 rounded-lg">
               {error}
             </div>
           )}
           {dragError && (
-            <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-md">
+            <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded-lg">
               {dragError}
             </div>
           )}
@@ -1051,12 +1079,12 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
       </Card>
 
       {/* Kanban board */}
-      <div className="flex-1 min-h-[400px]">
+      <div className="flex-1 min-h-[400px] rounded-3xl border border-slate-200/70 bg-slate-50/70 p-3 md:p-4 shadow-[0_20px_60px_-45px_rgba(15,23,42,0.35)]">
         {loading ? (
-          <div className="flex gap-4 overflow-x-auto max-w-7xl pb-2">
+          <div className="flex gap-4 overflow-x-auto pb-2">
             {COLUMN_ORDER.map((col) => (
-              <div key={col} className="w-[380px] shrink-0">
-                <Card className="border-slate-200 bg-white/60">
+              <div key={col} className="w-[390px] shrink-0">
+                <Card className="border-slate-200 bg-white/70">
                   <CardContent className="pt-4">
                     <div className="flex items-baseline justify-between mb-2">
                       <div>
@@ -1080,12 +1108,13 @@ const TwilioKanbanBoard: React.FC<TwilioKanbanBoardProps> = ({
             ))}
           </div>
         ) : (
-          <div className="flex gap-4 overflow-x-auto max-w-7xl pb-2">
+          <div className="flex gap-4 overflow-x-auto pb-2">
             {COLUMN_ORDER.map((colKey) => (
               <TwilioColumn
                 key={colKey}
                 columnKey={colKey}
                 items={board[colKey]}
+                privateApi={privateApi}
                 onToggleContacted={handleToggleContacted}
                 onTogglePostJob={handleTogglePostJob}
                 onToggleAddPayment={handleToggleAddPayment}

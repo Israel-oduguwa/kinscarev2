@@ -19,7 +19,7 @@ import ProtectedCandidatesDetails from "@/Providers/Candidates/ProtectedCandidat
 import { useParams } from "next/navigation";
 import { useApiClient } from "@/hooks/useApiClient";
 
-const TWILIO_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio";
+const TWILIO_BASE = "http://localhost:8081/api/v1/twilio";
 
 function formatTel(raw?: string | null) {
   if (!raw) return "—";
@@ -49,8 +49,8 @@ function getInitials(emailOrName: string) {
 // -----------------------------
 const CandidateDetailsSkeleton = () => {
   return (
-    <div className="bg-gray-100 p-6 max-w-6xl mx-auto space-y-4">
-      <div className="relative shadow-sm border bg-white border-gray-200 rounded-lg p-6 space-y-4">
+    <div className="bg-gray-100 p-6  mx-auto space-y-4">
+      <div className="relative order p-4 md:p-6 mb-4 space-y-6 border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
         <div className="flex items-center space-x-4">
           <Skeleton className="w-20 h-20 rounded-full" />
           <div className="flex flex-col space-y-2">
@@ -79,7 +79,7 @@ const CandidateDetailsSkeleton = () => {
           {Array.from({ length: 6 }).map((_, index) => (
             <div
               key={index}
-              className="shadow-sm border bg-white border-gray-200 rounded-lg p-4 space-y-4"
+              className="p-6 border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl"
             >
               <Skeleton className="w-16 h-16 rounded-full mx-auto" />
               <Skeleton className="w-3/4 h-4 rounded mx-auto" />
@@ -102,7 +102,7 @@ function CandidatesCard({ similarCaregivers }: any) {
   return (
     <div key={similarCaregivers.userID} className="w-full mb-4">
       <Link href={`/agent/caregiver/${similarCaregivers.userID}`}>
-        <div className="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
+        <div className=" p-6 border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
           <div className="mb-1 flex min-h-52 flex-col space-y-4">
             <div className="flex justify-between">
               <div className="flex space-x-2 items-center">
@@ -192,7 +192,7 @@ export default function CaregiverDetails() {
   const candidateID = id;
   // Endpoint (keep your existing one)
   const API_URL = useMemo(
-    () => `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/caregivers/${candidateID}`,
+    () => `http://localhost:8081/api/v1/providers/caregivers/${candidateID}`,
     [candidateID]
   );
   // SMS dialog states
@@ -279,7 +279,7 @@ export default function CaregiverDetails() {
 
   if (error || !caregiver) {
     return (
-      <div className="max-w-6xl px-4 md:px-10 py-12 xl:px-0 mx-auto">
+      <div className=" px-4 md:px-10 py-12 xl:px-0 mx-auto">
         <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-800">
           {error || "Caregiver not found."}
         </div>
@@ -290,7 +290,7 @@ export default function CaregiverDetails() {
   return (
     <div>
       {/* Candidate Profile */}
-      <div className="relative  bg-white mb-4 rounded-lg p-4 md:p-6 space-y-6">
+      <div className="relative order p-4 md:p-6 mb-4 space-y-6 border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
         {/* Header Section */}
         <div className="flex flex-col flex-wrap sm:flex-row space-y-4 items-start sm:items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -320,7 +320,7 @@ export default function CaregiverDetails() {
                 {caregiver.zipcode}
               </p>
             </div>
-            <div className="ml-5">
+            <div className="ml-5 ">
               <Button
                 onClick={() => setIsDialogOpen(true)}
                 className="flex items-center gap-2"

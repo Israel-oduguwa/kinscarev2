@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/scan-non-sms",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/payment-reminders",
+      "schedule": "0 * * * *"
+    }
+  ]
+}

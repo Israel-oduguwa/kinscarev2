@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useApiClient } from "@/hooks/useApiClient";
 
 const API_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+  "http://localhost:8081/api/v1/providers";
 
 type Props = {
   jobId: string;
@@ -67,7 +67,7 @@ const ProviderApproveJobButton: React.FC<Props> = ({
         `${API_BASE}/jumpstart/${jobId}/provider-approve`,
         { providerUserID: user.id }
       );
-
+      console.log(res.data)
       if (!res.data?.ok) {
         setErrorMessage(res.data?.message || "Approval failed.");
         return;
@@ -78,7 +78,7 @@ const ProviderApproveJobButton: React.FC<Props> = ({
         res.data?.data?.paymentLink ||
         res.data?.data?.providerLink ||
         null;
-
+      console.log(link)
       setProviderLink(link);
       //send the SMS
       // --------- Build SMS + send to provider ----------

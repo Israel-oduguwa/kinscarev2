@@ -1,55 +1,54 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
-import { SignUp, GoogleOneTap } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { useParams } from "next/navigation";
+import { SignUp } from "@clerk/nextjs";
+import axios from "axios";
 
-export default function TwilioSignup() {
-  const searchParams = useSearchParams();
+export default function AddPaymentSignupPage() {
+  const params = useParams();
+  const flowId = typeof params?.id === "string" ? params.id : "";
+  const [zipcode, setZipcode] = useState<string | null>(null);
+  const [loadingZip, setLoadingZip] = useState(false);
 
-  // Safely extract and decode all params
-  const getParam = (key: string): string | null => {
-    const value = searchParams.get(key);
-    if (!value) return null;
-    try {
-      return decodeURIComponent(value).trim() || null;
-    } catch {
-      return value.trim() || null;
-    }
-  };
-
-  const email = getParam("email")?.toLowerCase() || null;
-  const tempHash = getParam("temp_hash") || null;
-  const twilioId = getParam("twilioId") || null;
-  const zipcode = getParam("zipcode") || null;
-
-  // Build unsafeMetadata — only include truthy values
-  const unsafeMetadata = useMemo(() => {
-    const meta: Record<string, any> = {
-      role: "provider",
-      apply_metadata: true,
-      from_twilio: true,
-      signup_route: "twilio_invite",
+  useEffect(() => {
+    let cancelled = false;
+    const fetchGeo = async () => {
+      try {
+        setLoadingZip(true);
+        const response = await axios.get("/api/ip");
+        const { zip } = response.data || {};
+        if (!cancelled) {
+          setZipcode(zip || "");
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setZipcode("");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingZip(false);
+        }
+      }
     };
 
-    if (email) meta.email = email;
-    if (tempHash) meta.temp_hash = tempHash;
-    if (twilioId) meta.twilioId = twilioId;
-    if (zipcode) meta.zipcode = zipcode;
+    fetchGeo();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
-    return meta;
-  }, [email, tempHash, twilioId, zipcode]);
-  // console.log(unsafeMetadata)
-  // Debug log (remove in prod if needed)
-  useEffect(() => {
-    // console.log("Twilio Invite Detected:", { email, tempHash, twilioId, zipcode });
-    // console.log("unsafeMetadata sent to Clerk:", unsafeMetadata);
-  }, [unsafeMetadata]);
+  const unsafeMetadata = useMemo(
+    () => ({
+      role: "provider",
+      source: "add-payment",
+      signup_route: "add_payment",
+      flowId: flowId || undefined,
+      zipcode: zipcode || undefined,
+    }),
+    [flowId, zipcode]
+  );
 
-  // console.log(unsafeMetadata)
   return (
     <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top,#e0f2fe,#f8fafc_55%)] px-4 py-12">
       <div className="w-full max-w-5xl rounded-[28px] border border-slate-200/60 bg-white shadow-xl overflow-hidden">
@@ -79,6 +78,11 @@ export default function TwilioSignup() {
                 Get notifications on new applicants
               </div>
             </div>
+            {loadingZip && (
+              <p className="mt-6 text-xs text-slate-300">
+                Detecting your location…
+              </p>
+            )}
           </div>
 
           <div className="p-6 md:p-8">
@@ -100,22 +104,23 @@ export default function TwilioSignup() {
                   cardBox:
                     "w-full shadow-none border-none rounded-none bg-white",
                   card: "m-0 p-0 w-full shadow-none border-none",
-                  main: "m-0 p-0 w-full border-none shadow-none flex flex-col gap-0",
+                  main:
+                    "m-0 p-0 w-full border-none shadow-none flex flex-col gap-0",
                   header: "hidden",
                   headerTitle: "hidden",
                   headerSubtitle: "hidden",
                   form: "m-0 p-2 w-full flex flex-col gap-4",
                   formFieldInput: "h-12",
                   formFieldLabel: "text-sm",
-                  socialButtons: "m-0 p-2 pb-4 pt-2 w-full flex flex-col gap-2",
+                  socialButtons:
+                    "m-0 p-2 pb-4 pt-2 w-full flex flex-col gap-2",
                   socialButtonsBlockButton: "h-10",
                   socialButtonsProviderIcon: "w-10",
                   formButtonPrimary:
                     "bg-blue-600 shadow-xl py-2 border-none hover:bg-blue-500",
                   footer: "m-0 p-2 w-full",
                   footerAction: "text-sm text-gray-600",
-                  footerActionLink:
-                    "text-blue-600 font-semibold hover:underline",
+                  footerActionLink: "text-blue-600 font-semibold hover:underline",
                 },
                 layout: {
                   socialButtonsVariant: "blockButton",

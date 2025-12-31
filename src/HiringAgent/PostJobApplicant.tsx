@@ -14,10 +14,11 @@ import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { useApiClient } from "@/hooks/useApiClient";
 import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
 
 // ---------- Constants ----------
 const API_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+  "http://localhost:8081/api/v1/providers";
 
 const groupLicenses = [
   { label: "CNA", value: "CNA or NAC" },
@@ -152,8 +153,6 @@ export default function PostJobApplicant() {
   const [providerExistingAccount, setProviderExistingAccount] = useState<
     boolean | null
   >(null);
-  const [draftJobId, setDraftJobId] = useState<string | null>(null);
-  console.log(isTwilioSmsProvider)
   const {
     register,
     control,
@@ -244,6 +243,7 @@ export default function PostJobApplicant() {
           const applicant = applicantRes?.data?.data;
           if (applicant && !cancelled) {
             const nextUserId =
+              applicant.linkedUserId ||
               applicant.userID ||
               applicant.userId ||
               (typeof applicant._id === "string" ? applicant._id : null);
@@ -251,6 +251,7 @@ export default function PostJobApplicant() {
             setProviderHash(applicant.hash || applicant.temp_hash || null);
             setProviderProfileImage(applicant.profileImage || null);
             const email =
+              applicant.primaryContact?.email ||
               applicant.email ||
               applicant.contact?.email ||
               applicant.contacts?.email ||
@@ -261,7 +262,9 @@ export default function PostJobApplicant() {
               setValue("email", email);
             }
             const existingAccountFlag =
-              typeof applicant.existingAccount === "boolean"
+              typeof applicant.hasAccount === "boolean"
+                ? applicant.hasAccount
+                : typeof applicant.existingAccount === "boolean"
                 ? applicant.existingAccount
                 : typeof applicant.accountCreated === "boolean"
                 ? applicant.accountCreated
@@ -285,8 +288,11 @@ export default function PostJobApplicant() {
           const twilioRes = await privateApi.get(
             `${API_BASE}/jumpstart/providers/${resolvedUserId}/twilio-sms`
           );
-          const twilioData = twilioRes?.data?.data;
+          const twilioData = twilioRes?.data?.data ?? twilioRes?.data;
           twilioFlag = !!twilioData?.isTwilioSmsProvider;
+          if (typeof twilioData?.hasAccount === "boolean") {
+            setProviderExistingAccount(twilioData.hasAccount);
+          }
         } catch (err) {
           twilioFlag = false;
         }
@@ -331,21 +337,6 @@ export default function PostJobApplicant() {
       address: formData.address,
     });
     void savetoDB(formData);
-  };
-
-  const ensureDraftJobId = async (userId: string) => {
-    if (draftJobId) return draftJobId;
-    const draftRes = await privateApi.post("/api/v1/providers/post-job", {
-      userID: userId,
-      draft: true,
-    });
-    const newJobId =
-      draftRes?.data?.jobId ||
-      draftRes?.data?.jobID ||
-      draftRes?.data?.jobData?._id ||
-      null;
-    setDraftJobId(newJobId);
-    return newJobId;
   };
 
   // --------- Submit to API ----------
@@ -393,65 +384,7 @@ export default function PostJobApplicant() {
       contacts: contactBlock,
     };
 
-    const submitForNonSmsProvider = async () => {
-      if (!providerUserId) {
-        setSubmitError("Missing provider user ID for standard job posting.");
-        throw new Error("Missing provider user ID");
-      }
-
-      const jobId = await ensureDraftJobId(providerUserId);
-      if (!jobId) {
-        setSubmitError("Could not create a draft job for this provider.");
-        throw new Error("Draft job creation failed");
-      }
-
-      const payload = {
-        ...baseJobData,
-        draft: false,
-        _id: jobId,
-        userID: providerUserId,
-        hash: providerHash ?? undefined,
-        profileImage: providerProfileImage || userData?.profileImage || "",
-      };
-
-      const res = await privateApi.post("/api/v1/providers/post-job", payload);
-
-      const createdJobId =
-        res?.data?.jobId ||
-        res?.data?.jobID ||
-        res?.data?.jobData?._id ||
-        jobId;
-
-      // Best-effort SMS notification to the provider
-      try {
-        if (values.tel && createdJobId) {
-          const jobUrl = `https://www.kinscare.org/job-post/${createdJobId}`;
-          const message =
-            `Hi! We have posted your caregiver job opening.\n\n` +
-            `Title: ${values.title || "Caregiver job"}\n` +
-            `Location: ${values.zipcode || ""}\n\n` +
-            `Review and approve your job here:\n${jobUrl}`;
-
-          await privateApi.post(`/api/v1/twilio/sms/send`, {
-            body: message,
-            to: values.tel,
-            country: "US",
-          });
-        }
-      } catch (smsErr: any) {
-        console.error(
-          "Failed to send job preview SMS (non-SMS provider):",
-          smsErr?.message || smsErr
-        );
-        setSubmitError(
-          "Job posted, but we couldn't send the SMS preview. You may need to resend manually."
-        );
-      }
-
-      return createdJobId;
-    };
-
-    const submitForTwilioProvider = async () => {
+    const submitWithAgentPostJob = async () => {
       const jobOwnerUserId =
         providerExistingAccount && providerUserId
           ? providerUserId
@@ -483,20 +416,23 @@ export default function PostJobApplicant() {
         meta: {
           createdBy: agentUserId,
           applicantId: id,
+          providerUserID: providerUserId || undefined,
           hash: userData?.hash ?? null,
           geocode: userData?.geocode_address ?? null,
           draft: false,
         },
       };
-      console.log(payload)
+
       const res = await privateApi.post(
         `/api/v1/providers/jumpstart/agent-post-job`,
         payload
       );
 
       if (!res?.data?.ok) {
-        setSubmitError(res?.data?.error || "Failed to post job.");
-        return;
+        const message = res?.data?.error || "Failed to post job.";
+        setSubmitError(message);
+        toast.error("Job post failed", { description: message });
+        return null;
       }
 
       const job = res.data.data;
@@ -535,23 +471,22 @@ export default function PostJobApplicant() {
           "Failed to send job preview SMS:",
           smsErr?.message || smsErr
         );
-        setSubmitError(
-          "Job posted, but we couldn't send the SMS preview. You may need to resend manually."
-        );
+        const message =
+          "Job posted, but we couldn't send the SMS preview. You may need to resend manually.";
+        setSubmitError(message);
+        toast.error("SMS failed", { description: message });
       }
 
       return jobId;
     };
 
     try {
-      if (isTwilioSmsProvider === false) {
-        await submitForNonSmsProvider();
-      } else {
-        await submitForTwilioProvider();
-      }
+      const jobId = await submitWithAgentPostJob();
+      if (!jobId) return;
 
       // --------- Success: reset + redirect ----------
       setSubmitSuccess("Job posted successfully.");
+      toast.success("Job posted successfully.");
 
       reset({
         firstName: "",
@@ -579,14 +514,15 @@ export default function PostJobApplicant() {
       router.push(`/agent/twilio/provider/${id}`);
     } catch (e: any) {
       console.error("AgentPostJob submit error:", e);
-      setSubmitError(
-        e?.response?.data?.error || e?.message || "Failed to post job."
-      );
+      const message =
+        e?.response?.data?.error || e?.message || "Failed to post job.";
+      setSubmitError(message);
+      toast.error("Job post failed", { description: message });
     }
   };
 
   return (
-    <div className="max-w-7xl">
+    <div className="border p-10 border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
       {!agentUserId && (
         <Alert className="mb-2" variant="destructive">
           <AlertDescription>

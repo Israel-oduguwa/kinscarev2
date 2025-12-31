@@ -1,7 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams, useSearchParams, usePathname } from "next/navigation";
+import {
+  useParams,
+  useSearchParams,
+  usePathname,
+  useRouter,
+} from "next/navigation";
 import axios from "axios";
 import { loadStripe } from "@stripe/stripe-js";
 import {
@@ -15,15 +20,15 @@ import Confetti from "react-confetti";
 const stripe_key:any = process.env.STRIPE_PUBLIC_KEY;
 const stripePromise = loadStripe(stripe_key);
 
-const API_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+const API_BASE = "http://localhost:8081/api/v1/providers";
 
 type Applicant = {
   _id: string;
   email: string;
   phone?: string;
   zipcode?: string;
-  existingAccount?: boolean;
-  userID?: string;
+  hasAccount?: boolean;
+  linkedUserId?: string;
   temp_hash?: string;
   channel?: string;
   tags?: string[];
@@ -165,10 +170,21 @@ function PaymentForm({
   );
 }
 
-function ThankYouScreen({ email }: { email: string }) {
+function ThankYouScreen({
+  email,
+  redirectTo,
+}: {
+  email: string;
+  redirectTo: string;
+}) {
+  const router = useRouter();
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      router.replace(redirectTo);
+    }, 2500);
+
     const handleResize = () => {
       if (typeof window === "undefined") return;
       setWindowSize({
@@ -179,8 +195,11 @@ function ThankYouScreen({ email }: { email: string }) {
 
     handleResize();
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [redirectTo, router]);
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 px-4 overflow-hidden">
@@ -193,7 +212,7 @@ function ThankYouScreen({ email }: { email: string }) {
         />
       )}
 
-      <div className="relative max-w-md w-full rounded-2xl border border-emerald-100 bg-white px-6 py-8 shadow-lg">
+      <div className="relative max-w-xl w-full rounded-2xl border border-emerald-100 bg-white px-6 py-8 shadow-lg">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 border border-emerald-100 mb-4">
           <span className="text-2xl">✅</span>
         </div>
@@ -218,8 +237,8 @@ function ThankYouScreen({ email }: { email: string }) {
         </p>
 
         <p className="mt-3 text-[11px] text-gray-500 text-center">
-          If you have any questions, reply directly to your KinsCare emails or
-          contact our support team.
+          You&apos;ll be redirected to finish creating your provider account in
+          a moment.
         </p>
       </div>
     </div>
@@ -259,16 +278,45 @@ function AddPayment() {
 
       try {
         const res = await axios.get<ApplicantResponse>(
-          `${API_BASE}/jumpstart/applicant/${twilioId}`
+          `${API_BASE}/jumpstart/flow/${twilioId}`
         );
 
-        if (!res.data.ok || !res.data.data) {
+        const payload:any = res.data?.data || null;
+        const flow = payload?.flow || payload || null;
+        const merged = flow
+          ? {
+              ...flow,
+              ...payload,
+              email:
+                payload?.email ||
+                flow?.primaryContact?.email ||
+                flow?.email ||
+                "",
+              phone:
+                payload?.phone ||
+                flow?.primaryContact?.phone ||
+                flow?.phone,
+              zipcode:
+                payload?.zipcode ||
+                flow?.intake?.zipcode ||
+                flow?.zipcode,
+              hasAccount:
+                typeof payload?.hasAccount === "boolean"
+                  ? payload.hasAccount
+                  : flow?.hasAccount,
+              linkedUserId:
+                payload?.linkedUserId || flow?.linkedUserId || flow?.userID,
+            }
+          : null;
+
+        const isOk = res.data?.ok !== false;
+        if (!isOk || !merged) {
           setApplicantError(
             res.data.message ||
               "We could not find your request. Please contact support."
           );
         } else {
-          setApplicant(res.data.data);
+          setApplicant(merged);
         }
       } catch (err) {
         console.error(err);
@@ -283,7 +331,7 @@ function AddPayment() {
     fetchApplicant();
   }, [twilioId]);
 
-  // console.log(applicant?.existingAccount, applicant?.userID, twilioId);
+  // console.log(applicant?.hasAccount, applicant?.linkedUserId, twilioId);
 
   const handleCreatePaymentIntent = async () => {
     if (!applicant) return;
@@ -293,7 +341,7 @@ function AddPayment() {
     try {
       // Build payload based on existing account vs new
       const isExisting =
-        applicant.existingAccount === true && !!applicant.userID;
+        applicant.hasAccount === true && !!applicant.linkedUserId;
 
       const payload: any = {
         twilio_signup_id: twilioId,
@@ -301,7 +349,7 @@ function AddPayment() {
       };
 
       if (isExisting) {
-        payload.userID = applicant.userID;
+        payload.userID = applicant.linkedUserId;
       } else {
         payload.temp_hash = applicant.temp_hash;
         payload.email = applicant.email;
@@ -363,14 +411,25 @@ function AddPayment() {
 
   // ✅ If payment is completed, show the Thank You UI
   if (paymentCompleted) {
-    return <ThankYouScreen email={applicant.email} />;
+    const search = new URLSearchParams();
+    if (applicant.email) search.set("email", applicant.email);
+    if (applicant.temp_hash) search.set("temp_hash", applicant.temp_hash);
+    if (twilioId) search.set("twilioId", twilioId);
+    if (applicant.zipcode) search.set("zipcode", applicant.zipcode);
+
+    return (
+      <ThankYouScreen
+        email={applicant.email}
+        redirectTo={`/twilio/signup?${search.toString()}`}
+      />
+    );
   }
 
-  const isExisting = applicant.existingAccount === true && !!applicant.userID;
+  const isExisting = applicant.hasAccount === true && !!applicant.linkedUserId;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 px-4">
-      <div className="max-w-xl w-full rounded-2xl border border-gray-200 bg-white px-6 py-6 shadow-md">
+      <div className="max-w-2xl w-full rounded-2xl border border-gray-200 bg-white px-6 py-6 shadow-md">
         <div className="mb-4">
           <h1 className="text-xl font-semibold text-gray-900">
             Secure your caregiver match

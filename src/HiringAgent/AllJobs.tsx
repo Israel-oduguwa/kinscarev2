@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useEffect, useState, useContext, useMemo } from "react";
-import axios from "axios";
-import Link from "next/link";
-import { useAuthContext } from "@/context/AuthContext";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Building2, RefreshCw, AlertTriangle, MapPin, Calendar, Users, Filter, Plus } from "lucide-react";
+import { useAuthContext } from "@/context/AuthContext";
+import axios from "axios";
+import { AlertTriangle, Building2, Calendar, MapPin, Plus } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 
 type JobDoc = {
   _id: string | { $oid?: string };
@@ -21,7 +21,7 @@ type JobDoc = {
   contacts?: { zipcode?: string; state?: string; city?: string };
 };
 
-const API_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+const API_BASE = "http://localhost:8081/api/v1/providers";
 
 function toIdString(id: any): string {
   if (!id) return "";
@@ -96,7 +96,7 @@ export default function AllJobs() {
 
   if (!agentUserID) {
     return (
-      <div className="max-w-6xl mx-auto p-6">
+      <div className="mx-auto p-6">
         <Alert className="border-amber-200 bg-amber-50">
           <AlertTriangle className="h-4 w-4 text-amber-600" />
           <AlertDescription className="text-amber-800">
@@ -108,26 +108,11 @@ export default function AllJobs() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-8">
+    <div className="p-6 space-y-8">
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-        <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 bg-blue-100 rounded-xl flex items-center justify-center">
-              <Building2 className="h-6 w-6 text-blue-600" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                Your Job Posts
-              </h1>
-              <p className="text-slate-600 mt-1">
-                Manage and track all jobs posted under your agent account
-              </p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-3">
+      
+        {/* <div className="flex items-center gap-3">
           <Button variant="outline" onClick={handleRefresh} disabled={refreshing || loading} className="flex items-center gap-2">
             <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
             {refreshing ? "Refreshing..." : "Refresh"}
@@ -136,13 +121,13 @@ export default function AllJobs() {
             <Plus className="h-4 w-4" />
             New Job
           </Button>
-        </div>
+        </div> */}
       </div>
 
      
 
       {/* Main Content Card */}
-      <Card className="border-slate-200 bg-white/50 backdrop-blur-sm shadow-sm">
+      <Card className="border border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
         <CardHeader className="pb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -225,7 +210,7 @@ export default function AllJobs() {
 
                 return (
                   <Card key={id} className="border-slate-200 bg-white hover:shadow-md transition-shadow duration-200">
-                    <CardContent className="p-6">
+                    <CardContent className="">
                       <div className="flex items-start justify-between gap-4 mb-4">
                         <div className="flex-1 min-w-0">
                           <h3 className="text-lg font-semibold text-slate-900 mb-2 line-clamp-2">

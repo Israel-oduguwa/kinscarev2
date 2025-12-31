@@ -14,11 +14,13 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import axios from "axios";
 import {
+  Activity,
   ArrowLeft,
   Building2,
   Calendar,
   CheckCircle2,
   Loader2,
+  Link as LinkIcon,
   Mail,
   MapPin,
   MessageCircle,
@@ -44,7 +46,7 @@ import { Copy, Trash2 } from "lucide-react";
 import { useApiClient } from "@/hooks/useApiClient";
 
 const TWILIO_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio";
+  "http://localhost:8081/api/v1/twilio";
 
 const AGENT_SCRIPTS = [
   {
@@ -80,6 +82,84 @@ function fmtDate(d?: string | Date | null) {
   } catch {
     return String(d);
   }
+}
+
+function formatEventType(value?: string | null) {
+  if (!value) return "Event";
+  return value
+    .toLowerCase()
+    .split("_")
+    .map((part) => part.slice(0, 1).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function formatFlowState(value?: string | null) {
+  if (!value) return "Unknown";
+  return value
+    .toLowerCase()
+    .split("_")
+    .map((part) => part.slice(0, 1).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function summarizePayload(payload?: Record<string, any> | null) {
+  if (!payload) return null;
+  const entries = Object.entries(payload).filter(([key, v]) => {
+    if (v === undefined || v === null || v === "") return false;
+    const keyLower = key.toLowerCase();
+    if (keyLower.includes("id")) return false;
+    return true;
+  });
+  if (!entries.length) return null;
+  return entries
+    .map(([key, value]) => `${key.replace(/_/g, " ")}: ${String(value)}`)
+    .join(" · ");
+}
+
+function formatActor(actor?: {
+  type?: string;
+  id?: string;
+  channel?: string;
+} | null) {
+  if (!actor) return "System";
+  const typeRaw = actor.type ? actor.type.replace(/_/g, " ") : "System";
+  const type =
+    typeRaw.toLowerCase() === "agent"
+      ? "Agent"
+      : typeRaw.toLowerCase() === "provider"
+      ? "Provider"
+      : typeRaw.toLowerCase() === "caregiver"
+      ? "Caregiver"
+      : "System";
+  const channel =
+    actor.channel && actor.channel !== "internal"
+      ? ` via ${actor.channel.toUpperCase()}`
+      : "";
+  return `${type}${channel}`;
+}
+
+function buildEventSummary(event?: any) {
+  if (!event) return { label: "Activity updated", detail: "" };
+  const eventType = event.eventType as string | undefined;
+  const payload = (event.payload || {}) as Record<string, any>;
+
+  if (eventType === "FLOW_STATE_CHANGED") {
+    const fromState = formatFlowState(payload.from);
+    const toState = formatFlowState(payload.to);
+    const reason = payload.reason ? String(payload.reason) : "";
+    const source = payload.source ? String(payload.source) : "";
+    const extra = [reason, source].filter(Boolean).join(" · ");
+    return {
+      label: `Flow moved from ${fromState} to ${toState}`,
+      detail: extra,
+    };
+  }
+
+  const generic = formatEventType(eventType);
+  const reason = payload.reason ? String(payload.reason) : "";
+  const source = payload.source ? String(payload.source) : "";
+  const detail = [reason, source].filter(Boolean).join(" · ");
+  return { label: generic, detail };
 }
 
 function getInitials(emailOrName: string) {
@@ -135,9 +215,12 @@ export default function TwilioApplicantsDetails() {
   const [isSending, setIsSending] = useState(false);
   const [smsError, setSmsError] = useState<string | null>(null);
   const [smsOk, setSmsOk] = useState<string | null>(null);
+  const [events, setEvents] = useState<any[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(false);
+  const [eventsError, setEventsError] = useState<string | null>(null);
 
   const API_BASE =
-    "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+    "http://localhost:8081/api/v1/providers";
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [targetJob, setTargetJob] = useState<any>(null);
@@ -152,8 +235,11 @@ export default function TwilioApplicantsDetails() {
     if (!targetJob) return;
     setDeleting(true);
     try {
+      const jobId = toIdString(
+        targetJob.jobId || targetJob._id || targetJob.id
+      );
       await privateApi.post(`${API_BASE}/jumpstart/delete-job`, {
-        jobId: toIdString(targetJob.jobId), // stored as ObjectId in snippet
+        jobId, // stored as ObjectId in snippet
         applicantId: id, // Twilio lead id
         requesterId: agentUserId, // optional auth hint
         force: false, // set true only if you want to allow claimed deletions
@@ -195,6 +281,31 @@ export default function TwilioApplicantsDetails() {
     }
   };
 
+  const handleCopyPaymentLink = async () => {
+    if (!twilioSignupId) return;
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(paymentLink);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = paymentLink;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+      toast.success("Payment link copied", {
+        description: "Share this link with the provider to complete payment.",
+      });
+    } catch (err: any) {
+      toast.error("Copy failed", {
+        description: err?.message || "Unable to copy payment link.",
+      });
+    }
+  };
+
   const handleCopyText = async (text: string, label: string) => {
     if (!text) return;
     try {
@@ -225,18 +336,25 @@ export default function TwilioApplicantsDetails() {
     setLoading(true);
     setErr(null);
     try {
-      const endpoint = isUserId
-        ? `${API_BASE}/jumpstart/provider/${id}`
-        : `${API_BASE}/jumpstart/applicant/${id}`;
-        
+      const endpoint = `${API_BASE}/jumpstart/flow/${id}`;
 
       const res = await axios.get(endpoint);
-      
-      const data = res.data?.data || null;
-      console.log(data)
+
+      const payload = res.data?.data || null;
+      const flow = payload?.flow || payload || null;
+      const data =
+        flow && payload
+          ? {
+              ...flow,
+              ...payload,
+              agent_jobs: payload?.agent_jobs || flow?.agent_jobs || [],
+            }
+          : null;
       setApplicant(data);
-      setContacted(!!data?.contacted);
-      setAccountCreated(!!data?.accountCreated);
+      setContacted(!!data?.contacted || !!data?.intake?.providerContacted);
+      setAccountCreated(
+        !!data?.accountCreated || !!data?.intake?.accountCreated
+      );
     } catch (e: any) {
       setErr(
         e?.response?.data?.message || e?.message || "Failed to load applicant."
@@ -251,7 +369,69 @@ export default function TwilioApplicantsDetails() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  useEffect(() => {
+    if (!id || !applicant) return;
+    let cancelled = false;
+    const flowId =
+      toIdString((applicant as any)?.flowId) ||
+      toIdString((applicant as any)?.flow?._id) ||
+      toIdString(applicant?._id) ||
+      id;
+
+    const fetchEvents = async () => {
+      setEventsLoading(true);
+      setEventsError(null);
+      try {
+        const res = await privateApi.get(
+          `${API_BASE}/jumpstart/flow/${flowId}/events`,
+          { params: { page: 1, limit: 50 } }
+        );
+        const payload = res?.data || {};
+        const data = payload.data || payload.events || [];
+        if (!cancelled) {
+          setEvents(Array.isArray(data) ? data : []);
+        }
+      } catch (err: any) {
+        if (!cancelled) {
+          setEventsError(
+            err?.response?.data?.message ||
+              err?.message ||
+              "Failed to load events."
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setEventsLoading(false);
+        }
+      }
+    };
+
+    fetchEvents();
+    return () => {
+      cancelled = true;
+    };
+  }, [id, applicant, privateApi, API_BASE]);
+
+  const email =
+    applicant?.primaryContact?.email ?? applicant?.email ?? "—";
+
+  const zipcode = applicant?.intake?.zipcode ?? applicant?.zipcode ?? "—";
+  const twilioSignupId =
+    applicant?.intake?.twilioSignupId ||
+    applicant?.intake?.twilioSignupID ||
+    applicant?.twilioSignupId ||
+    applicant?.twilioId ||
+    null;
+  const paymentLink = twilioSignupId
+    ? `https://www.kinscare.org/add-payment/${twilioSignupId}`
+    : "";
+  const paymentStatus = applicant?.payment?.status || "";
+  const paymentDone =
+    applicant?.hasAccount === true &&
+    (paymentStatus === "authorized" || paymentStatus === "paid");
+
   const tel =
+    applicant?.primaryContact?.phone ??
     applicant?.phone ??
     applicant?.contact?.channel?.address ??
     applicant?.contact?.channelAddress ??
@@ -261,6 +441,7 @@ export default function TwilioApplicantsDetails() {
     if (!id) return;
     setSavingContacted(true);
     const providerUserId =
+      (typeof applicant?.linkedUserId === "string" && applicant.linkedUserId) ||
       (typeof applicant?.userID === "string" && applicant.userID) ||
       (typeof (applicant as any)?.userId === "string" && (applicant as any).userId) ||
       (isUserId ? id : null);
@@ -279,10 +460,13 @@ export default function TwilioApplicantsDetails() {
           }
         );
       } else {
-        await privateApi.post(`${API_BASE}/jumpstart/edit-twilio-details`, {
-          id,
-          contacted,
-        });
+        await privateApi.post(
+          `${API_BASE}/jumpstart/twilio-applicants/${id}/contacted`,
+          {
+            contacted,
+            agentId: agentUserId || undefined,
+          }
+        );
       }
     } catch (e: any) {
       setContacted((v) => !v);
@@ -368,7 +552,7 @@ export default function TwilioApplicantsDetails() {
 
   if (loading) {
     return (
-      <div className="p-6 space-y-6 max-w-6xl mx-auto">
+      <div className=" space-y-6 mx-auto">
         <div className="flex items-center gap-4">
           <Skeleton className="h-12 w-12 rounded-full" />
           <div className="space-y-2">
@@ -387,7 +571,7 @@ export default function TwilioApplicantsDetails() {
 
   if (err) {
     return (
-      <div className="p-6 max-w-6xl mx-auto">
+      <div className="p-6 mx-auto">
         <Alert variant="destructive" className="mb-6">
           <AlertDescription>{err}</AlertDescription>
         </Alert>
@@ -416,25 +600,45 @@ export default function TwilioApplicantsDetails() {
     );
   }
 
-  const tags: string[] = Array.isArray(applicant.tags) ? applicant.tags : [];
+  const tags: string[] = Array.isArray(applicant?.intake?.tags)
+    ? applicant.intake.tags
+    : Array.isArray(applicant.tags)
+    ? applicant.tags
+    : [];
   const agentJobs: any[] = Array.isArray(applicant.agent_jobs)
     ? applicant.agent_jobs
     : [];
-
+  const recentJobId = agentJobs.reduce((latestId: string | null, job: any) => {
+    const jobId = toIdString(job.jobId || job._id || job.id);
+    if (!jobId) return latestId;
+    const dateValue = job.created || job.createdAt || job.updatedAt;
+    const date = dateValue ? new Date(dateValue).getTime() : 0;
+    if (!latestId) return jobId;
+    const latestJob = agentJobs.find(
+      (item: any) => toIdString(item.jobId || item._id || item.id) === latestId
+    );
+    const latestDateValue =
+      latestJob?.created || latestJob?.createdAt || latestJob?.updatedAt;
+    const latestDate = latestDateValue
+      ? new Date(latestDateValue).getTime()
+      : 0;
+    return date > latestDate ? jobId : latestId;
+  }, null);
+console.log(applicant)
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+    <div className=" space-y-6 ">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="flex items-start gap-4">
           <div className="h-14 w-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-lg font-semibold">
-            {String(applicant?.email || "?")
+            {String(email || "?")
               .slice(0, 1)
               .toUpperCase()}
           </div>
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-2xl font-bold text-slate-900">
-                {applicant?.email || "No email provided"}
+                {email || "No email provided"}
               </h1>
               {applicant?.jump_start && (
                 <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-0">
@@ -476,18 +680,27 @@ export default function TwilioApplicantsDetails() {
             </Button>
           </Link>
           <Button
+            variant="outline"
+            onClick={() => handleCopyJobLink(recentJobId)}
+            disabled={!recentJobId}
+            className="flex items-center gap-2"
+          >
+            <Copy className="h-4 w-4" />
+            Copy latest job
+          </Button>
+          {/* <Button
             variant="ghost"
             onClick={() => window.history.back()}
             className="flex items-center gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
             Back
-          </Button>
+          </Button> */}
         </div>
       </div>
 
       {/* Contact Information */}
-      <Card className="bg-white/50 backdrop-blur-sm">
+      <Card className="border border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
         <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-2 text-lg">
             <User className="h-5 w-5 text-slate-600" />
@@ -513,7 +726,7 @@ export default function TwilioApplicantsDetails() {
               <div>
                 <p className="text-sm font-medium text-slate-600">Email</p>
                 <p className="font-semibold text-slate-900 truncate">
-                  {applicant.email || "—"}
+                  {email || "—"}
                 </p>
               </div>
             </div>
@@ -525,7 +738,7 @@ export default function TwilioApplicantsDetails() {
               <div>
                 <p className="text-sm font-medium text-slate-600">Zipcode</p>
                 <p className="font-semibold text-slate-900">
-                  {applicant.zipcode || "—"}
+                  {zipcode}
                 </p>
               </div>
             </div>
@@ -545,10 +758,110 @@ export default function TwilioApplicantsDetails() {
         </CardContent>
       </Card>
 
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between p-4 border border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-blue-600 text-white flex items-center justify-center">
+            <CheckCircle2 className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+              {paymentDone ? "Payment status" : "Payment Link"}
+            </p>
+            <p className="text-sm font-medium text-slate-900">
+              {paymentDone
+                ? "Payment done"
+                : twilioSignupId
+                ? `https://www.kinscare.org/add-payment/${twilioSignupId}`
+                : "Payment link unavailable"}
+            </p>
+          </div>
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleCopyPaymentLink}
+          disabled={!twilioSignupId || paymentDone}
+          className="flex items-center gap-2"
+        >
+          <LinkIcon className="h-4 w-4" />
+          {paymentDone ? "Payment done" : "Copy Payment Link"}
+        </Button>
+      </div>
+
+      {/* Event Log */}
+      {/* <Card className="bg-white/50 backdrop-blur-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Activity className="h-5 w-5 text-slate-600" />
+            Event Log
+          </CardTitle>
+          <CardDescription>
+            Timeline of actions captured in the flow.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {eventsLoading ? (
+            <div className="space-y-3">
+              <div className="h-4 w-40 bg-slate-200 rounded" />
+              <div className="h-4 w-64 bg-slate-200 rounded" />
+              <div className="h-4 w-52 bg-slate-200 rounded" />
+            </div>
+          ) : eventsError ? (
+            <Alert variant="destructive">
+              <AlertDescription>{eventsError}</AlertDescription>
+            </Alert>
+          ) : events.length === 0 ? (
+            <div className="text-sm text-slate-500">
+              No events yet. New activity will appear here.
+            </div>
+          ) : (
+            <div className="max-h-80 overflow-y-auto space-y-4 pr-1">
+              {events.map((evt: any) => {
+                const payloadText = summarizePayload(evt.payload);
+                const summary = buildEventSummary(evt);
+                return (
+                  <div
+                    key={evt._id || evt.createdAt}
+                    className="rounded-xl border border-slate-200 bg-white p-4"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className="text-[11px]">
+                          {formatEventType(evt.eventType)}
+                        </Badge>
+                        <span className="text-xs text-slate-500">
+                          {formatActor(evt.actor)}
+                        </span>
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        {fmtDate(evt.createdAt)}
+                      </div>
+                    </div>
+                    <div className="mt-2 text-sm text-slate-700">
+                      {summary.label}
+                    </div>
+                    {summary.detail && (
+                      <div className="mt-1 text-xs text-slate-500">
+                        {summary.detail}
+                      </div>
+                    )}
+                    {payloadText && (
+                      <div className="mt-2 text-xs text-slate-500">
+                        {payloadText}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card> */}
+
     
 
       {/* Notes Section */}
-      <Card className="bg-white/50 backdrop-blur-sm">
+      <Card className="border border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
         <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Send className="h-5 w-5 text-slate-600" />
@@ -592,9 +905,10 @@ export default function TwilioApplicantsDetails() {
           {/* Existing Notes */}
           <div className="space-y-4">
             <h4 className="font-semibold text-slate-900">Previous Notes</h4>
-            {Array.isArray(applicant.notes) && applicant.notes.length > 0 ? (
+            {Array.isArray(applicant?.intake?.notes) &&
+            applicant.intake.notes.length > 0 ? (
               <div className="space-y-3">
-                {applicant.notes.map((n: any) => (
+                {applicant.intake.notes.map((n: any) => (
                   <div
                     key={n._id || n.createdAt}
                     className="p-4 bg-slate-50 rounded-xl"
@@ -624,7 +938,7 @@ export default function TwilioApplicantsDetails() {
       </Card>
 
       {/* Scripts */}
-      <Card className="bg-white/50 backdrop-blur-sm">
+      <Card className="border border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
         <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-2 text-lg">
             <MessageSquareText className="h-5 w-5 text-slate-600" />
@@ -662,7 +976,7 @@ export default function TwilioApplicantsDetails() {
         </CardContent>
       </Card>
         {/* Progress Tracking */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="bg-white/50 backdrop-blur-sm">
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2 text-lg">
@@ -764,7 +1078,7 @@ export default function TwilioApplicantsDetails() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
 
       {/* --- SMS Dialog --- */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -773,11 +1087,11 @@ export default function TwilioApplicantsDetails() {
             <DialogTitle className="flex flex-col items-center justify-center text-center">
               <div className="mb-3">
                 <div className="h-12 w-12 rounded-full bg-indigo-600 text-white flex items-center justify-center text-lg font-semibold">
-                  {getInitials(applicant?.email || "A")}
+                  {getInitials(email || "A")}
                 </div>
               </div>
               <p className="font-bold text-2xl text-gray-800">
-                {applicant?.email || "Applicant"}
+                {email || "Applicant"}
               </p>
               <div className="flex items-center space-x-2 mt-2 text-gray-700">
                 <Phone size={16} />
@@ -835,7 +1149,7 @@ export default function TwilioApplicantsDetails() {
                   className="block p-2.5 w-full text-sm focus-visible:outline-blue-500 text-gray-900 bg-gray-50 rounded-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                 />
                 <div className="text-xs text-gray-500 mt-2">
-                  Default is <b>US</b>. Use ISO code, e.g., <b>NG</b>, <b>CA</b>
+                  Default is <b>US</b>. Use ISO code, e.g., <b>CA</b>
                   .
                 </div>
               </div>
@@ -891,7 +1205,7 @@ export default function TwilioApplicantsDetails() {
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
               {agentJobs.map((job: any, idx: number) => {
-                const jobId = toIdString(job.jobId);
+                const jobId = toIdString(job.jobId || job._id || job.id);
                 const created = fmtDate(job.created);
                 const schedule: string[] = Array.isArray(job.schedule)
                   ? job.schedule
@@ -900,7 +1214,7 @@ export default function TwilioApplicantsDetails() {
                   ? job.licenses
                   : [];
                 const days: string[] = Array.isArray(job.days) ? job.days : [];
-                const zipcode = job.zipcode || applicant.zipcode || "—";
+                const zipcode = job.zipcode || applicant?.intake?.zipcode || applicant.zipcode || "—";
                 const state = job.state || "—";
 
                 return (

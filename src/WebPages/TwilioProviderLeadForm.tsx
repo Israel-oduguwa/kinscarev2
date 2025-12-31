@@ -27,7 +27,7 @@ type ProviderTwilioLeadFormProps = {
 };
 
 const ENDPOINT =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/webhooks/twilio/capture-lead";
+  "http://localhost:8081/webhooks/twilio/capture-lead";
 
 function sanitizePhone(phone: string) {
   return phone.replace(/[^\d+]/g, "");
@@ -120,32 +120,36 @@ export default function TwilioProviderLeadForm({
   const isSubmitting = status === "submitting";
 
   const outerClass = isDashboard
-    ? "max-w-4xl mx-auto space-y-8"
+    ? "max-w-5xl space-y-6"
     : "min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white py-16 px-4";
   const textAccent = isDashboard ? "text-blue-600" : "text-cyan-300";
   const headingColor = isDashboard ? "text-slate-900" : "text-white";
   const subTextColor = isDashboard ? "text-slate-600" : "text-slate-300";
   const cardClass = isDashboard
-    ? "bg-white border border-slate-200 shadow-sm text-slate-900"
+    ? "bg-white/80 border border-slate-200/70 shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] backdrop-blur text-slate-900 rounded-2xl"
     : "bg-slate-900/70 border border-slate-800 shadow-2xl backdrop-blur text-white";
   const cardDescriptionColor = isDashboard ? "text-slate-600" : "text-slate-300";
   const labelColor = isDashboard ? "text-slate-700" : "text-slate-200";
   const inputClass = isDashboard
-    ? ""
+    ? "bg-white/90 border-slate-200 focus-visible:ring-blue-500 focus-visible:ring-offset-0"
     : "bg-slate-800 border-slate-700 text-white placeholder:text-slate-500";
   const helperTextColor = isDashboard ? "text-slate-500" : "text-slate-400";
+  const headerAlign = isDashboard ? "text-left" : "text-center";
+  const buttonClass = isDashboard
+    ? "w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+    : "w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold";
 
   return (
     <div className={outerClass}>
-      <div className="max-w-3xl mx-auto space-y-8">
-        <div className="text-center space-y-3">
+      <div className=" space-y-8">
+        <div className={`${headerAlign} space-y-3`}>
           <p className={`${textAccent} text-xs font-semibold tracking-widest uppercase`}>
             Twilio SMS Flow
           </p>
           <h1 className={`text-3xl md:text-4xl font-bold leading-tight ${headingColor}`}>
             Add a Provider to the SMS Flow
           </h1>
-          <p className={`${subTextColor} max-w-2xl mx-auto`}>
+          <p className={`${subTextColor}`}>
             Capture a provider&apos;s contact details so we can enroll them into the
             Twilio SMS flow and keep the conversation going.
           </p>
@@ -209,7 +213,7 @@ export default function TwilioProviderLeadForm({
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold"
+                className={buttonClass}
               >
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">

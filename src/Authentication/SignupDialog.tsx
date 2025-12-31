@@ -156,7 +156,7 @@
 //         });
 
 //         await axios.post(
-//           "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/create_user",
+//           "http://localhost:8081/api/v1/auth/create_user",
 //           payload
 //         );
 

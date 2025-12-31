@@ -5,8 +5,10 @@ import { useAuthContext } from "@/context/AuthContext";
 import AgentAuth from "@/HiringAgent/AgentAuth";
 import { UserButton } from "@clerk/nextjs";
 import {
+  ArrowLeft,
   DoorClosed,
   DoorOpen,
+  LineChart,
   LogOut,
   Menu,
   MessageCircle,
@@ -38,6 +40,12 @@ const agentLinks = [
     icon: <WorkflowIcon className="h-5 w-5" />,
     description: "Your Job Postings",
   },
+  {
+    href: "/agent/metrics",
+    label: "Metrics",
+    icon: <LineChart className="h-5 w-5" />,
+    description: "Jumpstart performance insights",
+  },
   // {
   //   href: "/agent/caregivers",
   //   label: "Caregivers",
@@ -46,12 +54,39 @@ const agentLinks = [
   // },
 ];
 
+const pageHeaderMap: Record<string, { title: string; description: string }> = {
+  "/agent": {
+    title: "Jumpstart Hiring Queue",
+    description:
+      "Review new applications, assign interviews, and keep the pipeline moving.",
+  },
+  "/agent/twilio": {
+    title: "Twilio Applicants",
+    description: "Manage Twilio SMS leads and job actions for providers.",
+  },
+  "/agent/jobs": {
+    title: "All Jobs",
+    description: "Track job postings, updates, and provider activity.",
+  },
+  "/agent/metrics": {
+    title: "Jumpstart Metrics",
+    description: "Visualize pipeline health and conversion performance.",
+  },
+};
+
 export default function AgentLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const activeLink = agentLinks.find((link) => link.href === pathname);
+  const pageHeader = pageHeaderMap[pathname ?? ""] ?? null;
+  const pageTitle = pageHeader?.title ?? activeLink?.label ?? "Agent Dashboard";
+  const pageDescription =
+    pageHeader?.description ??
+    activeLink?.description ??
+    "Overview of your hiring pipeline and tasks";
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { contactData, userData }: any = useAuthContext();
@@ -64,7 +99,12 @@ export default function AgentLayout({
 
   return (
     <AgentAuth>
-      <div className="min-h-screen flex bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="min-h-screen flex bg-slate-50 relative overflow-hidden">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-32 -right-32 h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.2),transparent_62%)] blur-3xl" />
+          <div className="absolute -bottom-40 -left-40 h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.16),transparent_60%)] blur-3xl" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.2)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.2)_1px,transparent_1px)] [background-size:72px_72px] opacity-20" />
+        </div>
         {/* Mobile Header */}
         <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-xl border-b border-slate-200 z-30 flex items-center justify-between px-4">
           <div className="flex items-center gap-3">
@@ -97,7 +137,7 @@ export default function AgentLayout({
 
         {/* Sidebar - Desktop */}
         <aside
-          className={`fixed top-0 left-0 h-screen bg-white/80 backdrop-blur-xl border-r border-slate-200/60 shadow-sm z-20 flex-col hidden md:flex transition-all duration-300 ease-in-out ${
+          className={`fixed top-0 left-0 h-screen bg-white/80 backdrop-blur-xl border-r border-slate-200/70 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.45)] z-20 flex-col hidden md:flex transition-all duration-300 ease-in-out ${
             isSidebarCollapsed ? "w-20" : "w-80"
           }`}
         >
@@ -402,15 +442,38 @@ export default function AgentLayout({
 
         {/* Main Content */}
         <main
-          className={`flex-1 min-h-screen px-4 md:px-8 py-1 relative transition-all duration-300 ${
+          className={`flex-1 min-h-screen min-w-0 w-full px-4 md:px-10 py-6 md:py-8 relative transition-all duration-300 overflow-x-hidden ${
             isSidebarCollapsed ? "md:ml-20" : "md:ml-80"
           }`}
         >
-          <div className="pt-16 md:pt-8">
-            {/* Main content card */}
-            <div className="w-full h-full min-h-[calc(100vh-4rem)] mx-auto bg-white/70 backdrop-blur-xl shadow-sm rounded-3xl p-6 md:p-8 border border-white/40 relative z-10">
-              {children}
+          <div className="pt-16  md:pt-4 max-w-[1600px] w-full mx-auto relative z-10">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6 md:mb-8">
+              <div>
+                <div className="text-xs uppercase tracking-[0.2em] text-slate-500 font-semibold">
+                  Agent Workspace
+                </div>
+                <h1 className="text-2xl md:text-3xl font-semibold text-slate-900 font-[family:var(--header-font)]">
+                  {pageTitle}
+                </h1>
+                <p className="text-sm text-slate-600 mt-1">{pageDescription}</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="hidden sm:flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm text-slate-600 shadow-sm">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,0.15)]" />
+                  Live queue updates
+                </div>
+                <Button
+                  variant="link"
+                  onClick={() => window.history.back()}
+                  className="flex items-center gap-2"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Back
+                </Button>
+              </div>
             </div>
+            {/* Main content card */}
+            <div>{children}</div>
           </div>
 
           {/* Background decorative elements */}

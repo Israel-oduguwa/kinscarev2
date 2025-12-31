@@ -15,12 +15,21 @@ export const COLUMN_ORDER: ColumnKey[] = [
   "match_made",
 ];
 
+export type FlowState =
+  | "INTAKE_INCOMPLETE"
+  | "INTAKE_COMPLETE"
+  | "JOB_POSTED"
+  | "CARE_GIVERS_SENT"
+  | "MATCHED"
+  | "STUCK"
+  | "CLOSED";
+
 export const COLUMN_CONFIG: Record<
   ColumnKey,
   { title: string; subtitle: string }
 > = {
   jobs: {
-    title: "Jobs",
+    title: "Entered",
     subtitle: "Provider replied YES via SMS",
   },
   confirmed: {
@@ -44,14 +53,17 @@ export const COLUMN_CONFIG: Record<
 // Raw document shape from your /twilio-signup collection
 export type TwilioApplicantRaw = {
   _id: any;
+  linkedUserId?: string | null;
   email?: string | null;
   phone?: string | null;
   zipcode?: string | null;
 
   source?: string;
   channel?: string;
+  entryTrigger?: string | null;
   createdAt?: string;
   updatedAt?: string;
+  closedAt?: string | null;
   timestamp?: string;
 
   assistanceRequestedAt?: string | null;
@@ -61,6 +73,28 @@ export type TwilioApplicantRaw = {
   agentActionAt?: string | null;
 
   tags?: string[];
+
+  flowState?: FlowState | string;
+  hasAccount?: boolean;
+  primaryContact?: {
+    phone?: string | null;
+    email?: string | null;
+  };
+  intake?: {
+    providerContacted?: boolean;
+    providerContactedAt?: string | null;
+    providerPostJob?: boolean;
+    providerPostJobAt?: string | null;
+    accountCreated?: boolean;
+    notes?: any[];
+    zipcode?: string | null;
+    tags?: string[];
+    twilioSignupId?: string | null;
+  };
+  payment?: {
+    required?: boolean;
+    status?: string | null;
+  };
 
   existingAccount?: boolean;
   temp_hash?: string | null;
@@ -169,7 +203,7 @@ export type Meta = {
 export type FiltersState = {
   search: string;
   hasAccount: "all" | "true" | "false";
-  source: "twilio" | "providers";
+  source: "sms" | "providers" | "all";
   jobWindow: "any" | "3d" | "2w" | "4w";
   postedJob: "all" | "true" | "false";
 };

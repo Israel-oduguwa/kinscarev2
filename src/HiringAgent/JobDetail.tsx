@@ -39,7 +39,7 @@ import { useToast } from "@/components/ui/use-toast";
 // NEW: split components
 
 const API_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+  "http://localhost:8081/api/v1/providers";
 
 export function fmtDate(d?: string | Date | null) {
   if (!d) return "—";
@@ -146,7 +146,7 @@ export default function JobDetail() {
   // ---------- Loading / Error / Empty Job ----------
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto p-6 space-y-8">
+      <div className=" mx-auto  space-y-8">
         {/* Header Skeleton */}
         <div className="flex items-center justify-between">
           <div className="space-y-3">
@@ -176,7 +176,7 @@ export default function JobDetail() {
 
   if (error) {
     return (
-      <div className="max-w-6xl mx-auto p-6 space-y-6">
+      <div className=" mx-auto p-6 space-y-6">
         <Alert className="border-red-200 bg-red-50">
           <AlertDescription className="text-red-800 flex items-center gap-2">
             <ShieldCheck className="h-4 w-4" />
@@ -225,14 +225,23 @@ export default function JobDetail() {
     ? "bg-emerald-50 text-emerald-700 border-emerald-200"
     : "bg-amber-50 text-amber-700 border-amber-200";
   const createdAt = fmtDate(job.created);
-  const applicantLinkId = job?.agentMeta?.applicantId || null;
-  const paymentLink = `https://www.kinscare.org/add-payment/${job?.agentMeta?.applicantId}`;
+  const twilioSignupId =
+    job?.agentMeta?.twilioSignupId ||
+    job?.agentMeta?.twilioId ||
+    job?.twilioSignupId ||
+    job?.twilioId ||
+    job?.agentMeta?.applicantId ||
+    null;
+    console.log(twilioSignupId)
+  const paymentLink = twilioSignupId
+    ? `https://www.kinscare.org/add-payment/${twilioSignupId}`
+    : "";
   const jobIdString =
     typeof job?._id === "string" ? job._id : job?._id?.toString?.() ?? "";
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-8 bg-gradient-to-br from-slate-50 via-white to-slate-100/70 rounded-3xl border border-slate-100">
+    <div className="space-y-6 ">
       {/* Header Section */}
-      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+      <div className="flex flex-col p-6 lg:flex-row lg:items-start lg:justify-between gap-6 border border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
         <div className="space-y-4 flex-1">
           <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
             Job Overview
@@ -331,7 +340,7 @@ export default function JobDetail() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 rounded-2xl border border-slate-200/70 bg-white/90 p-4 shadow-sm md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-3 p-4 border border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-xl bg-slate-900 text-white flex items-center justify-center">
             <LinkIcon className="h-5 w-5" />
@@ -353,7 +362,7 @@ export default function JobDetail() {
           className="flex items-center gap-2"
         >
           <LinkIcon className="h-4 w-4" />
-          Copy Link
+          Copy Job Link
         </Button>
       </div>
 
@@ -386,7 +395,7 @@ export default function JobDetail() {
             {/* Left Column - Job Details */}
             <div className="lg:col-span-2 space-y-6">
               {/* Job Description Card */}
-              <Card className="bg-white/80 backdrop-blur-sm shadow-sm border-slate-100">
+              <Card className="border border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl">
                     <FileText className="h-5 w-5 text-blue-600" />
@@ -468,7 +477,7 @@ export default function JobDetail() {
               </Card>
 
               {/* Contact & Location Information */}
-              <Card className="bg-white/80 backdrop-blur-sm shadow-sm border-slate-100">
+              <Card className="border border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl">
                     <MapPin className="h-5 w-5 text-green-600" />
@@ -539,7 +548,7 @@ export default function JobDetail() {
             {/* Right Column - Meta Information */}
             <div className="space-y-6">
               {/* Status Card */}
-              <Card className="bg-white/80 backdrop-blur-sm shadow-sm border-slate-100">
+              <Card className="border border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl">
                     <ShieldCheck className="h-5 w-5 text-purple-600" />
@@ -598,9 +607,9 @@ export default function JobDetail() {
                     </div>
                   </div>
 
-                  {applicantLinkId && (
+                  {twilioSignupId && (
                     <div className="pt-4 border-t border-slate-100">
-                      <Link href={`/agent/twilio/provider/${applicantLinkId}`}>
+                      <Link href={`/agent/twilio/provider/${twilioSignupId}`}>
                         <Button
                           variant="outline"
                           className="w-full flex items-center gap-2"
@@ -615,7 +624,7 @@ export default function JobDetail() {
               </Card>
 
               {/* Provider Information */}
-              <Card className="bg-white/80 backdrop-blur-sm shadow-sm border-slate-100">
+              <Card className="border border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl">
                     <User className="h-5 w-5 text-indigo-600" />
@@ -669,7 +678,7 @@ export default function JobDetail() {
               </Card>
 
               {/* Agent Information */}
-              <Card className="bg-white/80 backdrop-blur-sm shadow-sm border-slate-100">
+              <Card className="border border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl">
                     <Building2 className="h-5 w-5 text-slate-600" />
