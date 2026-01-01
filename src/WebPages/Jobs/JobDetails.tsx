@@ -122,7 +122,7 @@ const Avatar: React.FC<AvatarProps> = ({
  *  Small Chip
  *  ------------------------------ */
 const Chip: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-700">
+  <span className="inline-flex items-center gap-1 rounded-full border border-white/70 bg-white/80 px-3 py-1 text-xs font-medium text-slate-700 shadow-sm">
     {children}
   </span>
 );
@@ -136,8 +136,8 @@ const SimilarJobs: React.FC<{ similarJobs: any[] }> = ({
   if (!Array.isArray(similarJobs) || similarJobs.length === 0) {
     return (
       <div className="w-full">
-        <p className="text-sm font-medium text-gray-800">Similar Jobs</p>
-        <div className="mt-3 rounded-xl border border-dashed border-gray-300 bg-white p-4 text-sm text-gray-600">
+        <p className="text-sm font-medium text-slate-800">Similar Jobs</p>
+        <div className="mt-3 rounded-xl border border-dashed border-white/70 bg-white/80 p-4 text-sm text-slate-600 shadow-sm">
           No similar jobs found.
         </div>
       </div>
@@ -146,7 +146,7 @@ const SimilarJobs: React.FC<{ similarJobs: any[] }> = ({
 
   return (
     <div className="w-full">
-      <p className="text-sm antialiased font-medium text-gray-800">
+      <p className="text-sm antialiased font-medium text-slate-800">
         Similar Jobs
       </p>
       <div className="mt-3 space-y-3">
@@ -162,7 +162,7 @@ const SimilarJobs: React.FC<{ similarJobs: any[] }> = ({
             <Link
               key={job._id}
               href={`/jobs/${job._id}`}
-              className="block rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              className="block rounded-2xl border border-white/70 bg-white/80 p-4 shadow-[0_14px_35px_-28px_rgba(15,23,42,0.4)] backdrop-blur transition hover:shadow-[0_20px_45px_-30px_rgba(15,23,42,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             >
               <div className="flex items-start gap-2">
                 <Avatar
@@ -173,10 +173,12 @@ const SimilarJobs: React.FC<{ similarJobs: any[] }> = ({
                   rounded="full"
                 />
                 <div className="min-w-0">
-                  <p className="mb-1 truncate text-sm font-semibold text-gray-900">
+                  <p className="mb-1 truncate text-sm font-semibold text-slate-900">
                     {job?.title}
                   </p>
-                  <p className="text-xs text-gray-600">{locationLine || "—"}</p>
+                  <p className="text-xs text-slate-600">
+                    {locationLine || "—"}
+                  </p>
 
                   <div className="mt-2 flex flex-wrap gap-2">
                     {Array.isArray(job?.licenses) &&
@@ -222,8 +224,15 @@ async function JobDetails({ jobID }: { jobID: string }) {
     .join(", ");
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <div className="mx-auto max-w-screen-xl px-4 py-8">
+    <div className="relative min-h-screen bg-slate-950/5 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_20%_-10%,rgba(59,130,246,0.14),transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_90%_20%,rgba(30,64,175,0.12),transparent_60%)]" />
+        <div className="absolute -top-24 right-6 h-72 w-72 rounded-full bg-sky-300/25 blur-3xl" />
+        <div className="absolute -bottom-32 left-10 h-80 w-80 rounded-full bg-blue-200/35 blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.14)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.14)_1px,transparent_1px)] bg-[size:36px_36px] opacity-30" />
+      </div>
+      <div className="relative mx-auto max-w-screen-xl mt-20 px-4 py-8">
         {/* Back & Title Row */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <JobBackLink/>
@@ -238,7 +247,7 @@ async function JobDetails({ jobID }: { jobID: string }) {
         </div>
 
         {/* Header Card */}
-        <div className="mb-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="mb-8 rounded-3xl border border-white/70 bg-white/80 p-6 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div className="flex min-w-0 flex-1 items-start gap-4">
               <Avatar
@@ -249,12 +258,12 @@ async function JobDetails({ jobID }: { jobID: string }) {
                 rounded="2xl"
               />
               <div className="min-w-0">
-                <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+                <h1 className="text-2xl font-[family:var(--header-font)] font-extrabold tracking-tight text-slate-800">
                   {job?.title}
                 </h1>
-                <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-gray-600">
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-600">
                   {job?.provider ? (
-                    <span className="font-medium text-gray-800">
+                    <span className="font-medium text-slate-800">
                       {job.provider}
                     </span>
                   ) : null}
@@ -298,8 +307,10 @@ async function JobDetails({ jobID }: { jobID: string }) {
 
             {/* Secondary Apply (desktop visible here too) */}
             <div>
-              <OauthApply  job={job} jobID={job._id}>
-                <Button className="w-full rounded-xl px-6 py-3 shadow-[0_8px_20px_-8px_rgba(59,130,246,0.6)] transition hover:shadow-[0_12px_28px_-10px_rgba(59,130,246,0.65)]">Join to apply</Button>
+              <OauthApply job={job} jobID={job._id}>
+                <Button className="w-full rounded-xl bg-blue-600 px-6 py-3 text-white shadow-[0_12px_28px_-14px_rgba(59,130,246,0.55)] transition hover:bg-blue-700 hover:shadow-[0_16px_32px_-14px_rgba(59,130,246,0.6)]">
+                  Join to apply
+                </Button>
               </OauthApply>
             </div>
           </div>
@@ -310,21 +321,21 @@ async function JobDetails({ jobID }: { jobID: string }) {
           {/* Left: Content */}
           <div className="lg:col-span-2">
             {/* About */}
-            <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h2 className="mb-3 text-lg font-semibold tracking-tight text-gray-900">
+            <section className="rounded-3xl border border-white/70 bg-white/80 p-6 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
+              <h2 className="mb-3 text-lg font-semibold tracking-tight text-slate-900">
                 About this Role
               </h2>
-              <div className="prose prose-sm max-w-none text-gray-800">
+              <div className="prose prose-sm max-w-none text-slate-800">
                 <Interweave content={job?.description || "—"} />
               </div>
 
               {job?.certifications ? (
                 <>
-                  <div className="mt-6 h-px w-full bg-gray-100" />
-                  <h3 className="mt-6 mb-3 text-base font-semibold text-gray-900">
+                  <div className="mt-6 h-px w-full bg-slate-100" />
+                  <h3 className="mt-6 mb-3 text-base font-semibold text-slate-900">
                     Requirements & Certifications
                   </h3>
-                  <div className="prose prose-sm max-w-none text-gray-800">
+                  <div className="prose prose-sm max-w-none text-slate-800">
                     <Interweave content={job.certifications} />
                   </div>
                 </>
@@ -333,29 +344,29 @@ async function JobDetails({ jobID }: { jobID: string }) {
 
             {/* Mobility */}
             {job?.mobility ? (
-              <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="mb-2 text-lg font-semibold tracking-tight text-gray-900">
+              <section className="mt-6 rounded-3xl border border-white/70 bg-white/80 p-6 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
+                <h2 className="mb-2 text-lg font-semibold tracking-tight text-slate-900">
                   Mobility
                 </h2>
-                <p className="text-sm text-gray-700">{job.mobility}</p>
+                <p className="text-sm text-slate-700">{job.mobility}</p>
               </section>
             ) : null}
 
             {/* Compensation */}
             {job?.compensation && String(job.compensation).trim().length > 0 ? (
-              <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="mb-2 text-lg font-semibold tracking-tight text-gray-900">
+              <section className="mt-6 rounded-3xl border border-white/70 bg-white/80 p-6 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
+                <h2 className="mb-2 text-lg font-semibold tracking-tight text-slate-900">
                   Compensation
                 </h2>
-                <p className="text-sm text-gray-700">{job.compensation}</p>
+                <p className="text-sm text-slate-700">{job.compensation}</p>
               </section>
             ) : null}
 
             {/* Alert Preferences */}
             {Array.isArray(job?.alert_preferences) &&
             job.alert_preferences.length > 0 ? (
-              <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="mb-3 text-lg font-semibold tracking-tight text-gray-900">
+              <section className="mt-6 rounded-3xl border border-white/70 bg-white/80 p-6 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
+                <h2 className="mb-3 text-lg font-semibold tracking-tight text-slate-900">
                   Alert Preferences
                 </h2>
                 <div className="flex flex-wrap gap-2">
@@ -388,7 +399,7 @@ async function JobDetails({ jobID }: { jobID: string }) {
               </div> */}
 
               {/* Similar Jobs */}
-              <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+              <div className="rounded-3xl border border-white/70 bg-white/80 p-5 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
                 <SimilarJobs similarJobs={similarJobs} />
               </div>
             </div>

@@ -252,13 +252,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
       {/* Toast notifications (top center, with rich colors) */}
       <Toaster richColors position="top-center" />
     <div
-  className="w-full mb-8 px-6 py-8 bg-white/80 rounded-2xl shadow-xl border border-gray-100
-    backdrop-blur-lg transition-all"
-  style={{
-    background:
-      "linear-gradient(100deg, rgba(248,250,252,0.98) 80%, rgba(190,230,255,0.15) 100%)",
-  }}
->
+      className="w-full mb-8 px-6 py-8 rounded-3xl border border-white/70 bg-white/75 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.4)] backdrop-blur-lg transition-all"
+      style={{
+        background:
+          "linear-gradient(100deg, rgba(248,250,252,0.96) 70%, rgba(191,219,254,0.2) 100%)",
+      }}
+    >
   <div className="grid items-end grid-cols-1 md:grid-cols-[1fr_1fr_auto_auto] gap-4">
     {/* Multi-Select: Shift Types */}
     <MultiSelect
@@ -269,7 +268,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       label="Select shift type"
       isAnimation={true}
       maxCount={5}
-      className="w-full rounded-xl border-gray-200 focus-within:ring-2 focus-within:ring-blue-500 transition"
+      className="w-full rounded-xl border-slate-200 focus-within:ring-2 focus-within:ring-blue-500 transition"
     />
 
     {/* Multi-Select: License Types */}
@@ -281,7 +280,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       label="Select license"
       isAnimation={true}
       maxCount={4}
-      className="w-full rounded-xl border-gray-200 focus-within:ring-2 focus-within:ring-blue-500 transition"
+      className="w-full rounded-xl border-slate-200 focus-within:ring-2 focus-within:ring-blue-500 transition"
     />
 
     {/* Search Button */}
@@ -293,7 +292,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           selectedShifts.length === 0 ||
           selectedLicenses.length === 0
         }
-        className="w-full lg:w-auto rounded-xl px-8 py-3 bg-linear-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
+        className="w-full lg:w-auto rounded-xl px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
         aria-label="Search caregivers"
       >
         {loading ? (
@@ -330,7 +329,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   {/* Concierge Blurb (low-key, for those exploring) */}
   <div className="mt-5 flex items-center justify-center">
-    <span className="text-sm lg:text-sm text-gray-600 text-center font-medium">
+    <span className="text-sm lg:text-sm text-slate-600 text-center font-medium">
       Want help finding caregivers?{" "}
       <Link href="/jumpstart-hiring/apply">
         <span className="text-blue-600 font-semibold">Our team</span>

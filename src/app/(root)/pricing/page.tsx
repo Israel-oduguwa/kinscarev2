@@ -111,22 +111,29 @@ const faqs = [
 ];
 export default function Pricing() {
   return (
-    <div className="min-h-screen bg-[hsl(var(--background))] flex flex-col">
-      <div className="max-w-screen-xl mx-auto space-y-16 px-6 lg:px-16 py-12">
+    <div className="relative min-h-screen bg-slate-950/5 flex flex-col overflow-hidden">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_20%_-10%,rgba(59,130,246,0.14),transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_90%_20%,rgba(30,64,175,0.12),transparent_60%)]" />
+        <div className="absolute -top-24 right-6 h-72 w-72 rounded-full bg-sky-300/25 blur-3xl" />
+        <div className="absolute -bottom-32 left-10 h-80 w-80 rounded-full bg-blue-200/35 blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.14)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.14)_1px,transparent_1px)] bg-[size:36px_36px] opacity-35" />
+      </div>
+      <div className="relative max-w-screen-xl mx-auto space-y-16 px-6 lg:px-16 py-12">
         {/* Header Section */}
 
-        <div className="text-center lg:pt-14  mb-16">
-          <span className="inline-block mb-3 px-3 py-1 rounded-full text-sm font-semibold bg-gradient-to-r from-blue-100 to-blue-100 text-blue-600 shadow">
+        <div className="text-center mt-20 lg:pt-14 mb-16">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 mb-4">
             Transparent Pricing
-          </span>
-          <h1 className="text-6xl font-extrabold text-gray-700">
+          </p>
+          <h1 className="text-4xl md:text-6xl font-[family:var(--header-font)] font-extrabold text-slate-900">
             Find the{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-blue-500">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-sky-500">
               right caregiver
             </span>{" "}
             for you!
           </h1>
-          <p className="text-lg text-[hsl(var(--muted-foreground))] mt-4 max-w-2xl mx-auto">
+          <p className="text-lg text-slate-600 mt-4 max-w-2xl mx-auto">
             Find local caregivers near you looking for full-time, part-time,
             live-in, weekends, and overnight jobs. Our caregivers have CNA, HCA,
             or NAR licenses. Get started for free, no credit card required.
@@ -138,10 +145,10 @@ export default function Pricing() {
             <div
               key={plan.id}
               className={`
-                  group relative flex-1 min-w-[280px] max-w-xs bg-white/70 backdrop-blur-lg border border-gray-200
-                  rounded-3xl shadow-xl px-7 py-10 transition-all duration-300
-                  hover:scale-105 hover:shadow-2xl hover:border-blue-400
-                  ${plan.id === "monthly" ? "ring-2 ring-blue-400" : ""}
+                  group relative flex-1 min-w-[280px] max-w-xs bg-white/80 backdrop-blur-xl border border-white/70
+                  rounded-3xl shadow-[0_18px_45px_-30px_rgba(15,23,42,0.45)] px-7 py-10 transition-all duration-300
+                  hover:scale-105 hover:shadow-[0_24px_60px_-40px_rgba(15,23,42,0.5)] hover:border-blue-300
+                  ${plan.id === "monthly" ? "ring-2 ring-blue-400/60" : ""}
                 `}
             >
               {plan.highlight && (
@@ -151,8 +158,8 @@ export default function Pricing() {
                     flex items-center gap-1 px-4 py-1 rounded-full font-medium text-xs
                     ${
                       plan.id === "monthly"
-                        ? "bg-gradient-to-r from-blue-500 to-pink-500 text-white shadow-md"
-                        : "bg-blue-100 text-blue-600"
+                        ? "bg-blue-600 text-white shadow-md"
+                        : "bg-blue-100 text-blue-700"
                     }
                   `}
                 >
@@ -160,23 +167,25 @@ export default function Pricing() {
                   {plan.highlight}
                 </div>
               )}
-              <h3 className="text-2xl font-bold mb-2 text-gray-800">
+              <h3 className="text-2xl font-extrabold mb-2 text-slate-900">
                 {plan.title}
               </h3>
               <div className="flex items-baseline justify-center mb-5">
-                <span className="text-4xl font-extrabold text-gray-900">
+                <span className="text-4xl font-extrabold text-slate-900">
                   {plan.price}
                 </span>
-                <span className="ml-2 text-sm text-gray-400 font-medium">
+                <span className="ml-2 text-sm text-slate-400 font-medium">
                   /plan
                 </span>
               </div>
-              <p className="text-gray-600 text-base mb-5">{plan.description}</p>
+              <p className="text-slate-600 text-base mb-5">
+                {plan.description}
+              </p>
               <ul className="space-y-3 mb-7">
                 {plan.features.map((f, idx) => (
                   <li
                     key={idx}
-                    className="flex items-center gap-2 text-gray-700"
+                    className="flex items-center gap-2 text-slate-700"
                   >
                     <CheckCircle className="text-blue-500 w-4 h-4" />
                     <span>{f}</span>
@@ -189,8 +198,8 @@ export default function Pricing() {
                       w-full py-3 rounded-xl text-lg font-bold shadow
                       ${
                         plan.id === "monthly"
-                          ? "bg-gradient-to-r from-blue-600 to-pink-500 text-white hover:from-pink-500 hover:to-blue-600"
-                          : "bg-indigo-600 text-white hover:bg-indigo-700"
+                          ? "bg-blue-600 text-white hover:bg-blue-700"
+                          : "bg-slate-900 text-white hover:bg-slate-800"
                       }
                     `}
                 >
@@ -211,14 +220,14 @@ export default function Pricing() {
         <div className="max-w-screen-xl mx-auto space-y-6 px-6 lg:px-16">
           {/* Every Plan Includes */}
           <div className="space-y-2">
-            <h2 className="text-3xl tracking-tight font-bold bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] bg-clip-text text-transparent">
+            <h2 className="text-3xl tracking-tight font-[family:var(--header-font)] font-extrabold text-slate-900">
               Every Plan Includes
             </h2>
             <ul className="text-lg">
               <li className="flex items-start gap-4 py-2 rounded-[var(--radius)]  transition-colors duration-200">
-                <div className="shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                <div className="shrink-0 w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center">
                   <svg
-                    className="w-4 h-4 text-green-600"
+                    className="w-4 h-4 text-emerald-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -254,9 +263,9 @@ export default function Pricing() {
                 </span>
               </li>
               <li className="flex items-start gap-4 py-2 rounded-[var(--radius)]  transition-colors duration-200">
-                <div className="shrink-0 w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
+                <div className="shrink-0 w-6 h-6 bg-sky-100 rounded-full flex items-center justify-center">
                   <svg
-                    className="w-4 h-4 text-purple-600"
+                    className="w-4 h-4 text-blue-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -272,9 +281,9 @@ export default function Pricing() {
                 <span>Instant job posting & applicant tracking</span>
               </li>
               <li className="flex items-start gap-4 py-2 rounded-[var(--radius)]  transition-colors duration-200">
-                <div className="shrink-0 w-6 h-6 bg-pink-100 rounded-full flex items-center justify-center">
+                <div className="shrink-0 w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center">
                   <svg
-                    className="w-4 h-4 text-pink-600"
+                    className="w-4 h-4 text-slate-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -292,16 +301,16 @@ export default function Pricing() {
             </ul>
           </div>
           {/* Why Direct Contact Matters */}
-          <div className="bg-[hsl(var(--secondary))] p-8 rounded-[var(--radius)]">
-            <h2 className="text-3xl  tracking-tight font-bold mb-4">
+          <div className="bg-white/80 border border-white/70 p-8 rounded-3xl shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
+            <h2 className="text-3xl tracking-tight font-[family:var(--header-font)] font-extrabold mb-4 text-slate-900">
               Why Direct Contact Matters
             </h2>
-            <p className=" text-[hsl(var(--muted-foreground))] mb-6">
+            <p className="text-slate-600 mb-6">
               Tired of interview no-shows? When you can't communicate directly
               with candidates, it's hard to confirm appointments, follow up, or
               assess real interest.
             </p>
-            <p className=" text-[hsl(var(--muted-foreground))]">
+            <p className="text-slate-600">
               With KinsCare, you contact caregivers directly—no middlemen, no
               scheduling barriers. This means fewer no-shows and better hiring
               outcomes.
@@ -309,14 +318,14 @@ export default function Pricing() {
           </div>
 
           {/* Cancel Anytime */}
-          <div className="bg-gradient-to-r from-[hsl(var(--primary))]/10 to-[hsl(var(--accent))]/10 p-8 rounded-[var(--radius)]">
-            <h2 className="text-3xl tracking-tight font-bold mb-4">
+          <div className="bg-white/80 border border-white/70 p-8 rounded-3xl shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
+            <h2 className="text-3xl tracking-tight font-[family:var(--header-font)] font-extrabold mb-4 text-slate-900">
               Cancel Anytime – No Auto-Renewals
             </h2>
-            <p className=" text-[hsl(var(--muted-foreground))] mb-2">
+            <p className="text-slate-600 mb-2">
               KinsCare is like Uber: you pay for access only when you need it.
             </p>
-            <ul className="list-disc pl-6 space-y-3 text-[hsl(var(--muted-foreground))]">
+            <ul className="list-disc pl-6 space-y-3 text-slate-600">
               <li>No long-term commitments</li>
               <li>No automatic renewals</li>
               <li>Start and stop whenever hiring needs arise</li>
@@ -325,41 +334,41 @@ export default function Pricing() {
 
           {/* FAQs */}
           <div className="space-y-8 py-10">
-            <h2 className="text-3xl tracking-tight font-bold">
+            <h2 className="text-3xl tracking-tight font-[family:var(--header-font)] font-extrabold text-slate-900">
               💡 Still have questions? Here's what providers want to know:
             </h2>
             <div className="space-y-6">
               <div className="border-b pb-6">
-                <h3 className="text-xl font-semibold">
+                <h3 className="text-xl font-semibold text-slate-900">
                   Q: What happens when my plan expires?
                 </h3>
-                <p className="mt-2 text-[hsl(var(--muted-foreground))]">
+                <p className="mt-2 text-slate-600">
                   A: Your access ends, but you can renew anytime.
                 </p>
               </div>
               <div className="border-b pb-6">
-                <h3 className="text-xl font-semibold">
+                <h3 className="text-xl font-semibold text-slate-900">
                   Q: Does KinsCare handle hiring and vetting caregivers?
                 </h3>
-                <p className="mt-2 text-[hsl(var(--muted-foreground))]">
+                <p className="mt-2 text-slate-600">
                   A: No, KinsCare is not a staffing agency. You contact and
                   recruit caregivers directly.
                 </p>
               </div>
               <div className="border-b pb-6">
-                <h3 className="text-xl font-semibold">
+                <h3 className="text-xl font-semibold text-slate-900">
                   Q: Can I hire caregivers for different job types?
                 </h3>
-                <p className="mt-2 text-[hsl(var(--muted-foreground))]">
+                <p className="mt-2 text-slate-600">
                   A: Yes! Find caregivers for full-time, part-time, live-in,
                   on-call, or weekend shifts.
                 </p>
               </div>
               <div className="pb-6">
-                <h3 className="text-xl font-semibold">
+                <h3 className="text-xl font-semibold text-slate-900">
                   Q: Can I cancel my plan?
                 </h3>
-                <p className="mt-2 text-[hsl(var(--muted-foreground))]">
+                <p className="mt-2 text-slate-600">
                   A: Yes! There are no contracts, and you can cancel anytime.
                 </p>
               </div>

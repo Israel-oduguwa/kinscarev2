@@ -16,7 +16,14 @@ import Link from "next/link";
 
 const FindLandingPage = () => {
   return (
-    <div className="bg-white text-gray-900 pt-20 sm:pt-20">
+    <div className="relative overflow-hidden bg-slate-950/5 text-slate-900 pt-20 sm:pt-20">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_20%_-10%,rgba(59,130,246,0.14),transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_90%_20%,rgba(30,64,175,0.12),transparent_60%)]" />
+        <div className="absolute -top-24 right-6 h-72 w-72 rounded-full bg-sky-300/25 blur-3xl" />
+        <div className="absolute -bottom-32 left-10 h-80 w-80 rounded-full bg-blue-200/35 blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.14)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.14)_1px,transparent_1px)] bg-[size:36px_36px] opacity-35" />
+      </div>
       {" "}
       {/* Added responsive padding-top to account for fixed/sticky navbar height (assuming ~64px/5rem on small, ~80px on larger; adjust values based on actual navbar height) */}
       {/* ============== HERO ============== */}
@@ -35,13 +42,17 @@ const FindLandingPage = () => {
             draggable={false}
           />
           {/* Overlay gradients */}
-          <div className="absolute inset-0 bg-black/30" />
-          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-gray-900/80 to-transparent" />
+          <div className="absolute inset-0 bg-slate-950/40" />
+          <div className="absolute inset-0 bg-[radial-gradient(800px_circle_at_20%_10%,rgba(59,130,246,0.25),transparent_60%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-slate-950/80 to-transparent" />
         </div>
 
         {/* Content */}
-        <div className="relative z-10 h-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center text-center">
-          <h1 className="text-white font-extrabold leading-tight tracking-tight text-4xl sm:text-5xl md:text-6xl">
+        <div className="relative z-10 pt-10 h-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.3em] text-slate-200">
+            Find caregivers
+          </p>
+          <h1 className="mt-3 font-bold text-white font-[family:var(--header-font)] leading-tight tracking-tight text-4xl sm:text-5xl md:text-6xl">
             Find the{" "}
             <span className="bg-conic from-yellow-400 via-red-500 to-pink-500 text-transparent bg-clip-text">
               Perfect Caregiver
@@ -52,7 +63,7 @@ const FindLandingPage = () => {
             <SearchBar />
           </div>
 
-          <p className="mt-4 py-6 text-base sm:text-lg md:text-xl text-gray-100 font-semibold">
+          <p className="mt-4 py-6 text-base sm:text-lg md:text-xl text-slate-100 font-semibold">
             Over{" "}
             <span className="text-white font-extrabold">30 caregivers</span>{" "}
             join KinsCare every day!
@@ -60,22 +71,23 @@ const FindLandingPage = () => {
         </div>
       </section>
       {/* ============== VALUE BANNER ============== */}
-      <section aria-label="KinsCare value banner" className="bg-gray-50">
+      <section aria-label="KinsCare value banner" className="relative">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 md:py-16">
-          <div className="relative p-6 md:p-8 rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-800 to-blue-900">
+          <div className="relative p-6 md:p-8 rounded-3xl overflow-hidden border border-white/60 bg-white/70 shadow-[0_18px_50px_-30px_rgba(15,23,42,0.45)] backdrop-blur-xl">
             {/* Decorative bubbles */}
-            <div className="pointer-events-none absolute -top-6 -right-10 w-36 h-36 bg-purple-500/20 rounded-full blur-2xl" />
-            <div className="pointer-events-none absolute -bottom-8 -left-8 w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl" />
+            <div className="pointer-events-none absolute -top-6 -right-10 w-36 h-36 bg-sky-300/30 rounded-full blur-2xl" />
+            <div className="pointer-events-none absolute -bottom-8 -left-8 w-40 h-40 bg-blue-400/20 rounded-full blur-2xl" />
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-900/5 via-blue-500/10 to-transparent" />
 
             <div className="relative flex flex-col md:flex-row items-start gap-6 md:gap-8">
-              <div className="min-w-[50px] h-12 flex items-center justify-center p-2 bg-gradient-to-br from-sky-400/20 to-purple-400/20 rounded-xl border border-white/10">
-                <Pin size={22} strokeWidth={2.3} className="text-white" />
+              <div className="min-w-[50px] h-12 flex items-center justify-center p-2 bg-white/70 rounded-xl border border-white/70 shadow-sm">
+                <Pin size={22} strokeWidth={2.3} className="text-blue-600" />
               </div>
 
-              <p className="flex-1 text-gray-100 text-base md:text-lg leading-relaxed">
+              <p className="flex-1 text-slate-700 text-base md:text-lg leading-relaxed">
                 KinsCare is designed to be easy and affordable. Every caregiver
                 you find here means{" "}
-                <span className="font-bold text-white">
+                <span className="font-semibold text-slate-900">
                   better support, less stress, and higher-quality
                 </span>{" "}
                 care for your residents.
@@ -85,20 +97,26 @@ const FindLandingPage = () => {
         </div>
       </section>
       {/* ============== VALUE PROPOSITION ============== */}
-      <section aria-labelledby="vp-title" className="bg-white">
+      <section aria-labelledby="vp-title" className="relative">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center py-10 md:py-14">
-          <h2 id="vp-title" className="text-3xl md:text-5xl font-bold mb-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+            Why KinsCare
+          </p>
+          <h2
+            id="vp-title"
+            className="mt-3 font-bold text-3xl md:text-5xl font-[family:var(--header-font)] mb-5 text-slate-900"
+          >
             Find Caregivers{" "}
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-500 to-blue-600">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 to-blue-600">
               Faster
             </span>
             {" & "}
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-500 to-blue-600">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 to-blue-600">
               Easier
             </span>
           </h2>
 
-          <p className="text-gray-700 max-w-3xl mx-auto">
+          <p className="text-slate-600 max-w-3xl mx-auto">
             Finding reliable caregivers is tough—high turnover, last-minute
             gaps, rising demand. KinsCare simplifies this process by connecting
             you directly with caregivers ready to work (full-time, part-time, or
@@ -112,7 +130,7 @@ const FindLandingPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
             {/* Visual card */}
             <div className="relative">
-              <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl transform rotate-2 hover:rotate-0 transition-all duration-500">
+              <div className="relative z-10 rounded-3xl overflow-hidden shadow-[0_20px_50px_-30px_rgba(15,23,42,0.5)] transform rotate-1 hover:rotate-0 transition-all duration-500">
                 <img
                   src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1336058538-min.jpg?alt=media&token=35eabd18-0e89-470b-a4d5-b8269b91a38c"
                   alt="Caregivers smiling"
@@ -120,12 +138,12 @@ const FindLandingPage = () => {
                   loading="lazy"
                 />
               </div>
-              <div className="pointer-events-none absolute -bottom-6 -right-6 w-32 h-32 bg-linear-to-r from-cyan-400 to-blue-500 rounded-full blur-2xl opacity-30" />
+              <div className="pointer-events-none absolute -bottom-6 -right-6 w-32 h-32 bg-linear-to-r from-sky-300 to-blue-400 rounded-full blur-2xl opacity-30" />
             </div>
 
             {/* Reasons */}
             <div>
-              <div className="inline-flex items-center bg-linear-to-r from-indigo-500 to-purple-600 text-white px-4 py-1 font-semibold rounded-full mb-5">
+              <div className="inline-flex items-center bg-blue-600/90 text-white px-4 py-1 font-semibold rounded-full mb-5">
                 <Pin size={16} className="mr-2" />
                 <span>Why Use KinsCare?</span>
               </div>
@@ -135,14 +153,12 @@ const FindLandingPage = () => {
                   {
                     title: "Quick Matching",
                     description: "Search caregivers who meet your needs.",
-                    icon: <SearchIcon size={20} className="text-cyan-500" />,
+                    icon: <SearchIcon size={20} className="text-blue-500" />,
                   },
                   {
                     title: "Direct Contact",
                     description: "Connect instantly after signing up.",
-                    icon: (
-                      <PhoneForwarded size={20} className="text-purple-500" />
-                    ),
+                    icon: <PhoneForwarded size={20} className="text-sky-500" />,
                   },
                   {
                     title: "No Middleman",
@@ -158,17 +174,17 @@ const FindLandingPage = () => {
                 ].map((item, i) => (
                   <div
                     key={i}
-                    className="p-5 rounded-xl backdrop-blur-sm bg-white/70 border border-gray-100 shadow-sm hover:shadow-md transition"
+                    className="p-5 rounded-2xl backdrop-blur bg-white/75 border border-white/70 shadow-sm hover:shadow-md transition"
                   >
                     <div className="flex items-start">
                       <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm mr-4">
                         {item.icon}
                       </div>
                       <div>
-                        <h3 className="font-bold text-base mb-1">
+                        <h3 className="font-semibold text-base mb-1 text-slate-900">
                           {item.title}
                         </h3>
-                        <p className="text-gray-600 text-sm">
+                        <p className="text-slate-600 text-sm">
                           {item.description}
                         </p>
                       </div>
@@ -181,15 +197,19 @@ const FindLandingPage = () => {
         </div>
       </section>
       {/* ============== WHY IT MATTERS ============== */}
-      <section aria-labelledby="why-title" className="bg-gray-50">
+      <section aria-labelledby="why-title" className="relative">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 md:py-14 grid md:grid-cols-1 gap-10">
-          <div className="bg-blue-50 p-6 md:p-8 rounded-xl">
+          <div className="bg-white/70 border border-white/70 p-6 md:p-8 rounded-3xl shadow-[0_18px_45px_-30px_rgba(15,23,42,0.4)] backdrop-blur-xl">
             <h3
               id="why-title"
-              className="tracking-tight text-2xl md:text-xl font-bold text-gray-800 mb-5"
+              className="tracking-tight font-semibold  text-2xl md:text-3xl  text-slate-900 mb-4"
             >
               Why Finding the Right Caregiver Matters
             </h3>
+            <p className="text-sm text-slate-600 mb-6 max-w-2xl">
+              Protect resident outcomes, reduce staff burnout, and keep your
+              operations running smoothly with dependable caregiver coverage.
+            </p>
 
             <ul className="space-y-4">
               {[
@@ -206,8 +226,8 @@ const FindLandingPage = () => {
                   body: "That’s where KinsCare makes a difference.",
                 },
               ].map((item, idx) => (
-                <li key={idx} className="flex items-start">
-                  <div className="w-10 h-10 bg-blue-100 text-blue-600 flex items-center justify-center rounded-full mr-3 shrink-0">
+                <li key={idx} className="flex items-center ">
+                  <div className="w-10 h-10 bg-sky-100 text-blue-700 flex items-center justify-center rounded-full mr-3 shrink-0">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-6 w-6"
@@ -223,8 +243,10 @@ const FindLandingPage = () => {
                       />
                     </svg>
                   </div>
-                  <p className="text-gray-800">
-                    <span className="font-semibold">{item.title}: </span>
+                  <p className="text-slate-700">
+                    <span className="font-semibold text-slate-900">
+                      {item.title}:{" "}
+                    </span>
                     {item.body}
                   </p>
                 </li>
@@ -235,12 +257,15 @@ const FindLandingPage = () => {
 
         {/* Post your job */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-12">
-          <div className="grid md:grid-cols-[1.05fr_0.95fr] gap-6 lg:gap-10 items-stretch rounded-2xl border border-gray-100 shadow-lg bg-white overflow-hidden">
+          <div className="grid md:grid-cols-[1.05fr_0.95fr] gap-6 lg:gap-10 items-stretch rounded-3xl border border-white/70 shadow-[0_20px_50px_-30px_rgba(15,23,42,0.4)] bg-white/80 backdrop-blur overflow-hidden">
             <div className="p-6 sm:p-8 flex flex-col justify-center">
-              <h3 className="tracking-tight text-2xl md:text-3xl font-bold text-gray-800 mb-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 mb-3">
+                Post a job
+              </p>
+              <h3 className="tracking-tight font-semibold   text-2xl md:text-3xl font-[family:var(--header-font)] text-slate-900 mb-4">
                 Get More Caregivers by Posting Your Job
               </h3>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-slate-600 leading-relaxed">
                 Posting a job on KinsCare makes it even easier to find
                 caregivers. Once live, caregivers can apply, share it with
                 colleagues, and help spread the word. We also notify our network
@@ -257,9 +282,9 @@ const FindLandingPage = () => {
                 ].map((item) => (
                   <div
                     key={item}
-                    className="flex items-start gap-2 text-sm text-gray-700"
+                    className="flex items-start gap-2 text-sm text-slate-700"
                   >
-                    <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                    <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-sky-100 text-blue-700">
                       <Check size={14} strokeWidth={2.4} />
                     </span>
                     <span className="leading-snug">{item}</span>
@@ -268,8 +293,8 @@ const FindLandingPage = () => {
               </div>
             </div>
 
-            <div className="relative bg-gray-100">
-              <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-cyan-400/10 to-transparent" />
+            <div className="relative bg-slate-100">
+              <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-sky-400/10 to-transparent" />
               <div className="relative h-full min-h-[260px] md:min-h-[320px]">
                 <img
                   src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/iStock-1140153601-min.jpg?alt=media&token=93fce255-b7d8-4e0d-a28a-5e089a94d6e7"
@@ -283,19 +308,16 @@ const FindLandingPage = () => {
         </div>
       </section>
       {/* ============== TESTIMONIALS ============== */}
-      <section aria-labelledby="testimonials-title" className="bg-white">
+      <section aria-labelledby="testimonials-title" className="relative">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
           <div className="text-center mb-12">
             <h2
               id="testimonials-title"
-              className="text-3xl md:text-5xl font-bold mb-3"
+              className="text-3xl font-bold md:text-5xl font-[family:var(--header-font)] mb-3 text-slate-900"
             >
-              Trusted by{" "}
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-500 to-pink-500">
-                Care Professionals
-              </span>
+              Trusted by care professionals
             </h2>
-            <p className="text-gray-600 max-w-3xl mx-auto">
+            <p className="text-slate-600 max-w-3xl mx-auto">
               Join hundreds of healthcare professionals who’ve transformed their
               hiring.
             </p>
@@ -309,7 +331,7 @@ const FindLandingPage = () => {
                 content:
                   "KinsCare makes finding caregivers easier than ever! I can post openings, get direct applications, and contact caregivers—no more waiting on referrals.",
                 initials: "MS",
-                color: "from-purple-500 to-indigo-500",
+                color: "from-sky-500 to-blue-600",
               },
               {
                 name: "Solomon Gebremariam",
@@ -317,7 +339,7 @@ const FindLandingPage = () => {
                 content:
                   "I found qualified local caregivers quickly with KinsCare. It’s simple, effective, and saves me time compared to other hiring methods!",
                 initials: "SG",
-                color: "from-cyan-500 to-blue-500",
+                color: "from-blue-500 to-indigo-600",
               },
               {
                 name: "Alice Kamau",
@@ -325,12 +347,12 @@ const FindLandingPage = () => {
                 content:
                   "KinsCare is both affordable and flexible. I only pay when I need caregivers, and get direct access to candidates without extra hassle.",
                 initials: "AK",
-                color: "from-amber-500 to-orange-500",
+                color: "from-sky-400 to-emerald-500",
               },
             ].map((t, i) => (
               <article
                 key={i}
-                className="p-7 rounded-3xl backdrop-blur-sm bg-white/70 border border-gray-100 shadow-sm hover:shadow-xl transition transform hover:-translate-y-1"
+                className="p-7 rounded-3xl backdrop-blur bg-white/75 border border-white/70 shadow-[0_12px_40px_-30px_rgba(15,23,42,0.45)] hover:shadow-[0_18px_50px_-30px_rgba(15,23,42,0.5)] transition transform hover:-translate-y-1"
               >
                 <header className="flex items-center mb-5">
                   <div
@@ -340,8 +362,8 @@ const FindLandingPage = () => {
                     {t.initials}
                   </div>
                   <div>
-                    <h3 className="font-bold">{t.name}</h3>
-                    <p className="text-gray-600 text-sm">{t.role}</p>
+                    <h3 className="font-semibold text-slate-900">{t.name}</h3>
+                    <p className="text-slate-600 text-sm">{t.role}</p>
                   </div>
                 </header>
 
@@ -356,16 +378,16 @@ const FindLandingPage = () => {
                   ))}
                 </div>
 
-                <p className="text-gray-700 italic">"{t.content}"</p>
+                <p className="text-slate-700 italic">"{t.content}"</p>
               </article>
             ))}
           </div>
 
           {/* KPI Banner */}
           <div className="mt-12">
-            <div className="relative bg-linear-to-br from-indigo-900 to-blue-800 rounded-2xl p-6 md:p-10 overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl" />
-              <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl" />
+            <div className="relative bg-linear-to-br from-slate-900 to-blue-900 rounded-3xl p-6 md:p-10 overflow-hidden shadow-[0_20px_60px_-40px_rgba(15,23,42,0.6)]">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-sky-400/15 rounded-full blur-3xl" />
+              <div className="absolute bottom-0 left-0 w-40 h-40 bg-blue-500/15 rounded-full blur-3xl" />
 
               <div className="relative flex flex-col md:flex-row items-center gap-8">
                 <div className="text-center md:text-left">
@@ -375,12 +397,12 @@ const FindLandingPage = () => {
                         className="absolute inset-0 bg-sky-500/20 blur-lg"
                         aria-hidden
                       />
-                      <span className="text-4xl md:text-6xl font-bold bg-linear-to-r from-sky-400 to-emerald-400 bg-clip-text text-transparent relative">
+                      <span className="text-4xl md:text-6xl font-[family:var(--header-font)] bg-linear-to-r from-sky-300 to-emerald-300 bg-clip-text text-transparent relative">
                         200+
                       </span>
                     </div>
                     <svg
-                      className="w-8 h-8 text-rose-400 animate-pulse"
+                      className="w-8 h-8 text-sky-300 animate-pulse"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -394,10 +416,10 @@ const FindLandingPage = () => {
                       />
                     </svg>
                   </div>
-                  <p className="text-indigo-100 font-medium">
+                  <p className="text-slate-100 font-medium">
                     Over 200 providers in the Northwest use KinsCare and the
                     number{" "}
-                    <span className="text-emerald-300">
+                    <span className="text-sky-200">
                       keeps growing daily!
                     </span>
                   </p>
@@ -408,16 +430,19 @@ const FindLandingPage = () => {
         </div>
       </section>
       {/* ============== HOW IT WORKS ============== */}
-      <section aria-labelledby="how-title" className="bg-gray-100">
+      <section aria-labelledby="how-title" className="relative">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
           <header className="text-center mb-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+              How it works
+            </p>
             <h2
               id="how-title"
-              className="text-3xl md:text-4xl font-bold tracking-tight text-gray-800 mb-2"
+              className="mt-3 font-bold text-3xl md:text-4xl font-[family:var(--header-font)] tracking-tight text-slate-900 mb-2"
             >
               What is the best way to find caregivers?
             </h2>
-            <p className="text-gray-600">
+            <p className="text-slate-600">
               Follow these simple steps to find the most qualified caregivers
               for your needs.
             </p>
@@ -425,8 +450,8 @@ const FindLandingPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Step 1 */}
-            <div className="bg-white rounded-xl p-6 min-h-64 shadow-sm hover:shadow-md transition">
-              <div className="flex items-center justify-center w-14 h-14 rounded-full bg-blue-100 text-blue-600 mb-4">
+            <div className="bg-white/80 rounded-2xl p-6 min-h-64 border border-white/70 shadow-sm hover:shadow-md transition backdrop-blur">
+              <div className="flex items-center justify-center w-14 h-14 rounded-full bg-sky-100 text-blue-700 mb-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -445,16 +470,18 @@ const FindLandingPage = () => {
                   <line x1="12" x2="12" y1="3" y2="15" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold mb-2">Post Your Job</h3>
-              <p className="text-gray-700">
+              <h3 className="text-lg font-semibold mb-2 text-slate-900">
+                Post Your Job
+              </h3>
+              <p className="text-slate-600">
                 Create a detailed job listing. Local caregivers get email and
                 text alerts about your opening.
               </p>
             </div>
 
             {/* Step 2 */}
-            <div className="bg-white rounded-xl p-6 min-h-64 shadow-sm hover:shadow-md transition">
-              <div className="flex items-center justify-center w-14 h-14 rounded-full bg-green-100 text-green-600 mb-4">
+            <div className="bg-white/80 rounded-2xl p-6 min-h-64 border border-white/70 shadow-sm hover:shadow-md transition backdrop-blur">
+              <div className="flex items-center justify-center w-14 h-14 rounded-full bg-blue-100 text-blue-700 mb-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -472,18 +499,18 @@ const FindLandingPage = () => {
                   <path d="m21 21-4.3-4.3" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold mb-2">
+              <h3 className="text-lg font-semibold mb-2 text-slate-900">
                 Search for Caregivers
               </h3>
-              <p className="text-gray-700">
+              <p className="text-slate-600">
                 Filter by availability (Full-time/Part-time) and licenses
                 (CNA/NAC, HCA). View resumes with contact info.
               </p>
             </div>
 
             {/* Step 3 */}
-            <div className="bg-white rounded-xl p-6 min-h-64 shadow-sm hover:shadow-md transition">
-              <div className="flex items-center justify-center w-14 h-14 rounded-full bg-purple-100 text-purple-600 mb-4">
+            <div className="bg-white/80 rounded-2xl p-6 min-h-64 border border-white/70 shadow-sm hover:shadow-md transition backdrop-blur">
+              <div className="flex items-center justify-center w-14 h-14 rounded-full bg-slate-100 text-slate-700 mb-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -502,8 +529,10 @@ const FindLandingPage = () => {
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold mb-2">Contact & Hire</h3>
-              <p className="text-gray-700">
+              <h3 className="text-lg font-semibold mb-2 text-slate-900">
+                Contact & Hire
+              </h3>
+              <p className="text-slate-600">
                 Review resumes and connect with caregivers directly to finalize
                 your hiring process.
               </p>
@@ -512,18 +541,18 @@ const FindLandingPage = () => {
         </div>
       </section>
       {/* ============== CTA ============== */}
-      <section aria-label="Primary call to action" className="bg-white">
+      <section aria-label="Primary call to action" className="relative">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-          <div className="relative rounded-3xl overflow-hidden p-8 md:p-12 bg-linear-to-br from-indigo-600 to-purple-700 shadow-2xl text-center">
+          <div className="relative rounded-3xl overflow-hidden p-8 md:p-12 bg-linear-to-br from-slate-900 via-blue-900 to-sky-800 shadow-[0_30px_80px_-50px_rgba(15,23,42,0.7)] text-center">
             {/* floating elems */}
-            <div className="absolute top-0 left-0 w-40 h-40 rounded-full bg-linear-to-r from-cyan-400/20 to-blue-500/20 blur-3xl" />
-            <div className="absolute bottom-0 right-0 w-40 h-40 rounded-full bg-linear-to-r from-pink-400/20 to-rose-500/20 blur-3xl" />
+            <div className="absolute top-0 left-0 w-40 h-40 rounded-full bg-linear-to-r from-sky-400/20 to-blue-500/20 blur-3xl" />
+            <div className="absolute bottom-0 right-0 w-40 h-40 rounded-full bg-linear-to-r from-sky-300/20 to-blue-400/20 blur-3xl" />
 
             <div className="relative z-10">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-[family:var(--header-font)] text-white mb-4">
                 Ready to Find Your Perfect Caregiver?
               </h2>
-              <p className="text-lg md:text-xl text-indigo-100 max-w-2xl mx-auto mb-7">
+              <p className="text-lg md:text-xl text-slate-100 max-w-2xl mx-auto mb-7">
                 Join providers who trust KinsCare to find reliable, qualified
                 caregivers quickly and easily.
               </p>
@@ -531,7 +560,7 @@ const FindLandingPage = () => {
               <div className="flex flex-col sm:flex-row justify-center gap-3">
                 <Link href="/caregivers?shifts=Full+time&licenses=HCA">
                   <button
-                    className="px-8 py-4 rounded-full font-semibold bg-white text-indigo-700 shadow-lg hover:shadow-xl hover:scale-[1.02] transition"
+                    className="px-8 py-4 rounded-full font-semibold bg-white text-blue-700 shadow-lg hover:shadow-xl hover:scale-[1.02] transition"
                     aria-label="Search caregivers now"
                   >
                     Search Caregivers Now

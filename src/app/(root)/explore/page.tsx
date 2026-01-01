@@ -81,12 +81,12 @@ function page() {
       />
       <Suspense fallback={<div className="p-6 text-sm">Loading…</div>}>
         {/* Hero Section */}
-        <section className="bg-gradient-to-br h-[90vh] overflow-y-hidden from-blue-50 via-white to-purple-400 text-gray-800 items-center py-20">
+        <section className="bg-linear-to-br mt-10 h-[90vh] overflow-y-hidden from-blue-50 via-white to-purple-400 text-gray-800 items-center py-20">
           <div className="px-6 lg:px-12 py-10 text-center">
             {/* Header Section */}
             <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">
               Discover Fulfilling Careers in <br />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-800 to-pink-600">
+              <span className="bg-clip-text text-transparent bg-linear-to-r from-yellow-800 to-pink-600">
                 Nursing & Allied Healthcare
               </span>
             </h1>

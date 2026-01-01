@@ -24,23 +24,33 @@ const ExplorerFAQPage: React.FC = () => {
   return (
     <>
  
-      <div className="mt-10">
-        <div className="max-w-6xl py-20 mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative mt-10 overflow-hidden bg-slate-950/5">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_20%_-10%,rgba(59,130,246,0.12),transparent_55%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_90%_20%,rgba(30,64,175,0.1),transparent_60%)]" />
+          <div className="absolute -top-24 right-6 h-72 w-72 rounded-full bg-sky-300/25 blur-3xl" />
+          <div className="absolute -bottom-32 left-10 h-80 w-80 rounded-full bg-blue-200/35 blur-3xl" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.12)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.12)_1px,transparent_1px)] bg-[size:36px_36px] opacity-35" />
+        </div>
+        <div className="max-w-7xl mt-20 py-20 mx-auto px-4 sm:px-6 lg:px-8 relative">
           {/* Page Header */}
-          <div className="p-4 border border-gray-300 mb-6 text-center rounded-lg bg-gray-100">
-            <h1 className="text-4xl font-bold text-gray-900">
+          <div className="p-8 border border-white/70 mb-8 text-center rounded-3xl bg-white/80 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 mb-4">
+              Explorer FAQ
+            </p>
+            <h1 className="text-4xl md:text-5xl font-[family:var(--header-font)] font-extrabold text-slate-900">
               Frequently Asked Questions (FAQs) for Explorers
             </h1>
           </div>
 
           {/* Accordion FAQ */}
-          <Accordion type="single" collapsible>
+          <Accordion type="single" collapsible className="space-y-4">
             {/* 1. What are Kinscare’s goals? */}
-            <AccordionItem value="item-1">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-1" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 What are Kinscare’s goals?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                 <p className="text-base">
                   Kinscare aims to connect individuals interested in nursing and
                   allied healthcare with the resources they need to explore, enter,
@@ -60,11 +70,11 @@ const ExplorerFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 2. How can Kinscare help me explore healthcare careers? */}
-            <AccordionItem value="item-2">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-2" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 How can Kinscare help me explore healthcare careers?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                 <p className="text-base">
                   Kinscare provides personalized guidance to help you discover which
                   nursing or allied healthcare profession aligns with your interests,
@@ -92,11 +102,11 @@ const ExplorerFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 3. Why does Kinscare focus on nursing and allied healthcare professions? */}
-            <AccordionItem value="item-3">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-3" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 Why does Kinscare focus on nursing and allied healthcare professions?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                 <p className="text-base">
                   We focus on nursing and allied healthcare professions because these
                   careers offer:
@@ -141,12 +151,12 @@ const ExplorerFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 4. I don’t have a healthcare background... */}
-            <AccordionItem value="item-4">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-4" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 I don’t have a healthcare background. Can I still pursue a career in
                 allied healthcare or nursing?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                 <p className="text-base">
                   Absolutely! You do not need prior healthcare experience to enter
                   the field. However, most nursing and allied healthcare training
@@ -164,11 +174,11 @@ const ExplorerFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 5. How do I know which healthcare career is right for me? */}
-            <AccordionItem value="item-5">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-5" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 How do I know which healthcare career is right for me?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                 <p className="text-base">
                   Choosing the right career depends on your interests, personality,
                   and long-term goals. Start by using Kinscare’s chat feature to
@@ -199,12 +209,12 @@ const ExplorerFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 6. What qualifications do I need... */}
-            <AccordionItem value="item-6">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-6" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 What qualifications do I need to start a career in nursing or allied
                 healthcare?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                 <p className="text-base">
                   The minimum qualifications vary widely depending on the career
                   path:
@@ -237,11 +247,11 @@ const ExplorerFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 7. Can I cross-train or combine different healthcare roles? */}
-            <AccordionItem value="item-7">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-7" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 Can I cross-train or combine different healthcare roles?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                 <p className="text-base">
                   Yes! While not common, cross-training in multiple healthcare fields
                   can make you more versatile and increase your earning potential.
@@ -268,12 +278,12 @@ const ExplorerFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 8. How can I transfer my foreign nursing or healthcare license...? */}
-            <AccordionItem value="item-8">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-8" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 How can I transfer my foreign nursing or healthcare license to
                 Washington or Oregon?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                 <p className="text-base">
                   If you have a foreign healthcare license, you may apply for
                   license endorsement in Washington or Oregon. The process includes:
@@ -302,11 +312,11 @@ const ExplorerFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 9. Where can I find schools or training programs near me? */}
-            <AccordionItem value="item-9">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-9" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 Where can I find schools or training programs near me?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                 <p className="text-base">
                   Use Kinscare’s chat feature to discover nearby colleges and
                   universities offering nursing and allied healthcare programs. You
@@ -317,12 +327,12 @@ const ExplorerFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 10. What are the job prospects...? */}
-            <AccordionItem value="item-10">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-10" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 What are the job prospects for nursing and allied healthcare
                 professionals?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                 <p className="text-base">
                   The healthcare industry is one of the fastest-growing sectors in
                   the U.S. due to:
@@ -350,11 +360,11 @@ const ExplorerFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 11. How can I start applying for healthcare training programs? */}
-            <AccordionItem value="item-11">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-11" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 How can I start applying for healthcare training programs?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                 <p className="text-base">By joining Kinscare, you can:</p>
                 <ul className="list-disc list-inside ml-4 mt-2">
                   <li>
@@ -370,11 +380,11 @@ const ExplorerFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 12. What are the career advancement opportunities in healthcare? */}
-            <AccordionItem value="item-12">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-12" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 What are the career advancement opportunities in healthcare?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                 <p className="text-base">
                   Healthcare offers multiple paths for career growth, including:
                 </p>
@@ -409,7 +419,9 @@ const ExplorerFAQPage: React.FC = () => {
           {/* Example CTA Button or Additional Links */}
           <div className="mt-8">
             <Link href="/explore-careers">
-              <Button className="w-full">Explore Careers</Button>
+              <Button className="w-full rounded-xl bg-blue-600 text-white hover:bg-blue-700">
+                Explore Careers
+              </Button>
             </Link>
           </div>
         </div>

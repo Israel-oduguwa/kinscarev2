@@ -26,14 +26,24 @@ const ProviderFAQPage: React.FC = () => {
     <>
      
 
-      <div className="mt-10">
-        <div className="max-w-6xl py-20 mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative mt-10 overflow-hidden bg-slate-950/5">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_20%_-10%,rgba(59,130,246,0.12),transparent_55%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_90%_20%,rgba(30,64,175,0.1),transparent_60%)]" />
+          <div className="absolute -top-24 right-6 h-72 w-72 rounded-full bg-sky-300/25 blur-3xl" />
+          <div className="absolute -bottom-32 left-10 h-80 w-80 rounded-full bg-blue-200/35 blur-3xl" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.12)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.12)_1px,transparent_1px)] bg-[size:36px_36px] opacity-35" />
+        </div>
+        <div className="max-w-7xl mt-20 py-20 mx-auto px-4 sm:px-6 lg:px-8 relative">
           {/* Page Header */}
-          <div className="p-4 border border-gray-300 mb-6 text-center rounded-lg bg-gray-100">
-            <h1 className="text-4xl font-bold text-gray-900">
+          <div className="p-8 border border-white/70 mb-8 text-center rounded-3xl bg-white/80 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 mb-4">
+              Provider FAQ
+            </p>
+            <h1 className="text-4xl md:text-5xl font-[family:var(--header-font)] font-extrabold text-slate-900">
               Frequently Asked Questions (FAQs) for Providers and Employers
             </h1>
-            <p className="mt-4 text-lg text-gray-600">
+            <p className="mt-4 text-lg text-slate-600">
               The most efficient way to connect with local CNAs, Home Care
               Assistants (HCAs), and caregivers/companions looking for full-time,
               part-time, weekend, live-in, and on-call opportunities.
@@ -41,13 +51,13 @@ const ProviderFAQPage: React.FC = () => {
           </div>
 
           {/* Accordion FAQ */}
-          <Accordion type="single" collapsible>
+          <Accordion type="single" collapsible className="space-y-4">
             {/* 1. What is Kinscare? */}
-            <AccordionItem value="item-1">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-1" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 What is Kinscare?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                <p className="text-base">
                   Kinscare is a platform that connects providers and individuals
                   seeking caregivers. Whether you need a Certified Nursing
@@ -60,11 +70,11 @@ const ProviderFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 2. Who should use Kinscare? */}
-            <AccordionItem value="item-2">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-2" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 Who should use Kinscare?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                <p className="text-base">Kinscare is designed for:</p>
                 <ul className="list-disc list-inside ml-4 mt-2">
                   <li>Adult Family Homes</li>
@@ -81,11 +91,11 @@ const ProviderFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 3. Why use Kinscare? */}
-            <AccordionItem value="item-3">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-3" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 Why use Kinscare?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                <p className="text-base">
                   Whether you're a staffing coordinator, recruiter, or a family
                   member looking for a caregiver, Kinscare simplifies your
@@ -112,11 +122,11 @@ const ProviderFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 4. How do I find a caregiver? */}
-            <AccordionItem value="item-4">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-4" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 How do I find a caregiver?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                <p className="text-base">
                   The best approach is to post a job and actively search for
                   candidates.
@@ -141,11 +151,11 @@ const ProviderFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 5. How do I contact a caregiver? */}
-            <AccordionItem value="item-5">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-5" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 How do I contact a caregiver?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                <p className="text-base">
                   Click the “View Contact Details” button on a caregiver’s
                   profile to see their phone number and email.
@@ -159,11 +169,11 @@ const ProviderFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 6. How does Kinscare find caregivers? */}
-            <AccordionItem value="item-6">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-6" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 How does Kinscare find caregivers?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                <p className="text-base">We actively recruit caregivers through:</p>
                 <ul className="list-disc list-inside ml-4 mt-2">
                   <li>Local vocational programs &amp; community colleges</li>
@@ -176,11 +186,11 @@ const ProviderFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 7. Are all caregivers on Kinscare licensed? */}
-            <AccordionItem value="item-7">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-7" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 Are all caregivers on Kinscare licensed?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                <p className="text-base">
                   Most caregivers on Kinscare are licensed, having completed
                   state-administered training and exams.
@@ -194,11 +204,11 @@ const ProviderFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 8. What happens after I find a caregiver? */}
-            <AccordionItem value="item-8">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-8" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 What happens after I find a caregiver?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                <p className="text-base">
                   Kinscare connects you with caregivers but does not handle:
                 </p>
@@ -214,11 +224,11 @@ const ProviderFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 9. How much does Kinscare cost? */}
-            <AccordionItem value="item-9">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-9" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 How much does Kinscare cost?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                <p className="text-base">
                   Kinscare operates on a pay-as-you-go model, similar to
                   Uber—not a subscription service like Netflix.
@@ -239,11 +249,11 @@ const ProviderFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 10. Does Kinscare have hidden fees? */}
-            <AccordionItem value="item-10">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-10" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 Does Kinscare have hidden fees?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                <p className="text-base">No. Kinscare has no:</p>
                 <ul className="list-disc list-inside ml-4 mt-2">
                   <li>✅ Initiation or setup fees</li>
@@ -255,11 +265,11 @@ const ProviderFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 11. How long is the free trial? */}
-            <AccordionItem value="item-11">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-11" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 How long is the free trial?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                <p className="text-base">
                   Kinscare offers a 7-day free trial to help you explore our
                   platform and find caregivers. If you see value in our service,
@@ -270,11 +280,11 @@ const ProviderFAQPage: React.FC = () => {
             </AccordionItem>
 
             {/* 12. How Can Providers Benefit from Engaging with Aspiring Healthcare Professionals? */}
-            <AccordionItem value="item-12">
-              <AccordionTrigger className="text-lg font-semibold">
+            <AccordionItem value="item-12" className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur px-4">
+              <AccordionTrigger className="text-lg font-semibold text-slate-900">
                 How Can Providers Benefit from Engaging with Aspiring Healthcare Professionals?
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="text-slate-600 pb-4">
                 <h3 className="text-md font-semibold mt-2">
                   Why should providers engage with individuals exploring a career in healthcare?
                 </h3>
@@ -339,7 +349,9 @@ const ProviderFAQPage: React.FC = () => {
           {/* Example CTA Button or Additional Links */}
           <div className="mt-8">
             <Link href="/post-a-job">
-              <Button className="w-full">Post a Job</Button>
+              <Button className="w-full rounded-xl bg-blue-600 text-white hover:bg-blue-700">
+                Post a Job
+              </Button>
             </Link>
           </div>
         </div>

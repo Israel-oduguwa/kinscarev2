@@ -1,13 +1,12 @@
+import JobListingLogo from "@/components/JobListingLogo";
+import { Button } from "@/components/ui/button";
 import { Interweave } from "interweave";
+import { BadgeCheck, Clock, MapPin } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import { Button } from "@/components/ui/button";
-import SearchBar from "./SearchBar";
 import OauthApply from "./OauthApply";
-import Image from "next/image";
-import SigninModal from "@/Authentication/SiginModal";
-import { MapPin, Clock, BadgeCheck } from "lucide-react";
-import JobListingLogo from "@/components/JobListingLogo";
+import SearchBar from "./SearchBar";
 import SearchInfo from "./SearchInfo";
 
 /** Safe query builder to avoid "undefined" in URLs */
@@ -43,7 +42,7 @@ const Logo: React.FC<{ src?: string; alt?: string }> = ({ src, alt }) => {
 };
 
 const Chip: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-700">
+  <span className="inline-flex items-center gap-1 rounded-full border border-white/70 bg-white/80 px-3 py-1 text-xs font-medium text-slate-700 shadow-sm">
     {children}
   </span>
 );
@@ -59,10 +58,10 @@ const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
 
   return (
     <div
-      className="group relative w-full rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:shadow-md focus-within:shadow-md"
+      className="group relative w-full rounded-3xl border border-white/70 bg-white/80 p-5 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur transition-all hover:shadow-[0_22px_55px_-35px_rgba(15,23,42,0.45)] focus-within:shadow-[0_22px_55px_-35px_rgba(15,23,42,0.45)]"
       role="article"
     >
-      <div className="absolute inset-0 -z-10 rounded-2xl opacity-0 ring-2 ring-blue-500/0 transition group-hover:opacity-100 group-hover:ring-blue-500/10" />
+      <div className="absolute inset-0 -z-10 rounded-3xl opacity-0 ring-2 ring-blue-500/0 transition group-hover:opacity-100 group-hover:ring-blue-500/10" />
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
         <Link
           href={`/jobs/${job._id}`}
@@ -77,7 +76,7 @@ const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
           />
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-lg font-semibold tracking-tight text-gray-900">
+              <h2 className="text-lg font-semibold tracking-tight text-slate-900">
                 {job?.title}
               </h2>
               {Array.isArray(job?.licenses) && job.licenses.length > 0 && (
@@ -88,13 +87,13 @@ const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
               )}
             </div>
 
-            <div className="mt-1 flex items-center gap-2 text-sm text-gray-600">
+            <div className="mt-1 flex items-center gap-2 text-sm text-slate-600">
               <MapPin className="h-4 w-4 shrink-0" />
               <span className="truncate">{locationLine || "—"}</span>
             </div>
 
             {job.certifications && job.certifications.length > 0 && (
-              <div className="mt-3 text-sm text-gray-700 line-clamp-2">
+              <div className="mt-3 text-sm text-slate-700 line-clamp-2">
                 <Interweave content={job?.certifications ?? ""} />
               </div>
             )}
@@ -123,7 +122,7 @@ const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
 
         <div className="w-full lg:w-auto">
           <OauthApply publicPage={true} job={job} jobID={job?._id}>
-            <Button className="w-full rounded-xl px-6 py-3 shadow-[0_8px_20px_-8px_rgba(59,130,246,0.6)] transition hover:shadow-[0_12px_28px_-10px_rgba(59,130,246,0.65)]">
+            <Button className="w-full rounded-xl bg-blue-600 px-6 py-3 text-white shadow-[0_12px_28px_-14px_rgba(59,130,246,0.55)] transition hover:bg-blue-700 hover:shadow-[0_16px_32px_-14px_rgba(59,130,246,0.6)]">
               Join to apply
             </Button>
           </OauthApply>
@@ -192,9 +191,16 @@ async function All({
     : "#";
 
   return (
-    <div className="min-h-screen py-20 bg-linear-to-b from-gray-50 to-white">
+    <div className="relative min-h-screen py-20 bg-slate-950/5 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_20%_-10%,rgba(59,130,246,0.14),transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_90%_20%,rgba(30,64,175,0.12),transparent_60%)]" />
+        <div className="absolute -top-24 right-6 h-72 w-72 rounded-full bg-sky-300/25 blur-3xl" />
+        <div className="absolute -bottom-32 left-10 h-80 w-80 rounded-full bg-blue-200/35 blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.14)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.14)_1px,transparent_1px)] bg-[size:36px_36px] opacity-30" />
+      </div>
       {/* Top header zone */}
-      <div className="relative border-b  border-gray-200/70 bg-[radial-gradient(60%_80%_at_50%_-20%,rgba(59,130,246,0.10),transparent)]">
+      <div className="relative border-b pt-20 border-white/70 bg-white/60 backdrop-blur">
         <div className="mx-auto max-w-6xl px-4 py-4">
           <div className="flex flex-col gap-6">
             <SearchBar />
@@ -204,13 +210,13 @@ async function All({
       </div>
 
       {/* Results */}
-      <div className="mx-auto max-w-6xl px-4 py-8">
+      <div className="relative mx-auto max-w-6xl px-4 py-8">
         <div className="grid grid-cols-1 gap-5">
           {jobs.length > 0 ? (
             jobs.map((job: any) => <JobPostCard key={job._id} job={job} />)
           ) : (
-            <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center">
-              <div className="mx-auto mb-4 h-16 w-16 text-gray-300">
+            <div className="rounded-3xl border border-dashed border-white/70 bg-white/80 p-10 text-center shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
+              <div className="mx-auto mb-4 h-16 w-16 text-slate-300">
                 {/* simple inline illustration */}
                 <svg viewBox="0 0 24 24" fill="none" className="h-full w-full">
                   <path
@@ -228,7 +234,7 @@ async function All({
                   />
                 </svg>
               </div>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-slate-600">
                 No jobs found for the selected filters.
               </p>
             </div>

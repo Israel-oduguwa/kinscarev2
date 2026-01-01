@@ -114,7 +114,7 @@ function HomePage() {
       {/* Enhanced Hero Section */}
       <section
         ref={refs.hero}
-        className="relative min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] py-10 md:py-10 overflow-hidden"
+         className="relative min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] py-10 md:py-10 overflow-hidden"
       >
         {/* Dynamic floating blobs */}
         <motion.div
@@ -142,7 +142,7 @@ function HomePage() {
           </div>
         </div>
 
-        <div className="max-w-8xl mx-auto px-4 md:px-8 text-center relative z-10 pt-24">
+        <div className="max-w-8xl mx-auto px-4 md:px-8 text-center relative z-10 pt-30">
           {/* Animated badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -150,7 +150,7 @@ function HomePage() {
             transition={{ duration: 0.5 }}
             className="inline-block rounded-2xl bg-white/10 backdrop-blur-xl p-3 shadow-lg mb-8 border border-white/10"
           >
-            <span className="inline-flex items-center text-indigo-200 font-bold gap-2 text-sm md:text-base tracking-wider">
+            <span className="inline-flex items-center text-slate-100 font-bold gap-2 text-sm md:text-base tracking-wider">
               <svg
                 width={24}
                 height={24}
@@ -158,7 +158,7 @@ function HomePage() {
                 viewBox="0 0 24 24"
                 className="shrink-0"
               >
-                <circle cx="12" cy="12" r="10" fill="#6366F1" />
+                <circle cx="12" cy="12" r="10" fill="#3B82F6" />
                 <path
                   d="M8 12.5L11 15.5L16 9.5"
                   stroke="#fff"
@@ -178,7 +178,7 @@ function HomePage() {
             animate={controls.hero}
             className="mb-8 md:mb-12"
           >
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight tracking-tighter">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-[family:var(--header-font)] font-extrabold text-white mb-6 leading-tight tracking-tighter">
               <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
                 {"Hire Great Caregivers".split(" ").map((word, i) => (
                   <motion.span key={i} variants={item} className="inline-block">
@@ -189,7 +189,7 @@ function HomePage() {
               <div className="mt-2 md:mt-4">
                 <motion.span
                   variants={item}
-                  className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff7e5f] to-[#feb47b]"
+                  className="text-transparent bg-clip-text bg-gradient-to-r from-sky-200 to-blue-300"
                 >
                   Fast
                 </motion.span>
@@ -198,7 +198,7 @@ function HomePage() {
                 </motion.span>
                 <motion.span
                   variants={item}
-                  className="text-transparent bg-clip-text bg-gradient-to-r from-[#4776E6] to-[#8E54E9]"
+                  className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-slate-200"
                 >
                   Guaranteed
                 </motion.span>
@@ -214,16 +214,16 @@ function HomePage() {
             className="max-w-4xl mx-auto text-lg md:text-xl text-white/80 mb-12"
           >
             Get matched with{" "}
-            <span className="font-bold text-[#feb47b] bg-white/10 px-2 py-1 rounded-md">
+            <span className="font-bold text-sky-200 bg-white/10 px-2 py-1 rounded-md">
               3 qualified caregivers
             </span>
             —personally found and scheduled for you by our team, in just 3 days.
             Plus, enjoy{" "}
-            <span className="font-bold text-purple-100 bg-white/10 px-2 py-1 rounded-md">
+            <span className="font-bold text-slate-100 bg-white/10 px-2 py-1 rounded-md">
               2 weeks of full access
             </span>{" "}
             to browse and hire as many as you need. All for{" "}
-            <span className="font-bold text-[#ff7e5f] bg-white/10 px-2 py-1 rounded-md">
+            <span className="font-bold text-sky-200 bg-white/10 px-2 py-1 rounded-md">
               $175
             </span>
             .
@@ -240,14 +240,14 @@ function HomePage() {
               <Button
                 size="lg"
                 className={cn(
-                  "bg-gradient-to-r from-[#ff7e5f] to-[#feb47b] text-white text-base md:text-lg font-bold",
+                  "bg-blue-600 text-white text-base md:text-lg font-bold",
                   "px-16 py-8 rounded-xl transform transition-all duration-300",
-                  "hover:from-[#ff6a4a] hover:to-[#fe9e6b] hover:scale-[1.03] hover:shadow-xl hover:shadow-[#ff7e5f]/30",
+                  "hover:bg-blue-700 hover:scale-[1.03] hover:shadow-xl hover:shadow-blue-500/30",
                   "relative overflow-hidden group"
                 )}
               >
                 <span className="relative z-10">Get Started</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-[#ff7e5f] to-[#feb47b] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className="absolute inset-0 bg-white/10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Button>
             </Link>
@@ -261,7 +261,7 @@ function HomePage() {
             transition={{ duration: 0.5, delay: 0.8 }}
             className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto"
           >
-            <div className="inline-flex items-center bg-gradient-to-r from-[#4776E6]/20 to-[#8E54E9]/20 text-white px-4 py-3 text-sm rounded-full font-medium backdrop-blur-sm border border-white/10">
+            <div className="inline-flex items-center bg-white/10 text-white px-4 py-3 text-sm rounded-full font-medium backdrop-blur-sm border border-white/10">
               <svg
                 className="w-5 h-5 mr-2 text-green-400"
                 fill="currentColor"
@@ -275,7 +275,7 @@ function HomePage() {
               </svg>
               100% Money-Back Guarantee
             </div>
-            <div className="inline-flex items-center bg-gradient-to-r from-[#ff7e5f]/20 to-[#feb47b]/20 text-white px-4 py-3 text-sm rounded-full font-medium backdrop-blur-sm border border-white/10">
+            <div className="inline-flex items-center bg-white/10 text-white px-4 py-3 text-sm rounded-full font-medium backdrop-blur-sm border border-white/10">
               <svg
                 className="w-5 h-5 mr-2 text-blue-400"
                 fill="currentColor"
@@ -293,7 +293,7 @@ function HomePage() {
           <div className="relative">
             {/* Floating elements around caregiver */}
             <motion.div
-              className="absolute top-8 left-0 w-16 h-16 rounded-full bg-gradient-to-r from-[#ff7e5f] to-[#feb47b] shadow-lg"
+              className="absolute top-8 left-0 w-16 h-16 rounded-full bg-gradient-to-r from-sky-400/60 to-blue-500/60 shadow-lg"
               animate={{
                 y: [0, -20, 0],
                 x: [0, 10, 0],
@@ -305,7 +305,7 @@ function HomePage() {
               }}
             />
             <motion.div
-              className="absolute top-4 right-0 w-12 h-12 rounded-full bg-gradient-to-r from-[#654ea3] to-[#da98b4] shadow-lg"
+              className="absolute top-4 right-0 w-12 h-12 rounded-full bg-gradient-to-r from-blue-400/60 to-slate-400/60 shadow-lg"
               animate={{
                 y: [0, 15, 0],
                 x: [0, -15, 0],
@@ -317,7 +317,7 @@ function HomePage() {
               }}
             />
             <motion.div
-              className="absolute bottom-16 left-1/4 w-10 h-10 rounded-full bg-gradient-to-r from-[#4776E6] to-[#8E54E9] shadow-lg"
+              className="absolute bottom-16 left-1/4 w-10 h-10 rounded-full bg-gradient-to-r from-sky-400/60 to-blue-500/60 shadow-lg"
               animate={{
                 y: [0, -15, 0],
                 x: [0, 10, 0],
@@ -370,7 +370,7 @@ function HomePage() {
       <section
         ref={refs.howItWorks}
         id="how-it-works"
-        className="py-20 bg-gradient-to-b from-white to-indigo-50 relative overflow-hidden"
+        className="py-20 bg-gradient-to-b from-white to-slate-50 relative overflow-hidden"
       >
         {/* Decorative Waves */}
         <div className="absolute top-0 left-0 w-full h-20 -mt-20 overflow-hidden">
@@ -381,11 +381,13 @@ function HomePage() {
 
         <div className="max-w-6xl mx-auto px-4 md:px-8 relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              How <span className="text-indigo-600">Jumpstart Hiring</span>{" "}
-              Works
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+              How it works
+            </p>
+            <h2 className="text-3xl md:text-4xl font-[family:var(--header-font)] font-extrabold text-slate-900 mb-4 mt-3">
+              How <span className="text-blue-600">Jumpstart Hiring</span> Works
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
               Our streamlined process gets you qualified caregivers faster than
               ever
             </p>
@@ -400,7 +402,7 @@ function HomePage() {
                   "Make a one-time payment of $175. No subscriptions, no hidden fees.",
                 icon: (
                   <svg
-                    className="w-8 h-8 text-indigo-600"
+                    className="w-8 h-8 text-blue-600"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -421,7 +423,7 @@ function HomePage() {
                   "Fill a short onboarding form—let us know your requirements, schedule, and preferences.",
                 icon: (
                   <svg
-                    className="w-8 h-8 text-indigo-600"
+                    className="w-8 h-8 text-blue-600"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -442,7 +444,7 @@ function HomePage() {
                   "A real KinsCare agent finds 3 qualified caregivers who match your needs.",
                 icon: (
                   <svg
-                    className="w-8 h-8 text-indigo-600"
+                    className="w-8 h-8 text-blue-600"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -463,7 +465,7 @@ function HomePage() {
                   "You'll get 2 weeks unlimited access to browse and hire additional caregivers.",
                 icon: (
                   <svg
-                    className="w-8 h-8 text-indigo-600"
+                    className="w-8 h-8 text-blue-600"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -480,21 +482,21 @@ function HomePage() {
             ].map((item) => (
               <div
                 key={item.step}
-                className="bg-gradient-to-b from-white to-indigo-50 border border-indigo-100 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group relative overflow-hidden"
+                className="bg-white/80 border border-white/70 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group relative overflow-hidden backdrop-blur"
               >
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-sky-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-xl font-bold text-indigo-600 mr-4 group-hover:bg-indigo-200 transition-colors">
+                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-xl font-bold text-blue-600 mr-4 group-hover:bg-blue-200 transition-colors">
                     {item.step}
                   </div>
-                  <div className="text-indigo-600 group-hover:text-indigo-800 transition-colors">
+                  <div className="text-blue-600 group-hover:text-blue-800 transition-colors">
                     {item.icon}
                   </div>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2 group-hover:text-indigo-700 transition-colors">
+                <h3 className="text-xl font-semibold text-slate-900 mb-2 group-hover:text-blue-700 transition-colors">
                   {item.title}
                 </h3>
-                <p className="text-gray-600">{item.description}</p>
+                <p className="text-slate-600">{item.description}</p>
               </div>
             ))}
           </div>
@@ -504,15 +506,18 @@ function HomePage() {
       {/* Trust & Guarantee - Modern Design */}
       <section
         ref={refs.trust}
-        className="py-20 bg-gradient-to-br from-blue-50 to-indigo-50 relative overflow-hidden"
+        className="py-20 bg-gradient-to-br from-white to-slate-50 relative overflow-hidden"
       >
         <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
           <div className="text-center mb-16">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+              Trust & guarantee
+            </p>
             <motion.h2
               variants={fadeIn}
               initial="hidden"
               animate={controls.trust}
-              className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
+              className="text-3xl md:text-4xl font-[family:var(--header-font)] font-extrabold text-slate-900 mb-4"
             >
               Why Providers Trust KinsCare
             </motion.h2>
@@ -521,7 +526,7 @@ function HomePage() {
               initial="hidden"
               animate={controls.trust}
               transition={{ delay: 0.1 }}
-              className="text-lg text-gray-600 max-w-2xl mx-auto"
+              className="text-lg text-slate-600 max-w-2xl mx-auto"
             >
               Our commitment to quality and satisfaction is unmatched
             </motion.p>
@@ -532,12 +537,12 @@ function HomePage() {
               variants={fadeIn}
               initial="hidden"
               animate={controls.trust}
-              className="bg-white rounded-2xl p-8 shadow-lg border border-indigo-100 hover:shadow-xl transition-shadow duration-300"
+              className="bg-white/80 rounded-3xl p-8 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] border border-white/70 hover:shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] transition-shadow duration-300 backdrop-blur"
             >
               <div className="flex items-start mb-4">
-                <div className="bg-green-100 p-3 rounded-lg mr-4">
+                <div className="bg-emerald-100 p-3 rounded-lg mr-4">
                   <svg
-                    className="w-6 h-6 text-green-600"
+                    className="w-6 h-6 text-emerald-600"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -550,11 +555,11 @@ function HomePage() {
                     />
                   </svg>
                 </div>
-                <h3 className="text-xl font-bold text-green-700">
+                <h3 className="text-xl font-extrabold text-emerald-700">
                   100% Satisfaction Guarantee
                 </h3>
               </div>
-              <p className="text-gray-600">
+              <p className="text-slate-600">
                 If we don't deliver 3 caregivers ready to interview within 3
                 business days, your payment is refunded—no questions asked.
               </p>
@@ -565,10 +570,10 @@ function HomePage() {
               initial="hidden"
               animate={controls.trust}
               transition={{ delay: 0.1 }}
-              className="bg-white rounded-2xl p-8 shadow-lg border border-indigo-100 hover:shadow-xl transition-shadow duration-300"
+              className="bg-white/80 rounded-3xl p-8 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] border border-white/70 hover:shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] transition-shadow duration-300 backdrop-blur"
             >
               <div className="flex items-start mb-4">
-                <div className="bg-blue-100 p-3 rounded-lg mr-4">
+                <div className="bg-sky-100 p-3 rounded-lg mr-4">
                   <svg
                     className="w-6 h-6 text-blue-600"
                     fill="none"
@@ -583,11 +588,11 @@ function HomePage() {
                     />
                   </svg>
                 </div>
-                <h3 className="text-xl font-bold text-blue-700">
+                <h3 className="text-xl font-extrabold text-blue-700">
                   Personal, Human Service
                 </h3>
               </div>
-              <p className="text-gray-600">
+              <p className="text-slate-600">
                 We believe in a personal touch. A dedicated member of our team
                 will be available to partner with you, ensuring you find the
                 right caregiver solution together.
@@ -600,13 +605,13 @@ function HomePage() {
             initial="hidden"
             animate={controls.trust}
             transition={{ delay: 0.2 }}
-            className="mt-16 bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-2xl p-8 max-w-4xl mx-auto shadow-sm hover:shadow-md transition-shadow"
+            className="mt-16 bg-gradient-to-r from-sky-50 to-blue-50 border border-blue-100 rounded-2xl p-8 max-w-4xl mx-auto shadow-sm hover:shadow-md transition-shadow"
           >
             <div className="flex flex-col md:flex-row items-center">
               <div className="md:w-1/3 flex justify-center mb-6 md:mb-0">
-                <div className="bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full w-32 h-32 flex items-center justify-center shadow-inner">
+                <div className="bg-gradient-to-br from-sky-100 to-blue-100 rounded-full w-32 h-32 flex items-center justify-center shadow-inner">
                   <svg
-                    className="w-16 h-16 text-indigo-600"
+                    className="w-16 h-16 text-blue-600"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -639,7 +644,7 @@ function HomePage() {
                   ].map((item, index) => (
                     <span
                       key={index}
-                      className="bg-white px-3 py-1 rounded-full text-sm font-medium text-indigo-700 shadow-sm"
+                      className="bg-white px-3 py-1 rounded-full text-sm font-medium text-blue-700 shadow-sm"
                     >
                       {item}
                     </span>
@@ -651,21 +656,21 @@ function HomePage() {
         </div>
 
         {/* Background elements */}
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full opacity-30 blur-[100px]"></div>
-        <div className="absolute top-1/3 right-0 w-64 h-64 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full opacity-40 blur-[80px]"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-r from-sky-100 to-blue-100 rounded-full opacity-40 blur-[100px]"></div>
+        <div className="absolute top-1/3 right-0 w-64 h-64 bg-gradient-to-r from-blue-100 to-slate-100 rounded-full opacity-40 blur-[80px]"></div>
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 bg-gradient-to-r from-indigo-600 to-purple-600 text-white relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-r from-slate-900 via-blue-900 to-sky-800 text-white relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-10">
           <div className="bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtZGFzaGFycmF5PSI1LDUiLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSIzMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjMsMyIvPjwvc3ZnPg==')] w-full h-full"></div>
         </div>
 
         <div className="max-w-4xl mx-auto px-4 md:px-8 text-center relative z-10">
-          <h2 className="text-3xl md:text-4xl font-extrabold mb-6">
-            Ready to Hire the <span className="text-indigo-200">Easy Way</span>?
+          <h2 className="text-3xl md:text-4xl font-[family:var(--header-font)] font-extrabold mb-6">
+            Ready to Hire the <span className="text-sky-200">Easy Way</span>?
           </h2>
-          <p className="text-lg md:text-xl text-indigo-100 max-w-2xl mx-auto mb-10">
+          <p className="text-lg md:text-xl text-slate-100 max-w-2xl mx-auto mb-10">
             Save time, reduce stress, and hire your next caregiver with full
             confidence. Jumpstart Hiring is the fastest, most reliable way to
             build your caregiving team.
@@ -674,10 +679,10 @@ function HomePage() {
             <Link href="/jumpstart-hiring/apply">
               <Button
                 size="lg"
-                className="bg-white text-indigo-700 text-lg font-bold px-10 py-5 rounded-xl shadow-lg hover:bg-indigo-50 transform transition-all duration-300 hover:scale-[1.03] group relative overflow-hidden"
+                className="bg-white text-blue-700 text-lg font-bold px-10 py-5 rounded-xl shadow-lg hover:bg-slate-100 transform transition-all duration-300 hover:scale-[1.03] group relative overflow-hidden"
               >
                 <span className="relative z-10">Book Now – $175</span>
-                <span className="absolute inset-0 bg-gradient-to-r from-indigo-50 to-white opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+                <span className="absolute inset-0 bg-gradient-to-r from-slate-100 to-white opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
               </Button>
             </Link>
             {/* <Link href="#how-it-works">
@@ -711,15 +716,18 @@ function HomePage() {
       {/* FAQ Section - Modern Design */}
       <section
         ref={refs.faq}
-        className="py-20 bg-white relative overflow-hidden"
+        className="py-20 bg-gradient-to-b from-white to-slate-50 relative overflow-hidden"
       >
         <div className="max-w-4xl mx-auto px-4 md:px-8 relative z-10">
           <div className="text-center mb-16">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+              FAQ
+            </p>
             <motion.h2
               variants={fadeIn}
               initial="hidden"
               animate={controls.faq}
-              className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
+              className="text-3xl md:text-4xl font-[family:var(--header-font)] font-extrabold text-slate-900 mb-4"
             >
               Frequently Asked Questions
             </motion.h2>
@@ -728,7 +736,7 @@ function HomePage() {
               initial="hidden"
               animate={controls.faq}
               transition={{ delay: 0.1 }}
-              className="text-lg text-gray-600 max-w-xl mx-auto"
+              className="text-lg text-slate-600 max-w-xl mx-auto"
             >
               Everything you need to know about our Jumpstart Hiring service
             </motion.p>
@@ -765,17 +773,17 @@ function HomePage() {
               <motion.div
                 key={index}
                 variants={item}
-                className="border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:border-indigo-300"
+                className="border border-white/70 rounded-2xl overflow-hidden transition-all duration-300 hover:border-blue-200 bg-white/80 backdrop-blur"
               >
                 <button
-                  className="flex items-center justify-between w-full p-6 text-left bg-gray-50 hover:bg-indigo-50 transition-colors"
+                  className="flex items-center justify-between w-full p-6 text-left bg-white/70 hover:bg-blue-50/60 transition-colors"
                   onClick={() => toggleQuestion(index)}
                 >
-                  <h3 className="text-lg font-semibold text-gray-800">
+                  <h3 className="text-lg font-semibold text-slate-900">
                     {item.question}
                   </h3>
                   <svg
-                    className={`w-5 h-5 text-indigo-600 transform transition-transform ${
+                    className={`w-5 h-5 text-blue-600 transform transition-transform ${
                       activeQuestion === index ? "rotate-180" : ""
                     }`}
                     fill="none"
@@ -796,7 +804,7 @@ function HomePage() {
                     activeQuestion === index ? "max-h-96" : "max-h-0"
                   }`}
                 >
-                  <div className="p-6 pt-0 text-gray-600">{item.answer}</div>
+                  <div className="p-6 pt-0 text-slate-600">{item.answer}</div>
                 </div>
               </motion.div>
             ))}
@@ -808,13 +816,13 @@ function HomePage() {
             animate={controls.faq}
             className="mt-16 text-center"
           >
-            <p className="text-gray-700 mb-6">
+            <p className="text-slate-700 mb-6">
               Still have questions? Our team is here to help.
             </p>
             <Link href="/contact">
               <Button
                 variant="outline"
-                className="text-indigo-700 border-indigo-200 hover:border-indigo-400 bg-white px-8 py-4 rounded-xl font-semibold hover:bg-indigo-50"
+                className="text-blue-700 border-blue-200 hover:border-blue-400 bg-white px-8 py-4 rounded-xl font-semibold hover:bg-blue-50"
               >
                 Contact Support
               </Button>
@@ -823,8 +831,8 @@ function HomePage() {
         </div>
 
         {/* Background elements */}
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full opacity-30 blur-[100px]"></div>
-        <div className="absolute top-1/3 left-0 w-64 h-64 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full opacity-40 blur-[80px]"></div>
+        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-r from-sky-100 to-blue-100 rounded-full opacity-35 blur-[100px]"></div>
+        <div className="absolute top-1/3 left-0 w-64 h-64 bg-gradient-to-r from-blue-100 to-slate-100 rounded-full opacity-40 blur-[80px]"></div>
       </section>
     </div>
   );

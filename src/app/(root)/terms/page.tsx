@@ -33,11 +33,23 @@ export const metadata: Metadata = {
 const Terms = () => {
   return (
     <>
-   
-    <div className="mt-10">
-    <div className="  pt-20 pb-10 px-6 lg:px-8 max-w-5xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Terms and Conditions</h1>
-        <p className="mb-6 text-gray-700">
+    <div className="relative mt-10 overflow-hidden bg-slate-950/5">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_20%_-10%,rgba(59,130,246,0.12),transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_90%_20%,rgba(30,64,175,0.1),transparent_60%)]" />
+        <div className="absolute -top-24 right-6 h-72 w-72 rounded-full bg-sky-300/25 blur-3xl" />
+        <div className="absolute -bottom-32 left-10 h-80 w-80 rounded-full bg-blue-200/35 blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.12)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.12)_1px,transparent_1px)] bg-[size:36px_36px] opacity-35" />
+      </div>
+      <div className="mt-32 pb-10 px-6 lg:px-8 max-w-7xl mx-auto relative">
+        <div className="rounded-3xl border border-white/70 bg-white/80 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.4)] backdrop-blur p-8 md:p-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 mb-3">
+            Legal
+          </p>
+          <h1 className="text-3xl md:text-4xl font-[family:var(--header-font)] font-extrabold text-slate-900 mb-6">
+            Terms and Conditions
+          </h1>
+          <p className="mb-6 text-slate-700">
           These terms and conditions ("Agreement") set forth the general terms
           and conditions of your use of the{" "}
           <Link
@@ -59,8 +71,10 @@ const Terms = () => {
           Services, you acknowledge that you have read, understood, and agree to
           be bound by the terms of this Agreement.
         </p>
-        <h2 className="text-xl font-semibold mb-4">Table of Contents</h2>
-        <ul className="list-disc pl-6 mb-8">
+          <h2 className="text-xl font-semibold text-slate-900 mb-4">
+            Table of Contents
+          </h2>
+          <ul className="list-disc pl-6 mb-8 text-slate-700">
           <li>
             <Link
               href="#accounts-and-membership"
@@ -121,11 +135,11 @@ const Terms = () => {
           </li>
         </ul>
 
-        <section id="accounts-and-membership" className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">
+          <section id="accounts-and-membership" className="mb-8">
+            <h3 className="text-xl font-semibold text-slate-900 mb-4">
             1. Accounts and Membership
-          </h3>
-          <p className="mb-4 text-gray-700">
+            </h3>
+            <p className="mb-4 text-slate-700">
             If you create an account on the Website, you are responsible for
             maintaining the security of your account and you are fully
             responsible for all activities that occur under the account and any
@@ -133,8 +147,8 @@ const Terms = () => {
             obligation to, monitor and review new accounts before you may sign
             in and start using the Services. Providing false contact information
             of any kind may result in the termination of your account.
-          </p>
-          <p className="text-gray-700">
+            </p>
+            <p className="text-slate-700">
             You must immediately notify us of any unauthorized uses of your
             account or any other breaches of security. We will not be liable for
             any acts or omissions by you, including any damages of any kind
@@ -144,84 +158,92 @@ const Terms = () => {
             tend to damage our reputation. If we delete your account, you may
             not re-register. We may block your email and IP address to prevent
             further registration.
-          </p>
-        </section>
+            </p>
+          </section>
 
-        <section id="billing-and-payments" className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">2. Billing and Payments</h3>
-          <p className="mb-4 text-gray-700">
+          <section id="billing-and-payments" className="mb-8">
+            <h3 className="text-xl font-semibold text-slate-900 mb-4">
+              2. Billing and Payments
+            </h3>
+            <p className="mb-4 text-slate-700">
             You shall pay all fees or charges to your account in accordance with
             the fees, charges, and billing terms in effect at the time a fee or
             charge is due and payable. If auto-renewal is enabled for the
             Services you have subscribed to, you will be charged automatically
             in accordance with the term you selected.
-          </p>
-          <p className="text-gray-700">
+            </p>
+            <p className="text-slate-700">
             If your transaction is flagged as high-risk, we may require
             additional verification, such as government ID or bank statements.
             We reserve the right to change product pricing at any time and
             refuse or cancel orders at our discretion.
-          </p>
-        </section>
+            </p>
+          </section>
 
-        <section id="accuracy-of-information" className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">
+          <section id="accuracy-of-information" className="mb-8">
+            <h3 className="text-xl font-semibold text-slate-900 mb-4">
             3. Accuracy of Information
-          </h3>
-          <p className="text-gray-700">
+            </h3>
+            <p className="text-slate-700">
             Occasionally, there may be information on the Website that contains
             typographical errors, inaccuracies, or omissions. We reserve the
             right to correct these errors and update or cancel orders without
             prior notice. We undertake no obligation to update or clarify
             information except as required by law.
-          </p>
-        </section>
+            </p>
+          </section>
 
-        <section id="uptime-guarantee" className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">4. Uptime Guarantee</h3>
-          <p className="text-gray-700">
+          <section id="uptime-guarantee" className="mb-8">
+            <h3 className="text-xl font-semibold text-slate-900 mb-4">
+              4. Uptime Guarantee
+            </h3>
+            <p className="text-slate-700">
             We offer a 99% uptime guarantee for our Services. This guarantee
             does not apply to outages caused by maintenance, user actions, or
             other circumstances beyond our control.
-          </p>
-        </section>
+            </p>
+          </section>
 
-        <section id="links-to-other-resources" className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">
+          <section id="links-to-other-resources" className="mb-8">
+            <h3 className="text-xl font-semibold text-slate-900 mb-4">
             5. Links to Other Resources
-          </h3>
-          <p className="text-gray-700">
+            </h3>
+            <p className="text-slate-700">
             The Website and Services may link to other resources. However, we do
             not endorse or assume responsibility for any third-party content,
             services, or actions. Accessing third-party resources is at your own
             risk.
-          </p>
-        </section>
+            </p>
+          </section>
 
-        <section id="changes-and-amendments" className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">6. Changes and Amendments</h3>
-          <p className="text-gray-700">
+          <section id="changes-and-amendments" className="mb-8">
+            <h3 className="text-xl font-semibold text-slate-900 mb-4">
+              6. Changes and Amendments
+            </h3>
+            <p className="text-slate-700">
             We reserve the right to modify this Agreement or its terms at any
             time. When changes are made, we may notify you via email or other
             contact methods. Continued use of the Website after changes
             indicates your acceptance of the updated terms.
-          </p>
-        </section>
+            </p>
+          </section>
 
-        <section id="acceptance-of-these-terms" className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">
+          <section id="acceptance-of-these-terms" className="mb-8">
+            <h3 className="text-xl font-semibold text-slate-900 mb-4">
             7. Acceptance of These Terms
-          </h3>
-          <p className="text-gray-700">
+            </h3>
+            <p className="text-slate-700">
             By accessing and using the Website, you agree to be bound by this
             Agreement. If you do not agree, you are not authorized to use the
             Website and Services.
-          </p>
-        </section>
+            </p>
+          </section>
 
-        <section id="contacting-us" className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">8. Contacting Us</h3>
-          <p className="text-gray-700">
+          <section id="contacting-us" className="mb-8">
+            <h3 className="text-xl font-semibold text-slate-900 mb-4">
+              8. Contacting Us
+            </h3>
+            <p className="text-slate-700">
             If you have any questions about this Agreement, please contact us at{" "}
             <Link
               href="mailto:feedback@kinscare.org"
@@ -230,11 +252,12 @@ const Terms = () => {
               feedback@kinscare.org
             </Link>
             .
-          </p>
-          <p className="text-gray-700">
+            </p>
+            <p className="text-slate-700">
             This document was last updated on September 3, 2022.
-          </p>
-        </section>
+            </p>
+          </section>
+        </div>
       </div>
     </div>
       

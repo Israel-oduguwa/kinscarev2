@@ -33,15 +33,28 @@ export const metadata: Metadata = {
 const PrivacyPolicy: React.FC = () => {
   return (
     <>
-      
-      <div className="max-w-4xl mt-10 mx-auto my-8 py-20 px-4">
+      <div className="relative mt-10 overflow-hidden bg-slate-950/5">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_20%_-10%,rgba(59,130,246,0.12),transparent_55%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_90%_20%,rgba(30,64,175,0.1),transparent_60%)]" />
+          <div className="absolute -top-24 right-6 h-72 w-72 rounded-full bg-sky-300/25 blur-3xl" />
+          <div className="absolute -bottom-32 left-10 h-80 w-80 rounded-full bg-blue-200/35 blur-3xl" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.12)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.12)_1px,transparent_1px)] bg-[size:36px_36px] opacity-35" />
+        </div>
+        <div className="max-w-7xl mt-20 mx-auto my-8 py-20 px-4 relative">
+          <div className="rounded-3xl border border-white/70 bg-white/80 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.4)] backdrop-blur p-8 md:p-10 text-slate-700">
         {/* Page Header */}
         <header>
-          <h1 className="text-4xl font-bold mb-6">Privacy Policy</h1>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 mb-3">
+            Legal
+          </p>
+          <h1 className="text-4xl font-[family:var(--header-font)] font-extrabold text-slate-900 mb-6">
+            Privacy Policy
+          </h1>
         </header>
 
         {/* Introduction */}
-        <p className="mb-4">
+        <p className="mb-4 text-slate-700">
           We respect your privacy and are committed to protecting it through our
           compliance with this privacy policy (“Policy”). This Policy describes
           the types of information we may collect from you or that you may
@@ -59,7 +72,7 @@ const PrivacyPolicy: React.FC = () => {
           our use of your Personal Information and how you can access and update
           it.
         </p>
-        <p className="mb-4">
+        <p className="mb-4 text-slate-700">
           This Policy is a legally binding agreement between you (“User”, “you”
           or “your”) and Kinscare (“Kinscare”, “we”, “us” or “our”). If you are
           entering into this agreement on behalf of a business or other legal
@@ -77,8 +90,10 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Table of Contents */}
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">Table of Contents</h2>
-          <ol className="list-decimal pl-5 space-y-2">
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">
+            Table of Contents
+          </h2>
+          <ol className="list-decimal pl-5 space-y-2 text-slate-700">
             <li>
               <a
                 href="#collection-of-personal-information"
@@ -213,10 +228,10 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Section 1: Collection of Personal Information */}
         <section id="collection-of-personal-information" className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">
             1. Collection of personal information
           </h2>
-          <p className="mb-4">
+          <p className="mb-4 text-slate-700">
             You can access and use the Website and Services without telling us
             who you are or revealing any information by which someone could
             identify you as a specific, identifiable individual. If, however,
@@ -265,7 +280,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Section 2: Privacy of Children */}
         <section id="privacy-of-children" className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">
             2. Privacy of children
           </h2>
           <p className="mb-4">
@@ -294,7 +309,7 @@ const PrivacyPolicy: React.FC = () => {
           id="use-and-processing-of-collected-information"
           className="mb-8"
         >
-          <h2 className="text-2xl font-semibold mb-4">
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">
             3. Use and processing of collected information
           </h2>
           <p className="mb-4">
@@ -351,7 +366,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Section 4: Payment Processing */}
         <section id="payment-processing" className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">4. Payment processing</h2>
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">4. Payment processing</h2>
           <p className="mb-4">
             In case of Services requiring payment, you may need to provide your
             credit card details or other payment account information, which will
@@ -387,7 +402,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Section 5: Managing Information */}
         <section id="managing-information" className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">
             5. Managing information
           </h2>
           <p className="mb-4">
@@ -405,7 +420,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Section 6: Disclosure of Information */}
         <section id="disclosure-of-information" className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">
             6. Disclosure of information
           </h2>
           <p className="mb-4">
@@ -432,7 +447,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Section 7: Retention of Information */}
         <section id="retention-of-information" className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">
             7. Retention of information
           </h2>
           <p className="mb-4">
@@ -454,7 +469,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Section 8: California Privacy Rights */}
         <section id="california-privacy-rights" className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">
             8. California privacy rights
           </h2>
           <p className="mb-4">
@@ -483,7 +498,7 @@ const PrivacyPolicy: React.FC = () => {
         </section>
         {/* Section 9: How to Exercise Your Rights */}
         <section id="how-to-exercise-your-rights" className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">
             9. How to exercise your rights
           </h2>
           <p className="mb-4">
@@ -510,7 +525,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Section 10: Data Analytics */}
         <section id="data-analytics" className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">10. Data analytics</h2>
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">10. Data analytics</h2>
           <p className="mb-4">
             Our Website and Services may use third-party analytics tools that
             use cookies, web beacons, or other similar information-gathering
@@ -529,7 +544,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Section 11: Do Not Track Signals */}
         <section id="do-not-track-signals" className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">
             11. Do Not Track signals
           </h2>
           <p className="mb-4">
@@ -562,7 +577,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Section 12: Advertisements */}
         <section id="advertisements" className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">12. Advertisements</h2>
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">12. Advertisements</h2>
           <p>
             We may permit certain third-party companies to help us tailor
             advertising that we think may be of interest to Users and to collect
@@ -574,7 +589,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Section 13: Links to Other Resources */}
         <section id="links-to-other-resources" className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">
             13. Links to other resources
           </h2>
           <p>
@@ -589,7 +604,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Section 14: Information Security */}
         <section id="information-security" className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">
             14. Information security
           </h2>
           <p className="mb-4">
@@ -615,7 +630,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Section 15: Data Breach */}
         <section id="data-breach" className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">15. Data breach</h2>
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">15. Data breach</h2>
           <p className="mb-4">
             In the event we become aware that the security of the Website and
             Services has been compromised or Users’ Personal Information has
@@ -634,7 +649,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Section 16: Changes and Amendments */}
         <section id="changes-and-amendments" className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">
             16. Changes and amendments
           </h2>
           <p>
@@ -648,7 +663,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Section 17: Acceptance of this Policy */}
         <section id="acceptance-of-this-policy" className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">
             17. Acceptance of this policy
           </h2>
           <p>
@@ -663,7 +678,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Section 18: Contacting Us */}
         <section id="contacting-us" className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">18. Contacting us</h2>
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">18. Contacting us</h2>
           <p className="mb-4">
             If you have any questions regarding the information we may hold
             about you or if you wish to exercise your rights, you may use the
@@ -694,8 +709,9 @@ const PrivacyPolicy: React.FC = () => {
             This document was last updated on September 3, 2022.
           </p>
         </section>
+          </div>
+        </div>
       </div>
-      
     </>
   );
 };

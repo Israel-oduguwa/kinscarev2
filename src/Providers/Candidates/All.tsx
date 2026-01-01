@@ -79,7 +79,7 @@ const CandidatesCard = ({ candidate }: any) => {
   return (
     <div key={candidate.userID} className="w-full relative mb-4 ">
       <Link href={`/provider/candidates/${candidate.userID}`}>
-        <div className="mb-1 flex relative  bg-white flex-col space-y-4 shadow-sm border border-gray-50 rounded-lg p-6">
+        <div className="mb-2 flex relative   flex-col space-y-4 p-6 border border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
           <div className="flex justify-between">
             <div className="flex space-x-2 items-center">
               <ProfileAvatar
@@ -263,7 +263,7 @@ function All() {
   return (
     <div className="w-full">
       <div className="bg-slate-100 min-h-screen p-3">
-        <div className="max-w-6xl py-6 mx-auto">
+        <div className="max-w-7xl py-6 mx-auto">
           <header className="bg-linear-to-r mb-6 from-blue-600 to-blue-900 text-white rounded-lg shadow-md p-6">
             <div className="max-w-6xl mx-auto">
               <>
@@ -281,7 +281,7 @@ function All() {
                   </p>
                 </div>
                 <div className="mb-1">
-                  <div className="w-full max-w-6xl p-6 bg-white rounded-lg">
+                  <div className="w-full max-w-7xl p-6 bg-white rounded-lg">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <MultiSelect
                         options={shiftOptions}

@@ -24,10 +24,10 @@ const CandidatesCard = ({ similarCaregivers }: any) => {
     e.nativeEvent.stopImmediatePropagation();
   };
   return (
-    <div key={similarCaregivers.userID} className="w-full  mb-4">
+    <div key={similarCaregivers.userID} className="w-full mb-4">
       <Link href={`/provider/candidates/${similarCaregivers.userID}`}>
-        <div className="bg-white  shadow-sm border border-gray-200 rounded-lg p-6">
-          <div className="mb-1 flex  min-h-52   flex-col space-y-4">
+        <div className="bg-white/90 shadow-[0_14px_40px_-28px_rgba(15,23,42,0.45)] border border-slate-200/70 rounded-2xl p-5 hover:shadow-[0_18px_50px_-30px_rgba(15,23,42,0.5)] transition-all duration-200">
+          <div className="mb-1 flex min-h-52 flex-col space-y-4">
             <div className="flex justify-between">
               <div className="flex space-x-2 items-center">
                 {/* <img
@@ -40,8 +40,8 @@ const CandidatesCard = ({ similarCaregivers }: any) => {
                   name={`${similarCaregivers?.name}`}
                   profileImage={similarCaregivers?.profileImage}
                 />
-                <div>
-                  <p className="antialiased flex space-x-2 font-bold relative text-gray-900">
+                <div className="min-w-0">
+                  <p className="antialiased flex space-x-2 font-semibold relative text-slate-900 truncate">
                     {similarCaregivers.name}{" "}
                     {availability && (
                       <span className="relative flex h-3 w-3">
@@ -50,12 +50,12 @@ const CandidatesCard = ({ similarCaregivers }: any) => {
                       </span>
                     )}
                   </p>
-                  <p className="text-sm text-gray-600 flex flex-wrap gap-0.5 space-x-1 items-center">
-                    <MapPin size={15} />
+                  <p className="text-sm text-slate-600 flex flex-wrap gap-0.5 space-x-1 items-center">
+                    <MapPin size={14} />
                     {similarCaregivers.city}, {similarCaregivers.zipcode}{" "}
                     <span className="h-1 w-1 bg-gray-700 rounded-full"></span>
                     {availability && (
-                      <span className="text-sm text-green-600 antialiased">
+                      <span className="text-sm text-emerald-600 antialiased">
                         Available now
                       </span>
                     )}
@@ -70,9 +70,9 @@ const CandidatesCard = ({ similarCaregivers }: any) => {
                   .map((license: any, index: any) => (
                     <div
                       key={index}
-                      className="relative text-sm bg-gray-100 text-gray-800 rounded-lg py-1.5 px-3"
+                      className="relative text-xs bg-slate-100 text-slate-700 rounded-full py-1 px-3"
                     >
-                      <span className="text-sm text-gray-600">{license}</span>
+                      <span className="text-xs text-slate-600">{license}</span>
                     </div>
                   ))}
                 {similarCaregivers.availability
@@ -80,18 +80,18 @@ const CandidatesCard = ({ similarCaregivers }: any) => {
                   .map((sch: any, index: React.Key | null | undefined) => (
                     <div
                       key={index}
-                      className="relative text-sm bg-gray-100 text-gray-800 rounded-lg py-1.5 px-3"
+                      className="relative text-xs bg-emerald-50 text-emerald-700 rounded-full py-1 px-3"
                     >
-                      <span className="text-sm text-gray-600">{sch}</span>
+                      <span className="text-xs text-emerald-700">{sch}</span>
                     </div>
                   ))}
               </div>
             </div>
             <div className="w-full ">
-              <p className="flex mb-2 text-sm font-bold items-center">
+              <p className="flex mb-2 text-sm font-semibold items-center text-slate-900">
                 Certifications
               </p>
-              <div className="text-sm text-gray-600 line-clamp-2">
+              <div className="text-sm text-slate-600 line-clamp-2">
                 <Interweave content={similarCaregivers.certifications} />
               </div>
             </div>
@@ -159,9 +159,9 @@ async function CandidateDetails({ candidateID }: { candidateID: string }) {
         />
         <meta name="twitter:image" content={caregiver.profileImage} />
       </Head>
-      <div className="max-w-6xl px-2 md:px-10 py-6 md:py-10 xl:px-0 mx-auto space-y-10">
+      <div className="max-w-7xl px-2 md:px-10 py-6 md:py-10 2xl:px-0 mx-auto space-y-10">
         {/* Candidate Profile */}
-        <div className="relative shadow-sm border bg-white border-gray-200 rounded-lg p-4 md:p-6 space-y-6">
+        <div className="relative shadow-[0_20px_60px_-40px_rgba(15,23,42,0.45)] border border-slate-200/70 bg-white/80 backdrop-blur rounded-2xl p-4 md:p-6 space-y-6">
           {/* Header Section */}
           <div className="flex flex-col flex-wrap sm:flex-row space-y-4 items-start sm:items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -181,10 +181,10 @@ async function CandidateDetails({ candidateID }: { candidateID: string }) {
                 )}
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
+                <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">
                   {caregiver.fname} {caregiver.lname}
                 </h2>
-                <p className="text-sm text-gray-600 flex items-center gap-1 mt-1">
+                <p className="text-sm text-slate-600 flex items-center gap-1 mt-1">
                   <MapPin size={14} />
                   {caregiver.address && caregiver.address} {caregiver.city},{" "}
                   {caregiver.zipcode}
@@ -195,16 +195,16 @@ async function CandidateDetails({ candidateID }: { candidateID: string }) {
           </div>
 
           {/* Licenses and Availability */}
-          <div className="w-full flex-wrap gap-4 flex">
+          <div className="w-full flex-wrap gap-2 flex">
             {/* Display only the first 2 licenses */}
             {caregiver.licenses
               .slice(0, 3)
               .map((license: any, index: React.Key | null | undefined) => (
                 <div
                   key={index}
-                  className="relative text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
+                  className="relative text-xs bg-slate-100 text-slate-700 rounded-full py-1 px-3"
                 >
-                  <span className="text-xs antialiased text-gray-600">
+                  <span className="text-xs antialiased text-slate-600">
                     {license}
                   </span>
                 </div>
@@ -215,9 +215,9 @@ async function CandidateDetails({ candidateID }: { candidateID: string }) {
               .map((sch: any, index: React.Key | null | undefined) => (
                 <div
                   key={index}
-                  className="relative text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
+                  className="relative text-xs bg-emerald-50 text-emerald-700 rounded-full py-1 px-3"
                 >
-                  <span className="text-xs antialiased text-gray-600">
+                  <span className="text-xs antialiased text-emerald-700">
                     {sch}
                   </span>
                 </div>
@@ -235,8 +235,8 @@ async function CandidateDetails({ candidateID }: { candidateID: string }) {
 
           {/* About Section */}
           <div className="space-y-4 mt-6">
-            <h3 className="text-sm font-semibold text-gray-900">About Me</h3>
-            <div className="text-sm text-gray-700 leading-relaxed">
+            <h3 className="text-sm font-semibold text-slate-900">About Me</h3>
+            <div className="text-sm text-slate-700 leading-relaxed">
               <Interweave content={caregiver.certifications} />
             </div>
           </div>
@@ -245,7 +245,7 @@ async function CandidateDetails({ candidateID }: { candidateID: string }) {
           {caregiver.mobility && (
             <div className="mt-6">
               <p className="text-sm">
-                <strong className="font-semibold text-gray-900">
+                <strong className="font-semibold text-slate-900">
                   Mobility:
                 </strong>{" "}
                 {caregiver.mobility}
@@ -254,7 +254,7 @@ async function CandidateDetails({ candidateID }: { candidateID: string }) {
           )}
           {caregiver.settings.alert_preferences && (
             <div className="mt-6">
-              <h3 className="text-sm font-semibold text-gray-900">
+              <h3 className="text-sm font-semibold text-slate-900">
                 Alert Preferences
               </h3>
               <div className="flex flex-wrap gap-2 mt-2">
@@ -262,7 +262,7 @@ async function CandidateDetails({ candidateID }: { candidateID: string }) {
                   (alert: any, idx: number) => (
                     <div
                       key={idx}
-                      className="bg-gray-100 text-gray-800 text-xs rounded-full px-3 py-1"
+                      className="bg-slate-100 text-slate-700 text-xs rounded-full px-3 py-1"
                     >
                       {alert}
                     </div>
@@ -275,7 +275,7 @@ async function CandidateDetails({ candidateID }: { candidateID: string }) {
 
         {/* Similar Caregivers Section */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">
             Similar Caregivers
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">

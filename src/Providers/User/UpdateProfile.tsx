@@ -249,12 +249,12 @@ const UpdateProfile = () => {
   };
 
   return (
-    <div className="bg-gray-100 py-10">
-      <div className="max-w-6xl mx-auto">
+    <div className="bg-linear-to-b from-slate-50 via-slate-50 to-slate-100 py-10">
+      <div className="max-w-7xl mx-auto px-4">
         {!contactData?.verified && (
-          <div className="flex items-center gap-2 mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
-            <ShieldAlert className="w-5 text-red-700 h-5" />
-            <span className="text-yellow-700 text-sm font-medium">
+          <div className="flex items-center gap-2 mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+            <ShieldAlert className="w-5 text-amber-700 h-5" />
+            <span className="text-amber-800 text-sm font-medium">
               Your account is not verified.{" "}
               <Button
                 variant="link"
@@ -272,7 +272,7 @@ const UpdateProfile = () => {
         >
           <DialogContent
             // closePosition="left"
-            className="mx-auto bg-white rounded-lg shadow-lg"
+            className="mx-auto bg-white rounded-2xl shadow-lg"
           >
             <DialogTitle className="pt-4">
               Get Verified & Connect To More Caregivers
@@ -290,16 +290,16 @@ const UpdateProfile = () => {
           </DialogContent>
         </Dialog>
 
-        <div className="mx-4 xl:mx-0 px-4 py-8 md:px-8 rounded-lg shadow-lg bg-white">
+        <div className="mx-0 px-4 py-8 md:px-8 rounded-2xl shadow-[0_20px_60px_-40px_rgba(15,23,42,0.45)] border border-slate-200/70 bg-white/80 backdrop-blur">
           {userData ? (
             <>
               <div className="mb-5">
-                <h2 className="font-bold text-xl text-gray-900">
+                <h2 className="font-semibold text-xl text-slate-900">
                   {!contactData?.complete
                     ? "Add your company or provider information to find the best match"
                     : "Update your account"}
                 </h2>
-                <p className="text-sm antialiased text-gray-700">
+                <p className="text-sm antialiased text-slate-600">
                   Update your profile so caregivers can recognize you and get
                   connected faster.
                 </p>
@@ -316,7 +316,7 @@ const UpdateProfile = () => {
                     {/* Contact Information */}
                     <div className="mb-4">
                       <div className="mb-2">
-                        <h3 className="font-semibold text-gray-700">
+                        <h3 className="font-semibold text-slate-800">
                           Contact information
                         </h3>
                       </div>
@@ -325,14 +325,14 @@ const UpdateProfile = () => {
                         <div className="mb-0">
                           <label
                             htmlFor="first-name"
-                            className="block mb-2 text-sm font-medium text-gray-900"
+                            className="block mb-2 text-sm font-medium text-slate-900"
                           >
                             First name
                           </label>
                           <input
                             type="text"
                             id="first-name"
-                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            className="bg-white/90 border border-slate-200 focus-visible:outline-blue-500 text-slate-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             required
                             {...register("fname")}
                           />
@@ -346,14 +346,14 @@ const UpdateProfile = () => {
                         <div>
                           <label
                             htmlFor="last-name"
-                            className="block mb-2 text-sm font-medium text-gray-900"
+                            className="block mb-2 text-sm font-medium text-slate-900"
                           >
                             Last name
                           </label>
                           <input
                             type="text"
                             id="last-name"
-                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            className="bg-white/90 border border-slate-200 focus-visible:outline-blue-500 text-slate-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             required
                             {...register("lname")}
                           />
@@ -369,14 +369,14 @@ const UpdateProfile = () => {
                         <div className="mb-0">
                           <label
                             htmlFor="provider-name"
-                            className="block mb-2 text-sm font-medium text-gray-900"
+                            className="block mb-2 text-sm font-medium text-slate-900"
                           >
                             Name of care provider
                           </label>
                           <input
                             type="text"
                             id="provider-name"
-                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            className="bg-white/90 border border-slate-200 focus-visible:outline-blue-500 text-slate-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             required
                             {...register("name")}
                           />
@@ -392,7 +392,7 @@ const UpdateProfile = () => {
                         <div>
                           <label
                             htmlFor="email"
-                            className="block mb-2 text-sm font-medium text-gray-900"
+                            className="block mb-2 text-sm font-medium text-slate-900"
                           >
                             Email
                           </label>
@@ -400,7 +400,7 @@ const UpdateProfile = () => {
                             type="email"
                             autoComplete="new-password"
                             id="email"
-                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            className="bg-white/90 border border-slate-200 focus-visible:outline-blue-500 text-slate-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             required
                             {...register("settings.email")}
                           />
@@ -414,7 +414,7 @@ const UpdateProfile = () => {
                         <div>
                           <label
                             htmlFor="tel"
-                            className="block mb-2 text-sm font-medium text-gray-900"
+                            className="block mb-2 text-sm font-medium text-slate-900"
                           >
                             Telephone
                           </label>
@@ -422,7 +422,7 @@ const UpdateProfile = () => {
                             type="tel"
                             id="tel"
                             autoComplete="new-password"
-                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            className="bg-white/90 border border-slate-200 focus-visible:outline-blue-500 text-slate-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             required
                             {...register("settings.tel")}
                           />
@@ -434,20 +434,20 @@ const UpdateProfile = () => {
                         </div>
                       </div>
 
-                      <p className="font-semibold text-gray-700 mb-2">
+                      <p className="font-semibold text-slate-700 mb-2">
                         To find caregivers close to you
                       </p>
                       <div>
                         <label
                           htmlFor="address"
-                          className="block mb-2 text-sm font-medium text-gray-900"
+                          className="block mb-2 text-sm font-medium text-slate-900"
                         >
                           Street address
                         </label>
                         <input
                           type="text"
                           id="address"
-                          className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                          className="bg-white/90 border border-slate-200 focus-visible:outline-blue-500 text-slate-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                           required
                           {...register("address")}
                         />
@@ -462,14 +462,14 @@ const UpdateProfile = () => {
                         <div>
                           <label
                             htmlFor="city"
-                            className="block mb-2 text-sm font-medium text-gray-900"
+                            className="block mb-2 text-sm font-medium text-slate-900"
                           >
                             City
                           </label>
                           <input
                             type="text"
                             id="city"
-                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            className="bg-white/90 border border-slate-200 focus-visible:outline-blue-500 text-slate-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             required
                             {...register("city")}
                           />
@@ -483,14 +483,14 @@ const UpdateProfile = () => {
                         <div>
                           <label
                             htmlFor="zipcode"
-                            className="block mb-2 text-sm font-medium text-gray-900"
+                            className="block mb-2 text-sm font-medium text-slate-900"
                           >
                             Zipcode
                           </label>
                           <input
                             type="text"
                             id="zipcode"
-                            className="bg-gray-50 border border-gray-300 focus-visible:outline-blue-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            className="bg-white/90 border border-slate-200 focus-visible:outline-blue-500 text-slate-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             required
                             {...register("zipcode")}
                           />
@@ -505,7 +505,7 @@ const UpdateProfile = () => {
 
                     {/* Type of provider */}
                     <div>
-                      <h3 className="font-semibold text-gray-700 antialiased mb-2">
+                      <h3 className="font-semibold text-slate-700 antialiased mb-2">
                         What kind of care provider are you?
                       </h3>
                       <MultiSelectField
@@ -526,7 +526,7 @@ const UpdateProfile = () => {
 
                     {/* In-house training */}
                     <div>
-                      <h3 className="font-semibold text-gray-700 mb-2">
+                      <h3 className="font-semibold text-slate-700 mb-2">
                         Do you offer in-house training or sponsor training?
                       </h3>
                       <Controller
@@ -543,14 +543,14 @@ const UpdateProfile = () => {
                                 value="yes"
                                 className="border-gray-600"
                               />
-                              <Label>Yes</Label>
+                              <Label className="text-slate-700">Yes</Label>
                             </div>
                             <div className="flex gap-2 items-center">
                               <RadioGroupItem
                                 value="no"
                                 className="border-gray-600"
                               />
-                              <Label>No</Label>
+                              <Label className="text-slate-700">No</Label>
                             </div>
                           </RadioGroup>
                         )}
@@ -564,7 +564,7 @@ const UpdateProfile = () => {
 
                     {/* Alerts */}
                     <div>
-                      <h3 className="font-semibold text-gray-700 antialiased mb-2">
+                      <h3 className="font-semibold text-slate-700 antialiased mb-2">
                         How do you want caregivers to contact you? [Must choose
                         one - your contact details won’t be shared]
                       </h3>
@@ -588,7 +588,7 @@ const UpdateProfile = () => {
                     <Button
                       type="submit"
                       disabled={loading || isSubmitting}
-                      className="w-full hidden gap-2 lg:flex"
+                      className="w-full hidden gap-2 lg:flex bg-blue-600 hover:bg-blue-700"
                     >
                       {(loading || isSubmitting) && (
                         <LoaderCircle className="animate-spin" />
@@ -608,8 +608,8 @@ const UpdateProfile = () => {
                   <div className="mb-6">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="font-semibold">Profile Image </h3>
-                        <p className="text-sm antialiased mb-2 text-gray-700">
+                        <h3 className="font-semibold text-slate-900">Profile Image</h3>
+                        <p className="text-sm antialiased mb-2 text-slate-600">
                           Add a clear logo/photo to build trust. Drag & drop or
                           click to upload.
                         </p>
@@ -619,20 +619,20 @@ const UpdateProfile = () => {
                     <div className="w-full">
                       <div
                         onClick={() => clerk.openUserProfile()}
-                        className="border-4 p-2 border-gray-200 rounded-full w-36 h-36 sm:w-40 sm:h-40 relative mx-auto"
+                        className="border-4 p-2 border-slate-200 rounded-full w-36 h-36 sm:w-40 sm:h-40 relative mx-auto bg-white"
                       >
                         <Avatar className="rounded-full w-full h-full">
                           <AvatarImage
                             src={user?.imageUrl || "/default-avatar.png"}
                             alt="profile-image"
                           />
-                          <AvatarFallback className="bg-gray-100">
-                            <UserRound className="w-8 h-8 text-gray-500" />
+                          <AvatarFallback className="bg-slate-100">
+                            <UserRound className="w-8 h-8 text-slate-500" />
                           </AvatarFallback>
                         </Avatar>
                         <Button
                           onClick={() => clerk.openUserProfile()}
-                          className="absolute top-14 right-14 bg-gray-800 text-white rounded-full"
+                          className="absolute top-14 right-14 bg-slate-900 text-white rounded-full"
                           size="icon"
                           type="button"
                           variant="ghost"
@@ -655,11 +655,11 @@ const UpdateProfile = () => {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
                 <div className="lg:col-span-2 w-full">
                   <div className="flex flex-col space-y-4">
-                    <Skeleton className="h-10 max-w-[850px] bg-slate-200" />
-                    <Skeleton className="h-10 max-w-[850px] bg-slate-100" />
-                    <Skeleton className="h-[125px] bg-slate-200 w-full rounded-xl" />
-                    <Skeleton className="h-[225px] bg-slate-100 w-full rounded-xl" />
-                    <Skeleton className="h-[225px] bg-slate-200 w-full rounded-xl" />
+                  <Skeleton className="h-10 max-w-[850px] bg-slate-200" />
+                  <Skeleton className="h-10 max-w-[850px] bg-slate-100" />
+                  <Skeleton className="h-[125px] bg-slate-200 w-full rounded-xl" />
+                  <Skeleton className="h-[225px] bg-slate-100 w-full rounded-xl" />
+                  <Skeleton className="h-[225px] bg-slate-200 w-full rounded-xl" />
                     <div className="space-y-2">
                       <Skeleton className="h-10 bg-slate-200 w-[250px]" />
                       <Skeleton className="h-10 bg-slate-100 w-[200px]" />

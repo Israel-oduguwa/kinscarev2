@@ -36,7 +36,7 @@ const SearchBar: React.FC = ({}) => {
   };
 
   return (
-    <header className="bg-gradient-to-r from-blue-600 to-blue-900 text-white rounded-lg shadow-md p-4 sm:p-6 mb-4">
+    <header className="bg-linear-to-r from-blue-600 to-blue-900 text-white rounded-lg shadow-md p-4 sm:p-6 mb-4">
       <div className="max-w-6xl mx-auto">
         <div className="mb-3">
           <h1 className="text-lg font-bold tracking-tight">Search for Jobs</h1>

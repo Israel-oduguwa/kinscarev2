@@ -5,7 +5,7 @@ import SigninModal from "@/Authentication/SiginModal";
 import { useAuthContext } from "@/context/AuthContext";
 
 const Chip: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-700">
+  <span className="inline-flex items-center gap-1 rounded-full border border-white/70 bg-white/80 px-3 py-1 text-xs font-medium text-slate-700 shadow-sm">
     {children}
   </span>
 );
@@ -15,10 +15,10 @@ function SearchInfo({ jobs, totalJobs, filters }: any) {
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className=" font-semibold tracking-tight text-gray-800">
-          <span className="text-gray-600">There are</span>{" "}
+        <h1 className="font-semibold tracking-tight text-slate-800">
+          <span className="text-slate-600">There are</span>{" "}
           <span className="text-blue-600">{totalJobs}</span>{" "}
-          <span className="text-gray-600">jobs near you.</span>
+          <span className="text-slate-600">jobs near you.</span>
           {jobs.length > 0 ? (
             <>
               {!userData && (
@@ -28,20 +28,20 @@ function SearchInfo({ jobs, totalJobs, filters }: any) {
                       Register
                     </span>
                   </OauthApply>{" "}
-                  <span className="text-gray-600">or</span>{" "}
+                  <span className="text-slate-600">or</span>{" "}
                   <SigninModal role="caregiver">
                     <span className="cursor-pointer text-blue-600 underline-offset-4 hover:underline">
                       sign in
                     </span>
                   </SigninModal>{" "}
-                  <span className="text-gray-600">
+                  <span className="text-slate-600">
                     to view details and apply instantly.
                   </span>
                 </>
               )}
             </>
           ) : (
-            <span className="text-gray-600">
+            <span className="text-slate-600">
               Adjust your filters to discover more opportunities.
             </span>
           )}

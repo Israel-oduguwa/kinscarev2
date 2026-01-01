@@ -92,18 +92,21 @@ function AccountSettings() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-gray-50 to-gray-100 py-8 px-4">
+    <div className="min-h-screen bg-linear-to-b from-slate-50 via-slate-50 to-slate-100 py-8 px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-6xl mx-auto"
+        className="max-w-7xl mx-auto"
       >
-        <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 bg-clip-text bg-linear-to-r from-blue-600 to-indigo-600">
+        <div className="text-left mb-10">
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-500 font-semibold">
+            Provider Account
+          </p>
+          <h1 className="text-3xl md:text-4xl font-semibold text-slate-900">
             Account Settings
           </h1>
-          <p className="mt-2 text-gray-500 max-w-2xl mx-auto">
+          <p className="mt-2 text-slate-600 max-w-2xl">
             Manage your profile, subscription, and account preferences
           </p>
         </div>
@@ -111,8 +114,8 @@ function AccountSettings() {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Sidebar Navigation */}
           <div className="lg:w-1/4">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-              <div className="p-6 border-b border-gray-200">
+            <div className="bg-white/80 rounded-2xl shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] border border-slate-200/70 overflow-hidden backdrop-blur">
+              <div className="p-6 border-b border-slate-200/70">
                 <div className="flex items-center">
                   <div className="bg-linear-to-br from-blue-500 to-indigo-600 w-12 h-12 rounded-lg flex items-center justify-center text-white">
                     {userData.profileImage ? (
@@ -129,10 +132,10 @@ function AccountSettings() {
                     )}
                   </div>
                   <div className="ml-4">
-                    <h2 className="font-bold text-gray-800 truncate max-w-[150px]">
+                    <h2 className="font-semibold text-slate-900 truncate max-w-[150px]">
                       {userData?.name || contactData?.name}
                     </h2>
-                    <p className="text-sm text-gray-500 truncate max-w-[150px]">
+                    <p className="text-sm text-slate-500 truncate max-w-[150px]">
                       {contactData?.email}
                     </p>
                   </div>
@@ -160,10 +163,10 @@ function AccountSettings() {
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`flex items-center w-full p-3 rounded-lg transition-all ${
+                    className={`flex items-center w-full p-3 rounded-xl transition-all ${
                       activeTab === item.id
-                        ? "bg-blue-50 text-blue-600 font-medium"
-                        : "text-gray-600 hover:bg-gray-50"
+                        ? "bg-gradient-to-r from-blue-50 via-blue-100/70 to-transparent text-blue-700 font-medium shadow-[inset_0_0_0_1px_rgba(59,130,246,0.2)]"
+                        : "text-slate-600 hover:bg-slate-50"
                     }`}
                   >
                     <span className="mr-3">{item.icon}</span>
@@ -177,17 +180,17 @@ function AccountSettings() {
           {/* Main Content */}
           <div className="lg:w-3/4">
             {loading ? (
-              <div className="flex justify-center items-center h-64 bg-white rounded-xl shadow-sm border border-gray-200">
+              <div className="flex justify-center items-center h-64 bg-white/80 rounded-2xl shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] border border-slate-200/70 backdrop-blur">
                 <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
               </div>
             ) : activeTab === "account" ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="bg-white rounded-xl shadow-sm border border-gray-200"
+                className="bg-white/80 rounded-2xl shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] border border-slate-200/70 backdrop-blur"
               >
-                <div className="p-4 border-b border-gray-200">
-                  <h2 className="text-xl font-bold text-gray-800 flex items-center">
+                <div className="p-4 border-b border-slate-200/70">
+                  <h2 className="text-xl font-semibold text-slate-900 flex items-center">
                     <User className="w-4 h-4 mr-2 text-blue-500" />
                     Account Information
                   </h2>
@@ -195,16 +198,16 @@ function AccountSettings() {
 
                 <div className="p-6">
                   {!contactData?.verified && (
-                    <div className="flex items-start p-4 mb-6 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <div className="flex items-start p-4 mb-6 bg-amber-50 rounded-xl border border-amber-200">
                       <ShieldAlert
                         className="text-yellow-500 mt-1 mr-3 shrink-0"
                         size={20}
                       />
                       <div>
-                        <h3 className="font-semibold text-yellow-800">
+                        <h3 className="font-semibold text-amber-800">
                           Unverified Account
                         </h3>
-                        <p className="text-yellow-700 text-sm mt-1">
+                        <p className="text-amber-700 text-sm mt-1">
                           Please verify your account to access all features.
                         </p>
                       </div>
@@ -222,7 +225,7 @@ function AccountSettings() {
                   >
                     <DialogContent
                       // closePosition="left"
-                      className="mx-auto bg-white rounded-lg shadow-lg overflow-hidden"
+                      className="mx-auto bg-white rounded-2xl shadow-lg overflow-hidden"
                     >
                       <DialogTitle className="pt-4">
                         Get Verified & Connect To More Caregivers
@@ -246,30 +249,32 @@ function AccountSettings() {
 
                   {userData ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="border border-gray-200 rounded-lg p-5">
-                        <h3 className="text-gray-500 text-sm font-medium mb-3">
+                      <div className="border border-slate-200/70 rounded-2xl p-5 bg-white/80">
+                        <h3 className="text-slate-500 text-sm font-medium mb-3">
                           Personal Information
                         </h3>
                         <div className="space-y-4">
                           <div>
-                            <p className="text-xs text-gray-500">Full Name</p>
-                            <p className="font-medium">{userData.fname} {userData.lname}</p>
+                            <p className="text-xs text-slate-500">Full Name</p>
+                            <p className="font-medium text-slate-900">
+                              {userData.fname} {userData.lname}
+                            </p>
                           </div>
                           <div>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-slate-500">
                               Email Address
                             </p>
-                            <p className="font-medium">
+                            <p className="font-medium text-slate-900">
                               {contactData?.email}
                             </p>
                             <div className="mt-1">
                               {contactData?.verified ? (
-                                <span className="inline-flex items-center text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
+                                <span className="inline-flex items-center text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
                                   <CheckCircle className="w-3 h-3 mr-1" />{" "}
                                   Verified
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center text-xs text-red-600 bg-red-50 px-2 py-1 rounded">
+                                <span className="inline-flex items-center text-xs text-rose-600 bg-rose-50 px-2 py-1 rounded-full">
                                   <XCircle className="w-3 h-3 mr-1" />{" "}
                                   Unverified
                                 </span>
@@ -277,8 +282,8 @@ function AccountSettings() {
                             </div>
                           </div>
                           <div>
-                            <p className="text-xs text-gray-500">Address</p>
-                            <p className="font-medium">
+                            <p className="text-xs text-slate-500">Address</p>
+                            <p className="font-medium text-slate-900">
                               {userData.address}, {userData.city},{" "}
                               {userData.zipcode}
                             </p>
@@ -291,17 +296,17 @@ function AccountSettings() {
                         </Link>
                       </div>
 
-                      <div className="border border-gray-200 rounded-lg p-5">
-                        <h3 className="text-gray-500 text-sm font-medium mb-3">
+                      <div className="border border-slate-200/70 rounded-2xl p-5 bg-white/80">
+                        <h3 className="text-slate-500 text-sm font-medium mb-3">
                           Subscription Status
                         </h3>
                         <div className="space-y-4">
                           <div className="flex justify-between items-center">
                             <div>
-                              <p className="text-xs text-gray-500">
+                              <p className="text-xs text-slate-500">
                                 Current Plan
                               </p>
-                              <p className="font-medium">
+                              <p className="font-medium text-slate-900">
                                 {trialActive && !contactData?.subscribed
                                   ? "Free Trial"
                                   : "Premium Plan"}
@@ -313,11 +318,11 @@ function AccountSettings() {
                                   Trial Active
                                 </span>
                               ) : contactData?.subscribed && subscriptionData ? (
-                                <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded-full">
+                                <span className="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs font-medium rounded-full">
                                   Subscribed
                                 </span>
                               ) : (
-                                <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs font-medium rounded-full">
+                                <span className="px-2 py-1 bg-slate-100 text-slate-800 text-xs font-medium rounded-full">
                                   Inactive
                                 </span>
                               )}
@@ -326,12 +331,12 @@ function AccountSettings() {
 
                           {trialActive && !contactData?.subscribed ? (
                             <div>
-                              <p className="text-xs text-gray-500">
+                              <p className="text-xs text-slate-500">
                                 Trial Period Ends
                               </p>
                               <div className="flex items-center">
-                                <Calendar className="w-4 h-4 text-gray-500 mr-2" />
-                                <p className="font-medium">
+                                <Calendar className="w-4 h-4 text-slate-500 mr-2" />
+                                <p className="font-medium text-slate-900">
                                   {convertISODateToNormal(
                                     contactData?.trial_end_date
                                   )}
@@ -351,7 +356,7 @@ function AccountSettings() {
                             </div>
                           ) : (
                             <div className="pt-2">
-                              <p className="text-gray-500 text-sm">
+                              <p className="text-slate-500 text-sm">
                                 You don&apos;t have an active subscription
                               </p>
                             </div>
@@ -372,8 +377,8 @@ function AccountSettings() {
                     </div>
                   ) : (
                     <div className="text-center py-10">
-                      <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 mx-auto" />
-                      <p className="mt-4 text-gray-500">Loading user data...</p>
+                      <div className="bg-slate-200 border-2 border-dashed rounded-2xl w-16 h-16 mx-auto" />
+                      <p className="mt-4 text-slate-500">Loading user data...</p>
                     </div>
                   )}
                 </div>
@@ -382,10 +387,10 @@ function AccountSettings() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="bg-white rounded-xl shadow-sm border border-gray-200"
+                className="bg-white/80 rounded-2xl shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] border border-slate-200/70 backdrop-blur"
               >
-                <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-                  <h2 className="text-xl font-bold text-gray-800 flex items-center">
+                <div className="p-6 border-b border-slate-200/70 flex justify-between items-center">
+                  <h2 className="text-xl font-semibold text-slate-900 flex items-center">
                     <CreditCard className="w-5 h-5 mr-2 text-blue-500" />
                     Billing & Plans
                   </h2>
@@ -405,21 +410,21 @@ function AccountSettings() {
 
                 <div className="p-6">
                   <div className="mb-8">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    <h3 className="text-lg font-semibold text-slate-900 mb-4">
                       Current Plan
                     </h3>
 
                     {trialActive && !contactData?.subscribed ? (
-                      <div className="bg-linear-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
+                      <div className="bg-linear-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-6">
                         <div className="flex justify-between items-center">
                           <div>
                             <div className="flex items-center">
                               <Crown className="text-yellow-500 mr-2" />
-                              <span className="font-bold text-gray-800">
+                              <span className="font-semibold text-slate-900">
                                 Free Trial
                               </span>
                             </div>
-                            <p className="text-gray-600 mt-2">
+                            <p className="text-slate-600 mt-2">
                               Your trial ends on{" "}
                               {convertISODateToNormal(
                                 contactData?.trial_end_date
@@ -432,12 +437,12 @@ function AccountSettings() {
                         </div>
                       </div>
                     ) : contactData?.subscribed && subscriptionData ? (
-                      <div className="bg-linear-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-6">
+                      <div className="bg-linear-to-r from-indigo-50 to-slate-50 border border-indigo-200 rounded-2xl p-6">
                         <div className="flex justify-between items-center">
                           <div>
                             <div className="flex items-center">
                               <Crown className="text-purple-500 mr-2" />
-                              <span className="font-bold text-gray-800">
+                              <span className="font-semibold text-slate-900">
                                 Premium Plan
                               </span>
                             </div>
@@ -445,17 +450,17 @@ function AccountSettings() {
                               subscription={subscriptionData}
                             />
                           </div>
-                          <span className="px-3 py-1 bg-purple-100 text-purple-800 text-sm font-medium rounded-full">
+                          <span className="px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">
                             Subscribed
                           </span>
                         </div>
                       </div>
                     ) : (
-                      <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center">
-                        <h4 className="font-medium text-gray-700 mb-2">
+                      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-center">
+                        <h4 className="font-medium text-slate-700 mb-2">
                           No Active Subscription
                         </h4>
-                        <p className="text-gray-500 text-sm mb-4">
+                        <p className="text-slate-500 text-sm mb-4">
                           Subscribe to a plan to access premium features
                         </p>
                         <Button

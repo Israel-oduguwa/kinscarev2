@@ -378,7 +378,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
   };
 
   return (
-    <div className="pt-4">
+    <div className="pt-2">
       {/* Heading */}
       {contactData.plan && contactData.subscription_status === "expired" ? (
         <div className="mx-auto max-w-4xl py-2 space-y-10">
@@ -414,7 +414,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
             </div>
           ) : (
             <div className="space-y-6">
-              <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-[hsl(var(--foreground))]">
+              <h3 className="text-xl sm:text-2xl font-semibold tracking-tight text-[hsl(var(--foreground))]">
                 Choose a Payment Method
               </h3>
 
@@ -422,7 +422,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                 <div>
                   {contactData.plan === "daily" &&
                   contactData.successful_payment_count == 1 ? (
-                    <div className="bg-yellow-100 text-yellow-800 text-sm p-4 rounded-lg">
+                    <div className="bg-amber-50 text-amber-800 text-sm p-4 rounded-2xl border border-amber-200/70">
                       {" "}
                       <p>
                         Renew now to get <b>20% off</b> on the Monthly Plan and{" "}
@@ -431,7 +431,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                       </p>
                     </div>
                   ) : contactData.plan === "weekly" ? (
-                    <div className="bg-yellow-100 text-yellow-800 text-sm p-4 rounded-lg">
+                    <div className="bg-amber-50 text-amber-800 text-sm p-4 rounded-2xl border border-amber-200/70">
                       <p>
                         Renew now to get <b>20% off</b> on the Monthly Plan!
                       </p>
@@ -471,16 +471,16 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                               discountPercentage // Pass discountPercentage for use in the API
                             )
                           }
-                          className={`text-sm px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition ${
+                          className={`text-sm px-4 py-2 rounded-xl shadow-sm hover:shadow-md transition ${
                             selectedPlan === plan.id
                               ? "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]"
-                              : "bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))]"
+                              : "bg-white text-[hsl(var(--muted-foreground))]"
                           }`}
                         >
                           {plan.title}
                         </Button>
                         {discountPercentage && (
-                          <div className="absolute -top-5 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded-bl-lg">
+                          <div className="absolute -top-5 right-0 bg-rose-500 text-white text-[10px] px-2 py-1 rounded-bl-lg">
                             {discountPercentage}% OFF
                           </div>
                         )}
@@ -502,12 +502,12 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                           <div
                             key={card.id}
                             onClick={() => setSelectedCard(card.id)}
-                            className={`flex items-center justify-between p-4 rounded-lg cursor-pointer border transition hover:shadow-lg ${
-                              selectedCard === card.id
-                                ? "border-[hsl(var(--primary))] bg-[hsl(var(--secondary))]"
-                                : "border-[hsl(var(--border))]"
-                            }`}
-                          >
+                          className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer border transition hover:shadow-lg ${
+                            selectedCard === card.id
+                              ? "border-[hsl(var(--primary))] bg-[hsl(var(--secondary))]"
+                              : "border-[hsl(var(--border))] bg-white"
+                          }`}
+                        >
                             <div className="flex items-center gap-4">
                               <CardImage cardBrand={card.brand} />
                               <div>
@@ -530,8 +530,8 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                         <Button
                           onClick={() => void createSubscription()}
                           disabled={loading}
-                          className="w-full sm:w-auto mt-4 px-6 py-3 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded-lg shadow hover:shadow-lg transition"
-                        >
+                        className="w-full sm:w-auto mt-4 px-6 py-3 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded-xl shadow hover:shadow-lg transition"
+                      >
                           {loading && <Loader2 className="animate-spin mr-2" />}
                           Pay using saved card
                         </Button>
@@ -544,7 +544,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                     <Button
                       onClick={handleOpenPaymentForm}
                       variant={savedCards.length === 0 ? "default" : "outline"}
-                      className="w-full mt-4 px-6 py-3 text-sm bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] rounded-lg shadow hover:shadow-lg transition"
+                      className="w-full mt-4 px-6 py-3 text-sm bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] rounded-xl shadow hover:shadow-lg transition"
                     >
                       Use another card
                     </Button>
@@ -556,18 +556,21 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
         </div>
       ) : (
         <div className="mx-auto py-10 space-y-10">
-          <div className="text-center space-y-1">
-            <h2 className="text-3xl tracking-tight font-extrabold text-gray-700">
+          <div className="text-center space-y-2">
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-500 font-semibold">
+              Subscription Plans
+            </p>
+            <h2 className="text-3xl tracking-tight font-semibold text-slate-900">
               Choose Your Subscription Plan
             </h2>
-            <p className="text-gray-600">
+            <p className="text-slate-600">
               Please purchase a plan to continue using Kinscare to recruit
               caregivers
             </p>
           </div>
 
           {/* Plan Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-2 sm:px-4 lg:px-6">
             {pricingPlans.map((plan) => (
               <div
                 key={plan.id}
@@ -577,18 +580,18 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                     plan.stripePriceId
                   )
                 }
-                className={`relative shadow-lg rounded-[var(--radius)] overflow-hidden hover:shadow-xl transition-transform transform hover:-translate-y-2 cursor-pointer ${
+                className={`relative shadow-[0_18px_60px_-40px_rgba(15,23,42,0.55)] rounded-2xl overflow-hidden hover:shadow-[0_20px_70px_-45px_rgba(15,23,42,0.6)] transition-transform transform hover:-translate-y-2 cursor-pointer border ${
                   plan.id === "monthly"
-                    ? "bg-[hsl(var(--accent))] scale-105 border-2 border-[hsl(var(--primary))] shadow-2xl" // Highlight Monthly Plan
-                    : "bg-[hsl(var(--card))]"
+                    ? "bg-white/90 scale-105 border-blue-400/60"
+                    : "bg-white/90 border-slate-200/70"
                 }`}
               >
                 {/* Accent Bar */}
                 <div
                   className={`h-2 ${
                     plan.id === "monthly"
-                      ? "bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary))]"
-                      : "bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))]"
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-600"
+                      : "bg-gradient-to-r from-slate-200 to-slate-100"
                   }`}
                 />
 
@@ -596,37 +599,29 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                 <div className="p-8">
                   {/* Recommended Badge */}
                   {plan.id === "monthly" && (
-                    <div className="absolute top-4 right-4 bg-[hsl(var(--primary))] text-[hsl(var(--card))] px-3 py-1 rounded-full text-sm font-bold shadow-md">
+                    <div className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-[11px] font-semibold shadow-md">
                       Recommended
                     </div>
                   )}
 
-                  <h3
-                    className={`text-2xl font-bold "text-[hsl(var(--card-foreground))]`}
-                  >
+                  <h3 className="text-xl font-semibold text-slate-900">
                     {plan.title}
                   </h3>
-                  <p
-                    className={`text-4xl font-extrabold mt-4 ${
-                      plan.id === "monthly"
-                        ? "text-[hsl(var(--foreground))]"
-                        : "text-[hsl(var(--foreground))]"
-                    }`}
-                  >
+                  <p className="text-4xl font-semibold mt-4 text-slate-900">
                     {plan.price}
                   </p>
-                  <p className="text-[hsl(var(--muted-foreground))] mt-4">
+                  <p className="text-slate-600 mt-4">
                     {plan.description}
                   </p>
                   <ul className="mt-6 space-y-4">
                     {plan.features.map((feature, index) => (
                       <li
                         key={index}
-                        className="flex items-center text-[hsl(var(--card-foreground))] space-x-2"
+                        className="flex items-center text-slate-700 space-x-2"
                       >
                         {/* Check icon */}
                         <svg
-                          className="w-5 h-5 text-[hsl(var(--chart-2))]"
+                          className="w-5 h-5 text-emerald-500"
                           fill="currentColor"
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -653,15 +648,15 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
 
       {/* Saved Cards Dialog */}
       <Dialog open={isCardDialogOpen} onOpenChange={setIsCardDialogOpen}>
-        <DialogContent className="max-w-full sm:max-w-3xl max-h-[90vh] overflow-auto rounded-lg p-4 sm:p-6 bg-[hsl(var(--background))] shadow-lg">
+        <DialogContent className="max-w-full sm:max-w-3xl max-h-[90vh] overflow-auto rounded-2xl p-4 sm:p-6 bg-white shadow-xl">
           <div className="space-y-6">
-            <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-[hsl(var(--foreground))]">
+            <h3 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900">
               Choose a Payment Method
             </h3>
 
             {/* Plan Selection */}
             <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-[hsl(var(--muted-foreground))]">
+              <h4 className="text-sm font-semibold text-slate-500">
                 Switch Plan
               </h4>
               <div className="flex flex-wrap gap-2">
@@ -675,10 +670,10 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                         plan.stripePriceId
                       )
                     }
-                    className={`text-sm px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition ${
+                    className={`text-sm px-4 py-2 rounded-xl shadow-sm hover:shadow-md transition ${
                       selectedPlan === plan.id
                         ? "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]"
-                        : "bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))]"
+                        : "bg-white text-slate-600"
                     }`}
                   >
                     {plan.title}
@@ -699,10 +694,10 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                         <div
                           key={card.id}
                           onClick={() => setSelectedCard(card.id)}
-                          className={`flex items-center justify-between p-4 rounded-lg cursor-pointer border transition hover:shadow-lg ${
+                          className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer border transition hover:shadow-lg ${
                             selectedCard === card.id
                               ? "border-[hsl(var(--primary))] bg-[hsl(var(--secondary))]"
-                              : "border-[hsl(var(--border))]"
+                              : "border-[hsl(var(--border))] bg-white"
                           }`}
                         >
                           <div className="flex items-center gap-4">
@@ -727,7 +722,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                       <Button
                         onClick={() => void createSubscription()}
                         disabled={loading}
-                        className="w-full sm:w-auto mt-4 px-6 py-3 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded-lg shadow hover:shadow-lg transition"
+                        className="w-full sm:w-auto mt-4 px-6 py-3 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded-xl shadow hover:shadow-lg transition"
                       >
                         {loading && <Loader2 className="animate-spin mr-2" />}
                         Pay using saved card
@@ -768,8 +763,8 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                   {/* <Button
                     onClick={handleOpenPaymentForm}
                     variant={savedCards.length === 0 ? "default" : "outline"}
-                    className="w-full mt-4 px-6 py-3 text-sm bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] rounded-lg shadow hover:shadow-lg transition"
-                  >
+                      className="w-full mt-4 px-6 py-3 text-sm bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] rounded-xl shadow hover:shadow-lg transition"
+                    >
                     Use another card
                   </Button> */}
                 </>
