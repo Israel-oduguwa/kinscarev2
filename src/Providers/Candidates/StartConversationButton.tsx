@@ -308,7 +308,7 @@ export default function StartConversationButton({
           }
         }}
       >
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Introduce yourself to {caregiverName}</DialogTitle>
             <DialogDescription>
