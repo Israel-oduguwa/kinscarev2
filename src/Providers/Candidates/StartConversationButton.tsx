@@ -113,6 +113,29 @@ export default function StartConversationButton({
     return [intro, warmNote, linkLine, closing].filter(Boolean).join(" ");
   };
 
+  const handlePaymentRequired = async (
+    access: {
+      trialActive?: boolean;
+      subscriptionActive?: boolean;
+      paymentVerified?: boolean;
+    },
+    smsBody: string,
+    toNumber: string
+  ) => {
+    setAccessInfo(access);
+    toast.error(
+      "Provider must be on free trial or paid to start a conversation."
+    );
+    await privateApi.post("/api/sms", {
+      to: toNumber,
+      body: smsBody,
+    });
+    setFlowState("payment_required");
+    if (!access.trialActive && !access.subscriptionActive && !access.paymentVerified) {
+      setVerifyOpen(true);
+    }
+  };
+
   useEffect(() => {
     if (!isLoaded || !isSignedIn) return;
     if (!providerId || !caregiver?.id) return;
@@ -211,26 +234,9 @@ export default function StartConversationButton({
 
       if (!data?.success) {
         if (data?.code === "PAYMENT_REQUIRED") {
-          const access = data?.access || {};
-          setAccessInfo(access);
-          toast.error(
-            data?.message ||
-              "Provider must be on free trial or paid to start a conversation."
-          );
-          const smsBody = buildSmsBody(draftMessage, null, false);
-          await privateApi.post("/api/sms", {
-            to: toNumber,
-            body: smsBody,
-          }),
-            setFlowState("payment_required");
           paymentBlocked = true;
-          if (
-            !access.trialActive &&
-            !access.subscriptionActive &&
-            !access.paymentVerified
-          ) {
-            setVerifyOpen(true);
-          }
+          const smsBody = buildSmsBody(draftMessage, null, false);
+          await handlePaymentRequired(data?.access || {}, smsBody, toNumber);
           return;
         }
         throw new Error(data?.message || "Unable to start conversation.");
@@ -248,12 +254,21 @@ export default function StartConversationButton({
       await privateApi.post("/api/sms", {
         to: toNumber,
         body: smsBody,
-      }),
-        setExistingConversationSid(sid);
+      });
+      setExistingConversationSid(sid);
       setDialogOpen(false);
       router.push(`/provider/conversations/${sid}`);
     } catch (error: any) {
-      toast.error(error?.message || "Unable to start conversation.");
+      const responseData = error?.response?.data;
+      if (responseData?.code === "PAYMENT_REQUIRED") {
+        paymentBlocked = true;
+        const smsBody = buildSmsBody(draftMessage, null, false);
+        await handlePaymentRequired(responseData?.access || {}, smsBody, toNumber);
+        return;
+      }
+      toast.error(
+        responseData?.message || error?.message || "Unable to start conversation."
+      );
     } finally {
       setIsLoading(false);
       if (!paymentBlocked) {
