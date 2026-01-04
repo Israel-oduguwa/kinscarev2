@@ -16,7 +16,7 @@ function RelatedBlogPost({ threadID }: { threadID: string }) {
   const getSimilarArticles = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get(`http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/blogs/get-article-similar-to-thread/${threadID}`
+      const { data } = await axios.get(`https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/blogs/get-article-similar-to-thread/${threadID}`
       );
       setSimilarArticles(data.similarArticles || []);
     } catch (error) {

@@ -144,7 +144,7 @@ async function All({
   page?: number;
 }) {
   const base =
-    "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/jobs-search";
+    "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/jobs-search";
   const qs = buildQuery({
     schedule,
     licenses,

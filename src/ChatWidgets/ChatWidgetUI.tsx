@@ -231,7 +231,7 @@ export default function ChatWidgetUI() {
       try {
         if (programOrReco) {
           const { data: collegeRecommendation } = await axios.post(
-            "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/ai/college-recommendation/",
+            "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/ai/college-recommendation/",
             { program: programOrReco },
             { headers: { "Content-Type": "application/json" } }
           );

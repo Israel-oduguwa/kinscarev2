@@ -14,7 +14,7 @@ polyfill();
 
 async function Comments({ postID, threadID }: any) {
   let data = await fetch(
-    `http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/posts/${postID}/replies`,
+    `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/posts/${postID}/replies`,
     { cache: "no-cache" }
   );
 

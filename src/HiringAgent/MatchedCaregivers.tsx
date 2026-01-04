@@ -13,11 +13,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useApiClient } from "@/hooks/useApiClient";
 
-const BASE_URL = "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/jumpstart/all-matches";
+const BASE_URL = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/jumpstart/all-matches";
 const INTERVIEW_URL =
-  "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/jumpstart/interview-caregiver";
+  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/jumpstart/interview-caregiver";
 const INTERVIEWED_URL =
-  "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/jumpstart/interview-caregivers"; // GET
+  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/jumpstart/interview-caregivers"; // GET
 
 export default function MatchedCaregivers({
   applicationId,
