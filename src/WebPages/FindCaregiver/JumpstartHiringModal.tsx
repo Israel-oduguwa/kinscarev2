@@ -195,7 +195,7 @@ export default function JumpstartHiringModal({
 
     try {
       await axios.post(
-        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/webhooks/twilio/capture-lead",
+        "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/webhooks/twilio/capture-lead",
         payload
       );
       localStorage.setItem(CONVERTED_KEY, "true");

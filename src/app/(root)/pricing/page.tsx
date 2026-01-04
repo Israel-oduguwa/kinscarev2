@@ -119,7 +119,7 @@ export default function Pricing() {
         <div className="absolute -bottom-32 left-10 h-80 w-80 rounded-full bg-blue-200/35 blur-3xl" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.14)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.14)_1px,transparent_1px)] bg-[size:36px_36px] opacity-35" />
       </div>
-      <div className="relative max-w-screen-xl mx-auto space-y-16 px-6 lg:px-16 py-12">
+      <div className="relative max-w-7xl mx-auto space-y-16 px-6 lg:px-16 py-12">
         {/* Header Section */}
 
         <div className="text-center mt-20 lg:pt-14 mb-16">
@@ -217,7 +217,7 @@ export default function Pricing() {
             pay-for-use service.
           </p>
         </div> */}
-        <div className="max-w-screen-xl mx-auto space-y-6 px-6 lg:px-16">
+        <div className="max-w-7xl mx-auto space-y-6 px-6 lg:px-16">
           {/* Every Plan Includes */}
           <div className="space-y-2">
             <h2 className="text-3xl tracking-tight font-[family:var(--header-font)] font-extrabold text-slate-900">

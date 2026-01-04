@@ -18,7 +18,7 @@ import { toast } from "sonner";
 
 // ---------- Constants ----------
 const API_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+  "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
 
 const groupLicenses = [
   { label: "CNA", value: "CNA or NAC" },

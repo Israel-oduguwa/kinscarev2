@@ -1,15 +1,13 @@
 import { Interweave } from "interweave";
-import { MapPin, MapPinCheckIcon, Send } from "lucide-react";
+import { MapPin } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { polyfill } from "interweave-ssr";
-import { Button } from "@/components/ui/button";
 import ProviderDialog from "./ProviderDialog";
-import { Separator } from "@/components/ui/separator";
 import ProfileAvatar from "@/components/ProfileAvatar";
-import JobPostModal from "../Jobs/JobPostModal";
 import ProtectedCandidatesDetails from "./ProtectedCandidatesDetails";
 import Head from "next/head";
+import StartConversationButton from "./StartConversationButton";
 polyfill();
 
 const CandidatesCard = ({ similarCaregivers }: any) => {
@@ -107,13 +105,13 @@ const CandidatesCard = ({ similarCaregivers }: any) => {
 
 async function CandidateDetails({ candidateID }: { candidateID: string }) {
   let data = await fetch(
-    `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/caregivers/${candidateID}`,
+    `http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/caregivers/${candidateID}`,
     { cache: "no-cache" }
   );
   const response: any = await data.json();
   //   console.log(response.caregiver);
   const { caregiver, similarCaregivers } = response;
-  console.log(caregiver)
+  
   const availability = false;
   // console.log(caregiver, "check details");
   return (
@@ -191,7 +189,30 @@ async function CandidateDetails({ candidateID }: { candidateID: string }) {
                 </p>
               </div>
             </div>
-            <ProviderDialog detailsPage={true} candidate={caregiver} />
+            <div className="w-full sm:w-auto">
+              <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-3 shadow-[0_14px_30px_-26px_rgba(15,23,42,0.35)]">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  Quick actions
+                </p>
+                <div className="mt-3 flex w-full flex-col gap-2">
+                  <StartConversationButton
+                    caregiver={{
+                      id: caregiver.userID,
+                      fname: caregiver.fname,
+                      lname: caregiver.lname,
+                      profileImage: caregiver.profileImage,
+                      phone: caregiver.settings?.tel,
+                    }}
+                    className="rounded-xl bg-slate-900 text-white hover:bg-slate-800"
+                    fullWidth
+                    size="lg"
+                  />
+                </div>
+                <p className="mt-2 text-xs text-slate-500">
+                  Start a real-time chat or send a quick message.
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Licenses and Availability */}

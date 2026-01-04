@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 
 export const twilioApi = axios.create({
-  baseURL: "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio/",
+  baseURL: "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio/",
   timeout: 15000,
   headers: { "Content-Type": "application/json" },
 });

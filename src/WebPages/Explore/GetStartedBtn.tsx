@@ -22,7 +22,7 @@ import Link from "next/link";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE ||
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com";
+  "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com";
 
 type Attribution = {
   email?: string | null;

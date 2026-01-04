@@ -1,11 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import * as client from "twilio";
+import client from "twilio";
 
-// Initialize the Twilio client with environment variables
-const twilioClient = client(
-  process.env.TWILIO_ACCOUNT_SID || "",
-  process.env.TWILIO_AUTH_TOKEN || ""
-);
+// Initialize the Twilio client with account credentials.
+const SID = "ACf74503b1d79d4249214a626c95f3c7b2";
+const AuthT = "4893f8fac21f9c8a2d24fdfaba8d3f76";
+const MessagingServiceSid = "MG4f1cfd864132764cc6054275ff68a63d";
+const twilioClient = client(SID, AuthT);
+
+// Normalize phone numbers into E.164 for Twilio.
+const normalizePhone = (phone?: string | null) => {
+  if (!phone) return null;
+  const trimmed = phone.trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith("+")) return trimmed;
+
+  const digits = trimmed.replace(/\D/g, "");
+  if (!digits) return null;
+
+  // Default handling for local formats; adjust if your default country differs.
+  if (digits.length === 11 && digits.startsWith("0")) {
+    return `+234${digits.slice(1)}`;
+  }
+  if (digits.length === 10) {
+    return `+1${digits}`;
+  }
+  return `+${digits}`;
+};
 
 /**
  * Handles POST requests to send SMS via Twilio.
@@ -26,11 +46,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const normalizedTo = normalizePhone(to);
+    if (!normalizedTo) {
+      return NextResponse.json(
+        { success: false, message: "Recipient phone number is invalid." },
+        { status: 400 }
+      );
+    }
+
     // Send the SMS using Twilio
     const send = await twilioClient.messages.create({
       body: messageBody,
-      from: process.env.TWILIO_PHONE_NUMBER, // Twilio verified phone number
-      to,
+      messagingServiceSid: MessagingServiceSid,
+      to: normalizedTo,
+      shortenUrls: true,
     });
 
     return NextResponse.json(

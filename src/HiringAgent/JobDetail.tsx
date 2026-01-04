@@ -39,7 +39,7 @@ import { useToast } from "@/components/ui/use-toast";
 // NEW: split components
 
 const API_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+  "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
 
 export function fmtDate(d?: string | Date | null) {
   if (!d) return "—";

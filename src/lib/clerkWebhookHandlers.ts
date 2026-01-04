@@ -3,7 +3,7 @@ import { WebhookEvent } from "@clerk/nextjs/server";
 
 const API_BASE =
   process.env.BACKEND_API_BASE ||
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com";
+  "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com";
 
 async function postToBackend(path: string, payload: any) {
   const url = `${API_BASE.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;

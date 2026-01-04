@@ -13,7 +13,7 @@ import AuthProvider from "@/components/contextProviders/AuthProvider";
 import IntercomProvider from "@/Providers/Utils/IntercomLoader";
 import MixpanelProvider from "@/lib/MixpanelProvider";
 import CookieConsentBanner from "@/Utils/CookieConsentBanner";
-import ChatWidgetUI from "@/ChatWidgets/ChatWidgetUI";
+import ChatWidgetGate from "@/ChatWidgets/ChatWidgetGate";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -109,8 +109,8 @@ export default function RootLayout({
                <SpeedInsights />
 
               <ContextProviders>
-                {" "}
-                <ChatWidgetUI /> <IntercomProvider />
+                <ChatWidgetGate />
+                <IntercomProvider />
                 <CookieConsentBanner />
                 {children}
               </ContextProviders>

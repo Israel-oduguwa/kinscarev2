@@ -86,11 +86,11 @@ export async function generateMetadata({
   try {
     // Fetch thread and posts data
     const threadResponse = await fetch(
-      `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/threads/${id}`,
+      `http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/threads/${id}`,
       { cache: "no-cache" }
     );
     const postsResponse = await fetch(
-      `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/threads/${id}/posts`,
+      `http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/threads/${id}/posts`,
       { cache: "no-cache" }
     );
 

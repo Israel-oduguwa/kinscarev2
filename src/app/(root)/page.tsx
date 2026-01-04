@@ -74,12 +74,12 @@ export default function Home() {
         }}
       />
 
-      <header className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 relative overflow-hidden">
+      <header className="min-h-screen bg-linear-to-br mt-10 from-orange-50 to-amber-50 relative overflow-hidden">
         {/* Floating decorative elements */}
-        <div className="absolute w-64 h-64 rounded-full bg-gradient-to-r from-indigo-200/30 to-rose-200/30 -top-32 -left-32 animate-[float_8s_ease-in-out_infinite]"></div>
+        <div className="absolute w-64 h-64 rounded-full bg-linear-to-r from-indigo-200/30 to-rose-200/30 -top-32 -left-32 animate-[float_8s_ease-in-out_infinite]"></div>
         <div className="absolute w-48 h-48 rounded-full bg-linear-to-r from-amber-200/30 to-emerald-200/30 top-1/4 right-20 animate-[float_7s_ease-in-out_infinite_1s]"></div>
-        <div className="absolute w-32 h-32 rounded-full bg-gradient-to-r from-rose-200/30 to-indigo-200/30 bottom-20 left-1/4 animate-[float_6s_ease-in-out_infinite_2s]"></div>
-        <div className="absolute w-24 h-24 rounded-full bg-gradient-to-r from-emerald-200/30 to-amber-200/30 bottom-32 right-1/3 animate-[float_5s_ease-in-out_infinite_3s]"></div>
+        <div className="absolute w-32 h-32 rounded-full bg-linear-to-r from-rose-200/30 to-indigo-200/30 bottom-20 left-1/4 animate-[float_6s_ease-in-out_infinite_2s]"></div>
+        <div className="absolute w-24 h-24 rounded-full bg-linear-to-r from-emerald-200/30 to-amber-200/30 bottom-32 right-1/3 animate-[float_5s_ease-in-out_infinite_3s]"></div>
 
         <div className="max-w-7xl mx-auto px-4 lg:px-4 ">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -684,7 +684,7 @@ export default function Home() {
             {/* Testimonial 1 */}
             <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out">
               <div className="flex items-center">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
                     <span className="text-blue-600 dark:text-blue-300 font-semibold text-lg">
                       MS

@@ -97,6 +97,8 @@ function CaregiverNotification() {
     switch (type) {
       case "job_application":
         return <Briefcase className="h-4 w-4 text-blue-600" />;
+      case "job_application_status":
+        return <UserCheck className="h-4 w-4 text-amber-600" />;
       case "message_caregiver":
         return <MessageCircle className="h-4 w-4 text-green-600" />;
       default:
@@ -110,6 +112,8 @@ function CaregiverNotification() {
         return `/vitae/provider/${notification.fromUserId}`;
       case "job_application":
         return `/vitae/jobs/${notification.metadata?.jobId}`;
+      case "job_application_status":
+        return `/vitae/jobs/${notification?.jobId}`;
       default:
         return `/vitae/referrals`;
     }
@@ -124,9 +128,9 @@ function CaregiverNotification() {
           <Button
             variant="ghost"
             size="icon"
-            className="relative w-12 h-12 [&>svg]:h-6! [&>svg]:w-6! rounded-full bg-transparent hover:bg-gray-100 transition-all duration-200 group"
+            className="relative w-12 h-12 [&>svg]:h-6! [&>svg]:w-6! rounded-full bg-transparent hover:bg-slate-100 transition-all duration-200 group"
           >
-            <Bell className="h-6 w-6 text-gray-600 group-hover:text-gray-900 transition-colors" />
+            <Bell className="h-6 w-6 text-slate-600 group-hover:text-slate-900 transition-colors" />
             {totalCount > 0 && (
               <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
@@ -144,10 +148,10 @@ function CaregiverNotification() {
           sideOffset={8}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-white">
+          <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-white">
             <div>
-              <h4 className="text-lg font-semibold text-gray-900">Notifications</h4>
-              <p className="text-sm text-gray-500 mt-1">
+              <h4 className="text-lg font-semibold text-slate-900">Notifications</h4>
+              <p className="text-sm text-slate-500 mt-1">
                 {unreadCount > 0 ? `${unreadCount} unread` : 'All caught up'}
               </p>
             </div>
@@ -166,7 +170,7 @@ function CaregiverNotification() {
           {/* Profile Completion Banner */}
           {userData?.complete === false && (
             <Link href="/vitae/update">
-              <div className="mx-6 mt-4 p-4 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 cursor-pointer group hover:from-amber-100 hover:to-orange-100 transition-all duration-200">
+              <div className="mx-6 mt-4 p-4 rounded-xl bg-amber-50 border border-amber-200 cursor-pointer group hover:bg-amber-100 transition-all duration-200">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-amber-100 rounded-lg">
@@ -203,13 +207,13 @@ function CaregiverNotification() {
               </div>
             ) : notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
-                <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-4">
-                  <Bell className="h-8 w-8 text-gray-400" />
+                <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-4">
+                  <Bell className="h-8 w-8 text-slate-400" />
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <h3 className="text-lg font-medium text-slate-900 mb-2">
                   No notifications
                 </h3>
-                <p className="text-gray-500 text-sm">
+                <p className="text-slate-500 text-sm">
                   We'll notify you when something arrives
                 </p>
               </div>
@@ -223,16 +227,16 @@ function CaregiverNotification() {
                     <div
                       onClick={() => markNotificationAsRead(notification._id)}
                       className={cn(
-                        "group flex items-start gap-4 p-4 rounded-xl cursor-pointer transition-all duration-200",
+                        "group flex items-start gap-4 p-4 mb-3 rounded-xl cursor-pointer transition-all duration-200",
                         notification.read 
-                          ? "bg-white hover:bg-gray-50" 
+                          ? "bg-white hover:bg-slate-50" 
                           : "bg-blue-50 hover:bg-blue-100 border border-blue-100"
                       )}
                     >
                       <div className="flex-shrink-0 mt-1">
                         <div className={cn(
                           "p-2 rounded-lg",
-                          notification.read ? "bg-gray-100" : "bg-blue-100"
+                          notification.read ? "bg-slate-100" : "bg-blue-100"
                         )}>
                           {getNotificationIcon(notification.type)}
                         </div>
@@ -242,7 +246,7 @@ function CaregiverNotification() {
                         <div className="flex items-start justify-between gap-2">
                           <p className={cn(
                             "text-sm leading-relaxed",
-                            notification.read ? "text-gray-700" : "text-gray-900 font-medium"
+                            notification.read ? "text-slate-700" : "text-slate-900 font-medium"
                           )}>
                             {notification.type === "job_application" 
                               ? `${notification.caregiverName} applied for ${notification.metadata?.jobTitle}`
@@ -253,7 +257,7 @@ function CaregiverNotification() {
                             <div className="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                           )}
                         </div>
-                        <p className="text-xs text-gray-500 mt-2">
+                        <p className="text-xs text-slate-500 mt-2">
                           {new Date(notification.createdAt).toLocaleDateString('en-US', {
                             month: 'short',
                             day: 'numeric',
@@ -271,11 +275,11 @@ function CaregiverNotification() {
 
           {/* Footer */}
           {notifications.length > 0 && (
-            <div className="border-t border-gray-100 p-4 bg-gray-50">
+            <div className="border-t border-slate-100 p-4 bg-slate-50">
               <Link href="/vitae/notifications">
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-center text-gray-600 hover:text-gray-900 hover:bg-white font-medium rounded-lg"
+                  className="w-full justify-center text-slate-600 hover:text-slate-900 hover:bg-white font-medium rounded-lg"
                 >
                   View all notifications
                   <ChevronRight className="h-4 w-4 ml-1" />

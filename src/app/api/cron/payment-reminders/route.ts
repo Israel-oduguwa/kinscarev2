@@ -3,7 +3,7 @@
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
-  const apiBase = "https://jrp7pe2xhj.us-east-1.awsapprunner.com";
+  const apiBase = "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com";
   const { searchParams } = new URL(request.url);
   const hours = searchParams.get("hours");
 

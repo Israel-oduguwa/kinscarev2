@@ -3,19 +3,18 @@
 import { useAuthContext } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useApiClient } from "@/hooks/useApiClient";
-import { Interweave } from "interweave";
-import { AlertCircle, ChevronLeft, Info } from "lucide-react";
+import { ChevronLeft, Info } from "lucide-react";
 import Link from "next/link";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { JobCardSkeleton } from "./JobCardSkeleton";
-import ApplyNow from "./JobsUI/ApplyNow";
 import Image from "next/image";
 import dayjs from "dayjs"; // For date formatting, optional
 
 interface Contact {
-  address: string;
-  city: string;
-  zipcode: string;
+  address?: string;
+  city?: string;
+  zipcode?: string;
+  state?: string;
 }
 
 interface Job {
@@ -29,71 +28,124 @@ interface Job {
   schedule: string[];
   minHours: number;
   compensation: string;
+  userID?: string;
 }
 
-function ReferralApplicationStatus({ application_submitted }: any) {
+type ApplicationStatus = "applied" | "interested" | "interviewed" | "hired";
+
+type AppliedApplication = {
+  jobId: string;
+  appliedOn: string;
+  provider: string;
+  providerID: string;
+  title: string;
+  status: ApplicationStatus;
+  statusUpdatedAt?: string;
+  email?: string;
+  referral?: boolean;
+  providerProfile?: {
+    userID?: string;
+    name?: string;
+    profileImage?: string;
+  };
+  job: Job;
+};
+
+const statusLabel: Record<ApplicationStatus, string> = {
+  applied: "Applied",
+  interested: "Interested",
+  interviewed: "Interviewed",
+  hired: "Hired",
+};
+
+const statusStyles: Record<ApplicationStatus, string> = {
+  applied: "bg-slate-100 text-slate-700 ring-slate-200",
+  interested: "bg-blue-50 text-blue-700 ring-blue-100",
+  interviewed: "bg-amber-50 text-amber-700 ring-amber-100",
+  hired: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+};
+
+const normalizeStatus = (status?: string): ApplicationStatus => {
+  if (status === "interested" || status === "interviewed" || status === "hired") {
+    return status;
+  }
+  return "applied";
+};
+
+function ReferralApplicationStatus({
+  applications,
+}: {
+  applications: AppliedApplication[];
+}) {
   // Filter for all referral applications (if you want to show all, not just first)
-  const referralApps = (application_submitted || []).filter(
-    (a: any) => a.referral === true
+  const referralApps = (applications || []).filter(
+    (a) => a.referral === true
   );
 
   if (!referralApps.length) return null;
 
   return (
-    <section className="my-10">
-      <h3 className="text-lg font-bold text-gray-900 mb-4">
+    <section className="my-10 rounded-3xl border border-white/70 bg-white/80 p-6 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
+      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+        Referral
+      </p>
+      <h3 className="mt-2 text-lg font-semibold text-slate-900">
         Your Referral Applications
       </h3>
-      <div className="space-y-5">
+      <p className="mt-2 text-sm text-slate-600">
+        These were submitted through a referral and will be visible once the
+        provider claims the job.
+      </p>
+      <div className="mt-5 space-y-5">
         {referralApps.map((app: any, idx: number) => (
           <div
             key={idx}
-            className="flex items-start gap-3 bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4 shadow-sm"
+            className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-white/90 px-5 py-4 shadow-sm"
           >
             <div className="shrink-0 mt-1">
-              <span className="inline-flex items-center justify-center rounded-full bg-gray-100 text-indigo-500 w-8 h-8">
+              <span className="inline-flex items-center justify-center rounded-full bg-slate-100 text-slate-600 w-8 h-8">
                 <Info className="w-5 h-5" />
               </span>
             </div>
             <div className="flex-1">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-1">
-                <span className="text-base font-semibold text-gray-800">
-                  {app.title || "Referred Job"}
+                <span className="text-base font-semibold text-slate-900">
+                  {app.title || app.job?.title || "Referred Job"}
                 </span>
-                {app.date && (
-                  <span className="text-xs  text-gray-800 sm:ml-3">
-                    {dayjs(app.date).format("MMM D, YYYY")}
+                {app.appliedOn && (
+                  <span className="text-xs text-slate-500 sm:ml-3">
+                    {dayjs(app.appliedOn).format("MMM D, YYYY")}
                   </span>
                 )}
               </div>
-              <span className="block text-sm text-gray-600 mb-1">
+              <span className="block text-sm text-slate-600 mb-1">
                 Provider:{" "}
-                <span className="font-medium text-gray-900">
-                  {app.provider}
+                <span className="font-medium text-slate-900">
+                  {app.provider || app.providerProfile?.name}
                 </span>
               </span>
               <div className="flex flex-wrap gap-2 mb-1">
                 {/* Show licenses and availability if available */}
-                {Array.isArray(app.licenses) &&
-                  app.licenses.map((lic: any, i: number) => (
+                {Array.isArray(app.job?.licenses) &&
+                  app.job.licenses.map((lic: any, i: number) => (
                     <span
                       key={i}
-                      className="bg-gray-200 text-xs rounded-full px-2 py-0.5 text-gray-700"
+                      className="bg-slate-100 text-xs rounded-full px-2 py-0.5 text-slate-700"
                     >
                       {lic}
                     </span>
                   ))}
-                {Array.isArray(app.availability) &&
-                  app.availability.map((av: any, i: number) => (
+                {Array.isArray(app.job?.schedule) &&
+                  app.job.schedule.map((av: any, i: number) => (
                     <span
                       key={i}
-                      className="bg-gray-100 text-xs rounded-full px-2 py-0.5 text-gray-500"
+                      className="bg-slate-50 text-xs rounded-full px-2 py-0.5 text-slate-500"
                     >
                       {av}
                     </span>
                   ))}
               </div>
-              <p className="text-sm text-gray-700 leading-relaxed">
+              <p className="text-sm text-slate-600 leading-relaxed">
                 This application was submitted through a referral. You’ll be
                 notified as soon as the provider claims the job and can review
                 your application.
@@ -103,7 +155,7 @@ function ReferralApplicationStatus({ application_submitted }: any) {
         ))}
       </div>
       <div className="mt-4">
-        <span className="text-xs text-gray-500">
+        <span className="text-xs text-slate-500">
           <em>
             Your applications are safe and visible to providers once they
             finalize their job posts. No extra steps needed.
@@ -114,81 +166,125 @@ function ReferralApplicationStatus({ application_submitted }: any) {
   );
 }
 
-const JobPostCard: React.FC<{ job: Job }> = ({ job }) => {
-  // console.log(job);
+const AppliedJobCard: React.FC<{ application: AppliedApplication }> = ({
+  application,
+}) => {
+  const job = application.job;
+  const status = normalizeStatus(application.status);
+  const providerName =
+    application.provider || application.providerProfile?.name || job.provider;
+  const providerId =
+    application.providerID || application.providerProfile?.userID || job.userID;
+  const providerLogo =
+    application.providerProfile?.profileImage || job.profileImage;
+  const locationLine = [job.contacts?.city, job.contacts?.state]
+    .filter(Boolean)
+    .join(", ");
   return (
-    <div className="bg-white shadow-md border border-gray-100 rounded-lg p-6 my-4 w-full mx-auto">
-      <div className="flex flex-col lg:flex-row items-center lg:items-start lg:justify-between gap-6">
-        {/* Job Content */}
-        <Link href={`/vitae/jobs/${job._id}`} className="flex-1">
-          <div>
-            {/* Job Header */}
-            <div className="flex items-center gap-4 mb-4">
-              {job.profileImage && (
-                <Image
-                  width={40}
-                  height={40}
-                  className="h-12 w-12 rounded-full object-cover"
-                  src={
-                    job.profileImage ||
-                    "https://lh3.googleusercontent.com/-g8IwNe70-kE/AAAAAAAAAAI/AAAAAAAAAAA/ALKGfkl1tpVAKXAezzCNWmKH5JWvlgr_xw/photo.jpg?sz=46"
-                  }
-                  alt="company logo"
-                />
-              )}
-              <div>
-                <h2 className="font-bold tracking-tight text-gray-800">
-                  {job.title}
-                </h2>
-                <p className="text-sm text-gray-600">
-                  {job.contacts.address}, {job.contacts.city},{" "}
-                  {job.contacts.zipcode}
+    <div className="rounded-3xl border border-white/70 bg-white/80 p-6 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div className="flex-1">
+          <div className="flex items-start gap-4">
+            {providerLogo && (
+              <Image
+                width={48}
+                height={48}
+                className="h-12 w-12 rounded-2xl object-cover"
+                src={providerLogo}
+                alt="provider logo"
+              />
+            )}
+            <div className="flex-1">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+                Applied job
+              </p>
+              <Link
+                href={`/vitae/jobs/${job._id}`}
+                className="mt-2 block text-lg font-semibold text-slate-900 hover:text-blue-700"
+              >
+                {job.title}
+              </Link>
+              <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-600">
+                <span>{providerName}</span>
+                {locationLine && (
+                  <span className="text-slate-400">•</span>
+                )}
+                {locationLine && <span>{locationLine}</span>}
+              </div>
+              {application.email && (
+                <p className="mt-1 text-xs text-slate-500">
+                  {application.email}
                 </p>
+              )}
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <span
+                  className={[
+                    "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1",
+                    statusStyles[status],
+                  ].join(" ")}
+                >
+                  {statusLabel[status]}
+                </span>
+                {application.statusUpdatedAt ? (
+                  <span className="text-xs text-slate-500">
+                    Updated {dayjs(application.statusUpdatedAt).format("MMM D")}
+                  </span>
+                ) : null}
+                {application.appliedOn ? (
+                  <span className="text-xs text-slate-500">
+                    Applied {dayjs(application.appliedOn).format("MMM D")}
+                  </span>
+                ) : null}
               </div>
             </div>
-
-            {/* Certifications */}
-            <div className="mb-4">
-              <p className="text-sm text-gray-600 line-clamp-2">
-                {/* <Interweave content={job.certifications} /> */}
-              </p>
-            </div>
-
-            {/* Licenses and Schedule */}
-            <div className="flex flex-wrap gap-2 mb-4">
-              {job?.licenses?.map((license, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg"
-                >
-                  {license}
-                </span>
-              ))}
-              {job?.schedule?.map((sch, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg"
-                >
-                  {sch}
-                </span>
-              ))}
-            </div>
-
-            {/* Min Hours */}
-            <div>
-              <p className="text-sm text-gray-500">
-                Min Hours:{" "}
-                <span className="text-gray-700 font-medium">
-                  {job.minHours} hours/week
-                </span>
-              </p>
-            </div>
           </div>
-        </Link>
 
-        {/* Apply Button */}
-        <div className="shrink-0 w-full lg:w-auto ">
-          <ApplyNow job={job} jobID={job._id} />
+          <div className="mt-5 flex flex-wrap gap-2">
+            {job?.licenses?.map((license, index) => (
+              <span
+                key={index}
+                className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700"
+              >
+                {license}
+              </span>
+            ))}
+            {job?.schedule?.map((sch, index) => (
+              <span
+                key={index}
+                className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700"
+              >
+                {sch}
+              </span>
+            ))}
+            {job?.minHours ? (
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+                Min {job.minHours} hrs / week
+              </span>
+            ) : null}
+            {job?.compensation ? (
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+                ${job.compensation}
+              </span>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3 lg:min-w-[180px]">
+          <Link href={`/vitae/jobs/${job._id}`}>
+            <Button className="w-full rounded-full bg-blue-600 text-white hover:bg-blue-700">
+              View job
+            </Button>
+          </Link>
+          {/* {providerId ? (
+            <Link href={`/vitae/provider/${providerId}`}>
+              <Button
+                variant="outline"
+                className="w-full rounded-full border-slate-200 bg-white/80"
+              >
+                Provider profile
+              </Button>
+            </Link>
+          ) : null} */}
         </div>
       </div>
     </div>
@@ -196,20 +292,24 @@ const JobPostCard: React.FC<{ job: Job }> = ({ job }) => {
 };
 function AppliedJobs() {
   const authData: any = useAuthContext();
-  const { contactData, userData } = authData;
+  const { contactData } = authData;
   const [loading, setLoading] = useState(false);
-  const [jobs, setJobs] = useState([]);
+  const [applications, setApplications] = useState<AppliedApplication[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const { privateApi } = useApiClient();
   // console.log(userData);
   const fetchJob = async () => {
     try {
       setLoading(true);
+      setError(null);
+      if (!contactData?.userID) return;
       const { data }: any = await privateApi.get(
-        `/api/v1/caregivers/jobs/applied-job/${contactData.userID}`
+        `/api/v1/caregivers/jobs/applied-job-status/${contactData.userID}`,
+        { params: { page: 1, limit: 20 } }
       );
-      setJobs(data.jobs);
+      setApplications(data.applications || []);
     } catch (error) {
-      console.log(error);
+      setError("Unable to load applied jobs. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -219,30 +319,57 @@ function AppliedJobs() {
   }, [contactData]);
   // console.log(jobs);
   return (
-    <div className="px-2 md:px-4 min-h-screen">
-      <div className="max-w-7xl pt-2 md:pt-8 mx-auto">
-        <div className="div">
+    <div className="relative min-h-screen bg-gradient-to-b from-slate-50 via-slate-50 to-slate-100 px-4 py-8 md:px-6 2xl:px-0">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(1000px_circle_at_10%_-10%,rgba(59,130,246,0.12),transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_90%_10%,rgba(37,99,235,0.12),transparent_60%)]" />
+        <div className="absolute -top-28 right-12 h-72 w-72 rounded-full bg-sky-200/30 blur-3xl" />
+        <div className="absolute -bottom-32 left-6 h-80 w-80 rounded-full bg-blue-200/35 blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.14)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.14)_1px,transparent_1px)] bg-[size:36px_36px] opacity-40" />
+      </div>
+      <div className="relative mx-auto max-w-7xl">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">
+              Applications
+            </p>
+            <h1 className="mt-2 text-2xl md:text-3xl font-[family:var(--header-font)] font-extrabold text-slate-900">
+              Applied jobs
+            </h1>
+            <p className="mt-2 text-sm text-slate-600">
+              Track each application and view the provider’s job and profile.
+            </p>
+          </div>
           <Link href="/vitae/jobs/all">
-            <Button variant="ghost">
+            <Button variant="ghost" className="rounded-full">
               <ChevronLeft size={18} /> Back to search jobs
             </Button>
           </Link>
         </div>
         {loading && (
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1  gap-6">
+          <div className="mt-6">
+            <div className="grid grid-cols-1 gap-6">
               {Array.from({ length: 6 }).map((_, idx) => (
                 <JobCardSkeleton key={idx} />
               ))}
             </div>
           </div>
         )}
-        {jobs.map((job: any, index: React.Key | null | undefined) => (
-          <JobPostCard key={index} job={job} />
-        ))}
-        <ReferralApplicationStatus
-          application_submitted={userData.application_submitted}
-        />
+        {error && <p className="mt-6 text-sm text-red-600">{error}</p>}
+        {!loading && !error && applications.length === 0 && (
+          <div className="mt-6 rounded-3xl border border-white/70 bg-white/80 p-6 text-sm text-slate-600 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
+            You have not applied to any jobs yet.
+          </div>
+        )}
+        <div className="mt-6 space-y-6">
+          {applications.map((application) => (
+            <AppliedJobCard
+              key={`${application.jobId}-${application.appliedOn}`}
+              application={application}
+            />
+          ))}
+        </div>
+        <ReferralApplicationStatus applications={applications} />
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const JobDetailSkeleton = () => {
   return (
-    <div className="max-w-6xl py-20 mx-auto p-4">
+    <div className="max-w-7xl mt-20 py-20 mx-auto p-4">
       {/* Grid container */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Left Column (Job Details) */}

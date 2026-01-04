@@ -147,7 +147,7 @@ function MobileMenu({ role }: { role: "caregiver" | "provider" | "guest" }) {
       <SheetTrigger asChild>
         <button
           aria-label="Open menu"
-          className="inline-flex items-center justify-center rounded-xl p-2.5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="inline-flex items-center justify-center rounded-xl p-2.5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <Menu size={22} />
         </button>

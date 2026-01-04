@@ -80,12 +80,17 @@ export default function CaregiverJob({ jobID }: JobProps) {
   const { job, similarJobs } = data;
 
   return (
-    <div className="max-w-6xl py-6 px-6 min-h-[100vh] 2xl:px-0 mx-auto">
-      <div className="relative shadow-sm border bg-white border-gray-200 mb-4 rounded-lg p-6">
+    <div className="max-w-7xl py-8 px-6 min-h-[100vh] 2xl:px-0 mx-auto">
+      <div className="mb-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+          Job posting
+        </p>
+      </div>
+      <div className="relative shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] border border-white/70 bg-white/80 backdrop-blur mb-4 rounded-3xl p-6">
         {/* Header */}
         <div className="w-full mb-4">
           <div className="flex gap-4 flex-wrap items-center lg:flex-nowrap justify-between">
-            <h2 className="text-3xl text-gray-800 tracking-tight font-semibold flex items-center gap-3">
+            <h2 className="text-3xl text-slate-900 tracking-tight font-[family:var(--header-font)] font-extrabold flex items-center gap-3">
               {job.title}
               {job?.verified && (
                 <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
@@ -113,8 +118,10 @@ export default function CaregiverJob({ jobID }: JobProps) {
             <ProfileImage className="w-20 h-20" />
             <div className="flex-1">
               <div className="flex flex-wrap gap-2 mb-1 items-center">
-                <p className="text-sm font-medium">{job.provider}</p>
-                <p className="flex gap-1 text-sm items-center text-gray-700">
+                <p className="text-sm font-medium text-slate-900">
+                  {job.provider}
+                </p>
+                <p className="flex gap-1 text-sm items-center text-slate-600">
                   <MapPin size={14} />
                   {job.contacts.address && `${job.contacts.address}, `}
                   {job.contacts.city}, {job.contacts.zipcode}
@@ -129,8 +136,10 @@ export default function CaregiverJob({ jobID }: JobProps) {
               )}
 
               {job.mobility && (
-                <p className="mt-3 w-28 font-bold text-xs bg-green-100 text-green-600 px-2 rounded-lg py-1">
-                  {job.mobility === "car_needed" ? "Car Needed" : "Car not needed"}
+                <p className="mt-3 w-28 font-bold text-xs bg-emerald-100 text-emerald-700 px-2 rounded-lg py-1">
+                  {job.mobility === "car_needed"
+                    ? "Car Needed"
+                    : "Car not needed"}
                 </p>
               )}
 
@@ -138,22 +147,18 @@ export default function CaregiverJob({ jobID }: JobProps) {
                 {job?.licenses?.slice(0, 3).map((license: string, index: number) => (
                   <div
                     key={index}
-                    className="text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
+                    className="text-xs bg-white/80 border border-white/70 text-slate-700 rounded-full py-1 px-3 shadow-sm"
                   >
-                    <span className="text-xs antialiased text-gray-600">
-                      {license}
-                    </span>
+                    <span className="text-xs antialiased">{license}</span>
                   </div>
                 ))}
 
                 {job?.schedule?.slice(0, 3).map((sch: string, index: number) => (
                   <div
                     key={index}
-                    className="text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
+                    className="text-xs bg-white/80 border border-white/70 text-slate-700 rounded-full py-1 px-3 shadow-sm"
                   >
-                    <span className="text-xs antialiased text-gray-600">
-                      {sch}
-                    </span>
+                    <span className="text-xs antialiased">{sch}</span>
                   </div>
                 ))}
               </div>
@@ -163,34 +168,42 @@ export default function CaregiverJob({ jobID }: JobProps) {
 
         {/* About / details */}
         <div className="mb-4">
-          <p className="font-semibold mb-1">About this role</p>
-          <div className="w-full prose-lg prose-p:text-sm prose-p:mt-1 text-gray-700">
+          <p className="font-semibold text-slate-900 mb-1">About this role</p>
+          <div className="w-full prose-lg prose-p:text-sm prose-p:mt-1 text-slate-700">
             <Interweave content={job.description} />
           </div>
 
           <div className="mb-4">
-            <p className="font-semibold mb-1">Minimum Hours Required</p>
-            <p className="text-sm font-normal antialiased">{job.minHours} hrs</p>
+            <p className="font-semibold text-slate-900 mb-1">
+              Minimum Hours Required
+            </p>
+            <p className="text-sm font-normal antialiased text-slate-700">
+              {job.minHours} hrs
+            </p>
           </div>
 
           <div className="mb-4">
-            <p className="w-full font-semibold mb-1">Compensation</p>
-            <p className="text-sm font-normal antialiased">{job.compensation}</p>
+            <p className="w-full font-semibold text-slate-900 mb-1">
+              Compensation
+            </p>
+            <p className="text-sm font-normal antialiased text-slate-700">
+              {job.compensation}
+            </p>
           </div>
         </div>
 
         {job.alert_preferences && (
           <div className="mb-4">
-            <p className="text-sm font-semibold mb-2 text-gray-900">
+            <p className="text-sm font-semibold mb-2 text-slate-900">
               Alert Preferences
             </p>
             <div className="flex flex-wrap gap-2">
               {job.alert_preferences.map((alert: string, idx: number) => (
                 <div
                   key={idx}
-                  className="text-xs bg-gray-100 text-gray-800 rounded-lg py-1 px-2"
+                  className="text-xs bg-white/80 border border-white/70 text-slate-700 rounded-full py-1 px-3 shadow-sm"
                 >
-                  <span className="text-xs antialiased text-gray-600">{alert}</span>
+                  <span className="text-xs antialiased">{alert}</span>
                 </div>
               ))}
             </div>
@@ -200,17 +213,19 @@ export default function CaregiverJob({ jobID }: JobProps) {
 
       {/* Applicants */}
       {job?.applicants?.length > 0 && (
-        <div className="bg-white my-6 rounded-3xl shadow-lg p-6 overflow-hidden">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">
+        <div className="bg-white/80 border border-white/70 my-6 rounded-3xl shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur p-6 overflow-hidden">
+          <h3 className="text-2xl font-[family:var(--header-font)] font-extrabold text-slate-900 mb-4">
             Applications for this job
           </h3>
           <ul className="space-y-4">
             {job.applicants.map((app: any) => (
               <Link key={app.userID} href={`/provider/candidates/${app.userID}`}>
-                <li className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition">
+                <li className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-white/80 border border-white/70 p-4 rounded-2xl shadow-sm hover:shadow-md transition">
                   <div>
-                    <p className="text-lg font-semibold text-gray-800">{app.name}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-lg font-semibold text-slate-900">
+                      {app.name}
+                    </p>
+                    <p className="text-sm text-slate-500">
                       Applied on:{" "}
                       {new Date(app.applied_on).toLocaleDateString(undefined, {
                         year: "numeric",
@@ -223,7 +238,7 @@ export default function CaregiverJob({ jobID }: JobProps) {
                     {app.licenses?.map((lic: string) => (
                       <span
                         key={lic}
-                        className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full"
+                        className="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full border border-blue-100"
                       >
                         {lic}
                       </span>
@@ -231,7 +246,7 @@ export default function CaregiverJob({ jobID }: JobProps) {
                     {app.availability?.map((slot: string) => (
                       <span
                         key={slot}
-                        className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full"
+                        className="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full border border-emerald-100"
                       >
                         {slot}
                       </span>
@@ -267,7 +282,7 @@ export default function CaregiverJob({ jobID }: JobProps) {
 // Perfect Skeleton Loader
 function CaregiverJobSkeleton() {
   return (
-    <div className="max-w-6xl py-6 px-6 min-h-[100vh] 2xl:px-0 mx-auto space-y-6">
+    <div className="max-w-7xl py-6 px-6 min-h-screen 2xl:px-0 mx-auto space-y-6">
       <div className="shadow-sm border bg-white border-gray-200 rounded-lg p-6 space-y-6">
         {/* Header */}
         <div className="flex justify-between items-start">

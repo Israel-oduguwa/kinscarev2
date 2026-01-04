@@ -12,6 +12,7 @@ import {
   BookOpen,
   User2Icon,
   Speech,
+  MessageCircle,
 } from "lucide-react";
 
 import {
@@ -52,12 +53,12 @@ import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
  */
 const itemClasses = (active: boolean) =>
   [
-    "font-semibold antialiased py-5",
+    "font-semibold antialiased py-5 rounded-xl",
     "[&>svg]:w-5 [&>svg]:h-5",
     "transition-colors duration-150",
     active
-      ? "bg-blue-100 text-blue-700 hover:bg-blue-200 hover:text-blue-800"
-      : "text-gray-700 hover:text-gray-900 hover:bg-gray-50",
+      ? "bg-gradient-to-r from-blue-50 via-blue-100/70 to-transparent text-blue-800 shadow-[inset_0_0_0_1px_rgba(59,130,246,0.25),0_12px_28px_-24px_rgba(37,99,235,0.55)]"
+      : "text-slate-700 hover:text-slate-900 hover:bg-slate-50",
   ].join(" ");
 
 const subItemClasses = (active: boolean) =>
@@ -66,7 +67,7 @@ const subItemClasses = (active: boolean) =>
     "transition-colors duration-150",
     active
       ? "bg-blue-50 text-blue-700 border-l-4 border-blue-600"
-      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900",
+      : "text-slate-700 hover:bg-slate-50 hover:text-slate-900",
   ].join(" ");
 
 export function AppSidebar({ children }: { children: React.ReactNode }) {
@@ -116,6 +117,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
   const findJobsActive = isCurrent("/vitae/jobs/all");
   const savedJobsActive = isCurrent("/vitae/favorites");
   const appliedJobsActive = isCurrent("/vitae/applied-jobs");
+  const conversationsActive = startsWith("/vitae/conversations");
   const careerPlanActive = isCurrent("/vitae/career-plan");
   const updateResumeActive = isCurrent("/vitae/update");
   const crowdPostActive =
@@ -129,8 +131,12 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <Sidebar variant="sidebar" collapsible="icon">
-        <SidebarHeader>
+      <Sidebar
+        variant="inset"
+        collapsible="icon"
+        className="border-r border-slate-200/70 bg-white/80 backdrop-blur-xl shadow-[0_20px_60px_-40px_rgba(15,23,42,0.4)]"
+      >
+        <SidebarHeader className="border-b border-slate-200/70">
           <SidebarMenu>
             <SidebarMenuItem>
               <Link
@@ -140,7 +146,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
               >
                 <SidebarMenuButton
                   size="lg"
-                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                  className="rounded-2xl px-3 py-2 data-[state=open]:bg-blue-50 data-[state=open]:text-blue-700"
                 >
                   <div className="flex items-center justify-center">
                     <Image
@@ -160,9 +166,11 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarHeader>
 
-        <SidebarContent>
+        <SidebarContent className="bg-linear-to-b from-white/90 via-white/80 to-slate-50/80">
           <SidebarGroup>
-            <SidebarGroupLabel>Your Dashboard</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-xs uppercase tracking-[0.2em] text-slate-500">
+              VITAE
+            </SidebarGroupLabel>
             <SidebarMenu className="space-y-1">
               {/* Find Jobs */}
               <SidebarMenuItem>
@@ -223,9 +231,9 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                           active ? "page" : undefined
                                         }
                                       >
-                                        <span className="font-medium text-sm">
-                                          {sub.title}
-                                        </span>
+                                          <span className="font-medium text-sm">
+                                            {sub.title}
+                                          </span>
                                       </Link>
                                     </SidebarMenuSubButton>
                                   </SidebarMenuSubItem>
@@ -286,6 +294,24 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
+              {/* Conversations */}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  className={itemClasses(conversationsActive)}
+                  aria-current={conversationsActive ? "page" : undefined}
+                  tooltip="Conversations"
+                >
+                  <Link href="/vitae/conversations">
+                    <MessageCircle aria-hidden="true" />
+                    <span className="text-sm">Conversations</span>
+                    <span className="ml-auto rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-emerald-700">
+                      New
+                    </span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
               {/* Career Plan */}
               <SidebarMenuItem>
                 <SidebarMenuButton
@@ -337,7 +363,8 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
       </Sidebar>
 
       <SidebarInset>
-        <div className="flex items-center h-16 shrink-0 my-1 px-2 gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 mx-auto w-full xl:max-w-screen-xl">
+        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
+          <div className="flex items-center h-16 shrink-0 my-1 px-2 gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 mx-auto w-full xl:max-w-screen-xl">
           <SidebarTrigger className="-ml-1" aria-label="Toggle sidebar" />
           <Image
             width={40}
@@ -380,7 +407,8 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
           <div className="flex items-center ml-auto">
             <CaregiverNavbarRight />
           </div>
-        </div>
+          </div>
+        </header>
 
         <main>{children}</main>
       </SidebarInset>

@@ -144,7 +144,7 @@ async function All({
   page?: number;
 }) {
   const base =
-    "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/jobs-search";
+    "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/jobs-search";
   const qs = buildQuery({
     schedule,
     licenses,
@@ -201,7 +201,7 @@ async function All({
       </div>
       {/* Top header zone */}
       <div className="relative border-b pt-20 border-white/70 bg-white/60 backdrop-blur">
-        <div className="mx-auto max-w-6xl px-4 py-4">
+        <div className="mx-auto max-w-7xl px-4 py-4">
           <div className="flex flex-col gap-6">
             <SearchBar />
             <SearchInfo jobs={jobs} filters={filters} totalJobs={totalJobs} />
@@ -210,7 +210,7 @@ async function All({
       </div>
 
       {/* Results */}
-      <div className="relative mx-auto max-w-6xl px-4 py-8">
+      <div className="relative mx-auto max-w-7xl px-4 py-8">
         <div className="grid grid-cols-1 gap-5">
           {jobs.length > 0 ? (
             jobs.map((job: any) => <JobPostCard key={job._id} job={job} />)

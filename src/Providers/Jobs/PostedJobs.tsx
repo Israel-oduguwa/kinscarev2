@@ -27,7 +27,7 @@ interface Job {
 }
 
 const JobPostCard: React.FC<{ job: Job }> = ({ job }) => (
-  <div className="bg-white shadow-md rounded-lg p-6 my-4 w-full mx-auto">
+  <div className="border border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl p-6 my-4 w-full mx-auto">
     <Link href={`/provider/job/${job._id}`}>
       <div className="flex space-x-2 items-center mb-3">
         <ProfileImage className="w-12 h-12 rounded-none" />
@@ -111,7 +111,7 @@ function PostedJobs() {
   return (
     <div className="py-6  px-4 bg-gray-100 min-h-screen">
       {loading && (
-        <div className="max-w-6xl mx-auto p-6">
+        <div className="max-w-7xl mx-auto p-6">
           <div className="grid grid-cols-1">
             {Array.from({ length: 6 }).map((_, idx) => (
               <JobSkeleton key={idx}/>
@@ -121,7 +121,7 @@ function PostedJobs() {
       )}
       {error && <p className="text-center text-red-500">{error}</p>}
       {!loading && !error && (
-        <Tabs defaultValue="job-posts" className=" p-6 max-w-6xl mx-auto">
+        <Tabs defaultValue="job-posts" className=" p-6 max-w-7xl mx-auto">
           <div className="mb-4">
             <TabsList>
               <TabsTrigger value="job-posts">Job Posts</TabsTrigger>

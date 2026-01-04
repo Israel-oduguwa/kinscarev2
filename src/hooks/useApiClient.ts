@@ -4,7 +4,7 @@ import axios, { AxiosInstance, AxiosRequestHeaders } from "axios";
 import { useAuth } from "@clerk/nextjs";
 import { useMemo } from "react";
 
-const API_BASE_URL = "https://jrp7pe2xhj.us-east-1.awsapprunner.com"
+const API_BASE_URL = "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com"
 
 // Public client: no auth header
 const publicApi = axios.create({

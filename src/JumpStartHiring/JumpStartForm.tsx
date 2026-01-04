@@ -341,7 +341,7 @@ function JumpStartForm() {
     const { first, last } = parseFirstLast(formData.fullName);
     try {
       await axios.post(
-        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/track-provider-signup",
+        "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/track-provider-signup",
         {
           cio_id: attribution.cio_id,
           email: formData.email,
@@ -361,7 +361,7 @@ function JumpStartForm() {
     try {
       // Create Stripe subscription
       const response = await axios.post<CreateSubscriptionResponse>(
-        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/jumpstart/make-payment",
+        "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/jumpstart/make-payment",
         {
           userID,
           customerEmail: formData.email,
@@ -381,7 +381,7 @@ function JumpStartForm() {
         },
       };
       await privateApi.post(
-        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/crud-operation",
+        "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/crud-operation",
         payload,
         { headers: { "Content-Type": "application/json" } }
       );
@@ -431,7 +431,7 @@ function JumpStartForm() {
     };
     try {
       await axios.post(
-        `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/jumpstart/submit-applcation`,
+        `http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/jumpstart/submit-applcation`,
         payload
       );
 

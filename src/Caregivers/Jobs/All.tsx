@@ -20,7 +20,7 @@ import { JobCardSkeleton } from "./JobCardSkeleton";
 
 /** ---------- Small UI bits (unchanged) ---------- **/
 const Chip: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-700">
+  <span className="inline-flex items-center gap-1 rounded-full border border-white/70 bg-white/80 px-3 py-1 text-xs font-medium text-slate-700 shadow-sm">
     {children}
   </span>
 );
@@ -36,10 +36,10 @@ const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
 
   return (
     <div
-      className="group relative w-full mb-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:shadow-md focus-within:shadow-md"
+      className="group relative w-full mb-4 rounded-3xl border border-white/70 bg-white/80 p-5 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur transition-all hover:shadow-[0_22px_55px_-35px_rgba(15,23,42,0.45)] focus-within:shadow-[0_22px_55px_-35px_rgba(15,23,42,0.45)]"
       role="article"
     >
-      <div className="absolute inset-0 -z-10 rounded-2xl opacity-0 ring-2 ring-blue-500/0 transition group-hover:opacity-100 group-hover:ring-blue-500/10" />
+      <div className="absolute inset-0 -z-10 rounded-3xl opacity-0 ring-2 ring-blue-500/0 transition group-hover:opacity-100 group-hover:ring-blue-500/10" />
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
         <Link
           href={`/vitae/jobs/${job._id}`}
@@ -55,7 +55,7 @@ const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-lg font-semibold tracking-tight text-gray-900">
+              <h2 className="text-lg font-semibold tracking-tight text-slate-900">
                 {job?.title}
               </h2>
               {Array.isArray(job?.licenses) && job.licenses.length > 0 && (
@@ -66,13 +66,13 @@ const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
               )}
             </div>
 
-            <div className="mt-1 flex items-center gap-2 text-sm text-gray-600">
+            <div className="mt-1 flex items-center gap-2 text-sm text-slate-600">
               <MapPin className="h-4 w-4 shrink-0" />
               <span className="truncate">{locationLine || "—"}</span>
             </div>
 
             {job.certifications && job.certifications.length > 0 && (
-              <div className="mt-3 text-sm text-gray-700 line-clamp-2">
+              <div className="mt-3 text-sm text-slate-700 line-clamp-2">
                 <Interweave content={job?.certifications ?? ""} />
               </div>
             )}
@@ -146,7 +146,7 @@ const fetchJobs = async (
   page: number
 ): Promise<JobsApiResponse> => {
   const response = await fetch(
-    `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/jobs/${userId}?page=${page}`
+    `http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/jobs/${userId}?page=${page}`
   );
   if (!response.ok) throw new Error("Error fetching jobs");
   return response.json();
@@ -182,10 +182,10 @@ const TabsBar: React.FC<{
         onClick={() => onChange(key)}
         aria-current={active ? "page" : undefined}
         className={[
-          "px-4 py-2 rounded-lg text-sm font-medium transition",
+          "px-4 py-2 rounded-full text-sm font-medium transition",
           active
-            ? "bg-gray-900 text-white shadow-sm"
-            : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50",
+            ? "bg-slate-900 text-white shadow-sm"
+            : "bg-white/80 text-slate-700 border border-white/70 hover:bg-slate-50",
         ].join(" ")}
       >
         {label}
@@ -194,7 +194,7 @@ const TabsBar: React.FC<{
   };
 
   return (
-    <div className="sticky top-0 z-20 bg-gray-100/80 backdrop-blur supports-backdrop-filter:bg-gray-100/60">
+    <div className="sticky top-0 z-20 border mb-4 border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
       <div className="max-w-7xl mx-auto px-2 md:px-4 py-3">
         <div className="flex items-center gap-2">
           {item("all", "All")}
@@ -202,7 +202,7 @@ const TabsBar: React.FC<{
           {item("applied", "Applied")}
         </div>
       </div>
-      <div className="h-px my-2 bg-gray-200" />
+      <div className=" my-2 bg-slate-200/60" />
     </div>
   );
 };
@@ -211,19 +211,21 @@ const TabsBar: React.FC<{
 const CompareProgramsCTA: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto mt-6">
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+      <div className="rounded-3xl border border-white/70 bg-white/80 p-5 shadow-[0_16px_40px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
-            <h3 className="text-base md:text-lg font-semibold text-gray-900">
+            <h3 className="text-base md:text-lg font-semibold text-slate-900">
               Compare Programs
             </h3>
-            <p className="mt-1 text-sm text-gray-700">
+            <p className="mt-1 text-sm text-slate-600">
               Compare colleges and universities offering programs that lead to
               nursing and other healthcare careers.
             </p>
           </div>
           <div className="flex gap-2">
-            <Button className="px-5">Start comparing</Button>
+            <Button className="px-5 bg-blue-600 text-white hover:bg-blue-700">
+              Start comparing
+            </Button>
             {/* Optional secondary link:
             <Button variant="outline">Learn more</Button>
             */}
@@ -371,8 +373,15 @@ function All() {
   const hasMore = page < totalPages;
 
   return (
-    <div className="py-6 px-2 bg-gray-100 md:px-4 min-h-screen">
-      <div className="max-w-7xl mx-auto">
+    <div className="relative py-6 px-2 bg-slate-950/5 md:px-4 min-h-screen overflow-hidden">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_20%_-10%,rgba(59,130,246,0.14),transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_90%_20%,rgba(30,64,175,0.12),transparent_60%)]" />
+        <div className="absolute -top-24 right-6 h-72 w-72 rounded-full bg-sky-300/25 blur-3xl" />
+        <div className="absolute -bottom-32 left-10 h-80 w-80 rounded-full bg-blue-200/35 blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.14)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.14)_1px,transparent_1px)] bg-[size:36px_36px] opacity-30" />
+      </div>
+      <div className="relative max-w-7xl mx-auto">
         {/* Job Search Header (always on top, shared across tabs) */}
         <JobSearchHeader
           filters={filters}
@@ -401,7 +410,7 @@ function All() {
 
               {!loading && totalJobs > 0 && (
                 <div className="mb-4">
-                  <p className="font-medium text-gray-800">
+                  <p className="font-medium text-slate-700">
                     Found {totalJobs} job(s)
                     {mode === "filtered" ? " for your search" : ""}.
                   </p>
@@ -409,7 +418,7 @@ function All() {
               )}
 
               {!loading && jobs.length === 0 && (
-                <p className="text-sm text-gray-600">No jobs found.</p>
+                <p className="text-sm text-slate-600">No jobs found.</p>
               )}
 
               {jobs.map((job: any) => (
@@ -418,12 +427,16 @@ function All() {
 
               <div className="flex justify-center mt-4">
                 {hasMore && (
-                  <Button onClick={loadMore} disabled={loading}>
+                  <Button
+                    onClick={loadMore}
+                    disabled={loading}
+                    className="bg-blue-600 text-white hover:bg-blue-700"
+                  >
                     {loading ? "Loading…" : "Load More"}
                   </Button>
                 )}
                 {!hasMore && jobs.length > 0 && (
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-slate-600">
                     No more jobs available
                   </p>
                 )}
@@ -431,7 +444,7 @@ function All() {
             </div>
 
             {/* NEW: CTA strictly AFTER Load More */}
-            <CompareProgramsCTA />
+            {/* <CompareProgramsCTA /> */}
           </div>
         )}
 
@@ -439,7 +452,7 @@ function All() {
           <div>
             <FavoriteJobs />
             {/* CTA AFTER Saved list */}
-            <CompareProgramsCTA />
+            {/* <CompareProgramsCTA /> */}
           </div>
         )}
 
@@ -447,7 +460,7 @@ function All() {
           <div>
             <AppliedJobs />
             {/* CTA AFTER Applied list */}
-            <CompareProgramsCTA />
+            {/* <CompareProgramsCTA /> */}
           </div>
         )}
       </div>

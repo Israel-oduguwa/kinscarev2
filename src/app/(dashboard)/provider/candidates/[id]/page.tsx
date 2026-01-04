@@ -7,9 +7,9 @@ import Footer from "@/WebPages/Footer";
 // Skeleton Component
 const CandidateDetailsSkeleton = () => {
   return (
-    <div className="bg-gray-100 p-6 max-w-7xl mx-auto space-y-4">
+    <div className="bg-gray-100 p-6 mt-10 max-w-7xl mx-auto space-y-4">
       {/* Profile Section Skeleton */}
-      <div className="relative shadow-sm border bg-white border-gray-200 rounded-lg p-6 space-y-4">
+      <div className="relative shadow-sm border rounded-xl bg-white border-gray-200 p-6 space-y-4">
         <div className="flex items-center space-x-4">
           <Skeleton className="w-20 h-20 rounded-full" />
           <div className="flex flex-col space-y-2">
@@ -33,7 +33,7 @@ const CandidateDetailsSkeleton = () => {
         </div>
       </div>
       <div className="space-y-4">
-        <Skeleton className="w-32 h-6 rounded" />
+        <Skeleton className="w-32 h-6 rounded-xl" />
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, index) => (
             <div
@@ -61,7 +61,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const params = await rawParams; // Await the params object
   const data = await fetch(
-    `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/caregivers/${params.id}`,
+    `http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/caregivers/${params.id}`,
     { cache: "no-cache" }
   );
   // console.log("Check Data", await data.json())

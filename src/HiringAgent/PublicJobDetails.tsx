@@ -207,7 +207,7 @@ const SimilarJobs: React.FC<{ similarJobs: any[] }> = ({
  *  ------------------------------ */
 async function PublicJobDetails({ jobID }: { jobID: string }) {
   const data = await fetch(
-    `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/job/${jobID}`,
+    `http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/job/${jobID}`,
     { cache: "no-cache" }
   );
   const response = await data.json();

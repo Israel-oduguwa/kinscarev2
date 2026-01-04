@@ -366,7 +366,15 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
   /**
    * Handler to open the new card payment form.
    */
-  const handleOpenPaymentForm = () => setOpenPaymentForm(true);
+  const handleOpenPaymentForm = () => {
+    setOpenPaymentForm((prev) => {
+      const next = !prev;
+      if (next) {
+        setSelectedCard(null);
+      }
+      return next;
+    });
+  };
 
   /**
    * Close all open dialogs.
@@ -648,16 +656,29 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
 
       {/* Saved Cards Dialog */}
       <Dialog open={isCardDialogOpen} onOpenChange={setIsCardDialogOpen}>
-        <DialogContent className="max-w-full sm:max-w-3xl max-h-[90vh] overflow-auto rounded-2xl p-4 sm:p-6 bg-white shadow-xl">
+        <DialogContent className="max-w-full sm:max-w-3xl max-h-[90vh] overflow-auto rounded-3xl p-4 sm:p-6 bg-white shadow-2xl">
           <div className="space-y-6">
-            <h3 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900">
-              Choose a Payment Method
-            </h3>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+                  Payment method
+                </p>
+                <h3 className="mt-2 text-xl sm:text-2xl font-semibold tracking-tight text-slate-900">
+                  Choose a payment method
+                </h3>
+                <p className="mt-1 text-sm text-slate-600">
+                  Use a saved card or add a new card for secure checkout.
+                </p>
+              </div>
+              <div className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs text-slate-600">
+                Secure Stripe checkout
+              </div>
+            </div>
 
             {/* Plan Selection */}
             <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-slate-500">
-                Switch Plan
+              <h4 className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+                Switch plan
               </h4>
               <div className="flex flex-wrap gap-2">
                 {pricingPlans.map((plan) => (
@@ -670,10 +691,10 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                         plan.stripePriceId
                       )
                     }
-                    className={`text-sm px-4 py-2 rounded-xl shadow-sm hover:shadow-md transition ${
+                    className={`text-sm px-4 py-2 rounded-full shadow-sm hover:shadow-md transition ${
                       selectedPlan === plan.id
                         ? "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]"
-                        : "bg-white text-slate-600"
+                        : "bg-white text-slate-600 border-slate-200"
                     }`}
                   >
                     {plan.title}
@@ -693,46 +714,91 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                       {savedCards.map((card) => (
                         <div
                           key={card.id}
-                          onClick={() => setSelectedCard(card.id)}
+                          onClick={() => {
+                            setSelectedCard(card.id);
+                            setOpenPaymentForm(false);
+                          }}
                           className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer border transition hover:shadow-lg ${
                             selectedCard === card.id
-                              ? "border-[hsl(var(--primary))] bg-[hsl(var(--secondary))]"
-                              : "border-[hsl(var(--border))] bg-white"
+                              ? "border-blue-500/60 bg-blue-50/60"
+                              : "border-slate-200 bg-white"
                           }`}
                         >
                           <div className="flex items-center gap-4">
-                            <CardImage cardBrand={card.brand} />
+                            <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+                              <CardImage cardBrand={card.brand} />
+                            </div>
                             <div>
-                              <p className="text-sm font-medium text-[hsl(var(--foreground))]">
-                                Use {card.brand} card ending in {card.last4}
+                              <p className="text-sm font-medium text-slate-900">
+                                {card.brand.toUpperCase()} ending in {card.last4}
                               </p>
-                              <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                                Exp {String(card.exp_month).padStart(2, "0")}/
+                              <p className="text-xs text-slate-500">
+                                Expires {String(card.exp_month).padStart(2, "0")}/
                                 {card.exp_year}
                               </p>
                             </div>
                           </div>
                           {selectedCard === card.id && (
-                            <span className="text-sm text-[hsl(var(--primary))] font-medium">
+                            <span className="text-xs font-semibold text-blue-600">
                               Selected
                             </span>
                           )}
                         </div>
                       ))}
-                      <Button
-                        onClick={() => void createSubscription()}
-                        disabled={loading}
-                        className="w-full sm:w-auto mt-4 px-6 py-3 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded-xl shadow hover:shadow-lg transition"
-                      >
-                        {loading && <Loader2 className="animate-spin mr-2" />}
-                        Pay using saved card
-                      </Button>
+                      <div className="flex flex-col gap-3 sm:flex-row">
+                        <Button
+                          onClick={() => void createSubscription()}
+                          disabled={loading}
+                          className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-full shadow hover:bg-blue-700 transition"
+                        >
+                          {loading && <Loader2 className="animate-spin mr-2" />}
+                          Pay with saved card
+                        </Button>
+                        <Button
+                          onClick={handleOpenPaymentForm}
+                          variant="outline"
+                          className="w-full sm:w-auto rounded-full border-slate-200"
+                        >
+                          {openPaymentForm ? "Hide card form" : "Use another card"}
+                        </Button>
+                      </div>
+                      {openPaymentForm && (
+                        <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4">
+                          {clientSecret ? (
+                            <Elements
+                              stripe={stripePromise}
+                              options={{ clientSecret }}
+                            >
+                              <FrequentPaymentForm
+                                clientSecret={clientSecret}
+                                userID={contactData.userID}
+                                subscription={subscription}
+                                plan={currentPlan?.id}
+                                priceId={currentPlan?.stripePriceId ?? ""}
+                                subscriptionID={subscriptionID}
+                                onSuccess={(result) =>
+                                  console.log("Payment success:")
+                                }
+                                onError={(error) =>
+                                  console.log("Payment error:", error)
+                                }
+                                customerId={""}
+                                intentType={""}
+                                close={handleCloseDialog}
+                              />
+                            </Elements>
+                          ) : (
+                            <p className="text-sm text-slate-600">
+                              Loading card form...
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <>
-                      {/* When the user does not have a saved card, we show the user the form  */}
-                      <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                        No saved cards available. Use a new card to proceed.
+                      <p className="text-sm text-slate-600">
+                        No saved cards available. Add a new card to proceed.
                       </p>
                       {clientSecret && (
                         <Elements
@@ -760,13 +826,6 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                       )}
                     </>
                   )}
-                  {/* <Button
-                    onClick={handleOpenPaymentForm}
-                    variant={savedCards.length === 0 ? "default" : "outline"}
-                      className="w-full mt-4 px-6 py-3 text-sm bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] rounded-xl shadow hover:shadow-lg transition"
-                    >
-                    Use another card
-                  </Button> */}
                 </>
               )}
             </div>
@@ -774,28 +833,6 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Payment Form Dialog */}
-      <Dialog open={openPaymentForm} onOpenChange={setOpenPaymentForm}>
-        <DialogContent className="[&>button]:hidden">
-          {clientSecret && (
-            <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <FrequentPaymentForm
-                clientSecret={clientSecret}
-                userID={contactData.userID}
-                subscription={subscription}
-                plan={currentPlan?.id}
-                priceId={currentPlan?.stripePriceId ?? ""}
-                subscriptionID={subscriptionID}
-                onSuccess={(result) => console.log("Payment success:")}
-                onError={(error) => console.log("Payment error:", error)}
-                customerId={""}
-                intentType={""}
-                close={handleCloseDialog}
-              />
-            </Elements>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

@@ -15,7 +15,7 @@ import ProfileAvatar from "@/components/ProfileAvatar";
 
 async function Discussion({ threadID }: { threadID: string }) {
   let data = await fetch(
-    `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/threads/${threadID}`,
+    `http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/threads/${threadID}`,
     { cache: "no-cache" }
   );
   const response = await data.json();

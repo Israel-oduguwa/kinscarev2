@@ -11,7 +11,7 @@ const DiscussionListSkeleton = () => {
       {Array.from({ length: 5 }).map((_, index) => (
         <div
           key={index}
-          className="p-4 mb-4 flex gap-4 flex-col md:flex-row items-center bg-white dark:bg-gray-800 border border-gray-50 dark:border-gray-700 rounded-lg shadow-sm max-w-full md:max-w-5xl"
+          className="p-4 mb-4 flex gap-4 flex-col md:flex-row items-center bg-white/80 border border-white/70 rounded-3xl shadow-[0_16px_40px_-30px_rgba(15,23,42,0.35)] max-w-full md:max-w-5xl backdrop-blur"
         >
           <div className="flex flex-col justify-between py-3 px-1 leading-normal w-full">
             <Skeleton className="h-6 w-3/4 mb-3" />
@@ -19,7 +19,7 @@ const DiscussionListSkeleton = () => {
               {Array.from({ length: 3 }).map((_, tagIndex) => (
                 <Skeleton
                   key={tagIndex}
-                  className="h-6 w-16 bg-gray-100 dark:bg-gray-700 rounded-lg"
+                  className="h-6 w-16 bg-slate-100 rounded-lg"
                 />
               ))}
             </div>
@@ -40,8 +40,8 @@ const DiscussionListSkeleton = () => {
         </div>
       ))}
       <div className="flex justify-center mt-4 space-x-4">
-        <Skeleton className="h-10 w-20 rounded bg-gray-200" />
-        <Skeleton className="h-10 w-20 rounded bg-gray-200" />
+        <Skeleton className="h-10 w-20 rounded bg-slate-200" />
+        <Skeleton className="h-10 w-20 rounded bg-slate-200" />
       </div>
     </div>
   );
@@ -120,10 +120,17 @@ async function ForumPage({ searchParams }: { searchParams: any }) {
   };
 
   return (
-    <main className="bg-gray-50 min-h-screen">
+    <main className="relative bg-slate-950/5 min-h-screen overflow-hidden">
       {/* JSON-LD scripts remain the same */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_20%_-10%,rgba(59,130,246,0.14),transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_90%_20%,rgba(30,64,175,0.12),transparent_60%)]" />
+        <div className="absolute -top-24 right-6 h-72 w-72 rounded-full bg-sky-300/25 blur-3xl" />
+        <div className="absolute -bottom-32 left-10 h-80 w-80 rounded-full bg-blue-200/35 blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.14)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.14)_1px,transparent_1px)] bg-[size:36px_36px] opacity-30" />
+      </div>
 
-      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="relative max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Mobile Filters Drawer (Moved to top on mobile) */}
           <div className="lg:hidden">
@@ -137,7 +144,6 @@ async function ForumPage({ searchParams }: { searchParams: any }) {
 
           {/* Main Content */}
           <section className="flex-1 lg:max-w-3xl">
-           
 
             <Suspense fallback={<DiscussionListSkeleton />}>
               <DiscussionList searchParams={searchParams} />
@@ -146,7 +152,7 @@ async function ForumPage({ searchParams }: { searchParams: any }) {
 
           {/* Right Sidebar */}
           <aside className="lg:w-80 shrink-0">
-            <div className="bg-white border border-gray-200 rounded-xl p-6 sticky top-20">
+            <div className="bg-white/80 border border-white/70 rounded-3xl p-6 sticky top-20 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
               <div className="text-center">
                 <div className="inline-block bg-blue-100 rounded-full p-3 mb-4">
                   <svg
@@ -163,16 +169,16 @@ async function ForumPage({ searchParams }: { searchParams: any }) {
                     />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">
                   Start a Discussion
                 </h3>
-                <p className="text-sm text-gray-500 mb-4">
+                <p className="text-sm text-slate-600 mb-4">
                   Share your knowledge, ask questions, or start a new topic
                 </p>
                 <Link
                   className={buttonVariants({
                     className:
-                      "w-full shadow-sm hover:shadow-md transition-shadow",
+                      "w-full shadow-sm hover:shadow-md transition-shadow bg-blue-600 text-white hover:bg-blue-700",
                     variant: "default",
                   })}
                   href="/community/create"

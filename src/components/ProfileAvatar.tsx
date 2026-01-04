@@ -1,4 +1,5 @@
-import React from "react";
+"use client"
+import React, { useState } from "react";
 import clsx from "clsx"; // For class merging
 import Image from "next/image";
 
@@ -49,7 +50,9 @@ const GradientAvatar: React.FC<GradientAvatarProps> = ({
   // Default gradient colors if name is invalid
   const colors = stringToColor(name || "User");
 
-  return profileImage ? (
+  const [imageError, setImageError] = useState(false);
+
+  return profileImage && !imageError ? (
     // Render profile image if available
     <div className={`${size} relative`}>
       <Image
@@ -57,6 +60,7 @@ const GradientAvatar: React.FC<GradientAvatarProps> = ({
         className={clsx("rounded-full flex-shrink-0")}
         src={profileImage}
         alt={`${name}'s profile`}
+        onError={() => setImageError(true)}
       />
     </div>
   ) : (

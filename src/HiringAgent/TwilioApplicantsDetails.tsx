@@ -46,7 +46,7 @@ import { Copy, Trash2 } from "lucide-react";
 import { useApiClient } from "@/hooks/useApiClient";
 
 const TWILIO_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio";
+  "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio";
 
 const AGENT_SCRIPTS = [
   {
@@ -220,7 +220,7 @@ export default function TwilioApplicantsDetails() {
   const [eventsError, setEventsError] = useState<string | null>(null);
 
   const API_BASE =
-    "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+    "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [targetJob, setTargetJob] = useState<any>(null);

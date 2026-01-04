@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Clock, Flame } from "lucide-react";
 
-const API_URL = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/blogs/all";
+const API_URL = "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/blogs/all";
 
 interface Blog {
   _id: string;
@@ -86,22 +86,25 @@ const BlogList: React.FC<BlogListProps> = ({ initialBlogs, totalPages }) => {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
         <div className="space-y-2">
-          <h2 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-gray-800 to-blue-600 dark:from-gray-100 dark:to-blue-400 bg-clip-text text-transparent">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+            Blog
+          </p>
+          <h2 className="text-2xl md:text-4xl font-[family:var(--header-font)] font-extrabold text-slate-900">
             Latest Articles
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
+          <p className="text-slate-600 text-lg">
             Insights and stories from our community
           </p>
         </div>
 
         {/* Sort Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-1.5 shadow-sm border border-gray-100 dark:border-gray-700 flex">
+        <div className="bg-white/80 rounded-xl p-1.5 shadow-sm border border-white/70 backdrop-blur flex">
           <button
             onClick={() => handleSortChange("recent")}
             className={`px-6 py-2 flex items-center gap-2 rounded-lg transition-all ${
               sortBy === "recent"
-                ? "bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 shadow-sm text-blue-600 dark:text-blue-400"
-                : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                ? "bg-blue-50 shadow-sm text-blue-700"
+                : "text-slate-500 hover:bg-slate-50"
             }`}
           >
             <Clock className="h-4 w-4" />
@@ -111,8 +114,8 @@ const BlogList: React.FC<BlogListProps> = ({ initialBlogs, totalPages }) => {
             onClick={() => handleSortChange("popular")}
             className={`px-6 py-2 flex items-center gap-2 rounded-lg transition-all ${
               sortBy === "popular"
-                ? "bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 shadow-sm text-blue-600 dark:text-blue-400"
-                : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                ? "bg-blue-50 shadow-sm text-blue-700"
+                : "text-slate-500 hover:bg-slate-50"
             }`}
           >
             <Flame className="h-4 w-4" />
@@ -126,7 +129,7 @@ const BlogList: React.FC<BlogListProps> = ({ initialBlogs, totalPages }) => {
         {blogs.map((blog) => (
           <article
             key={blog._id}
-            className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col h-full"
+            className="group relative bg-white/80 rounded-3xl shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] hover:shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] transition-shadow duration-300 overflow-hidden flex flex-col h-full border border-white/70 backdrop-blur"
           >
             <Link href={`/blog/${blog.slug}`} className="h-full flex flex-col">
               {/* Image Container */}
@@ -137,36 +140,36 @@ const BlogList: React.FC<BlogListProps> = ({ initialBlogs, totalPages }) => {
                   fill
                   className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-900/40" />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/40" />
               </div>
 
               {/* Content Container - Fixed Height */}
               <div className="p-6 flex flex-col flex-grow h-full space-y-4">
-                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 leading-snug line-clamp-2">
+                <h3 className="text-xl font-bold text-slate-900 leading-snug line-clamp-2">
                   {blog.title}
                 </h3>
 
-                <p className="text-gray-600 text-sm font-light dark:text-gray-400 line-clamp-3 leading-relaxed flex-grow">
+                <p className="text-slate-600 text-sm font-light line-clamp-3 leading-relaxed flex-grow">
                   {blog.excerpt}
                 </p>
 
                 {/* Author Section - Always at Bottom */}
-                <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3 mt-4 pt-4 border-t border-white/70">
                   <div className="relative flex-shrink-0">
-                    <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 blur opacity-20 group-hover:opacity-30 transition-opacity" />
+                    <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-blue-500 to-slate-400 blur opacity-20 group-hover:opacity-30 transition-opacity" />
                     <Image
                       src={blog.author.profilePicture}
                       alt={blog.author.name}
                       width={48}
                       height={48}
-                      className="relative rounded-full border-2 border-white dark:border-gray-800"
+                      className="relative rounded-full border-2 border-white"
                     />
                   </div>
                   <div className="min-w-0">
-                    <p className="font-medium text-gray-900 dark:text-gray-200 truncate">
+                    <p className="font-medium text-slate-900 truncate">
                       {blog.author.name}
                     </p>
-                    <time className="text-sm text-gray-500 dark:text-gray-400">
+                    <time className="text-sm text-slate-500">
                       {new Date(blog.createdAt).toLocaleDateString("en-US", {
                         year: "numeric",
                         month: "short",
@@ -187,7 +190,7 @@ const BlogList: React.FC<BlogListProps> = ({ initialBlogs, totalPages }) => {
           <button
             onClick={fetchMoreBlogs}
             disabled={loading}
-            className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-xl shadow-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
+            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
           >
             <div className="flex items-center gap-2">
               {loading ? (
@@ -237,7 +240,7 @@ const BlogList: React.FC<BlogListProps> = ({ initialBlogs, totalPages }) => {
       )}
 
       {!hasMore && (
-        <p className="text-center text-gray-500 dark:text-gray-400 mt-8 py-6 border-t border-gray-100 dark:border-gray-700">
+        <p className="text-center text-slate-500 mt-8 py-6 border-t border-white/70">
           You've reached the end! 🎉
         </p>
       )}

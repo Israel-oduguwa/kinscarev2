@@ -33,7 +33,7 @@ async function page(props: { params: Promise<{ id: string }> }) {
   const { id } = params;
   return (
     <Suspense fallback={<ProviderJobSkeleton/>}>
-      <div className="min-h-full bg-gray-100">
+      <div className="min-h-full bg-slate-950/5">
         <ProviderJob jobID={id} />
       </div>
     </Suspense>

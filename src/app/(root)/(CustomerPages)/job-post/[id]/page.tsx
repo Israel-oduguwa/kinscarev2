@@ -18,7 +18,7 @@ export async function generateMetadata(
 
   try {
     const response = await fetch(
-      `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/job/${id}`,
+      `http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/job/${id}`,
       { cache: "no-cache" }
     );
     const { job } = await response.json();

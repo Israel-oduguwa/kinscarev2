@@ -25,7 +25,7 @@ const uploadFile = async (file: File) => {
     formData.append("file", file);
 
     const { data } = await axios.post(
-      "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/upload-file",
+      "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/upload-file",
       formData,
       {
         headers: {
@@ -44,7 +44,7 @@ const uploadFile = async (file: File) => {
 const deleteFile = async (fileUrl: string) => {
   try {
     await axios.post(
-      "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/delete-file",
+      "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/delete-file",
       { fileUrl }
     );
     return true;

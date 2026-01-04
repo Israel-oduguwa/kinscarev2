@@ -10,7 +10,7 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { useAuthContext } from "@/context/AuthContext";
 import { useApiClient } from "@/hooks/useApiClient";
-import axios from "axios";
+import { cn } from "@/lib/utils";
 import { Bell, CheckCircle, Dot } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -19,18 +19,17 @@ function ProviderNotification() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
-    const  authData: any = useAuthContext();
-  const {  userData, contactData } = authData;
+  const authData: any = useAuthContext();
+  const { userData, contactData } = authData;
 
   // Calculate total notifications count:
   // unread notifications + (1 if profile is incomplete)
   const totalCount = unreadCount + (userData?.complete === false ? 1 : 0);
-  const {privateApi} = useApiClient()
+  const { privateApi } = useApiClient();
   // Fetch notifications from API
   const fetchNotifications = async () => {
     setLoading(true);
     try {
-      console.log("fetching");
       const { data } = await privateApi.get(
         `/api/v1/notifications/fetch`,
         {
@@ -55,7 +54,6 @@ function ProviderNotification() {
   // Mark a notification as read
   const markNotificationAsRead = async (notificationId: string) => {
     try {
-      console.log("marking as read");
       await privateApi.post(
         `/api/v1/notifications/mark-as-read`,
         { notificationId }
@@ -67,7 +65,6 @@ function ProviderNotification() {
       );
       setUnreadCount((count) => Math.max(count - 1, 0));
     } catch (error) {
-      console.log(error);
       toast({
         title: "Error updating notification",
         description: "Unable to mark notification as read.",
@@ -94,34 +91,53 @@ function ProviderNotification() {
           <Button
             variant="ghost"
             size="icon"
-             className="relative w-12 h-12 [&>svg]:h-6! [&>svg]:w-6! rounded-full bg-transparent hover:bg-gray-100 transition-all duration-200 group"
+            className="relative h-12 w-12 rounded-full bg-transparent transition-all duration-200 hover:bg-slate-100 [&>svg]:h-6! [&>svg]:w-6!"
           >
-            <Bell className="h-6 w-6" />
+            <Bell className="h-6 w-6 text-slate-600" />
             {totalCount > 0 && (
-              <span
-                className="absolute text-white text-xs p-2 top-0 right-0 inline-flex items-center justify-center w-5 h-5 bg-red-500 rounded-full font-bold"
-              >
-                {totalCount}
+              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
+                  {totalCount}
+                </span>
               </span>
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-80 p-4">
-          <div className="flex items-center justify-between">
-            <h4 className="text-lg font-bold">Notifications</h4>
-            {totalCount > 0 && <Badge>{totalCount} unread</Badge>}
+        <PopoverContent
+          className="w-96 p-0 rounded-2xl border-0 shadow-xl bg-white overflow-hidden"
+          align="end"
+          sideOffset={8}
+        >
+          <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-white">
+            <div>
+              <h4 className="text-lg font-semibold text-slate-900">
+                Notifications
+              </h4>
+              <p className="mt-1 text-sm text-slate-500">
+                {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
+              </p>
+            </div>
+            {totalCount > 0 && (
+              <Badge className="bg-slate-100 text-slate-700">
+                {totalCount} unread
+              </Badge>
+            )}
           </div>
 
           {/* Loading State */}
           {loading && (
-            <div className="space-y-4 mt-4">
+            <div className="space-y-4 p-6">
               {[...Array(3)].map((_, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center space-x-4 animate-pulse"
+                  className="flex items-center gap-3 animate-pulse"
                 >
-                  <div className="h-6 w-6 rounded-full bg-gray-200"></div>
-                  <div className="w-full h-4 bg-gray-200 rounded"></div>
+                  <div className="h-10 w-10 rounded-full bg-slate-200"></div>
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-3/4 rounded bg-slate-200"></div>
+                    <div className="h-3 w-1/2 rounded bg-slate-200"></div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -129,58 +145,60 @@ function ProviderNotification() {
 
           {/* When not loading, show notifications if available or the complete-profile alert */}
           {!loading && (notifications.length > 0 || userData?.complete === false) && (
-            <div className="mt-4 space-y-3">
+            <div className="p-2">
               {/* Complete Profile Notification */}
               {userData?.complete === false && (
-                <div className="flex items-center justify-between p-2 rounded-lg bg-yellow-100 cursor-pointer">
-                  <Link
-                    href="/provider/account/settings/profile"
-                    className="flex-1"
-                  >
-                    <div>
-                      <p className="text-sm font-semibold text-yellow-800">
-                        Complete Your Profile
-                      </p>
-                      <p className="text-xs text-yellow-600">
-                        Update your profile to get the best experience.
-                      </p>
-                    </div>
-                  </Link>
-                </div>
+                <Link href="/provider/account/settings/profile">
+                  <div className="mx-2 my-2 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                    <p className="font-semibold">Complete your profile</p>
+                    <p className="mt-1 text-xs text-amber-700">
+                      Update your profile to get the best experience.
+                    </p>
+                  </div>
+                </Link>
               )}
 
               {/* Other Notifications */}
               {notifications.slice(0, 4).map((notification) => (
                 <div
                   key={notification._id}
-                  className={`flex items-center justify-between p-2 rounded-lg ${
-                    notification.read ? "bg-gray-50" : "bg-blue-100"
-                  } cursor-pointer`}
+                  className={cn(
+                    "group flex items-start gap-4 p-4 rounded-xl cursor-pointer transition-all duration-200 mx-2",
+                    notification.read
+                      ? "bg-white hover:bg-slate-50"
+                      : "bg-blue-50 hover:bg-blue-100 border border-blue-100"
+                  )}
                   onClick={() => markNotificationAsRead(notification._id)}
                 >
                   <Link
-                    className="mb-2 flex-1"
+                    className="flex-1"
                     href={
                       notification.type === "job_application"
                         ? `/provider/candidates/${notification.fromUserId}`
                         : ``
                     }
                   >
-                    <div>
+                    <div className="flex items-start justify-between gap-2">
                       <p
-                        className={`text-sm ${
-                          notification.read ? "text-gray-800" : "font-semibold"
-                        }`}
+                        className={cn(
+                          "text-sm leading-relaxed",
+                          notification.read
+                            ? "text-slate-700"
+                            : "text-slate-900 font-medium"
+                        )}
                       >
                         {notification.message}
                       </p>
-                      <p className="text-xs text-gray-400">
-                        {new Date(notification.createdAt).toLocaleTimeString()}
-                      </p>
+                      {!notification.read && (
+                        <div className="mt-2 h-2 w-2 rounded-full bg-blue-500"></div>
+                      )}
                     </div>
+                    <p className="mt-2 text-xs text-slate-500">
+                      {new Date(notification.createdAt).toLocaleTimeString()}
+                    </p>
                   </Link>
                   {notification.read ? (
-                    <CheckCircle className="h-5 w-5 text-gray-400" />
+                    <CheckCircle className="h-5 w-5 text-slate-400" />
                   ) : (
                     <Dot className="h-5 w-5 text-blue-500" />
                   )}
@@ -193,16 +211,18 @@ function ProviderNotification() {
           {!loading &&
             notifications.length === 0 &&
             userData?.complete === true && (
-              <div className="flex flex-col items-center justify-center h-32 space-y-2">
-                <Bell className="h-10 w-10 text-gray-400" />
-                <p className="text-gray-500">No notifications yet</p>
+              <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
+                <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-4">
+                  <Bell className="h-8 w-8 text-slate-400" />
+                </div>
+                <p className="text-slate-500">No notifications yet</p>
               </div>
             )}
 
           {/* Footer */}
           {!loading && notifications.length > 4 && (
-            <div className="mt-4 text-center">
-              <Button variant="link" size="sm">
+            <div className="border-t border-slate-100 p-4 bg-slate-50">
+              <Button variant="ghost" size="sm" className="w-full justify-center text-slate-600 hover:text-slate-900 hover:bg-white">
                 View all notifications
               </Button>
             </div>

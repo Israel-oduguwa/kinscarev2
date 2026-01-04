@@ -40,6 +40,8 @@ import {
   Sparkles,
   Speech,
   UserPen,
+  Users,
+  MessagesSquare,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -65,9 +67,23 @@ export function EmployerAppSidebar({
         isActive: false,
       },
       {
+        title: "Job Applicants",
+        url: "/provider/job/applications",
+        icon: Users,
+        isActive: false,
+        badge: "New",
+      },
+      {
         title: "Saved Caregivers",
         url: "/provider/candidates/favorites",
         icon: BookmarkCheck,
+        isActive: false,
+      },
+      {
+        title: "Conversations",
+        url: "/provider/conversations",
+        icon: MessagesSquare,
+        badge: "New",
         isActive: false,
       },
       {
@@ -82,6 +98,7 @@ export function EmployerAppSidebar({
         icon: FrameIcon,
         isActive: false,
       },
+
       {
         title: "Update Profile",
         url: "/provider/account/settings/profile",
@@ -127,6 +144,7 @@ export function EmployerAppSidebar({
     "/provider/account/settings/profile"
   );
   const communityActive = checkIsActive("/community");
+  const isConversationRoute = pathname.startsWith("/provider/conversations");
   return (
     <SidebarProvider>
       <Sidebar
@@ -188,7 +206,14 @@ export function EmployerAppSidebar({
                           className={`relative font-semibold antialiased rounded-xl px-3 py-6 my-0.5 [&>svg]:w-6 [&>svg]:h-4 ${activeClasses}`}
                         >
                           {item.icon && <item.icon />}
-                          <span>{item.title}</span>
+                          <span className="flex items-center gap-2">
+                            {item.title}
+                            {item.badge ? (
+                              <span className="rounded-full bg-blue-600/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-700">
+                                {item.badge}
+                              </span>
+                            ) : null}
+                          </span>
                           <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
@@ -213,17 +238,24 @@ export function EmployerAppSidebar({
                     </SidebarMenuItem>
                   </Collapsible>
                 ) : (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton
-                        tooltip={item.title}
-                        isActive={isActive}
-                        asChild
-                        className={`relative font-semibold antialiased rounded-xl px-3 py-5 [&>svg]:w-6 [&>svg]:h-4 ${activeClasses}`}
-                      >
-                        <Link href={item.url}>
-                          {item.icon && <item.icon />}
-                          <span>{item.title}</span>
-                        </Link>
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      tooltip={item.title}
+                      isActive={isActive}
+                      asChild
+                      className={`relative font-semibold antialiased rounded-xl px-3 py-5 [&>svg]:w-6 [&>svg]:h-4 ${activeClasses}`}
+                    >
+                      <Link href={item.url}>
+                        {item.icon && <item.icon />}
+                        <span className="flex items-center gap-2">
+                          {item.title}
+                          {item.badge ? (
+                            <span className="rounded-full bg-blue-600/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-700">
+                              {item.badge}
+                            </span>
+                          ) : null}
+                        </span>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
@@ -235,9 +267,19 @@ export function EmployerAppSidebar({
       </Sidebar>
       <SidebarInset>
         {/* Header / Top Bar */}
-       
-        <header className="sticky  top-0 z-30 bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
-         <ProviderPostJobBanner />
+
+        <header
+          className={`sticky top-0 z-30 bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60 ${
+            isConversationRoute ? "md:static" : ""
+          }`}
+        >
+          <div
+            className={
+              isConversationRoute ? "hidden md:block" : "block"
+            }
+          >
+            <ProviderPostJobBanner />
+          </div>
           <div className="flex  h-16 xl:h-14 items-center shrink-0 px-2 gap-2 transition-[height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
             {/* Sidebar Trigger (always visible) */}
             <SidebarTrigger className="-ml-1" />
@@ -247,8 +289,13 @@ export function EmployerAppSidebar({
               <NavigationMenu className="z-0">
                 <NavigationMenuList>
                   <NavigationMenuItem>
-                    <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                      <Link href="/provider/candidates/all">Find Caregivers</Link>
+                    <NavigationMenuLink
+                      asChild
+                      className={navigationMenuTriggerStyle()}
+                    >
+                      <Link href="/provider/candidates/all">
+                        Find Caregivers
+                      </Link>
                     </NavigationMenuLink>
                   </NavigationMenuItem>
                 </NavigationMenuList>
@@ -257,7 +304,10 @@ export function EmployerAppSidebar({
               <NavigationMenu className="z-0">
                 <NavigationMenuList>
                   <NavigationMenuItem>
-                    <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                    <NavigationMenuLink
+                      asChild
+                      className={navigationMenuTriggerStyle()}
+                    >
                       <Link href="/provider/job/update/new">Post Job</Link>
                     </NavigationMenuLink>
                   </NavigationMenuItem>

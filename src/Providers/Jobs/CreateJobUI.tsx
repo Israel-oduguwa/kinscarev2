@@ -118,11 +118,26 @@ function CreateJobUI({ jobID, userData, job, type }: any) {
     formState: { errors, isSubmitting },
   }:any = useForm({
     resolver: yupResolver(schema),
+    shouldFocusError: true,
     defaultValues: {
       description: job.description,
       compensation: job.compensation,
       smsConsent: false,
-      contacts: job.contacts,
+      contacts: {
+        address: job?.contacts?.address ?? userData?.address ?? "",
+        city: job?.contacts?.city ?? userData?.city ?? "",
+        zipcode: job?.contacts?.zipcode ?? userData?.zipcode ?? "",
+        email:
+          job?.contacts?.email ??
+          userData?.settings?.email ??
+          userData?.auth?.email ??
+          "",
+        tel:
+          job?.contacts?.tel ??
+          userData?.settings?.tel ??
+          userData?.auth?.tel ??
+          "",
+      },
       licenses: job.licenses ? job.licenses : [],
       schedule: job.schedule ? job.schedule : [],
       minHours: job.minHours,
@@ -199,12 +214,39 @@ function CreateJobUI({ jobID, userData, job, type }: any) {
       setLoading(false);
     }
   };
+
+  const onError = (formErrors: any) => {
+    const firstError =
+      Object.values(formErrors || {})[0]?.message ||
+      formErrors?.contacts?.email?.message ||
+      formErrors?.contacts?.tel?.message;
+    toast({
+      title: "Please review the highlighted fields",
+      description: firstError || "Some fields need your attention.",
+      variant: "destructive",
+    });
+  };
+
   useEffect(() => {
     if (userData) {
       reset({
         description: job.description,
         compensation: job.compensation,
-        contacts: job.contacts,
+        contacts: {
+          address: job?.contacts?.address ?? userData?.address ?? "",
+          city: job?.contacts?.city ?? userData?.city ?? "",
+          zipcode: job?.contacts?.zipcode ?? userData?.zipcode ?? "",
+          email:
+            job?.contacts?.email ??
+            userData?.settings?.email ??
+            userData?.auth?.email ??
+            "",
+          tel:
+            job?.contacts?.tel ??
+            userData?.settings?.tel ??
+            userData?.auth?.tel ??
+            "",
+        },
         licenses: job.licenses ? job.licenses : [],
         schedule: job.schedule ? job.schedule : [],
         minHours: job.minHours,
@@ -271,7 +313,7 @@ function CreateJobUI({ jobID, userData, job, type }: any) {
   };
   return (
     <div className="py-6">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="py-8 mx-6 px-4 md:px-10 rounded-lg shadow-lg bg-white">
           <div>
             <div className="mb-5">
@@ -603,8 +645,8 @@ function CreateJobUI({ jobID, userData, job, type }: any) {
                 <div className="w-full">
                   <Button
                     disabled={loading || isSubmitting}
-                    onClick={handleSubmit(onSubmit)}
-                    className="w-full flex gap-2 "
+                    onClick={handleSubmit(onSubmit, onError)}
+                    className="w-full flex gap-2 py-4"
                   >
                     {loading && <LoaderCircle className="animate-spin" />}{" "}
                     {loading || isSubmitting

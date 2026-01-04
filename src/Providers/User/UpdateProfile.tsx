@@ -249,7 +249,7 @@ const UpdateProfile = () => {
   };
 
   return (
-    <div className="bg-linear-to-b from-slate-50 via-slate-50 to-slate-100 py-10">
+    <div className="bg-linear-to-b min-h-screen from-slate-50 via-slate-50 to-slate-100 py-10">
       <div className="max-w-7xl mx-auto px-4">
         {!contactData?.verified && (
           <div className="flex items-center gap-2 mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
@@ -588,7 +588,7 @@ const UpdateProfile = () => {
                     <Button
                       type="submit"
                       disabled={loading || isSubmitting}
-                      className="w-full hidden gap-2 lg:flex bg-blue-600 hover:bg-blue-700"
+                      className="w-full hidden gap-2 py-5 lg:flex bg-blue-600 hover:bg-blue-700"
                     >
                       {(loading || isSubmitting) && (
                         <LoaderCircle className="animate-spin" />
@@ -613,6 +613,9 @@ const UpdateProfile = () => {
                           Add a clear logo/photo to build trust. Drag & drop or
                           click to upload.
                         </p>
+                        <div className="rounded-xl border border-blue-100 bg-blue-50/60 px-3 py-2 text-xs text-blue-700">
+                          Providers with a profile image get more caregiver responses. Add yours now.
+                        </div>
                       </div>
                     </div>
 

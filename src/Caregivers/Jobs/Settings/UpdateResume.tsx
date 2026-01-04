@@ -368,9 +368,9 @@ const CaregiverProfileForm = () => {
   const DOC_MAX_BYTES = 3 * 1024 * 1024; // 3MB
 
   return (
-    <div className="bg-gray-100 px-0 md:px-4">
+    <div className="bg-gray-100 min-h-screen px-0 md:px-4">
       <div className="py-3 md:py-6 lg:py-10">
-        <div className="max-w-7xl mx-auto py-6 sm:py-8 px-3 sm:px-5 md:px-8 rounded-lg shadow-lg bg-white">
+        <div className="max-w-7xl mx-auto py-6 sm:py-8 px-3 sm:px-5 md:px-8 border border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
           <div className="mb-5">
             <h2 className="font-bold text-xl text-gray-900">
               Update your resume
@@ -698,7 +698,7 @@ const CaregiverProfileForm = () => {
                 <Button
                   type="submit"
                   disabled={loading || isSubmitting}
-                  className="w-full hidden gap-2 lg:flex"
+                  className="w-full hidden gap-2 py-5 lg:flex"
                 >
                   {(loading || isSubmitting) && (
                     <LoaderCircle className="animate-spin" />
@@ -840,7 +840,7 @@ const CaregiverProfileForm = () => {
                   <Button
                     disabled={loading || isSubmitting}
                     onClick={handleSubmit(onSubmit)}
-                    className="w-full flex gap-2 lg:hidden"
+                    className="w-full  flex gap-2 lg:hidden"
                   >
                     {(loading || isSubmitting) && (
                       <LoaderCircle className="animate-spin" />

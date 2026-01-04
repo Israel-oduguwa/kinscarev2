@@ -68,7 +68,7 @@ export default function ImageUploader({
   const handleDelete = async () => {
     try {
       await axios.post(
-        "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/delete-file",
+        "http://https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/delete-file",
         {
           fileUrl: value,
         }

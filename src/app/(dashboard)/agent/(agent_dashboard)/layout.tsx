@@ -8,6 +8,7 @@ import {
   ArrowLeft,
   DoorClosed,
   DoorOpen,
+  Flag,
   LineChart,
   LogOut,
   Menu,
@@ -46,6 +47,12 @@ const agentLinks = [
     icon: <LineChart className="h-5 w-5" />,
     description: "Jumpstart performance insights",
   },
+  {
+    href: "/agent/reports",
+    label: "Reports",
+    icon: <Flag className="h-5 w-5" />,
+    description: "Conversation moderation tickets",
+  },
   // {
   //   href: "/agent/caregivers",
   //   label: "Caregivers",
@@ -71,6 +78,10 @@ const pageHeaderMap: Record<string, { title: string; description: string }> = {
   "/agent/metrics": {
     title: "Jumpstart Metrics",
     description: "Visualize pipeline health and conversion performance.",
+  },
+  "/agent/reports": {
+    title: "Conversation Reports",
+    description: "Review reported conversations and take action.",
   },
 };
 
