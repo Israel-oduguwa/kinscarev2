@@ -5,7 +5,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import ProtectedCandidateDialogs from "./ProtectedCandidateDialogs";
 import { toast as sonnerToast } from "sonner";
-import { isTrialActive, trackEvents } from "@/lib/utils";
+import { getChatAccess, trackEvents } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useApiClient } from "@/hooks/useApiClient";
 
@@ -33,7 +33,7 @@ function ProtectedCandidatesDetails({
    * If false -> show real contact info.
    */
   const [isTrialExpired, setIsTrialExpired] = useState(
-    !(contactData?.trial || contactData?.subscribed)
+    !getChatAccess(contactData).canChat
   );
 
   /** Payment setup-intent variables */
@@ -178,10 +178,8 @@ function ProtectedCandidatesDetails({
       setClientSecret(clientSecret);
       // console.log(clientSecret);
 
-      const isNotVerified = !(
-        contactData?.trial === true || contactData?.subscribe === true
-      );
-      if (isNotVerified) {
+      const { canChat } = getChatAccess(contactData);
+      if (!canChat) {
         setIsTrialDialogOpen(true);
       }
     } catch (error) {
@@ -191,6 +189,23 @@ function ProtectedCandidatesDetails({
 
   /** ============== Reveal Contacts ============== */
   const openRevealContacts = async () => {
+    const { trialActive, subscriptionActive, trialExpiredLegacy, canChat } =
+      getChatAccess(contactData);
+    const isVerified = contactData?.payment_verified === true;
+
+    if (isVerified) {
+      if (canChat) {
+        setIsTrialExpired(false);
+        return;
+      }
+      if (trialExpiredLegacy) {
+        setIsDialogOpen(true);
+        return;
+      }
+      setIsDialogOpen(true);
+      return;
+    }
+
     // If the user has not done the first reveal
     if (!firstRevealDone) {
       setCountdown(1);
@@ -232,19 +247,14 @@ function ProtectedCandidatesDetails({
     }
     // If the user has done 2 reveals, fallback to existing logic
     else {
-      const trialStart = contactData?.trial_start_date;
-      const trialEnd = contactData?.trial_end_date;
-      const isSubscribed = contactData?.subscribed;
-      if ((trialStart && trialEnd) || contactData.trial === "expired") {
-        const trialActive = isTrialActive(trialStart, trialEnd);
-        if (!trialActive) {
-          // open the payment subscribe modal
+      if (!trialActive && !subscriptionActive) {
+        if (trialExpiredLegacy) {
           setIsDialogOpen(true);
+        } else {
+          setIsTrialExpired(true);
+          openVerifyIdentity();
+          getSecrete();
         }
-      } else {
-        setIsTrialExpired(true);
-        openVerifyIdentity();
-        getSecrete();
       }
     }
   };
@@ -288,26 +298,8 @@ function ProtectedCandidatesDetails({
 
   /** ============== On Mount: Check Subscription/Trial ============== */
   useEffect(() => {
-    const trialStart = contactData?.trial_start_date;
-    const trialEnd = contactData?.trial_end_date;
-    const isSubscribed = contactData?.subscribed;
-    // console.log(isSubscribed, "ProtectedCandidatesDetails");
-    if (isSubscribed) {
-      // console.log(isSubscribed)
-      setIsTrialExpired(false);
-      return;
-    }
-    if (trialStart && trialEnd) {
-      const trialActive = isTrialActive(trialStart, trialEnd);
-      setIsTrialExpired(!trialActive);
-    } else {
-      const trialFlag =
-        contactData?.trial === false || contactData?.trial === "expired"
-          ? false
-          : true;
-      // console.log(trialFlag);
-      setIsTrialExpired(!trialFlag);
-    }
+    const { canChat } = getChatAccess(contactData);
+    setIsTrialExpired(!canChat);
    
   }, [contactData]);
 

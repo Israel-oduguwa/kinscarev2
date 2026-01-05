@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { useAuthContext } from "@/context/AuthContext";
+import { getChatAccess } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageCircle, Loader2 } from "lucide-react";
@@ -64,7 +65,7 @@ export default function StartConversationButton({
 }: StartConversationButtonProps) {
   const { isLoaded, isSignedIn } = useAuth();
   const { user } = useUser();
-  const { userData } = useAuthContext();
+  const { userData, contactData } = useAuthContext();
   const { privateApi } = useApiClient();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -206,6 +207,22 @@ export default function StartConversationButton({
       return;
     }
 
+    const access = getChatAccess(contactData);
+    const paymentVerified = contactData?.payment_verified === true;
+    if (!access.canChat) {
+      setAccessInfo({
+        trialActive: access.trialActive,
+        subscriptionActive: access.subscriptionActive,
+        paymentVerified,
+      });
+      setFlowState("payment_required");
+      setDialogOpen(true);
+      if (!paymentVerified) {
+        setVerifyOpen(true);
+      }
+      return;
+    }
+
     const toNumber = normalizePhone(caregiver.phone);
     if (!toNumber) {
       toast.error("Caregiver phone number is invalid.");
@@ -308,7 +325,7 @@ export default function StartConversationButton({
           }
         }}
       >
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl!">
           <DialogHeader>
             <DialogTitle>Introduce yourself to {caregiverName}</DialogTitle>
             <DialogDescription>
@@ -319,8 +336,9 @@ export default function StartConversationButton({
           {flowState === "payment_required" ? (
             <div className="space-y-4">
               <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                Message sent. To continue chatting, please verify your account
-                or subscribe.
+                {accessInfo?.paymentVerified
+                  ? "Message sent. Your free trial has ended. Please subscribe to continue chatting."
+                  : "Message sent. Please verify your account to start your free trial."}
               </div>
               <div className="flex flex-col gap-2 sm:flex-row">
                 {!accessInfo?.paymentVerified ? (

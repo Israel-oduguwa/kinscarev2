@@ -11,8 +11,9 @@ import {
 } from "@stripe/react-stripe-js";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TagManager from "react-gtm-module";
+import Confetti from "react-confetti";
 
 interface PaymentFormProps {
   clientSecret: string; // The client secret for SetupIntent
@@ -41,10 +42,20 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   const elements = useElements();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [confettiSize, setConfettiSize] = useState({ width: 0, height: 0 });
   const { contactData, refreshData, userData }: any = useAuthContext();
   const { privateApi }: any = useApiClient();
   const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const updateSize = () =>
+      setConfettiSize({ width: window.innerWidth, height: window.innerHeight });
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
 
   // Function to update PaymentMethod ID in the database
   const updatePaymentMethod = async (paymentMethodID: string) => {
@@ -100,7 +111,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     e.preventDefault();
 
     if (!stripe || !elements) {
-      setMessage("Stripe has not loaded. Please try again.");
+      toast({
+        title: "Stripe not ready",
+        description: "Stripe has not loaded. Please try again.",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -183,16 +198,26 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
       // Success! Notify parent component
       onSuccess({ paymentMethodID });
-      setMessage("free trial started!");
+      toast({
+        title: "Verification complete",
+        description: "Your free trial is now active.",
+      });
+      setShowConfetti(true);
       // we would fetch the userData and update the context
       await refreshData();
       setIsTrialExpired(false);
-      // router.refresh();
       setIsLoading(false);
-      window.location.reload();
-      close();
+      setTimeout(() => {
+        setShowConfetti(false);
+        window.location.reload();
+        close();
+      }, 3800);
     } catch (error: any) {
-      setMessage(error.message);
+      toast({
+        title: "Payment failed",
+        description: error.message || "Unable to verify your payment method.",
+        variant: "destructive",
+      });
       if (onError) onError(error);
       setIsLoading(false);
     }
@@ -203,6 +228,16 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   };
 
   return (
+    <>
+      {showConfetti && confettiSize.width > 0 ? (
+        <Confetti
+          width={confettiSize.width}
+          height={confettiSize.height}
+          numberOfPieces={220}
+          recycle={false}
+          style={{ position: "fixed", inset: 0, zIndex: 60 }}
+        />
+      ) : null}
     <form id="payment-form" onSubmit={handleSubmit} className="space-y-6">
       <PaymentElement id="payment-element" options={paymentElementOptions} />
       <div className="flex justify-end">
@@ -222,6 +257,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         </div>
       )} */}
     </form>
+    </>
   );
 };
 

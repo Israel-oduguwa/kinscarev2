@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useAuthContext } from "@/context/AuthContext";
+import PricingPlan from "@/Providers/User/PricingPlan";
 import ProfileAvatar from "@/components/ProfileAvatar";
 import { MultiSelect } from "@/components/multi-select";
 import { Button } from "@/components/ui/button"; // Using ShadCN button component
@@ -10,26 +10,23 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import axios from "axios";
+import { useAuthContext } from "@/context/AuthContext";
+import { sanitizeContent } from "@/lib/ui_utils";
+import { getChatAccess } from "@/lib/utils";
 import { Interweave } from "interweave";
 import {
   AlertTriangle,
-  ArrowRight,
-  Loader,
   Loader2,
   Mail,
   MapPin,
   Search,
-  Send,
-  SquareArrowOutUpRight,
+  SquareArrowOutUpRight
 } from "lucide-react";
 import Link from "next/link";
 import React, { useContext, useEffect, useState } from "react";
-import ProviderDialog from "./ProviderDialog";
-import { Skeleton } from "@/components/ui/skeleton";
-import { sanitizeContent } from "@/lib/ui_utils";
-import { CandidatesContext } from "./CandidatesContext";
 import { CaregiverCardSkeleton } from "./CandidateSkelenton";
+import { CandidatesContext } from "./CandidatesContext";
+import ProviderDialog from "./ProviderDialog";
 
 interface Candidates {
   _id: string;
@@ -229,6 +226,8 @@ const CandidatesCard = ({ candidate }: any) => {
 };
 
 function All() {
+  const { contactData } = useAuthContext();
+  const [showPricingDialog, setShowPricingDialog] = useState(false);
   const {
     candidates,
     loading,
@@ -259,9 +258,38 @@ function All() {
     { label: "NAR", value: "NAR" },
     { label: "Companion", value: "None" },
   ];
-  // console.log(candidates, "total pages");
+
+  useEffect(() => {
+    if (!contactData?.userID) return;
+    const { canChat } = getChatAccess(contactData);
+    const pricingPlanId = contactData?.pricing_plan_id;
+    const isPricingSignup = contactData?.signup_route === "pricing_page";
+    const storageKey = `pricing_prompt_seen_${contactData.userID}`;
+
+    if (canChat || !pricingPlanId || !isPricingSignup) return;
+    if (typeof window !== "undefined" && localStorage.getItem(storageKey)) {
+      return;
+    }
+
+    setShowPricingDialog(true);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(storageKey, "true");
+    }
+  }, [contactData]);
+
+  const closePricingDialog = () => setShowPricingDialog(false);
+
   return (
     <div className="w-full">
+      <Dialog open={showPricingDialog} onOpenChange={setShowPricingDialog}>
+        <DialogContent className="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden p-0">
+          <PricingPlan
+            closePricingDialog={closePricingDialog}
+            initialPlanId={contactData?.pricing_plan_id || null}
+            autoStart
+          />
+        </DialogContent>
+      </Dialog>
       <div className="bg-slate-100 min-h-screen p-3">
         <div className="max-w-7xl py-6 mx-auto">
           <header className="bg-linear-to-r mb-6 from-blue-600 to-blue-900 text-white rounded-lg shadow-md p-6">

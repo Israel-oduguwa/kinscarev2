@@ -32,7 +32,7 @@ import React, { useContext, useEffect, useState } from "react";
 import PaymentForm from "../User/PaymentForm";
 import { loadStripe } from "@stripe/stripe-js";
 import { useRouter } from "next/navigation";
-import { fetchUserData, isTrialActive } from "@/lib/utils";
+import { fetchUserData, getChatAccess } from "@/lib/utils";
 import { useAuthContext } from "@/context/AuthContext";
 import { useApiClient } from "@/hooks/useApiClient";
 const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY || "");
@@ -50,7 +50,7 @@ function ProviderDialog({ candidate, similar, detailsPage, page }: any) {
     `Hi ${candidate.name}, we think you're a great fit for our opening, and we would love to talk to you!`
   );
   const [isTrialExpired, setIsTrialExpired] = useState(
-    !(contactData.trial || contactData.subscribed)
+    !getChatAccess(contactData).canChat
   );
   const [isSending, setIsSending] = useState(false);
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
@@ -71,20 +71,8 @@ function ProviderDialog({ candidate, similar, detailsPage, page }: any) {
   // Trial period & subscription state
   useEffect(() => {
     try {
-      const trialStart = contactData.trial_start_date;
-      const trialEnd = contactData.trial_end_date;
-      const isSubscribed = contactData.subscribed;
-      if (isSubscribed) {
-        setIsTrialExpired(false);
-        return;
-      }
-      if (trialStart && trialEnd) {
-        const trialActive = isTrialActive(trialStart, trialEnd);
-        setIsTrialExpired(!trialActive);
-      } else {
-        const trialFlag = contactData.trial || false;
-        setIsTrialExpired(!trialFlag);
-      }
+      const { canChat } = getChatAccess(contactData);
+      setIsTrialExpired(!canChat);
     } catch (err) {
       toast.error("Failed to determine trial/subscription state.");
       setIsTrialExpired(true);
@@ -176,7 +164,8 @@ function ProviderDialog({ candidate, similar, detailsPage, page }: any) {
       toast.success(`Message sent to ${candidate.fname} ${candidate.lname}!`);
 
       // If not subscribed, prompt upgrade info
-      if (!contactData.subscribed || !contactData.trial) {
+      const { canChat } = getChatAccess(contactData);
+      if (!canChat) {
         closeDialog();
         setOpenInformation(true);
       } else {
@@ -435,7 +424,7 @@ function ProviderDialog({ candidate, similar, detailsPage, page }: any) {
             <textarea
               id="message"
               value={message}
-              disabled={!contactData.payment_verified}
+              disabled={isTrialExpired}
               onChange={(e) => setMessage(e.target.value)}
               rows={10}
               className="block p-2.5 w-full text-sm focus-visible:outline-blue-500 text-gray-900 bg-gray-50 rounded-sm border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"

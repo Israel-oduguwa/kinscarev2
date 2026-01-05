@@ -9,11 +9,12 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "@/components/ui/use-toast";
 import { useAuthContext } from "@/context/AuthContext";
 import { useApiClient } from "@/hooks/useApiClient";
 import { rewardReferrer } from "@/lib/paymentUtils";
-import { fetchContactsData } from "@/lib/utils";
 import FrequentPaymentForm from "./FrequentPaymentForm";
+import Confetti from "react-confetti";
 
 /* -------------------------------------------------------------------------- */
 /*                               Type Definitions                              */
@@ -64,6 +65,8 @@ interface PaymentMethodsResponse {
 
 interface PricingPlanProps {
   closePricingDialog: () => void;
+  initialPlanId?: string | null;
+  autoStart?: boolean;
 }
 
 interface UserContext {
@@ -90,7 +93,11 @@ const stripePromise = loadStripe(STRIPE_PUBLIC_KEY);
 /*                             Main Component                                 */
 /* -------------------------------------------------------------------------- */
 
-function PricingPlan({ closePricingDialog }: PricingPlanProps) {
+function PricingPlan({
+  closePricingDialog,
+  initialPlanId,
+  autoStart = false,
+}: PricingPlanProps) {
   const { userData, contactData, refreshData } = useAuthContext();
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [savedCards, setSavedCards] = useState<CardItem[]>([]);
@@ -100,6 +107,9 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
   const [loading, setLoading] = useState(false);
   const [isFetchingSecret, setIsFetchingSecret] = useState(false);
   const [openPaymentForm, setOpenPaymentForm] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [confettiSize, setConfettiSize] = useState({ width: 0, height: 0 });
+  const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
   const [subscription, setSubscription] = useState<SubscriptionData | null>(
     null
   );
@@ -108,6 +118,15 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
   const { privateApi } = useApiClient();
 
   const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const updateSize = () =>
+      setConfettiSize({ width: window.innerWidth, height: window.innerHeight });
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
 
   const pricingPlans: PricingPlanItem[] = [
     {
@@ -140,6 +159,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
   ];
 
   const currentPlan = pricingPlans.find((plan) => plan.id === selectedPlan);
+  const [autoStarted, setAutoStarted] = useState(false);
 
   /**
    * Fetch a new subscription client secret for the selected plan.
@@ -194,6 +214,34 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
     },
     [contactData.customer_id]
   );
+
+  useEffect(() => {
+    if (!autoStart || autoStarted) return;
+    if (!contactData?.customer_id || !initialPlanId) return;
+    if (contactData?.plan && contactData?.subscription_status !== "expired") {
+      return;
+    }
+
+    const matchedPlan = pricingPlans.find(
+      (plan) => plan.id === initialPlanId || plan.stripePriceId === initialPlanId
+    );
+    if (!matchedPlan) return;
+
+    setAutoStarted(true);
+    void createSubscriptionClientSecret(
+      matchedPlan.id,
+      matchedPlan.stripePriceId
+    );
+  }, [
+    autoStart,
+    autoStarted,
+    contactData?.customer_id,
+    contactData?.plan,
+    contactData?.subscription_status,
+    createSubscriptionClientSecret,
+    initialPlanId,
+    pricingPlans,
+  ]);
 
   const createSubscriptionClientSecretRenew = useCallback(
     async (
@@ -342,22 +390,27 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
       await refreshData();
       router.refresh();
 
-      const fetchedData = await fetchContactsData(
-        contactData.userID,
-        contactData.email
-      );
-      if (fetchedData) {
-        // send reward
-        await rewardReferrer(contactData.userID, "subscription");
-        setTimeout(() => {
-          window.location.reload(); // Reload after the delay
-          handleCloseDialog();
-          setIsCardDialogOpen(false);
-          setLoading(false);
-        }, 4000); // 3-second delay
-      }
+      await rewardReferrer(contactData.userID, "subscription");
+      toast({
+        title: "Subscription active",
+        description: "Your plan is now active. Enjoy premium access.",
+      });
+      setIsPaymentSuccess(true);
+      setShowConfetti(true);
+      setTimeout(() => {
+        setShowConfetti(false);
+        window.location.reload();
+        handleCloseDialog();
+        setIsCardDialogOpen(false);
+        setLoading(false);
+      }, 3800);
     } catch (error) {
       console.error("Error creating subscription:", error);
+      toast({
+        title: "Payment failed",
+        description: "Unable to activate your subscription. Please try again.",
+        variant: "destructive",
+      });
       setLoading(false);
     } finally {
     }
@@ -386,9 +439,34 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
   };
 
   return (
+    <>
+      {showConfetti && confettiSize.width > 0 ? (
+        <Confetti
+          width={confettiSize.width}
+          height={confettiSize.height}
+          numberOfPieces={220}
+          recycle={false}
+          style={{ position: "fixed", inset: 0, zIndex: 60 }}
+        />
+      ) : null}
     <div className="pt-2">
       {/* Heading */}
-      {contactData.plan && contactData.subscription_status === "expired" ? (
+      {isPaymentSuccess ? (
+        <div className="flex min-h-[320px] items-center justify-center rounded-2xl border border-emerald-100 bg-emerald-50/60 px-6 py-16 text-center">
+          <div className="max-w-md space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-600">
+              Payment received
+            </p>
+            <h3 className="text-2xl font-semibold text-emerald-900">
+              Subscription activated
+            </h3>
+            <p className="text-sm text-emerald-700">
+              We&apos;re finalizing your access. This page will refresh in a
+              moment.
+            </p>
+          </div>
+        </div>
+      ) : contactData.plan && contactData.subscription_status === "expired" ? (
         <div className="mx-auto max-w-4xl py-2 space-y-10">
           {renewingPlan || isFetchingSecret ? ( // Show skeletons when loading
             <div className="space-y-6">
@@ -509,7 +587,10 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                         {savedCards.map((card) => (
                           <div
                             key={card.id}
-                            onClick={() => setSelectedCard(card.id)}
+                            onClick={() => {
+                              setSelectedCard(card.id);
+                              setOpenPaymentForm(false);
+                            }}
                           className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer border transition hover:shadow-lg ${
                             selectedCard === card.id
                               ? "border-[hsl(var(--primary))] bg-[hsl(var(--secondary))]"
@@ -556,6 +637,39 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                     >
                       Use another card
                     </Button>
+                    {openPaymentForm && (
+                      <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50/60 p-4">
+                        {clientSecret ? (
+                          <Elements
+                            stripe={stripePromise}
+                            options={{ clientSecret }}
+                          >
+                            <FrequentPaymentForm
+                              clientSecret={clientSecret}
+                              userID={contactData.userID}
+                              subscription={subscription}
+                              plan={currentPlan?.id}
+                              priceId={currentPlan?.stripePriceId ?? ""}
+                              subscriptionID={subscriptionID}
+                              onSuccess={(result) => {
+                                console.log("Payment success:");
+                                setIsPaymentSuccess(true);
+                              }}
+                              onError={(error) =>
+                                console.log("Payment error:", error)
+                              }
+                              customerId={""}
+                              intentType={""}
+                              close={handleCloseDialog}
+                            />
+                          </Elements>
+                        ) : (
+                          <p className="text-sm text-slate-600">
+                            Loading card form...
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </>
                 )}
               </div>
@@ -812,9 +926,10 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
                             plan={currentPlan?.id}
                             priceId={currentPlan?.stripePriceId ?? ""}
                             subscriptionID={subscriptionID}
-                            onSuccess={(result) =>
-                              console.log("Payment success:")
-                            }
+                            onSuccess={(result) => {
+                              console.log("Payment success:");
+                              setIsPaymentSuccess(true);
+                            }}
                             onError={(error) =>
                               console.log("Payment error:", error)
                             }
@@ -834,6 +949,7 @@ function PricingPlan({ closePricingDialog }: PricingPlanProps) {
       </Dialog>
 
     </div>
+    </>
   );
 }
 

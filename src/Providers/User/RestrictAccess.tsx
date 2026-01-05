@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
-import axios from "axios";
 import { toast } from "@/components/ui/use-toast";
 import {
   Dialog,
@@ -14,6 +13,7 @@ import {
 import FreeTrialPayment from "./FreeTrialPayment";
 import { Loader } from "lucide-react";
 import { useApiClient } from "@/hooks/useApiClient";
+import { getChatAccess } from "@/lib/utils";
 
 interface RestrictAccessProps {
   children: React.ReactNode; // Components to render if access is allowed
@@ -22,7 +22,7 @@ interface RestrictAccessProps {
 
 const RestrictAccess: React.FC<RestrictAccessProps> = ({ children, mode = "wrap" }) => {
   const authData: any = useAuthContext(); // Context to fetch user data
-  const { contactData, userData } = authData || {};
+  const { contactData } = authData || {};
   const {privateApi} = useApiClient()
   const router = useRouter();
 
@@ -63,31 +63,38 @@ const RestrictAccess: React.FC<RestrictAccessProps> = ({ children, mode = "wrap"
   // Trial logic only applies in "wrap" mode
   useEffect(() => {
     if (mode === "wrap" && contactData !== undefined) {
-      const trialState = contactData?.trial; // true, false, or "expired"
+      const { trialActive, trialExpiredLegacy, subscriptionActive } =
+        getChatAccess(contactData);
+      const needsTrial = !trialActive && !subscriptionActive && !trialExpiredLegacy;
+      const needsPricing = !trialActive && !subscriptionActive && trialExpiredLegacy;
 
-      if (trialState === false) {
+      if (needsTrial) {
         setIsTrialDialogOpen(true); // No trial, show free trial modal
         fetchClientSecret();
-      } else if (trialState === "expired") {
+      } else if (needsPricing) {
         setIsPricingDialogOpen(true); // Expired trial, show pricing modal
       }
     }
-  }, [userData, mode]);
+  }, [contactData, mode]);
 
   const handleInteraction = () => {
     // Trigger modal logic in "trigger" mode
-    const trialState = contactData?.trial;
+    const { trialActive, trialExpiredLegacy, subscriptionActive } =
+      getChatAccess(contactData);
+    const needsTrial = !trialActive && !subscriptionActive && !trialExpiredLegacy;
+    const needsPricing = !trialActive && !subscriptionActive && trialExpiredLegacy;
 
-    if (trialState === false) {
+    if (needsTrial) {
       setIsTrialDialogOpen(true);
       fetchClientSecret();
-    } else if (trialState === "expired") {
+    } else if (needsPricing) {
       setIsPricingDialogOpen(true);
     }
   };
 
   // Render children (protected content) if trial is active
-  if (mode === "wrap" && userData?.trial === true) {
+  const { canChat } = getChatAccess(contactData);
+  if (mode === "wrap" && canChat) {
     return <>{children}</>;
   }
 
@@ -165,7 +172,7 @@ const RestrictAccess: React.FC<RestrictAccessProps> = ({ children, mode = "wrap"
 </Dialog>
 
       {/* Render children only in "wrap" mode */}
-      {mode === "wrap" && userData?.trial === true && children}
+      {mode === "wrap" && canChat && children}
     </>
   );
 };

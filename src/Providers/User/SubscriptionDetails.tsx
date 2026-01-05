@@ -44,75 +44,51 @@ const SubscriptionDetails: React.FC<SubscriptionProps> = ({ subscription }) => {
   };
 
   return (
-    <div className="mx-auto bg-white  dark:bg-gray-800">
-      <h1 className="text-xl font-bold  text-gray-900 dark:text-white">
-        Subscription Details
-      </h1>
-      {/* <p className="text-sm  text-gray-500 dark:text-gray-400 mb-6">
-        Manage your subscription easily.
-      </p> */}
-      <div className="space-y-4">
-        {/* Subscription ID */}
-        {/* <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-            Subscription ID
-          </span>
-          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            {id}
-          </span>
-        </div> */}
-        {/* Status */}
-        <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-            Status
-          </span>
-          <span
-            className={`text-sm font-medium ${
-              status === "active"
-                ? "text-green-600"
-                : "text-red-600"
-            } dark:${
-              status === "active"
-                ? "text-green-400"
-                : "text-red-400"
-            }`}
-          >
-            {status.charAt(0).toUpperCase() + status.slice(1)}
-          </span>
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_16px_40px_-34px_rgba(15,23,42,0.25)]">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+            Subscription
+          </p>
+          <h3 className="mt-2 text-lg font-semibold text-slate-900">
+            Current details
+          </h3>
         </div>
-        {/* Current Period */}
-        <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-            Current Period
-          </span>
-          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            {formatDate(current_period_start)} - {formatDate(current_period_end)}
-          </span>
-        </div>
-        {/* Plan Details */}
-        <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+        <span
+          className={`px-3 py-1 text-xs font-semibold rounded-full ${
+            status === "active"
+              ? "bg-emerald-100 text-emerald-700"
+              : "bg-rose-100 text-rose-700"
+          }`}
+        >
+          {status.charAt(0).toUpperCase() + status.slice(1)}
+        </span>
+      </div>
+
+      <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <div className="rounded-xl border border-slate-200/70 bg-slate-50/60 p-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
             Plan
-          </span>
-          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            {formatPrice(plan.amount, plan.currency)} / {plan.interval}
-          </span>
+          </p>
+          <p className="mt-2 text-base font-semibold text-slate-900">
+            {formatPrice(plan.amount, plan.currency)}{" "}
+            <span className="text-sm font-medium text-slate-500">
+              / {plan.interval}
+            </span>
+          </p>
         </div>
-        {/* Quantity */}
-        {/* <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-            Quantity:
-          </span>
-          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            {quantity}
-          </span>
+        {/* <div className="rounded-xl border border-slate-200/70 bg-slate-50/60 p-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            Current period
+          </p>
+          <p className="mt-2 text-base font-semibold text-slate-900">
+            {formatDate(current_period_start)}
+          </p>
+          <p className="text-sm text-slate-500">
+            Renews on {formatDate(current_period_end)}
+          </p>
         </div> */}
       </div>
-      {/* <div className="mt-6">
-        <Button>
-          Manage Subscription
-       </Button>
-      </div> */}
     </div>
   );
 };

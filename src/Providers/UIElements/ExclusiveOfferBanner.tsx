@@ -11,12 +11,12 @@ import {
 import PricingPlan from "../User/PricingPlan";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import SubscriptionUpgradeDialog from "../User/UpgradeSubscription";
 import VerifyAccount from "../Candidates/VerifyAccount";
 import UpgradeSubscription from "../User/UpgradeSubscription";
+import { getChatAccess } from "@/lib/utils";
 
 const ExclusiveOfferBanner = () => {
-  const { userData, contactData }: any = useAuthContext();
+  const { contactData }: any = useAuthContext();
   const [plan, setPlan] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isVerificationDialogOpen, setIsVerificationDialogOpen] =
@@ -24,6 +24,7 @@ const ExclusiveOfferBanner = () => {
   const [showVerifyBanner, setShowVerifyBanner] = useState(false);
   const [showUpgradeBanner, setShowUpgradeBanner] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const { subscriptionActive } = getChatAccess(contactData);
 
   useEffect(() => {
     if (contactData) {
@@ -31,10 +32,9 @@ const ExclusiveOfferBanner = () => {
         setShowVerifyBanner(true);
       } else {
         if (
-          (contactData?.plan &&
-            contactData.subscribed &&
-            contactData.plan === "daily") ||
-          contactData.plan === "weekly"
+          subscriptionActive &&
+          ((contactData?.plan && contactData.plan === "daily") ||
+            contactData?.plan === "weekly")
         ) {
           setShowUpgradeBanner(true);
         }

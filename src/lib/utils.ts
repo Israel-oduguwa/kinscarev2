@@ -2,7 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 
 import { twMerge } from "tailwind-merge";
 
-import { useApiClient } from "@/hooks/useApiClient";
+import axios, { type AxiosInstance } from "axios";
 
 interface UserCustomData {
   userID?: string;
@@ -10,10 +10,32 @@ interface UserCustomData {
   [key: string]: any;
 }
 
-export const fetchUserData = async (
+const DEFAULT_API_BASE_URL = "http://localhost:8081";
+
+const getDefaultApiClient = () =>
+  axios.create({
+    baseURL: DEFAULT_API_BASE_URL,
+  });
+
+export function fetchUserData(
+  privateApi: AxiosInstance,
   userID: string,
   email: string
-): Promise<UserCustomData | null> => {
+): Promise<UserCustomData | null>;
+export function fetchUserData(
+  userID: string,
+  email: string
+): Promise<UserCustomData | null>;
+export async function fetchUserData(
+  apiOrUserID: AxiosInstance | string,
+  userIDOrEmail: string,
+  maybeEmail?: string
+): Promise<UserCustomData | null> {
+  const isClient =
+    typeof apiOrUserID !== "string" && typeof apiOrUserID?.post === "function";
+  const privateApi = isClient ? apiOrUserID : getDefaultApiClient();
+  const userID = isClient ? userIDOrEmail : apiOrUserID;
+  const email = isClient ? maybeEmail : userIDOrEmail;
   const payload = {
     collectionName: "users",
     operation: "findOne",
@@ -33,12 +55,27 @@ export const fetchUserData = async (
     console.error("Error fetching user data:", error);
     return null;
   }
-};
+}
 
-export const fetchContactsData = async (
+export function fetchContactsData(
+  privateApi: AxiosInstance,
   userID: string,
   email: string
-): Promise<UserCustomData | null> => {
+): Promise<UserCustomData | null>;
+export function fetchContactsData(
+  userID: string,
+  email: string
+): Promise<UserCustomData | null>;
+export async function fetchContactsData(
+  apiOrUserID: AxiosInstance | string,
+  userIDOrEmail: string,
+  maybeEmail?: string
+): Promise<UserCustomData | null> {
+  const isClient =
+    typeof apiOrUserID !== "string" && typeof apiOrUserID?.post === "function";
+  const privateApi = isClient ? apiOrUserID : getDefaultApiClient();
+  const userID = isClient ? userIDOrEmail : apiOrUserID;
+  const email = isClient ? maybeEmail : userIDOrEmail;
   const payload = {
     collectionName: "contacts",
     operation: "findOne",
@@ -55,10 +92,10 @@ export const fetchContactsData = async (
     );
     return response.data;
   } catch (error) {
-    console.error("Error fetching user data:", error);
+    console.error("Error fetching contact data:", error);
     return null;
   }
-};
+}
 
 
 
@@ -122,6 +159,35 @@ export function isTrialActive(trialStartDate: DateInput, trialEndDate: DateInput
     console.error("Error determining trial status:", error);
     return false;
   }
+}
+
+export function getChatAccess(contact: any) {
+  const trialActive =
+    contact?.trial === true &&
+    contact?.trial_expired !== true &&
+    (!contact?.trial_end_date ||
+      new Date(contact.trial_end_date) >= new Date());
+
+  const trialExpiredLegacy =
+    contact?.trial === "expired" ||
+    contact?.trial_status === "expired" ||
+    contact?.trial_expired === true;
+
+  const subscriptionActive =
+    ["active", "trialing", "complete", "paid", "authorized"].includes(
+      `${contact?.subscription_status || ""}`.toLowerCase()
+    ) &&
+    (!contact?.subscription_end_date ||
+      new Date(contact.subscription_end_date) >= new Date());
+
+  const canChat = trialActive || subscriptionActive;
+
+  return {
+    trialActive,
+    trialExpiredLegacy,
+    subscriptionActive,
+    canChat,
+  };
 }
 
 export const   convertISODateToNormal = (isoString: string | number | Date) => {

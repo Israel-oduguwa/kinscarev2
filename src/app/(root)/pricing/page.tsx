@@ -50,7 +50,7 @@ const pricingPlans = [
     title: "Daily Plan",
     price: "$23.99",
     stripePriceId: "price_1SG0IIAoahxG9SLGjs1ME0zJ",
-    highlight: "Try risk-free",
+    highlight: "Try-daily",
     best: "Exploring caregivers before committing",
     description: `Best for exploring caregivers before committing or temporary needs. Get access for 24 hours.`,
     features: [

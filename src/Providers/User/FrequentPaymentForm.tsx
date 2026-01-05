@@ -1,10 +1,9 @@
-import React, { useContext, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   PaymentElement,
   useElements,
   useStripe,
 } from "@stripe/react-stripe-js";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
@@ -14,6 +13,7 @@ import { fetchContactsData, trackEvents } from "@/lib/utils";
 import TagManager from "react-gtm-module";
 import { rewardReferrer } from "@/lib/paymentUtils";
 import { useApiClient } from "@/hooks/useApiClient";
+import Confetti from "react-confetti";
 
 interface FrequentPaymentFormProps {
   clientSecret: string;
@@ -48,6 +48,17 @@ const FrequentPaymentForm: React.FC<FrequentPaymentFormProps> = ({
 
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [confettiSize, setConfettiSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const updateSize = () =>
+      setConfettiSize({ width: window.innerWidth, height: window.innerHeight });
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
 
   const updatePaymentMethod = async () => {
     try {
@@ -166,15 +177,21 @@ const FrequentPaymentForm: React.FC<FrequentPaymentFormProps> = ({
 
       // Call onSuccess callback with payment method ID
       onSuccess({ paymentMethodID });
+      toast({
+        title: "Subscription active",
+        description: "Your plan is now active. Enjoy premium access.",
+      });
+      setShowConfetti(true);
       await refreshData();
       // then we reward the referer
       await rewardReferrer(contactData.userID, "subscription");
       // Wait for webhook processing (e.g., 2 seconds)
       setTimeout(() => {
+        setShowConfetti(false);
         window.location.reload(); // Reload after the delay
         close();
         setIsLoading(false); // Ensure loading state is turned off
-      }, 3000); // 3-second delay
+      }, 3800);
     } catch (error: any) {
       // Handle errors and show a toast notification
       toast({
@@ -188,6 +205,16 @@ const FrequentPaymentForm: React.FC<FrequentPaymentFormProps> = ({
   };
 
   return (
+    <>
+      {showConfetti && confettiSize.width > 0 ? (
+        <Confetti
+          width={confettiSize.width}
+          height={confettiSize.height}
+          numberOfPieces={220}
+          recycle={false}
+          style={{ position: "fixed", inset: 0, zIndex: 60 }}
+        />
+      ) : null}
     <form id="payment-form" onSubmit={handleSubmit} className="space-y-6">
       <PaymentElement id="payment-element" options={{ layout: "tabs" }} />
       <div className="flex justify-end">
@@ -198,6 +225,7 @@ const FrequentPaymentForm: React.FC<FrequentPaymentFormProps> = ({
       </div>
       {message && <p className="text-red-500">{message}</p>}
     </form>
+    </>
   );
 };
 

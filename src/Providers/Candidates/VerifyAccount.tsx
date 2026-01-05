@@ -11,7 +11,7 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { useAuthContext } from "@/context/AuthContext";
 import { useApiClient } from "@/hooks/useApiClient";
-import { isTrialActive, trackEvents } from "@/lib/utils";
+import { getChatAccess, trackEvents } from "@/lib/utils";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { Cloudy, FileText, Loader, X } from "lucide-react";
@@ -41,7 +41,7 @@ function VerifyAccount({ openModal, setOpenModal }: { openModal: boolean, setOpe
    * If false -> show real contact info.
    */
   const [isTrialExpired, setIsTrialExpired] = useState(
-    !(contactData?.trial || contactData?.subscribed)
+    !getChatAccess(contactData).canChat
   );
 
   const router = useRouter();
@@ -212,24 +212,8 @@ function VerifyAccount({ openModal, setOpenModal }: { openModal: boolean, setOpe
 
   /** ============== On Mount: Check Subscription/Trial ============== */
   useEffect(() => {
-    const trialStart = contactData?.trial_start_date;
-    const trialEnd = contactData?.trial_end_date;
-    const isSubscribed = contactData?.subscribed;
-
-    if (isSubscribed) {
-      setIsTrialExpired(false);
-      return;
-    }
-    if (trialStart && trialEnd) {
-      const trialActive = isTrialActive(trialStart, trialEnd);
-      setIsTrialExpired(!trialActive);
-    } else {
-      const trialFlag = contactData?.trial || false;
-      // console.log(trialFlag);
-      setIsTrialExpired(!trialFlag);
-    }
-
-    // refreshData()
+    const { canChat } = getChatAccess(contactData);
+    setIsTrialExpired(!canChat);
   }, [contactData]);
 
  
@@ -336,7 +320,7 @@ function VerifyAccount({ openModal, setOpenModal }: { openModal: boolean, setOpe
     <>
       {/* ============== TRIAL VERIFICATION (ATT. LETTER / PAYMENT) DIALOG ============== */}
       <Dialog  open={isTrialDialogOpen} onOpenChange={setOpenModal}>
-        <DialogContent closePosition="left" className="h-screen md:h-auto max-w-4xl overflow-y-auto">
+        <DialogContent closePosition="left" className="h-screen md:h-auto max-w-4xl! overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex flex-col items-center text-center">
               <h2 className="font-bold tracking-tight text-2xl text-gray-800">
