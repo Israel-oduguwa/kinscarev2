@@ -22,7 +22,7 @@ const buildQuery = (
   }
   const q = sp.toString();
   return q ? `?${q}` : "";
-};
+}; 
 
 const Logo: React.FC<{ src?: string; alt?: string }> = ({ src, alt }) => {
   const fallback =
