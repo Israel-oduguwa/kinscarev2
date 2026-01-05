@@ -19,7 +19,7 @@ import ProtectedCandidatesDetails from "@/Providers/Candidates/ProtectedCandidat
 import { useParams } from "next/navigation";
 import { useApiClient } from "@/hooks/useApiClient";
 
-const TWILIO_BASE = "http://localhost:8081/api/v1/twilio";
+const TWILIO_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/twilio";
 
 function formatTel(raw?: string | null) {
   if (!raw) return "—";
@@ -192,7 +192,7 @@ export default function CaregiverDetails() {
   const candidateID = id;
   // Endpoint (keep your existing one)
   const API_URL = useMemo(
-    () => `http://localhost:8081/api/v1/providers/caregivers/${candidateID}`,
+    () => `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/caregivers/${candidateID}`,
     [candidateID]
   );
   // SMS dialog states

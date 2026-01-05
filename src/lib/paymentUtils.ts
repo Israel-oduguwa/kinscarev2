@@ -23,7 +23,7 @@ export async function rewardReferrer(
 
     const token = await getToken();
     const response: AxiosResponse<RewardReferrerResponse> = await privateApi.post(
-      `http://localhost:8081/api/v1/auth/get_user_data`, // Or your full API URL
+      `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/auth/get_user_data`, // Or your full API URL
       payload,
       { headers: { Authorization: `Bearer ${token}` } }
     );

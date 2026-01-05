@@ -67,7 +67,7 @@ const mobilityOptions = [
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE ||
-  "http://localhost:8081";
+  "https://jrp7pe2xhj.us-east-1.awsapprunner.com";
 
 const LS_KEY_PREFS = "kc_search_prefs";
 const LS_KEY_FORM_DATA = "publicJobPostData";
