@@ -10,7 +10,7 @@ interface UserCustomData {
   [key: string]: any;
 }
 
-const DEFAULT_API_BASE_URL = "https://jrp7pe2xhj.us-east-1.awsapprunner.com";
+const DEFAULT_API_BASE_URL = "http://localhost:8081";
 
 const getDefaultApiClient = () =>
   axios.create({

@@ -6,7 +6,7 @@ interface PostProps {
 
 async function DiscussionPosts({ threadID }: PostProps) {
   let data = await fetch(
-    `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/forum/threads/${threadID}/posts`,
+    `http://localhost:8081/api/v1/forum/threads/${threadID}/posts`,
     // { next: { revalidate:1 } }
     { cache: "no-cache" }
   );
