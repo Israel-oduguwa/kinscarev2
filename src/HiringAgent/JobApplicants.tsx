@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle, User } from "lucide-react";
 import { fmtDate } from "./JobDetail";
 
-const API_BASE = "http://localhost:8081/api/v1/providers";
+const API_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
 
 export default function ApplicantsTab({ jobId }: { jobId: string }) {
   const [applicants, setApplicants] = useState<any[]>([]);

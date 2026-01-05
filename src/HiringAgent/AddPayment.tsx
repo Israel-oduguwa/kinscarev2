@@ -20,7 +20,7 @@ import Confetti from "react-confetti";
 const stripe_key:any = process.env.STRIPE_PUBLIC_KEY;
 const stripePromise = loadStripe(stripe_key);
 
-const API_BASE = "http://localhost:8081/api/v1/providers";
+const API_BASE = "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
 
 type Applicant = {
   _id: string;

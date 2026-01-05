@@ -3,7 +3,7 @@ import { WebhookEvent } from "@clerk/nextjs/server";
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 const API_BASE =
   process.env.BACKEND_API_BASE ||
-  "http://localhost:8081";
+  "https://jrp7pe2xhj.us-east-1.awsapprunner.com";
 
 export async function POST(req: NextRequest) {
   let evt: WebhookEvent;
