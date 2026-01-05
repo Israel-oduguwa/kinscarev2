@@ -1,10 +1,30 @@
 // components/MigrationBanner.tsx
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 export default function MigrationBanner() {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
+  const storageKey = "kinscare_migration_banner_dismissed_until";
+  const dismissForDays = 7;
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem(storageKey);
+    if (!stored) {
+      setVisible(true);
+      return;
+    }
+    const until = Number(stored);
+    if (!Number.isFinite(until) || Date.now() > until) {
+      setVisible(true);
+    }
+  }, []);
+
+  const dismissBanner = () => {
+    const until = Date.now() + dismissForDays * 24 * 60 * 60 * 1000;
+    window.localStorage.setItem(storageKey, String(until));
+    setVisible(false);
+  };
 
   if (!visible) return null;
 
@@ -54,6 +74,7 @@ export default function MigrationBanner() {
         </p>
         <Link
           href="/signin"
+          onClick={dismissBanner}
           className="flex-none rounded-full bg-white/10 px-3.5 py-1 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white/20 hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
           Go to sign in <span aria-hidden="true">→</span>
@@ -63,7 +84,7 @@ export default function MigrationBanner() {
       <div className="flex flex-1 justify-end">
         <button
           type="button"
-          onClick={() => setVisible(false)}
+          onClick={dismissBanner}
           className="-m-3 p-3 text-slate-100 hover:text-white focus-visible:outline-none"
         >
           <span className="sr-only">Dismiss</span>

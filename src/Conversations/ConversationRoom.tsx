@@ -259,7 +259,12 @@ export default function ConversationRoom({
               );
             }
           } catch (error: any) {
-            toast.error(error?.message || "Chat token refresh failed.");
+            toast.error(error?.message || "Chat token refresh failed.", {
+              action: {
+                label: "Refresh",
+                onClick: refreshToken,
+              },
+            });
           } finally {
             refreshInFlight.current = false;
           }

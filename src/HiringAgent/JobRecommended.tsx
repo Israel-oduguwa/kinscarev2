@@ -31,7 +31,7 @@ import ProfileAvatar from "@/components/ProfileAvatar";
 
 
 const API_BASE =
-  "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers";
+  "http://localhost:8081/api/v1/providers";
 
 const groupLicenses = [
   { label: "CNA", value: "CNA or NAC" },

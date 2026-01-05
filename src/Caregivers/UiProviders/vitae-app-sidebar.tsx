@@ -45,7 +45,12 @@ import CaregiverNavbarRight from "@/Caregivers/CaregiverNavbarRight";
 import { usePathname } from "next/navigation";
 
 import Image from "next/image";
-import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@radix-ui/react-navigation-menu";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+} from "@radix-ui/react-navigation-menu";
 import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 
 /**
@@ -187,6 +192,67 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
+              {/* Conversations */}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  className={itemClasses(conversationsActive)}
+                  aria-current={conversationsActive ? "page" : undefined}
+                  tooltip="Conversations"
+                >
+                  <Link href="/vitae/conversations">
+                    <MessageCircle aria-hidden="true" />
+                    <span className="text-sm">Conversations</span>
+                    <span className="ml-auto rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-emerald-700">
+                      New
+                    </span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              {/* Saved Jobs */}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  className={itemClasses(savedJobsActive)}
+                  aria-current={savedJobsActive ? "page" : undefined}
+                  tooltip="Saved Jobs"
+                >
+                  <Link href="/vitae/favorites">
+                    <PieChart aria-hidden="true" />
+                    <span className="text-sm">Saved Jobs</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Applied Jobs */}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  className={itemClasses(appliedJobsActive)}
+                  aria-current={appliedJobsActive ? "page" : undefined}
+                  tooltip="Applied Jobs"
+                >
+                  <Link href="/vitae/applied-jobs">
+                    <BriefcaseMedical aria-hidden="true" />
+                    <span className="text-sm text">Applied Jobs</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Career Plan */}
+              {/* <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  className={itemClasses(careerPlanActive)}
+                  aria-current={careerPlanActive ? "page" : undefined}
+                  tooltip="Career Plan"
+                >
+                  <Link href="/vitae/career-plan">
+                    <BookOpen aria-hidden="true" />
+                    <span className="text-sm">Career Plan</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem> */}
               {/* Refer + Make $. (collapsible) */}
               {data.navMain.map((item, idx) => {
                 const open = isSectionOpen(item.url, item.items);
@@ -231,9 +297,9 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                           active ? "page" : undefined
                                         }
                                       >
-                                          <span className="font-medium text-sm">
-                                            {sub.title}
-                                          </span>
+                                        <span className="font-medium text-sm">
+                                          {sub.title}
+                                        </span>
                                       </Link>
                                     </SidebarMenuSubButton>
                                   </SidebarMenuSubItem>
@@ -263,70 +329,6 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                   </div>
                 );
               })}
-
-              {/* Saved Jobs */}
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  className={itemClasses(savedJobsActive)}
-                  aria-current={savedJobsActive ? "page" : undefined}
-                  tooltip="Saved Jobs"
-                >
-                  <Link href="/vitae/favorites">
-                    <PieChart aria-hidden="true" />
-                    <span className="text-sm">Saved Jobs</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {/* Applied Jobs */}
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  className={itemClasses(appliedJobsActive)}
-                  aria-current={appliedJobsActive ? "page" : undefined}
-                  tooltip="Applied Jobs"
-                >
-                  <Link href="/vitae/applied-jobs">
-                    <BriefcaseMedical aria-hidden="true" />
-                    <span className="text-sm text">Applied Jobs</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {/* Conversations */}
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  className={itemClasses(conversationsActive)}
-                  aria-current={conversationsActive ? "page" : undefined}
-                  tooltip="Conversations"
-                >
-                  <Link href="/vitae/conversations">
-                    <MessageCircle aria-hidden="true" />
-                    <span className="text-sm">Conversations</span>
-                    <span className="ml-auto rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-emerald-700">
-                      New
-                    </span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {/* Career Plan */}
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  className={itemClasses(careerPlanActive)}
-                  aria-current={careerPlanActive ? "page" : undefined}
-                  tooltip="Career Plan"
-                >
-                  <Link href="/vitae/career-plan">
-                    <BookOpen aria-hidden="true" />
-                    <span className="text-sm">Career Plan</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
               {/* Update Resume */}
               <SidebarMenuItem>
                 <SidebarMenuButton
@@ -365,48 +367,48 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
       <SidebarInset>
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
           <div className="flex items-center h-16 shrink-0 my-1 px-2 gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 mx-auto w-full xl:max-w-screen-xl">
-          <SidebarTrigger className="-ml-1" aria-label="Toggle sidebar" />
-          <Image
-            width={40}
-            height={40}
-            className="h-6 md:hidden  pr-1 sm:h-8"
-            src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
-            alt="Kinscare logo"
-          />
-          {/* Top nav: use asChild to avoid nested anchors; add active state */}
-          <NavigationMenu className="hidden md:block">
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <Link href="/vitae/jobs/all" passHref>
-                  <NavigationMenuLink
-                    className={navigationMenuTriggerStyle()}
-                    aria-current={findJobsActive ? "page" : undefined}
-                  >
-                    Find Jobs
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
+            <SidebarTrigger className="-ml-1" aria-label="Toggle sidebar" />
+            <Image
+              width={40}
+              height={40}
+              className="h-6 md:hidden  pr-1 sm:h-8"
+              src="https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444"
+              alt="Kinscare logo"
+            />
+            {/* Top nav: use asChild to avoid nested anchors; add active state */}
+            <NavigationMenu className="hidden md:block">
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <Link href="/vitae/jobs/all" passHref>
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                      aria-current={findJobsActive ? "page" : undefined}
+                    >
+                      Find Jobs
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
 
-          <NavigationMenu className="hidden md:block">
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <Link href="/vitae/career-plan" passHref>
-                  <NavigationMenuLink
-                    className={navigationMenuTriggerStyle()}
-                    aria-current={careerPlanActive ? "page" : undefined}
-                  >
-                    Career Plan
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
+            <NavigationMenu className="hidden md:block">
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <Link href="/vitae/career-plan" passHref>
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                      aria-current={careerPlanActive ? "page" : undefined}
+                    >
+                      Career Plan
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
 
-          <div className="flex items-center ml-auto">
-            <CaregiverNavbarRight />
-          </div>
+            <div className="flex items-center ml-auto">
+              <CaregiverNavbarRight />
+            </div>
           </div>
         </header>
 

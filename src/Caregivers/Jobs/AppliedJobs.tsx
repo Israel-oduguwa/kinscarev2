@@ -327,7 +327,7 @@ function AppliedJobs() {
         <div className="absolute -bottom-32 left-6 h-80 w-80 rounded-full bg-blue-200/35 blur-3xl" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.14)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.14)_1px,transparent_1px)] bg-[size:36px_36px] opacity-40" />
       </div>
-      <div className="relative mx-auto max-w-7xl">
+      <div className="relative mx-auto px-6 max-w-7xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">
