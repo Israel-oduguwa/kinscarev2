@@ -91,7 +91,7 @@ function ProviderNotification() {
           <Button
             variant="ghost"
             size="icon"
-            className="relative h-12 w-12 rounded-full bg-transparent transition-all duration-200 hover:bg-slate-100 [&>svg]:h-6! [&>svg]:w-6!"
+            className="relative h-12 w-12 rounded-full bg-transparent transition-all duration-200 hover:bg-slate-100 [&>svg]:h-5! [&>svg]:w-5! md:[&>svg]:h-6! md:[&>svg]:w-6!"
           >
             <Bell className="h-6 w-6 text-slate-600" />
             {totalCount > 0 && (

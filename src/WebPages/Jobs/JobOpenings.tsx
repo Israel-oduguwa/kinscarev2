@@ -58,8 +58,7 @@ const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
 
   return (
     <div
-      className="group relative w-full rounded-3xl border border-white/70 bg-white/80 p-5 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur transition-all hover:shadow-[0_22px_55px_-35px_rgba(15,23,42,0.45)] focus-within:shadow-[0_22px_55px_-35px_rgba(15,23,42,0.45)]"
-      role="article"
+      className="group relative w-full rounded-3xl border border-slate-200/70 bg-white p-5 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.28)] transition-all hover:shadow-[0_22px_55px_-35px_rgba(15,23,42,0.38)] focus-within:shadow-[0_22px_55px_-35px_rgba(15,23,42,0.38)]"
     >
       <div className="absolute inset-0 -z-10 rounded-3xl opacity-0 ring-2 ring-blue-500/0 transition group-hover:opacity-100 group-hover:ring-blue-500/10" />
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
@@ -144,7 +143,7 @@ async function All({
   page?: number;
 }) {
   const base =
-    "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/jobs-search";
+    "http://localhost:8081/api/v1/caregivers/jobs-search";
   const qs = buildQuery({
     schedule,
     licenses,
@@ -215,7 +214,7 @@ async function All({
           {jobs.length > 0 ? (
             jobs.map((job: any) => <JobPostCard key={job._id} job={job} />)
           ) : (
-            <div className="rounded-3xl border border-dashed border-white/70 bg-white/80 p-10 text-center shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
+             <div className="rounded-3xl border border-dashed border-slate-200/70 bg-white p-10 text-center shadow-[0_18px_45px_-30px_rgba(15,23,42,0.28)]">
               <div className="mx-auto mb-4 h-16 w-16 text-slate-300">
                 {/* simple inline illustration */}
                 <svg viewBox="0 0 24 24" fill="none" className="h-full w-full">

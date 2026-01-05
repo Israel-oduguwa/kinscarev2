@@ -16,6 +16,7 @@ import {
   BookmarkCheck,
   FileText,
   Menu,
+  MessageCircle,
   SearchIcon,
   Settings,
   User
@@ -80,8 +81,13 @@ const ProviderUserButton = () => {
             labelIcon={<SearchIcon className="h-4 w-4" />}
             href="/provider/candidates/all"
           />
+           <UserButton.Link
+            label="Conversations"
+            labelIcon={<MessageCircle className="h-4 w-4" />}
+            href="/provider/conversations"
+          />
           <UserButton.Link
-            label="Your job postings"
+            label="Your Job postings"
             labelIcon={<User className="h-4 w-4" />}
             href="/provider/job/all"
           />

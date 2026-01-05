@@ -76,7 +76,7 @@ const CandidatesCard = ({ candidate }: any) => {
   return (
     <div key={candidate.userID} className="w-full relative mb-4 ">
       <Link href={`/provider/candidates/${candidate.userID}`}>
-        <div className="mb-2 flex relative   flex-col space-y-4 p-6 border border-slate-200/70 bg-white/80 backdrop-blur shadow-[0_16px_50px_-36px_rgba(15,23,42,0.35)] rounded-2xl">
+        <div className="mb-2 flex relative flex-col space-y-4 rounded-2xl border border-slate-200/70 bg-white p-6 shadow-[0_16px_50px_-36px_rgba(15,23,42,0.28)]">
           <div className="flex justify-between">
             <div className="flex space-x-2 items-center">
               <ProfileAvatar
@@ -170,7 +170,7 @@ const CandidatesCard = ({ candidate }: any) => {
           </Button> */}
         </div>
       </Link>
-      <div className="md:absolute py-1 px-1 right-4 top-4">
+      <div className="md:absolute hidden md:block py-1 px-1 right-4 top-4">
         <ProviderDialog page="all" candidate={candidate} />
       </div>
       {/* Dialog Box for Hire Action */}
@@ -291,7 +291,7 @@ function All() {
         </DialogContent>
       </Dialog>
       <div className="bg-slate-100 min-h-screen p-3">
-        <div className="max-w-7xl py-6 mx-auto">
+        <div className="max-w-7xl py-0 md:py-6 mx-auto">
           <header className="bg-linear-to-r mb-6 from-blue-600 to-blue-900 text-white rounded-lg shadow-md p-6">
             <div className="max-w-6xl mx-auto">
               <>

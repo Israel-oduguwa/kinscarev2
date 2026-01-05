@@ -1,11 +1,33 @@
 "use client"
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Megaphone } from "lucide-react";
 
+const DISMISS_KEY = "provider_post_job_banner_dismissed_until";
+const DISMISS_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+
 export default function ProviderPostJobBanner() {
   const [visible, setVisible] = useState(true);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const raw = window.localStorage.getItem(DISMISS_KEY);
+    const until = raw ? Number(raw) : 0;
+    if (Number.isFinite(until) && until > Date.now()) {
+      setVisible(false);
+    }
+  }, []);
+
+  const dismissForNow = () => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(
+        DISMISS_KEY,
+        String(Date.now() + DISMISS_WINDOW_MS)
+      );
+    }
+    setVisible(false);
+  };
+
   if (!visible) return null;
 
   return (
@@ -17,9 +39,11 @@ export default function ProviderPostJobBanner() {
               <Megaphone className="h-5 w-5" />
             </div>
             <div>
-              <Link href="/provider/job/update/new"><p className="text-sm font-semibold">
-                Post your caregiver opening, and connect with local caregivers who match your needs
-              </p></Link>
+              <Link href="/provider/job/update/new" onClick={dismissForNow}>
+                <p className="text-sm font-semibold">
+                  Post your caregiver opening, and connect with local caregivers who match your needs
+                </p>
+              </Link>
               {/* <p className="text-xs text-white/80">
                 Share your role to reach available caregivers and NACs in your area.
               </p> */}
@@ -27,13 +51,18 @@ export default function ProviderPostJobBanner() {
           </div>
           <div className="flex items-center gap-2 sm:shrink-0">
             <Link href="/provider/job/update/new">
-              <Button variant="secondary" size="sm" className="text-indigo-700">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="text-indigo-700"
+                onClick={dismissForNow}
+              >
                 Post a job
               </Button>
             </Link>
             <button
               type="button"
-              onClick={() => setVisible(false)}
+              onClick={dismissForNow}
               className="text-white/80 hover:text-white focus-visible:outline-none p-2"
               aria-label="Dismiss banner"
             >

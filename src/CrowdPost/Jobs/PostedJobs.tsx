@@ -85,7 +85,7 @@ function PostedJobs() {
       setLoading(true);
       try {
         const response = await axios.get(
-          `https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/providers/posted-jobs/${user?.customData?.hash}`
+          `http://localhost:8081/api/v1/providers/posted-jobs/${user?.customData?.hash}`
         );
         setJobs(response.data.jobs);
         // console.log(response.data.jobs);

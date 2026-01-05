@@ -366,7 +366,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
 
       <SidebarInset>
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
-          <div className="flex items-center h-16 shrink-0 my-1 px-2 gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 mx-auto w-full xl:max-w-screen-xl">
+          <div className="flex items-center h-16 shrink-0 my-1 px-2 gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 mx-auto w-full xl:max-w-7xl">
             <SidebarTrigger className="-ml-1" aria-label="Toggle sidebar" />
             <Image
               width={40}
