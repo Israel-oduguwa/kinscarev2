@@ -200,7 +200,7 @@ async function All({
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.14)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.14)_1px,transparent_1px)] bg-[size:36px_36px] opacity-30" />
       </div>
       {/* Top header zone */}
-      <div className="relative border-b  border-white/70 bg-white/60 backdrop-blur">
+      <div className="relative border-b  pt-0 xl:pt-16 md:pt-6 border-white/70 bg-white/60 backdrop-blur">
         <div className="mx-auto max-w-7xl px-4 py-4">
           <div className="flex flex-col gap-6">
             <SearchBar />
