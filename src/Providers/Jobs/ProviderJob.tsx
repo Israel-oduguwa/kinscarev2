@@ -286,15 +286,80 @@ export default function ProviderJob({
         </div>
       )}
 
-      {/* Matching caregivers */}
-      {isProviderView && Array.isArray(similarJobs) && similarJobs.length > 0 && (
+      {/* Matching caregivers (provider) / Similar jobs (caregiver) */}
+      {isProviderView && Array.isArray(similarJobs) && similarJobs.length > 0 ? (
         <div className="w-full mt-4">
           <p className="antialiased font-bold mb-2">
             Review these caregivers that match your job post
           </p>
           <MatchingCaregiver jobID={jobID} />
         </div>
-      )}
+      ) : !isProviderView &&
+        Array.isArray(similarJobs) &&
+        similarJobs.length > 0 ? (
+        <div className="w-full mt-6">
+          <p className="text-sm antialiased font-semibold text-slate-900">
+            Similar Jobs
+          </p>
+          <div className="mt-4 space-y-4">
+            {similarJobs.map((similarJob: any) => (
+              <Link
+                key={similarJob._id}
+                href={`/vitae/jobs/${similarJob._id}`}
+              >
+                <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md">
+                  <div className="mb-3 flex items-center gap-3">
+                    {similarJob.profileImage ? (
+                      <Image
+                        width={40}
+                        height={40}
+                        className="h-8 w-8 rounded-md object-cover"
+                        src={similarJob.profileImage}
+                        alt="company logo"
+                      />
+                    ) : (
+                      <div className="h-8 w-8 rounded-md bg-slate-100" />
+                    )}
+                    <div className="min-w-0">
+                      <p className="mb-1 line-clamp-1 text-sm font-medium text-gray-900">
+                        {similarJob.title}
+                      </p>
+                      <p className="text-xs font-normal text-gray-600">
+                        {similarJob.contacts?.zipcode},{" "}
+                        {similarJob.contacts?.city}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex w-full flex-wrap gap-2">
+                    {Array.isArray(similarJob.licenses) &&
+                      similarJob.licenses
+                        .slice(0, 2)
+                        .map((license: string, idx: number) => (
+                          <span
+                            key={`${similarJob._id}-lic-${idx}`}
+                            className="rounded-lg bg-gray-100 px-2 py-1 text-xs text-gray-700"
+                          >
+                            {license}
+                          </span>
+                        ))}
+                    {Array.isArray(similarJob.schedule) &&
+                      similarJob.schedule
+                        .slice(0, 2)
+                        .map((sch: string, idx: number) => (
+                          <span
+                            key={`${similarJob._id}-sch-${idx}`}
+                            className="rounded-lg bg-gray-100 px-2 py-1 text-xs text-gray-700"
+                          >
+                            {sch}
+                          </span>
+                        ))}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
