@@ -10,10 +10,8 @@ import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import ContextProviders from "@/components/contextProviders/ContextProviders";
 import AuthProvider from "@/components/contextProviders/AuthProvider";
-import IntercomProvider from "@/Providers/Utils/IntercomLoader";
-import MixpanelProvider from "@/lib/MixpanelProvider";
+import ClientSideWidgets from "@/components/contextProviders/ClientSideWidgets";
 import CookieConsentBanner from "@/Utils/CookieConsentBanner";
-import ChatWidgetGate from "@/ChatWidgets/ChatWidgetGate";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -101,7 +99,6 @@ export default function RootLayout({
             speed={200}
             shadow="0 0 10px #2299DD,0 0 5px #2299DD"
           />
-          <MixpanelProvider />
           <ThemeProvider
             attribute="class"
             defaultTheme="light"
@@ -113,8 +110,7 @@ export default function RootLayout({
                <SpeedInsights />
 
               <ContextProviders>
-                <ChatWidgetGate />
-                <IntercomProvider />
+                <ClientSideWidgets />
                 <CookieConsentBanner />
                 {children}
               </ContextProviders>

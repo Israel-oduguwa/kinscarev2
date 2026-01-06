@@ -3,6 +3,59 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   reactStrictMode: false,
+  async headers() {
+    const cspReportOnly = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:",
+      "style-src 'self' 'unsafe-inline' https:",
+      "img-src 'self' data: https: blob:",
+      "font-src 'self' data: https:",
+      "connect-src 'self' https: wss:",
+      "frame-src 'self' https:",
+      "base-uri 'self'",
+      "frame-ancestors 'self'",
+      "object-src 'none'",
+      "upgrade-insecure-requests",
+    ]
+      .join("; ");
+
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Content-Security-Policy-Report-Only",
+            value: cspReportOnly,
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=31536000; includeSubDomains; preload",
+          },
+          {
+            key: "Cross-Origin-Opener-Policy",
+            value: "same-origin",
+          },
+          {
+            key: "X-Frame-Options",
+            value: "SAMEORIGIN",
+          },
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Permissions-Policy",
+            value:
+              "accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), usb=()",
+          },
+        ],
+      },
+    ];
+  },
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if

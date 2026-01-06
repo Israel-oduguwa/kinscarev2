@@ -53,12 +53,13 @@ export const usePrevNextButtons = (
 type PropType = ComponentPropsWithRef<"button">;
 
 export const PrevButton: React.FC<PropType> = (props) => {
-  const { children, ...restProps } = props;
+  const { children, "aria-label": ariaLabel, ...restProps } = props;
 
   return (
     <button
       className="embla__button embla__button--prev "
       type="button"
+      aria-label={ariaLabel ?? "Previous slide"}
       {...restProps}
     >
       <div className="bg-blue-500 p-3 text-white rounded-full">
@@ -71,12 +72,13 @@ export const PrevButton: React.FC<PropType> = (props) => {
 };
 
 export const NextButton: React.FC<PropType> = (props) => {
-  const { children, ...restProps } = props;
+  const { children, "aria-label": ariaLabel, ...restProps } = props;
 
   return (
     <button
       className="embla__button embla__button--next"
       type="button"
+      aria-label={ariaLabel ?? "Next slide"}
       {...restProps}
     >
       <div className="bg-blue-500 p-3 text-white rounded-full">

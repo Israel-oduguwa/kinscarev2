@@ -1,7 +1,11 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import ChatWidgetUI from "@/ChatWidgets/ChatWidgetUI";
+
+const ChatWidgetUI = dynamic(() => import("@/ChatWidgets/ChatWidgetUI"), {
+  ssr: false,
+});
 
 const isConversationPath = (pathname: string) => {
   return (

@@ -137,10 +137,17 @@ export default function ChatWidgetUI() {
 
   // Smooth scroll to bottom on updates
   useEffect(() => {
-    scrollerRef.current?.scrollTo({
-      top: scrollerRef.current.scrollHeight,
-      behavior: "smooth",
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      scroller.scrollTo({
+        top: scroller.scrollHeight,
+        behavior: "smooth",
+      });
     });
+
+    return () => window.cancelAnimationFrame(frame);
   }, [messages, showTyping, open, minimized, showSignup]);
 
   // Initialize flow when widget opens — using current signed-in status
@@ -437,6 +444,7 @@ export default function ChatWidgetUI() {
               </button> */}
                 <button
                   title="Close"
+                  aria-label="Close chat"
                   onClick={() => setOpen(false)}
                   className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                 >
@@ -486,6 +494,8 @@ export default function ChatWidgetUI() {
                     className="flex-1 px-3 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-sm text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none disabled:opacity-40"
                   />
                   <button
+                    type="submit"
+                    aria-label="Send message"
                     disabled={!allowFreeText || !inputText.trim()}
                     className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-black text-white disabled:opacity-40"
                   >

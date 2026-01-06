@@ -182,18 +182,22 @@ export default function ConversationRoom({
     if (!messagesContainerRef.current || isLoading) return;
 
     const container = messagesContainerRef.current;
-    const isNearBottom =
-      container.scrollHeight - container.clientHeight - container.scrollTop <
-      100;
+    const frame = window.requestAnimationFrame(() => {
+      const isNearBottom =
+        container.scrollHeight - container.clientHeight - container.scrollTop <
+        100;
 
-    if (isNearBottom || !initialScrollDoneRef.current) {
-      const behavior = initialScrollDoneRef.current ? "smooth" : "instant";
-      container.scrollTo({
-        top: container.scrollHeight,
-        behavior,
-      });
-      initialScrollDoneRef.current = true;
-    }
+      if (isNearBottom || !initialScrollDoneRef.current) {
+        const behavior = initialScrollDoneRef.current ? "smooth" : "instant";
+        container.scrollTo({
+          top: container.scrollHeight,
+          behavior,
+        });
+        initialScrollDoneRef.current = true;
+      }
+    });
+
+    return () => window.cancelAnimationFrame(frame);
   }, [messages, isLoading]);
 
   // Load conversation logic remains the same...

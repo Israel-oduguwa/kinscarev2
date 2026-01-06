@@ -26,8 +26,7 @@ function StartCaregiver() {
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
-    const y = el.getBoundingClientRect().top + window.scrollY - 80;
-    window.scrollTo({ top: y, behavior: "smooth" });
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   // High-quality Unsplash hero photo (nurse assisting senior)
@@ -157,7 +156,7 @@ function StartCaregiver() {
       {/* How it works (scroll target) */}
       <section
         id="how-it-works"
-        className="py-16 md:py-20 bg-gradient-to-b from-indigo-50 to-white"
+        className="scroll-mt-20 py-16 md:py-20 bg-gradient-to-b from-indigo-50 to-white"
         aria-labelledby="how-heading"
       >
         <div className="container mx-auto px-6">

@@ -52,6 +52,7 @@ export default function AdminLayout({
             <button
               onClick={() => setSidebarOpen(false)}
               className="sm:hidden text-gray-500 dark:text-gray-400"
+              aria-label="Close sidebar"
             >
               ✖
             </button>
@@ -91,6 +92,7 @@ export default function AdminLayout({
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="sm:hidden text-gray-500 dark:text-gray-400"
+              aria-label="Open sidebar"
             >
               <Menu size={24} />
             </button>

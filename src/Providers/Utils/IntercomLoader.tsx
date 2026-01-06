@@ -1,17 +1,25 @@
 "use client";
 
-import { useEffect, useState, useContext } from "react";
-import { usePathname, } from "next/navigation";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useAuthContext } from "@/context/AuthContext";
 
 const IntercomProvider = () => {
   const pathname = usePathname();
   const [scriptLoaded, setScriptLoaded] = useState(false);
-  const {userData}:any = useAuthContext()
+  const { userData }: any = useAuthContext();
+  const appId = process.env.INTERCOM_APP_ID;
 
   // Determine if Intercom should be active
-  const shouldLoadIntercom = true // userData?.role === "provider" && pathname !== "/";
+  const role = userData?.role || userData?.settings?.role;
+  const isSignedInUser = Boolean(userData?.userID || role);
+  const isLeadPage =
+    pathname.startsWith("/jumpstart-hiring") ||
+    pathname.startsWith("/post-job") ||
+    pathname.startsWith("/find-caregivers") ||
+    pathname.startsWith("/pricing");
+  const shouldLoadIntercom = Boolean(appId) && (isSignedInUser || isLeadPage);
   // console.log(userData);
   // Manage Intercom boot/shutdown when conditions or script status change
   // console.log(pathname)
@@ -22,7 +30,7 @@ const IntercomProvider = () => {
       shouldLoadIntercom
     ) {
       window.Intercom("boot", {
-        app_id: process.env.INTERCOM_APP_ID || "YOUR_APP_ID",
+        app_id: appId || "",
         hide_default_launcher: true, // 👈 THIS hides the widget!
         user_id: userData?.userID ?? undefined,
         name:
@@ -51,13 +59,15 @@ const IntercomProvider = () => {
     } else if (window.Intercom) {
       window.Intercom("shutdown");
     }
-  }, [shouldLoadIntercom, scriptLoaded, userData]);
+  }, [shouldLoadIntercom, scriptLoaded, userData, appId]);
+
+  if (!shouldLoadIntercom) return null;
 
   return (
     <Script
       id="intercom-script"
-      strategy="afterInteractive"
-      src={`https://widget.intercom.io/widget/${process.env.INTERCOM_APP_ID || "YOUR_APP_ID"}`}
+      strategy="lazyOnload"
+      src={`https://widget.intercom.io/widget/${appId}`}
       onLoad={() => setScriptLoaded(true)}
     />
   );
