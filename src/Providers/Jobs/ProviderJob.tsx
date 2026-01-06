@@ -96,7 +96,7 @@ export default function ProviderJob({
         {/* Header */}
         <div className="w-full mb-4">
           <div className="flex gap-4 flex-wrap items-center lg:flex-nowrap justify-between">
-            <h2 className="text-xl md:2xl lg:3xl text-slate-800 tracking-tight font-bold xl:font-extrabold flex items-center gap-3">
+            <h2 className="xl:text-3xl text-slate-800 tracking-tight font-bold xl:font-extrabold flex items-center gap-3">
               {job.title}
               {job?.verified && (
                 <span className="inline-flex [&>svg]:h-4! [&>svg]:w-4! md:[&>svg]:h-5! md:[&>svg]:w-5! items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 md:px-2.5 text-xs font-semibold text-emerald-700">
@@ -234,7 +234,7 @@ export default function ProviderJob({
       {/* Applicants */}
       {isProviderView && job?.applicants?.length > 0 && (
         <div className="">
-          <h3 className="text-2xl font-[family:var(--header-font)] font-extrabold text-slate-900 mb-4">
+          <h3 className="lg:text-2xl font-[family:var(--header-font)] font-extrabold text-slate-900 mb-4">
             Applications for this job
           </h3>
           <ul className="space-y-4">

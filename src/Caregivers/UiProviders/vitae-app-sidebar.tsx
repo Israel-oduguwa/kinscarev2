@@ -379,14 +379,14 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             <NavigationMenu className="hidden md:block">
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <Link href="/vitae/jobs/all" passHref>
-                    <NavigationMenuLink
-                      className={navigationMenuTriggerStyle()}
+                  <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                    <Link
+                      href="/vitae/jobs/all"
                       aria-current={findJobsActive ? "page" : undefined}
                     >
                       Find Jobs
-                    </NavigationMenuLink>
-                  </Link>
+                    </Link>
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
@@ -394,14 +394,14 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             <NavigationMenu className="hidden md:block">
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <Link href="/vitae/career-plan" passHref>
-                    <NavigationMenuLink
-                      className={navigationMenuTriggerStyle()}
+                  <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                    <Link
+                      href="/vitae/career-plan"
                       aria-current={careerPlanActive ? "page" : undefined}
                     >
                       Career Plan
-                    </NavigationMenuLink>
-                  </Link>
+                    </Link>
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>

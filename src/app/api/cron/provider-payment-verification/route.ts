@@ -2,27 +2,30 @@
 
 import { NextResponse } from "next/server";
 
+const apiBase = "https://jrp7pe2xhj.us-east-1.awsapprunner.com";
+
 export async function GET(request: Request) {
-  const apiBase = "https://jrp7pe2xhj.us-east-1.awsapprunner.com";
   const { searchParams } = new URL(request.url);
-  const hours = searchParams.get("hours");
+  const intervalDays = searchParams.get("intervalDays");
+  const dryRun = searchParams.get("dryRun");
 
   if (!apiBase) {
     return NextResponse.json(
-      { ok: false, error: "Missing API_BASE_URL." },
+      { ok: false, error: "Missing API base URL." },
       { status: 500 }
     );
   }
 
   const params = new URLSearchParams();
-  if (hours) params.set("hours", hours);
+  if (intervalDays) params.set("intervalDays", intervalDays);
+  if (dryRun) params.set("dryRun", dryRun);
   const suffix = params.toString() ? `?${params.toString()}` : "";
 
   try {
     const res = await fetch(
-      `${apiBase}/api/v1/providers/jumpstart/notifications/payment-reminders${suffix}`,
+      `${apiBase}/api/v1/email/reminders/provider-payment-verification${suffix}`,
       {
-        method: "POST",
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
@@ -32,7 +35,7 @@ export async function GET(request: Request) {
     if (!res.ok) {
       const text = await res.text();
       return NextResponse.json(
-        { ok: false, error: text || "Payment reminder failed." },
+        { ok: false, error: text || "Provider payment reminder failed." },
         { status: 500 }
       );
     }
@@ -41,7 +44,10 @@ export async function GET(request: Request) {
     return NextResponse.json(data || { ok: true });
   } catch (error: any) {
     return NextResponse.json(
-      { ok: false, error: error?.message || "Payment reminder failed." },
+      {
+        ok: false,
+        error: error?.message || "Provider payment reminder failed.",
+      },
       { status: 500 }
     );
   }

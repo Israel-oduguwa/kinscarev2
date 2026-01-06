@@ -23,10 +23,12 @@ import {
   SquareArrowOutUpRight
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
 import { CaregiverCardSkeleton } from "./CandidateSkelenton";
 import { CandidatesContext } from "./CandidatesContext";
 import ProviderDialog from "./ProviderDialog";
+import VerifyAccount from "./VerifyAccount";
 
 interface Candidates {
   _id: string;
@@ -228,6 +230,10 @@ const CandidatesCard = ({ candidate }: any) => {
 function All() {
   const { contactData } = useAuthContext();
   const [showPricingDialog, setShowPricingDialog] = useState(false);
+  const [verifyOpen, setVerifyOpen] = useState(false);
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
   const {
     candidates,
     loading,
@@ -277,6 +283,19 @@ function All() {
     }
   }, [contactData]);
 
+  useEffect(() => {
+    const verifyParam = searchParams?.get("verify");
+    if (verifyParam !== "1" && verifyParam !== "true") return;
+    setVerifyOpen(true);
+
+    const nextParams = new URLSearchParams(searchParams.toString());
+    nextParams.delete("verify");
+    const nextQuery = nextParams.toString();
+    router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, {
+      scroll: false,
+    });
+  }, [searchParams, pathname, router]);
+
   const closePricingDialog = () => setShowPricingDialog(false);
 
   return (
@@ -290,6 +309,7 @@ function All() {
           />
         </DialogContent>
       </Dialog>
+      <VerifyAccount openModal={verifyOpen} setOpenModal={setVerifyOpen} />
       <div className="bg-slate-100 min-h-screen p-3">
         <div className="max-w-7xl py-0 md:py-6 mx-auto">
           <header className="bg-linear-to-r mb-6 from-blue-600 to-blue-900 text-white rounded-lg shadow-md p-6">

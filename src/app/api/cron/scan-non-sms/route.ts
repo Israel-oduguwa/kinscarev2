@@ -3,7 +3,7 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const apiBase = "http://localhost:8081"
+  const apiBase = "https://jrp7pe2xhj.us-east-1.awsapprunner.com";
   // const cronSecret = process.env.CRON_SECRET;
 
   if (!apiBase) {
