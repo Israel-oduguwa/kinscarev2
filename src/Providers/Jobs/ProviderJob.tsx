@@ -14,6 +14,7 @@ import JobPostActions from "./JobPostActions";
 import MatchingCaregiver from "./MatchingCaregiver";
 import ProfileImage from "../User/ProfileImage";
 import Link from "next/link";
+import Image from "next/image";
 import VerifyNudge from "./VerifyNudge";
 import { useApiClient } from "@/hooks/useApiClient";
 import { Skeleton } from "@/components/ui/skeleton";
