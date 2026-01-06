@@ -682,7 +682,7 @@ function HomePage() {
                 className="bg-white text-blue-700 text-lg font-bold px-10 py-5 rounded-xl shadow-lg hover:bg-slate-100 transform transition-all duration-300 hover:scale-[1.03] group relative overflow-hidden"
               >
                 <span className="relative z-10">Book Now – $175</span>
-                <span className="absolute inset-0 bg-gradient-to-r from-slate-100 to-white opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+                <span className="absolute inset-0 bg-linear-to-r from-slate-100 to-white opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
               </Button>
             </Link>
             {/* <Link href="#how-it-works">
