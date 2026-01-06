@@ -175,7 +175,7 @@ function CandidatesCard({
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between">
-                  <p className="text-lg font-bold text-gray-900 truncate">
+                  <p className=" md:text-lg font-bold text-gray-900 truncate">
                     {displayName}
                   </p>
                   {availabilityPulse && (
@@ -416,13 +416,13 @@ export default async function Caregivers({
     : "#";
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">
       {/* Server-to-client toasts */}
       <ToastPortal messages={toasts} />
 
       {/* Header with search + summary */}
       <div className="relative border-b border-gray-200/70 bg-[radial-gradient(60%_80%_at_50%_-20%,rgba(59,130,246,0.10),transparent)]">
-        <div className="mx-auto max-w-7xl px-4 py-8">
+        <div className="mx-auto max-w-7xl px-4 py-0 md:py-6">
           <div className="flex flex-col py-2 xl:py-6 gap-4">
             <SearchBar
               availability={availabilityArray}

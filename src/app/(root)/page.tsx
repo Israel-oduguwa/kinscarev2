@@ -74,7 +74,7 @@ export default function Home() {
         }}
       />
 
-      <header className="min-h-screen bg-linear-to-br mt-10 from-orange-50 to-amber-50 relative overflow-hidden">
+      <header className="min-h-screen bg-linear-to-br mt-0 md:mt-10 from-orange-50 to-amber-50 relative overflow-hidden">
         {/* Floating decorative elements */}
         <div className="absolute w-64 h-64 rounded-full bg-linear-to-r from-indigo-200/30 to-rose-200/30 -top-32 -left-32 animate-[float_8s_ease-in-out_infinite]"></div>
         <div className="absolute w-48 h-48 rounded-full bg-linear-to-r from-amber-200/30 to-emerald-200/30 top-1/4 right-20 animate-[float_7s_ease-in-out_infinite_1s]"></div>
@@ -94,7 +94,7 @@ export default function Home() {
                 exploring a future in healthcare—KinsCare is built for you.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 mb-10">
+              <div className="flex flex-col sm:flex-row gap-4 mb-6 md:mb-10">
                 <Link
                   href="/find-caregivers"
                   className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:from-indigo-700 hover:to-violet-800 hover:-translate-y-1"
@@ -123,7 +123,7 @@ export default function Home() {
               </div>
 
               {/* Stats */}
-              <div className="flex flex-wrap gap-8">
+              <div className="flex flex-wrap gap-4 md:gap-6 lg:gap-8">
                 <div className="flex items-center">
                   <div className="text-lg font-bold text-indigo-600">200+</div>
                   <div className="ml-3 text-sm text-slate-600">
@@ -216,14 +216,14 @@ export default function Home() {
           </div>
         </div>
       </header>
-      <section className="bg-white relative py-20  overflow-hidden dark:bg-gray-900">
+      <section className="bg-white relative py-10 md:py-20  overflow-hidden dark:bg-gray-900">
         <div className="max-w-7xl mx-auto antialiased ">
           <div className="px-8">
             <h2 className="text-3xl  max-w-3xl mx-auto tracking-tight font-bold text-gray-800 text-center dark:text-white md:text-4xl xl:text-5xl">
               Empowering <span>care</span>, simplifying connections
             </h2>
             <p className="mx-auto mt-6 antialiased text-slate-600 dark:text-gray-300 max-w-md text-center">
-              Built for providers to hire faster. 
+              Built for providers to hire faster.
             </p>
           </div>
           <div className="relative">
@@ -668,7 +668,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="bg-gray-50 relative py-20  overflow-hidden dark:bg-gray-900">
+      <section className="bg-gray-50 relative py-10 md:py-20  overflow-hidden dark:bg-gray-900">
         <div className="max-w-7xl mx-auto antialiased px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl tracking-tight font-bold text-gray-900 dark:text-white md:text-4xl xl:text-5xl">
@@ -762,7 +762,7 @@ export default function Home() {
             {/* Testimonial 3 */}
             <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out">
               <div className="flex items-center">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
                     <span className="text-purple-600 dark:text-purple-300 font-semibold text-lg">
                       AK
@@ -808,13 +808,13 @@ export default function Home() {
         </div>
       </section>
       {/* <FeaturesSection/> */}
-      <section className="relative py-24 md:py-30 overflow-hidden bg-gradient-to-br from-gray-900 to-gray-950 dark:from-gray-900 dark:to-gray-950">
+      <section className="relative py-16 md:py-30 overflow-hidden bg-linear-to-br from-gray-900 to-gray-950 dark:from-gray-900 dark:to-gray-950">
         {/* Decorative background elements */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute top-1/4 -left-10 w-96 h-96 bg-gradient-to-r from-teal-500/10 to-blue-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-1/3 -right-10 w-96 h-96 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/4 -left-10 w-96 h-96 bg-linear-to-r from-teal-500/10 to-blue-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-1/3 -right-10 w-96 h-96 bg-linear-to-r from-blue-500/10 to-indigo-500/10 rounded-full blur-3xl"></div>
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl">
-            <div className="bg-grid-white/[0.05] absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,transparent_30%,black)]"></div>
+            <div className="bg-grid-white/[0.05] absolute inset-0 mask-[radial-gradient(ellipse_at_center,transparent_30%,black)]"></div>
           </div>
         </div>
 

@@ -100,10 +100,10 @@ export default function PostJobPage() {
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.14)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.14)_1px,transparent_1px)] bg-[size:36px_36px] opacity-30" />
         </div>
         {/* In-page value proposition/banner for conversion */}
-        <div className="relative max-w-7xl mt-20 mx-auto py-24 px-4 grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="relative max-w-7xl mt-0 md:mt-10 lg:mt-16 mx-auto py-24 px-0  md:px-4 grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Main Form Column (spans 2/3 width) */}
           <div className="lg:col-span-7 xl:col-span-8">
-            <div className="mb-6">
+            <div className="mb-6 px-4 md:px-0">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
                 Post a job
               </p>
@@ -141,7 +141,7 @@ export default function PostJobPage() {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-4 xl:col-span-4 space-y-8">
+          <div className="lg:col-span-4 px-4 md:px-0 xl:col-span-4 space-y-8">
             {/* How It Works */}
             <div className="bg-white/80 rounded-3xl shadow-[0_20px_50px_-35px_rgba(15,23,42,0.45)] border border-white/70 backdrop-blur overflow-hidden">
               <div className="p-6">

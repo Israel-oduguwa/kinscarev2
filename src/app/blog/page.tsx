@@ -67,13 +67,13 @@ export default async function Page() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.14)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.14)_1px,transparent_1px)] bg-[size:36px_36px] opacity-30" />
       </div>
       {/* Featured Article */}
-      <header className="relative w-full py-20">
+      <header className="relative w-full py-0 lg:py-16 md:py-10">
         <FeaturedArticle article={featuredArticle} />
       </header>
 
       {/* Client Component for Blogs (with Load More) */}
       <section className="relative">
-        <div className="max-w-screen-xl py-10 mx-auto px-6">
+        <div className="max-w-7xl py-0 md:py-6 lg:py-10 mx-auto px-0 md:px-4 lg:px-6">
           <BlogList initialBlogs={blogs} totalPages={totalPages} />
         </div>
       </section>

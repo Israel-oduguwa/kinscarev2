@@ -98,7 +98,7 @@ const BlogList: React.FC<BlogListProps> = ({ initialBlogs, totalPages }) => {
         </div>
 
         {/* Sort Tabs */}
-        <div className="bg-white/80 rounded-xl p-1.5 shadow-sm border border-white/70 backdrop-blur flex">
+        <div className="bg-white/90 rounded-xl p-1.5 shadow-sm border border-white/70 backdrop-blur-sm md:backdrop-blur flex">
           <button
             onClick={() => handleSortChange("recent")}
             className={`px-6 py-2 flex items-center gap-2 rounded-lg transition-all ${
@@ -129,34 +129,34 @@ const BlogList: React.FC<BlogListProps> = ({ initialBlogs, totalPages }) => {
         {blogs.map((blog) => (
           <article
             key={blog._id}
-            className="group relative bg-white/80 rounded-3xl shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] hover:shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] transition-shadow duration-300 overflow-hidden flex flex-col h-full border border-white/70 backdrop-blur"
+            className="group relative bg-white/90 rounded-3xl shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] hover:shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] transition-shadow duration-300 overflow-hidden flex flex-col h-full border border-white/70 backdrop-blur-sm md:backdrop-blur"
           >
             <Link href={`/blog/${blog.slug}`} className="h-full flex flex-col">
               {/* Image Container */}
-              <div className="relative aspect-video overflow-hidden flex-shrink-0">
+              <div className="relative aspect-video overflow-hidden shrink-0">
                 <Image
                   src={blog.featuredImage}
                   alt={blog.title}
                   fill
                   className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/40" />
+                <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-slate-900/40" />
               </div>
 
               {/* Content Container - Fixed Height */}
-              <div className="p-6 flex flex-col flex-grow h-full space-y-4">
+              <div className="p-6 flex flex-col grow h-full space-y-4">
                 <h3 className="text-xl font-bold text-slate-900 leading-snug line-clamp-2">
                   {blog.title}
                 </h3>
 
-                <p className="text-slate-600 text-sm font-light line-clamp-3 leading-relaxed flex-grow">
+                <p className="text-slate-600 text-sm font-light line-clamp-3 leading-relaxed grow">
                   {blog.excerpt}
                 </p>
 
                 {/* Author Section - Always at Bottom */}
-                <div className="flex items-center gap-3 mt-4 pt-4 border-t border-white/70">
-                  <div className="relative flex-shrink-0">
-                    <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-blue-500 to-slate-400 blur opacity-20 group-hover:opacity-30 transition-opacity" />
+                <div className="flex items-center gap-3 mt-0  pt-4 border-t border-white/70">
+                  <div className="relative shrink-0">
+                    <div className="absolute -inset-1 rounded-full bg-linear-to-r from-blue-500 to-slate-400 blur opacity-20 group-hover:opacity-30 transition-opacity" />
                     <Image
                       src={blog.author.profilePicture}
                       alt={blog.author.name}

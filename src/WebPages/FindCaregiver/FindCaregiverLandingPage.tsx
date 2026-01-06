@@ -48,7 +48,7 @@ const FindLandingPage = () => {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 pt-10 h-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center text-center">
+        <div className="relative z-10 pt-0 md:pt-10 h-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center text-center">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-slate-200">
             Find caregivers
           </p>
@@ -73,7 +73,7 @@ const FindLandingPage = () => {
       {/* ============== VALUE BANNER ============== */}
       <section aria-label="KinsCare value banner" className="relative">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 md:py-16">
-          <div className="relative p-6 md:p-8 rounded-3xl overflow-hidden border border-white/60 bg-white/70 shadow-[0_18px_50px_-30px_rgba(15,23,42,0.45)] backdrop-blur-xl">
+          <div className="relative rounded-3xl border border-white/60 bg-white/80 p-6 shadow-[0_18px_50px_-30px_rgba(15,23,42,0.45)] backdrop-blur-sm md:p-8 md:backdrop-blur-xl">
             {/* Decorative bubbles */}
             <div className="pointer-events-none absolute -top-6 -right-10 w-36 h-36 bg-sky-300/30 rounded-full blur-2xl" />
             <div className="pointer-events-none absolute -bottom-8 -left-8 w-40 h-40 bg-blue-400/20 rounded-full blur-2xl" />
@@ -174,7 +174,7 @@ const FindLandingPage = () => {
                 ].map((item, i) => (
                   <div
                     key={i}
-                    className="p-5 rounded-2xl backdrop-blur bg-white/75 border border-white/70 shadow-sm hover:shadow-md transition"
+                    className="rounded-2xl border border-white/70 bg-white/85 p-5 shadow-sm transition hover:shadow-md backdrop-blur-sm md:backdrop-blur"
                   >
                     <div className="flex items-start">
                       <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm mr-4">
@@ -199,7 +199,7 @@ const FindLandingPage = () => {
       {/* ============== WHY IT MATTERS ============== */}
       <section aria-labelledby="why-title" className="relative">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 md:py-14 grid md:grid-cols-1 gap-10">
-          <div className="bg-white/70 border border-white/70 p-6 md:p-8 rounded-3xl shadow-[0_18px_45px_-30px_rgba(15,23,42,0.4)] backdrop-blur-xl">
+          <div className="rounded-3xl border border-white/70 bg-white/80 p-6 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.4)] backdrop-blur-sm md:p-8 md:backdrop-blur-xl">
             <h3
               id="why-title"
               className="tracking-tight font-semibold  text-2xl md:text-3xl  text-slate-900 mb-4"
@@ -257,7 +257,7 @@ const FindLandingPage = () => {
 
         {/* Post your job */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-12">
-          <div className="grid md:grid-cols-[1.05fr_0.95fr] gap-6 lg:gap-10 items-stretch rounded-3xl border border-white/70 shadow-[0_20px_50px_-30px_rgba(15,23,42,0.4)] bg-white/80 backdrop-blur overflow-hidden">
+          <div className="grid md:grid-cols-[1.05fr_0.95fr] gap-6 lg:gap-10 items-stretch rounded-3xl border border-white/70 bg-white/85 shadow-[0_20px_50px_-30px_rgba(15,23,42,0.4)] backdrop-blur-sm md:backdrop-blur overflow-hidden">
             <div className="p-6 sm:p-8 flex flex-col justify-center">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 mb-3">
                 Post a job
@@ -352,7 +352,7 @@ const FindLandingPage = () => {
             ].map((t, i) => (
               <article
                 key={i}
-                className="p-7 rounded-3xl backdrop-blur bg-white/75 border border-white/70 shadow-[0_12px_40px_-30px_rgba(15,23,42,0.45)] hover:shadow-[0_18px_50px_-30px_rgba(15,23,42,0.5)] transition transform hover:-translate-y-1"
+                className="rounded-3xl border border-white/70 bg-white/85 p-7 shadow-[0_12px_40px_-30px_rgba(15,23,42,0.45)] transition hover:-translate-y-1 hover:shadow-[0_18px_50px_-30px_rgba(15,23,42,0.5)] backdrop-blur-sm md:backdrop-blur"
               >
                 <header className="flex items-center mb-5">
                   <div
@@ -450,7 +450,7 @@ const FindLandingPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Step 1 */}
-            <div className="bg-white/80 rounded-2xl p-6 min-h-64 border border-white/70 shadow-sm hover:shadow-md transition backdrop-blur">
+            <div className="rounded-2xl border border-white/70 bg-white/85 p-6 min-h-64 shadow-sm transition hover:shadow-md backdrop-blur-sm md:backdrop-blur">
               <div className="flex items-center justify-center w-14 h-14 rounded-full bg-sky-100 text-blue-700 mb-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -480,7 +480,7 @@ const FindLandingPage = () => {
             </div>
 
             {/* Step 2 */}
-            <div className="bg-white/80 rounded-2xl p-6 min-h-64 border border-white/70 shadow-sm hover:shadow-md transition backdrop-blur">
+            <div className="rounded-2xl border border-white/70 bg-white/85 p-6 min-h-64 shadow-sm transition hover:shadow-md backdrop-blur-sm md:backdrop-blur">
               <div className="flex items-center justify-center w-14 h-14 rounded-full bg-blue-100 text-blue-700 mb-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -509,7 +509,7 @@ const FindLandingPage = () => {
             </div>
 
             {/* Step 3 */}
-            <div className="bg-white/80 rounded-2xl p-6 min-h-64 border border-white/70 shadow-sm hover:shadow-md transition backdrop-blur">
+            <div className="rounded-2xl border border-white/70 bg-white/85 p-6 min-h-64 shadow-sm transition hover:shadow-md backdrop-blur-sm md:backdrop-blur">
               <div className="flex items-center justify-center w-14 h-14 rounded-full bg-slate-100 text-slate-700 mb-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

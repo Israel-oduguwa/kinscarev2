@@ -118,17 +118,17 @@ function HomePage() {
       >
         {/* Dynamic floating blobs */}
         <motion.div
-          className="absolute top-[1%] left-[5%] w-96 h-96 bg-gradient-to-r from-[#ff7e5f] to-[#feb47b] rounded-full opacity-20 blur-[120px]"
+          className="absolute top-[1%] left-[5%] w-96 h-96 bg-gradient-to-r from-[#ff7e5f] to-[#feb47b] rounded-full opacity-20 blur-[80px] sm:blur-[100px] lg:blur-[120px]"
           variants={floatVariants}
           animate="float1"
         />
         <motion.div
-          className="absolute top-1/4 right-[10%] w-80 h-80 bg-gradient-to-r from-[#4776E6] to-[#8E54E9] rounded-full opacity-25 blur-[70px]"
+          className="absolute top-1/4 right-[10%] w-80 h-80 bg-gradient-to-r from-[#4776E6] to-[#8E54E9] rounded-full opacity-25 blur-[50px] sm:blur-[60px] lg:blur-[70px]"
           variants={floatVariants}
           animate="float2"
         />
         <motion.div
-          className="absolute bottom-1/3 left-[10%] w-72 h-72 bg-gradient-to-r from-[#654ea3] to-[#da98b4] rounded-full opacity-20 blur-[140px]"
+          className="absolute bottom-1/3 left-[10%] w-72 h-72 bg-gradient-to-r from-[#654ea3] to-[#da98b4] rounded-full opacity-20 blur-[90px] sm:blur-[110px] lg:blur-[140px]"
           variants={floatVariants}
           animate="float3"
         />
@@ -142,13 +142,13 @@ function HomePage() {
           </div>
         </div>
 
-        <div className="max-w-8xl mx-auto px-4 md:px-8 text-center relative z-10 pt-30">
+        <div className="max-w-8xl mx-auto px-4 md:px-8 text-center relative z-10 pt-10 md:pt-24 xl:pt-30">
           {/* Animated badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-block rounded-2xl bg-white/10 backdrop-blur-xl p-3 shadow-lg mb-8 border border-white/10"
+            className="inline-block rounded-2xl bg-white/15 backdrop-blur-sm md:backdrop-blur-xl p-3 shadow-lg mb-8 border border-white/10"
           >
             <span className="inline-flex items-center text-slate-100 font-bold gap-2 text-sm md:text-base tracking-wider">
               <svg
@@ -344,7 +344,7 @@ function HomePage() {
             ].map((stat, index) => (
               <div
                 key={index}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 text-center"
+                className="bg-white/10 backdrop-blur-sm md:backdrop-blur border border-white/10 rounded-xl p-4 text-center"
               >
                 <div className="text-2xl md:text-3xl font-bold text-white mb-1">
                   {stat.value}
@@ -482,7 +482,7 @@ function HomePage() {
             ].map((item) => (
               <div
                 key={item.step}
-                className="bg-white/80 border border-white/70 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group relative overflow-hidden backdrop-blur"
+                className="bg-white/85 border border-white/70 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group relative overflow-hidden backdrop-blur-sm md:backdrop-blur"
               >
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-sky-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="flex items-center mb-4">
@@ -537,7 +537,7 @@ function HomePage() {
               variants={fadeIn}
               initial="hidden"
               animate={controls.trust}
-              className="bg-white/80 rounded-3xl p-8 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] border border-white/70 hover:shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] transition-shadow duration-300 backdrop-blur"
+              className="bg-white/85 rounded-3xl p-8 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] border border-white/70 hover:shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] transition-shadow duration-300 backdrop-blur-sm md:backdrop-blur"
             >
               <div className="flex items-start mb-4">
                 <div className="bg-emerald-100 p-3 rounded-lg mr-4">
@@ -570,7 +570,7 @@ function HomePage() {
               initial="hidden"
               animate={controls.trust}
               transition={{ delay: 0.1 }}
-              className="bg-white/80 rounded-3xl p-8 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] border border-white/70 hover:shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] transition-shadow duration-300 backdrop-blur"
+              className="bg-white/85 rounded-3xl p-8 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] border border-white/70 hover:shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] transition-shadow duration-300 backdrop-blur-sm md:backdrop-blur"
             >
               <div className="flex items-start mb-4">
                 <div className="bg-sky-100 p-3 rounded-lg mr-4">
@@ -773,7 +773,7 @@ function HomePage() {
               <motion.div
                 key={index}
                 variants={item}
-                className="border border-white/70 rounded-2xl overflow-hidden transition-all duration-300 hover:border-blue-200 bg-white/80 backdrop-blur"
+                className="border border-white/70 rounded-2xl overflow-hidden transition-all duration-300 hover:border-blue-200 bg-white/85 backdrop-blur-sm md:backdrop-blur"
               >
                 <button
                   className="flex items-center justify-between w-full p-6 text-left bg-white/70 hover:bg-blue-50/60 transition-colors"

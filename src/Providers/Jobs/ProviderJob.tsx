@@ -23,6 +23,7 @@ polyfill();
 
 interface JobProps {
   jobID: string;
+  viewer?: "provider" | "caregiver";
 }
 
 interface JobData {
@@ -30,11 +31,15 @@ interface JobData {
   similarJobs: any[];
 }
 
-export default function CaregiverJob({ jobID }: JobProps) {
+export default function ProviderJob({
+  jobID,
+  viewer = "provider",
+}: JobProps) {
   const { privateApi } = useApiClient();
   const [data, setData] = useState<JobData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isProviderView = viewer === "provider";
 
   useEffect(() => {
     const fetchJob = async () => {
@@ -66,7 +71,7 @@ export default function CaregiverJob({ jobID }: JobProps) {
   }, [jobID, privateApi]);
 
   if (loading) {
-    return <CaregiverJobSkeleton />;
+    return <ProviderJobSkeleton />;
   }
 
   if (error || !data?.job) {
@@ -106,16 +111,30 @@ export default function CaregiverJob({ jobID }: JobProps) {
                 />
               )}
             </h2>
-            <div>
-              <JobPostActions jobID={jobID} />
-            </div>
+            {isProviderView ? (
+              <div>
+                <JobPostActions jobID={jobID} />
+              </div>
+            ) : null}
           </div>
         </div>
 
         {/* Provider / job meta */}
         <div className="mb-10">
           <div className="flex space-x-4 items-start">
-            <ProfileImage className="w-20 h-20" />
+            {isProviderView ? (
+              <ProfileImage className="w-20 h-20" />
+            ) : job.profileImage ? (
+              <Image
+                width={80}
+                height={80}
+                className="h-20 w-20 rounded-2xl object-cover"
+                src={job.profileImage}
+                alt="Company logo"
+              />
+            ) : (
+              <div className="h-20 w-20 rounded-2xl bg-slate-100" />
+            )}
             <div className="flex-1">
               <div className="flex flex-wrap gap-2 mb-1 items-center">
                 <p className="text-sm font-medium text-slate-900">
@@ -212,7 +231,7 @@ export default function CaregiverJob({ jobID }: JobProps) {
       </div>
 
       {/* Applicants */}
-      {job?.applicants?.length > 0 && (
+      {isProviderView && job?.applicants?.length > 0 && (
         <div className="bg-white/80 border border-white/70 my-6 rounded-3xl shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur p-6 overflow-hidden">
           <h3 className="text-2xl font-[family:var(--header-font)] font-extrabold text-slate-900 mb-4">
             Applications for this job
@@ -260,14 +279,14 @@ export default function CaregiverJob({ jobID }: JobProps) {
       )}
 
       {/* Trust nudge */}
-      {!job?.verified && (
+      {isProviderView && !job?.verified && (
         <div className="mb-8">
           <VerifyNudge />
         </div>
       )}
 
       {/* Matching caregivers */}
-      {Array.isArray(similarJobs) && similarJobs.length > 0 && (
+      {isProviderView && Array.isArray(similarJobs) && similarJobs.length > 0 && (
         <div className="w-full mt-4">
           <p className="antialiased font-bold mb-2">
             Review these caregivers that match your job post
@@ -280,7 +299,7 @@ export default function CaregiverJob({ jobID }: JobProps) {
 }
 
 // Perfect Skeleton Loader
-function CaregiverJobSkeleton() {
+function ProviderJobSkeleton() {
   return (
     <div className="max-w-7xl py-6 px-6 min-h-screen 2xl:px-0 mx-auto space-y-6">
       <div className="shadow-sm border bg-white border-gray-200 rounded-lg p-6 space-y-6">
@@ -347,3 +366,5 @@ function CaregiverJobSkeleton() {
     </div>
   );
 }
+
+export { ProviderJobSkeleton };

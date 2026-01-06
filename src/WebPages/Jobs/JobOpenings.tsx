@@ -41,8 +41,30 @@ const Logo: React.FC<{ src?: string; alt?: string }> = ({ src, alt }) => {
   );
 };
 
-const Chip: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <span className="inline-flex items-center gap-1 rounded-full border border-white/70 bg-white/80 px-3 py-1 text-xs font-medium text-slate-700 shadow-sm">
+const CHIP_LIMITS = {
+  licenses: { mobile: 1, desktop: 6 },
+  schedule: { mobile: 1, desktop: 6 },
+};
+
+const chipVisibility = (
+  index: number,
+  mobileLimit: number,
+  desktopLimit: number
+) => {
+  if (index < mobileLimit) return "";
+  if (index < desktopLimit) return "hidden sm:inline-flex";
+  return "hidden";
+};
+
+const Chip: React.FC<{ children: React.ReactNode; className?: string }> = ({
+  children,
+  className,
+}) => (
+  <span
+    className={`inline-flex items-center gap-1 rounded-full border border-white/70 bg-white/80 px-3 py-1 text-xs font-medium text-slate-700 shadow-sm ${
+      className || ""
+    }`}
+  >
     {children}
   </span>
 );
@@ -75,7 +97,7 @@ const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
           />
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-lg font-semibold tracking-tight text-slate-900">
+              <h2 className="text md:text-lg  font-semibold tracking-tight text-slate-900">
                 {job?.title}
               </h2>
               {Array.isArray(job?.licenses) && job.licenses.length > 0 && (
@@ -92,7 +114,7 @@ const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
             </div>
 
             {job.certifications && job.certifications.length > 0 && (
-              <div className="mt-3 text-sm text-slate-700 line-clamp-2">
+              <div className="mt-0 text-sm text-slate-700 line-clamp-2">
                 <Interweave content={job?.certifications ?? ""} />
               </div>
             )}
@@ -100,11 +122,27 @@ const JobPostCard: React.FC<{ job: any }> = ({ job }) => {
             <div className="mt-4 flex flex-wrap gap-2">
               {Array.isArray(job?.licenses) &&
                 job.licenses.map((license: string, i: number) => (
-                  <Chip key={`lic-${i}`}>{license}</Chip>
+                  <Chip
+                    key={`lic-${i}`}
+                    className={chipVisibility(
+                      i,
+                      CHIP_LIMITS.licenses.mobile,
+                      CHIP_LIMITS.licenses.desktop
+                    )}
+                  >
+                    {license}
+                  </Chip>
                 ))}
               {Array.isArray(job?.schedule) &&
                 job.schedule.map((sch: string, i: number) => (
-                  <Chip key={`sch-${i}`}>
+                  <Chip
+                    key={`sch-${i}`}
+                    className={chipVisibility(
+                      i,
+                      CHIP_LIMITS.schedule.mobile,
+                      CHIP_LIMITS.schedule.desktop
+                    )}
+                  >
                     <Clock className="h-3.5 w-3.5" />
                     {sch}
                   </Chip>
@@ -199,9 +237,9 @@ async function All({
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.14)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.14)_1px,transparent_1px)] bg-[size:36px_36px] opacity-30" />
       </div>
       {/* Top header zone */}
-      <div className="relative border-b  pt-0 xl:pt-16 md:pt-6 border-white/70 bg-white/60 backdrop-blur">
+      <div className="relative border-b pt-0 xl:pt-16 md:pt-6 border-white/70 bg-white/60 backdrop-blur">
         <div className="mx-auto max-w-7xl px-4 py-4">
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-0 md:gap-4 lg:gap-6">
             <SearchBar />
             <SearchInfo jobs={jobs} filters={filters} totalJobs={totalJobs} />
           </div>
@@ -209,7 +247,7 @@ async function All({
       </div>
 
       {/* Results */}
-      <div className="relative mx-auto max-w-7xl px-4 py-8">
+      <div className="relative mx-auto max-w-7xl px-4 py-6">
         <div className="grid grid-cols-1 gap-5">
           {jobs.length > 0 ? (
             jobs.map((job: any) => <JobPostCard key={job._id} job={job} />)
