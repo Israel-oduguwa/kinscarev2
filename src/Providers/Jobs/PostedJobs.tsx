@@ -109,7 +109,7 @@ function PostedJobs() {
   const draftJobs = jobs.filter((job) => job.draft);
   // console.log(jobs)
   return (
-    <div className="py-6  px-4 bg-gray-100 min-h-screen">
+    <div className="py-0 px-0 md:px-4 bg-gray-100 min-h-screen">
       {loading && (
         <div className="max-w-7xl mx-auto p-6">
           <div className="grid grid-cols-1">

@@ -77,7 +77,7 @@ export default function ProviderJob({
 
   if (error || !data?.job) {
     return (
-      <div className="max-w-6xl mx-auto py-12 px-6 text-center">
+      <div className="max-w-6xl mx-auto py-12 px-4 text-center">
         <p className="text-red-600 font-medium">{error || "Job not found"}</p>
       </div>
     );
@@ -86,7 +86,7 @@ export default function ProviderJob({
   const { job, similarJobs } = data;
 
   return (
-    <div className="max-w-7xl py-8 px-6 min-h-[100vh] 2xl:px-0 mx-auto">
+    <div className="max-w-7xl py-6 md:py-8 px-4 min-h-screen 2xl:px-0 mx-auto">
       <div className="mb-4">
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
           Job posting
@@ -96,11 +96,11 @@ export default function ProviderJob({
         {/* Header */}
         <div className="w-full mb-4">
           <div className="flex gap-4 flex-wrap items-center lg:flex-nowrap justify-between">
-            <h2 className="text-3xl text-slate-900 tracking-tight font-[family:var(--header-font)] font-extrabold flex items-center gap-3">
+            <h2 className="text-xl md:2xl lg:3xl text-slate-800 tracking-tight font-bold xl:font-extrabold flex items-center gap-3">
               {job.title}
               {job?.verified && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-                  <ShieldCheck size={21} />
+                <span className="inline-flex [&>svg]:h-4! [&>svg]:w-4! md:[&>svg]:h-5! md:[&>svg]:w-5! items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 md:px-2.5 text-xs font-semibold text-emerald-700">
+                  <ShieldCheck />
                   Verified
                 </span>
               )}
@@ -233,7 +233,7 @@ export default function ProviderJob({
 
       {/* Applicants */}
       {isProviderView && job?.applicants?.length > 0 && (
-        <div className="bg-white/80 border border-white/70 my-6 rounded-3xl shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur p-6 overflow-hidden">
+        <div className="">
           <h3 className="text-2xl font-[family:var(--header-font)] font-extrabold text-slate-900 mb-4">
             Applications for this job
           </h3>
@@ -297,47 +297,55 @@ export default function ProviderJob({
       ) : !isProviderView &&
         Array.isArray(similarJobs) &&
         similarJobs.length > 0 ? (
-        <div className="w-full mt-6">
-          <p className="text-sm antialiased font-semibold text-slate-900">
-            Similar Jobs
-          </p>
-          <div className="mt-4 space-y-4">
+        <div className="w-full mt-8">
+          <div className="flex items-center justify-between">
+            <p className="text-base font-semibold text-slate-900">
+              Similar Jobs
+            </p>
+            <span className="text-xs text-slate-500">
+              {similarJobs.length} roles
+            </span>
+          </div>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {similarJobs.map((similarJob: any) => (
               <Link
                 key={similarJob._id}
                 href={`/vitae/jobs/${similarJob._id}`}
               >
-                <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md">
-                  <div className="mb-3 flex items-center gap-3">
+                <div className="h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+                  <div className="flex items-center gap-3">
                     {similarJob.profileImage ? (
                       <Image
-                        width={40}
-                        height={40}
-                        className="h-8 w-8 rounded-md object-cover"
+                        width={44}
+                        height={44}
+                        className="h-11 w-11 rounded-xl object-cover"
                         src={similarJob.profileImage}
                         alt="company logo"
                       />
                     ) : (
-                      <div className="h-8 w-8 rounded-md bg-slate-100" />
+                      <div className="h-11 w-11 rounded-xl bg-slate-100" />
                     )}
                     <div className="min-w-0">
-                      <p className="mb-1 line-clamp-1 text-sm font-medium text-gray-900">
+                      <p className="line-clamp-1 text-sm font-semibold text-slate-900">
                         {similarJob.title}
                       </p>
-                      <p className="text-xs font-normal text-gray-600">
-                        {similarJob.contacts?.zipcode},{" "}
-                        {similarJob.contacts?.city}
+                      <p className="text-xs text-slate-500">
+                        {similarJob.contacts?.city || "—"}{" "}
+                        {similarJob.contacts?.zipcode
+                          ? `· ${similarJob.contacts?.zipcode}`
+                          : ""}
                       </p>
                     </div>
                   </div>
-                  <div className="flex w-full flex-wrap gap-2">
+
+                  <div className="mt-3 flex flex-wrap gap-2">
                     {Array.isArray(similarJob.licenses) &&
                       similarJob.licenses
                         .slice(0, 2)
                         .map((license: string, idx: number) => (
                           <span
                             key={`${similarJob._id}-lic-${idx}`}
-                            className="rounded-lg bg-gray-100 px-2 py-1 text-xs text-gray-700"
+                            className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-700"
                           >
                             {license}
                           </span>
@@ -348,7 +356,7 @@ export default function ProviderJob({
                         .map((sch: string, idx: number) => (
                           <span
                             key={`${similarJob._id}-sch-${idx}`}
-                            className="rounded-lg bg-gray-100 px-2 py-1 text-xs text-gray-700"
+                            className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-700"
                           >
                             {sch}
                           </span>

@@ -181,7 +181,7 @@ async function All({
   page?: number;
 }) {
   const base =
-    "https://jrp7pe2xhj.us-east-1.awsapprunner.com/api/v1/caregivers/jobs-search";
+    "http://localhost:8081/api/v1/caregivers/jobs-search";
   const qs = buildQuery({
     schedule,
     licenses,
@@ -228,7 +228,7 @@ async function All({
     : "#";
 
   return (
-    <div className="relative min-h-screen py-20 bg-slate-950/5 overflow-hidden">
+    <div className="relative min-h-screen py-10 bg-slate-950/5 overflow-hidden">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_20%_-10%,rgba(59,130,246,0.14),transparent_55%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_90%_20%,rgba(30,64,175,0.12),transparent_60%)]" />
@@ -237,7 +237,7 @@ async function All({
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.14)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.14)_1px,transparent_1px)] bg-[size:36px_36px] opacity-30" />
       </div>
       {/* Top header zone */}
-      <div className="relative border-b pt-0 xl:pt-16 md:pt-6 border-white/70 bg-white/60 backdrop-blur">
+      <div className="relative border-b pt-0 xl:pt-10 md:pt-6 border-white/70 bg-white/60 backdrop-blur">
         <div className="mx-auto max-w-7xl px-4 py-4">
           <div className="flex flex-col gap-0 md:gap-4 lg:gap-6">
             <SearchBar />
