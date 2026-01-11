@@ -4,8 +4,8 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const apiBase = "https://jrp7pe2xhj.us-east-1.awsapprunner.com";
-  const { searchParams } = new URL(request.url);
-  const hours = searchParams.get("hours");
+  // const { searchParams } = new URL(request.url);
+  // const hours = searchParams.get("hours");
 
   if (!apiBase) {
     return NextResponse.json(
@@ -15,12 +15,12 @@ export async function GET(request: Request) {
   }
 
   const params = new URLSearchParams();
-  if (hours) params.set("hours", hours);
-  const suffix = params.toString() ? `?${params.toString()}` : "";
+  // if (hours) params.set("hours", hours);
+  // const suffix = params.toString() ? `?${params.toString()}` : "";
 
   try {
     const res = await fetch(
-      `${apiBase}/api/v1/providers/jumpstart/notifications/payment-reminders${suffix}`,
+      `${apiBase}/api/v1/providers/jumpstart/notifications/payment-reminders`,
       {
         method: "POST",
         headers: {
