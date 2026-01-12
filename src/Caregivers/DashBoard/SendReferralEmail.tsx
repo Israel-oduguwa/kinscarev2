@@ -1,7 +1,6 @@
 "use client";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { useAuthContext } from "@/context/AuthContext";
 import { useApiClient } from "@/hooks/useApiClient";
 import { useForm } from "react-hook-form";
@@ -28,8 +27,9 @@ const schema = yup.object().shape({
 });
 
 function SendReferralEmail() {
- const  authData: any = useAuthContext();
-  const { userData, setUserData } = mongodb;
+  const authData: any = useAuthContext();
+  const { userData, setUserData } = authData;
+  const { privateApi } = useApiClient();
   const { closeDialog } = useDialog();
 
   // Points (UNCHANGED)
