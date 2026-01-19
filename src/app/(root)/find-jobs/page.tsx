@@ -4,6 +4,7 @@ import JobOpenings from "@/WebPages/Jobs/JobOpenings";
 import Navbar from "@/WebPages/Navbar";
 import { Metadata } from "next";
 import React, { Suspense } from "react";
+import { DialogProvider } from "@/Caregivers/CaregiverContext/DialogProvider";
 
 export const metadata: Metadata = {
   title: "Job openings | KinsCare",
@@ -17,21 +18,27 @@ async function FindJobs({
   const { schedule, licenses, minHours, page }: any = await searchParams;
   return (
     <div>
-      
-      <Suspense
-        fallback={
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 py-10 mt-32  gap-6">
-              <Skeleton className="w-full h-40 " />
-              {Array.from({ length: 6 }).map((_, idx) => (
-                <CaregiverCardSkeleton key={idx} />
-              ))}
+      <DialogProvider>
+        <Suspense
+          fallback={
+            <div className="max-w-7xl mx-auto">
+              <div className="grid grid-cols-1 py-10 mt-32  gap-6">
+                <Skeleton className="w-full h-40 " />
+                {Array.from({ length: 6 }).map((_, idx) => (
+                  <CaregiverCardSkeleton key={idx} />
+                ))}
+              </div>
             </div>
-          </div>
-        }
-      >
-        <JobOpenings page={page} schedule={schedule} minHours={minHours} licenses={licenses} />
-      </Suspense>
+          }
+        >
+          <JobOpenings
+            page={page}
+            schedule={schedule}
+            minHours={minHours}
+            licenses={licenses}
+          />
+        </Suspense>
+      </DialogProvider>
     </div>
   );
 }
