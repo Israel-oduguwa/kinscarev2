@@ -26,43 +26,6 @@ export async function generateMetadata(
 
     // console.log("The Generate metadata work", job);
 
-    const jsonLd = {
-      "@context": "https://schema.org",
-      "@type": "JobPosting",
-      title: job.title,
-      description: job.description, // HTML content preserved
-      identifier: {
-        "@type": "PropertyValue",
-        name: "Kinscare",
-        value: job._id,
-      },
-      hiringOrganization: {
-        "@type": "Organization",
-        name: job.provider,
-        logo:
-          job.profileImage ||
-          "https://firebasestorage.googleapis.com/v0/b/exhct2004.appspot.com/o/Kinscare%20Logo.svg?alt=media&token=e0ffb5fe-d0f9-4992-b505-a4180dffe444",
-      },
-      jobLocation: {
-        "@type": "Place",
-        address: {
-          "@type": "PostalAddress",
-          addressLocality: job.contacts.city,
-          addressRegion: job.contacts.city, // Assuming Washington, adjust accordingly
-          addressCountry: "US",
-          postalCode: job.contacts.zipcode,
-        },
-      },
-      datePosted: job.createdAt,
-      validThrough: "nill", // Replace with actual job expiration date
-      employmentType: job.alert_preferences.join(", "),
-      baseSalary: {
-        "@type": "MonetaryAmount",
-        currency: "USD", // Adjust currency as needed
-        value: job.compensation,
-      },
-    };
-
     return {
       title: `${job.title} - ${job.contacts.city}`,
       description: job.description,

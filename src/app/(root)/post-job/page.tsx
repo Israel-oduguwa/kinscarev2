@@ -64,12 +64,6 @@ export default function PostJobPage() {
       target: "https://kinscare.org/post-job",
       description:
         "Post your care job and start receiving caregiver applications within hours.",
-      result: {
-        "@type": "JobPosting",
-        title: "Caregiving Job Opportunity",
-        description:
-          "Your posted job will be seen by qualified, local caregivers on KinsCare.",
-      },
     },
   };
 
